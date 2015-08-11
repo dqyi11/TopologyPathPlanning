@@ -23,6 +23,9 @@ public:
     int _max_x;
     int _max_y;
 
+    Ray2D m_alpha_ray;
+    Ray2D m_beta_ray;
+
 };
 
 #endif // OBSTACLE_H
