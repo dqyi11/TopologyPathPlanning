@@ -17,6 +17,7 @@ public:
     Polygon2D m_pgn;
     Point2D _centroid;
     Point2D m_bk;
+    std::vector<Segment2D> m_segments;
 
     int _min_x;
     int _min_y;
@@ -25,6 +26,9 @@ public:
 
     Ray2D m_alpha_ray;
     Ray2D m_beta_ray;
+
+    Segment2D m_alpha_seg;
+    Segment2D m_beta_seg;
 
 };
 

@@ -24,11 +24,13 @@ LIBS += -L/usr/local/lib \
 
 SOURCES += \
     worldmap.cpp \
-    obstacle.cpp
+    obstacle.cpp \
+    region.cpp
 
 HEADERS  += \
     worldmap.h \
     utility.h \
     obstacle.h \
-    world_datatype.h
+    world_datatype.h \
+    region.h
 

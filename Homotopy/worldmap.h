@@ -8,16 +8,24 @@ class WorldMap {
 public:
     WorldMap( int width, int height );
 
-    bool load_obstalce_info( int** pp_obstacle_info );
-    bool _is_in_obstacle(Point2D point);
-    bool _is_in_obs_bk_lines(Point2D point);
+    bool load_obstalce_info( std::vector< std::vector<Point2D> > polygons);
     bool init();
+    bool init_segments();
 
-    Point2D _find_intersection_with_boundary(Ray2D ray);
+    bool is_in_obstacle( Point2D point );
+
+    bool _is_in_obstacle( Point2D point );
+    bool _is_in_obs_bk_lines( Point2D point );
+
+    std::vector<Point2D> _intersect( Segment2D seg, std::vector<Segment2D> segments );
+    Point2D* _find_intersection_with_boundary( Ray2D ray );
 
 private:
     int _map_width;
     int _map_height;
+
+    int _sample_width_scale;
+    int _sample_height_scale;
 
     int** _pp_obstalce_info;
 
@@ -25,10 +33,10 @@ private:
     std::vector<Line2D>    _obs_bk_pair_lines;
     std::vector<Segment2D> _boundary_lines;
     Point2D                _central_point;
-    Line2D                 _x_min_line;
-    Line2D                 _x_max_line;
-    Line2D                 _y_min_line;
-    Line2D                 _y_max_line;
+    Segment2D              _x_min_line;
+    Segment2D              _x_max_line;
+    Segment2D              _y_min_line;
+    Segment2D              _y_max_line;
 };
 
 #endif // WORLDMAP_H

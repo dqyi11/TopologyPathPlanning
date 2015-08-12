@@ -1,5 +1,6 @@
 #include "opencv2/core/core.hpp"
 #include <CGAL/intersections.h>
+#include <CGAL/Polygon_2_algorithms.h>
 #include "worldmap.h"
 
 #define NO_OBSTACLE_PIX    255
@@ -9,6 +10,9 @@
 WorldMap::WorldMap( int width, int height ) {
     _map_width = width;
     _map_height = height;
+
+    _sample_width_scale = _map_width/5;
+    _sample_height_scale = _map_width/5;
     _central_point = Point2D(width/2, height/2);
 
     _pp_obstalce_info = new int*[_map_width];
@@ -22,11 +26,19 @@ WorldMap::WorldMap( int width, int height ) {
     _obs_bk_pair_lines.clear();
 }
 
-bool WorldMap::load_obstalce_info( int** pp_obstacle_info ) {
+bool WorldMap::load_obstalce_info( std::vector< std::vector<Point2D> > polygons ) {
+    _obstacles.clear();
+    int obs_idx = 0;
+    for( std::vector< std::vector<Point2D> >::iterator it=polygons.begin(); it!=polygons.end(); it++ ) {
+        std::vector<Point2D> points = (*it);
+        Obstacle* p_obs = new Obstacle(points, obs_idx);
+        obs_idx ++;
+    }
+
     for( int i=0; i<_map_width; i++ ) {
         _pp_obstalce_info[i] = new int[_map_height];
         for ( int j=0; j<_map_height; i++ ) {
-            if ( pp_obstacle_info[i][j] > OBSTACLE_THRESHOLD ) {
+            if ( is_in_obstacle( Point2D(i, j) ) ) {
                 _pp_obstalce_info[i][j] = NO_OBSTACLE_PIX;
             }
             else {
@@ -79,18 +91,40 @@ bool WorldMap::init() {
     for( std::vector<Obstacle*>::iterator it=_obstacles.begin(); it!=_obstacles.end(); it++) {
         Obstacle* p_obstacle = (*it);
         p_obstacle->m_alpha_ray = Ray2D( p_obstacle->m_bk, _central_point );
-        p_obstacle->m_beta_ray = Ray2D( p_obstacle->m_bk, Point2D(2*p_obstacle->m_bk.x-_central_point.x, 2*p_obstacle->m_bk.y-_central_point.y) );
+        p_obstacle->m_beta_ray = Ray2D( p_obstacle->m_bk, Point2D(2*p_obstacle->m_bk.x()-_central_point.x(), 2*p_obstacle->m_bk.y()-_central_point.y()) );
 
-        p_obstacle->m_alpha_ray;
+        Point2D * p_a_pt = _find_intersection_with_boundary( p_obstacle->m_alpha_ray );
+        Point2D * p_b_pt = _find_intersection_with_boundary( p_obstacle->m_beta_ray );
+
+        if ( p_a_pt ) {
+            p_obstacle->m_alpha_seg = Segment2D( p_obstacle->m_bk, *p_a_pt );
+        }
+        if ( p_b_pt ) {
+            p_obstacle->m_beta_seg = Segment2D( p_obstacle->m_bk, *p_b_pt );
+        }
     }
 
 }
 
+bool WorldMap::init_segments() {
+
+    for( std::vector<Obstacle*>::iterator it=_obstacles.begin(); it!=_obstacles.end(); it++) {
+        Obstacle* p_obstacle = (*it);
+        for( std::vector<Obstacle*>::iterator itr=_obstacles.begin(); itr!=_obstacles.end(); itr++) {
+            Obstacle* p_ref_obstacle = (*itr);
+            // check alpha_seg with obstacles
+            std::vector<Point2D> result = _intersect(p_obstacle->m_alpha_seg, p_ref_obstacle->m_segments);
+        }
+    }
+}
+
+
+
 bool WorldMap::_is_in_obstacle(Point2D point) {
 
     if( _pp_obstalce_info ) {
-        int x = (int)point.x;
-        int y = (int)point.y;
+        int x = (int)point.x();
+        int y = (int)point.y();
         if( _pp_obstalce_info[x][y] < OBSTACLE_THRESHOLD ) {
             return true;
         }
@@ -113,11 +147,38 @@ Point2D* WorldMap::_find_intersection_with_boundary(Ray2D ray) {
 
     for(std::vector<Segment2D>::iterator it=_boundary_lines.begin(); it!=_boundary_lines.end(); it++) {
         Segment2D seg = (*it);
-        cpp11::result_of<K::Intersect_2(Segment2D, Ray2D)>::type result = intersection(seg, ray);
-        if (result) {
-            Point2D* p = boost::get<Point2D>(&*result);
+        CGAL::Object result = intersection(seg, ray);
+        Point2D* p = new Point2D();
+        if ( CGAL::assign(*p, result) ) {
             return p;
+        }
+        if(p) {
+            delete p;
+            p = NULL;
         }
     }
     return NULL;
+}
+
+bool WorldMap::is_in_obstacle( Point2D point ) {
+    for( std::vector<Obstacle*>::iterator it = _obstacles.begin(); it != _obstacles.end(); it++ ) {
+        Obstacle * p_obstacle = (*it);
+        if( p_obstacle->m_pgn.has_on_boundary( point ) == true ) {
+            return true;
+        }
+    }
+    return false;
+}
+
+std::vector<Point2D> WorldMap::_intersect( Segment2D seg, std::vector<Segment2D> segments ) {
+    std::vector<Point2D> points;
+    for(std::vector<Segment2D>::iterator it=segments.begin(); it!=segments.end(); it++) {
+        Segment2D bound = (*it);
+        CGAL::Object result = intersection(seg, bound);
+        Point2D p;
+        if ( CGAL::assign(p, result) ) {
+            points.push_back(p);
+        }
+    }
+    return points;
 }
