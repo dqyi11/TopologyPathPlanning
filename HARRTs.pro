@@ -1,6 +1,6 @@
 
 TEMPLATE = subdirs
 
-SUBDIRS = Homotopy  #HA-RRTs HomotopyDemo HA-RRTsDemo
+SUBDIRS = Homotopy HomotopyViz HomotopyDemo  #HA-RRTs  HA-RRTsDemo
 
 CONFIG += ordered

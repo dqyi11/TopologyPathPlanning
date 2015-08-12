@@ -20,6 +20,9 @@ public:
     std::vector<Point2D> _intersect( Segment2D seg, std::vector<Segment2D> segments );
     Point2D* _find_intersection_with_boundary( Ray2D ray );
 
+    int getWidth() { return _map_width; }
+    int getHeight() { return _map_height; }
+
 private:
     int _map_width;
     int _map_height;

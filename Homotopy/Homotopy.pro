@@ -6,21 +6,13 @@ DESTDIR = ../lib
 
 win32{
 
-INCLUDEPATH += C:\\opencv\build\include \
-               C:\\CGAL-4.6.1\include
-
-LIBS += -LC:\opencv\build\x86\vc10\lib \
-        -lopencv_core249
-}
-
-linux {
-
-INCLUDEPATH += /usr/local/include/opencv
-
-LIBS += -L/usr/local/lib \
-        -lopencv_core
+INCLUDEPATH += C:\\CGAL-4.6.1\include
 
 }
+
+
+LIBS += -L/usr/lib -lCGAL
+
 
 SOURCES += \
     worldmap.cpp \
@@ -29,7 +21,6 @@ SOURCES += \
 
 HEADERS  += \
     worldmap.h \
-    utility.h \
     obstacle.h \
     world_datatype.h \
     region.h

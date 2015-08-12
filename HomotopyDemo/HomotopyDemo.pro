@@ -12,5 +12,8 @@ INCLUDEPATH += ../Homotopy \
 LIBS += -L../lib -lHomotopy -lHomotopyViz
 
 SOURCES += \
+    mainwindow.cpp \
+    main.cpp
 
 HEADERS  += \
+    mainwindow.h
