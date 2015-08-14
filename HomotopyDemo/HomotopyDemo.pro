@@ -6,10 +6,12 @@ TEMPLATE = app
 
 DESTDIR = ../bin
 
+QMAKE_CXXFLAGS += -frounding-math
+
 INCLUDEPATH += ../Homotopy \
                ../HomotopyViz
 
-LIBS += -L../lib -lHomotopy -lHomotopyViz
+LIBS += -L../lib -lHomotopy -lHomotopyViz -lCGAL
 
 SOURCES += \
     mainwindow.cpp \

@@ -4,15 +4,9 @@ CONFIG += staticlib
 
 DESTDIR = ../lib
 
-win32{
-
-INCLUDEPATH += C:\\CGAL-4.6.1\include
-
-}
-
+QMAKE_CXXFLAGS += -frounding-math
 
 LIBS += -L/usr/lib -lCGAL
-
 
 SOURCES += \
     worldmap.cpp \

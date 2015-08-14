@@ -30,13 +30,12 @@ void MainWindow::createMenuBar() {
 
 void MainWindow::createActions() {
     mpOpenAction = new QAction("Open", this);
-
     connect(mpOpenAction, SIGNAL(triggered()), this, SLOT(onOpen()));
 }
 
 void MainWindow::onOpen() {
     QString tempFilename = QFileDialog::getOpenFileName(this,
-             tr("Open File"), "./", tr("Json Files (*.json)"));
+             tr("Open File"), "./", tr("Map Files (*.*)"));
 
     mpViz->loadMap(tempFilename);
 }
