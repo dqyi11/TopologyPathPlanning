@@ -8,11 +8,9 @@ class WorldMap {
 public:
     WorldMap( int width, int height );
 
-    bool load_obstalce_info( std::vector< std::vector<Point2D> > polygons);
+    bool load_obstacle_info( std::vector< std::vector<Point2D> > polygons);
     bool init();
     bool init_segments();
-
-    bool is_in_obstacle( Point2D point );
 
     bool _is_in_obstacle( Point2D point );
     bool _is_in_obs_bk_lines( Point2D point );
@@ -32,8 +30,6 @@ private:
 
     int _sample_width_scale;
     int _sample_height_scale;
-
-    int** _pp_obstalce_info;
 
     std::vector<Obstacle*> _obstacles;
     std::vector<Line2D>    _obs_bk_pair_lines;

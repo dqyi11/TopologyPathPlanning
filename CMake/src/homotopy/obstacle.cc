@@ -13,7 +13,7 @@ Obstacle::Obstacle(std::vector<Point2D> points, int index ){
         m_pgn.push_back(pos);
     }
 
-    for( int i=0; i< m_points.size(); i++ ) {
+    for( unsigned int i=0; i< m_points.size(); i++ ) {
         if( i < m_points.size()-1 ) {
             Segment2D seg( m_points[i], m_points[i+1] );
             m_segments.push_back(seg);
@@ -36,11 +36,13 @@ Point2D Obstacle::sample_position() {
 
     bool found = false;
     while (found == false) {
-        int rnd_x = (int)(rand()*(_max_x - _min_x) + _min_x);
-        int rnd_y = (int)(rand()*(_max_x - _min_x) + _min_x);
+        float x_ratio = static_cast<float> (rand())/static_cast<float>(RAND_MAX);
+        float y_ratio = static_cast<float> (rand())/static_cast<float>(RAND_MAX);
+        int rnd_x = static_cast<int>(x_ratio*(_max_x - _min_x)) + _min_x;
+        int rnd_y = static_cast<int>(y_ratio*(_max_y - _min_y)) + _min_y;
 
         Point2D rnd_point(rnd_x, rnd_y);
-        if (m_pgn.bounded_side( rnd_point ) == CGAL::ON_BOUNDED_SIDE ) {
+        if ( CGAL::ON_BOUNDED_SIDE == m_pgn.bounded_side( rnd_point ) ) {
             return rnd_point;
         }
     }
