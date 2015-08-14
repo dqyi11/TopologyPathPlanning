@@ -12,6 +12,8 @@ public:
 
 
 protected:
+    bool initWorld(QString filename);
+
     WorldMap* mpWorld;
     int mWorldWidth;
     int mWorldHeight;
@@ -19,6 +21,8 @@ signals:
 
 public slots:
 
+private slots:
+    void paintEvent(QPaintEvent * e);
 };
 
 #endif // HOMOTOPYVIZ_H
