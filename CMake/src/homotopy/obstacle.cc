@@ -2,9 +2,13 @@
 #include <CGAL/centroid.h>
 #include <CGAL/squared_distance_2.h>
 #include "obstacle.h"
+#include "worldmap.h"
 
-Obstacle::Obstacle(std::vector<Point2D> points, int index ){
+Obstacle::Obstacle(std::vector<Point2D> points, int index, WorldMap* world ){
     _index = index;
+    _p_world = world;
+
+    m_dist_bk2cp = 0.0;
 
     m_points.clear();
     m_segments.clear();

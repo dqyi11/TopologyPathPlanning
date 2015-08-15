@@ -22,7 +22,7 @@ bool WorldMap::load_obstacle_info( std::vector< std::vector<Point2D> > polygons 
     int obs_idx = 0;
     for( std::vector< std::vector<Point2D> >::iterator it=polygons.begin(); it!=polygons.end(); it++ ) {
         std::vector<Point2D> points = (*it);
-        Obstacle* p_obs = new Obstacle(points, obs_idx);
+        Obstacle* p_obs = new Obstacle(points, obs_idx, this);
         obs_idx ++;
         _obstacles.push_back(p_obs);
     }
@@ -61,6 +61,11 @@ bool WorldMap::init() {
         }
     }
 
+    for( std::vector<Obstacle*>::iterator it = _obstacles.begin(); it != _obstacles.end(); it++ ) {
+        Obstacle * p_obstacle = (*it);
+        p_obstacle->m_dist_bk2cp = p_obstacle->distance_to_bk(_central_point);
+    }
+
     // init four boundary line
     _boundary_lines.clear();
     _x_min_line = Segment2D(Point2D(0,0), Point2D(_map_width-1,0));
@@ -84,14 +89,16 @@ bool WorldMap::init() {
         Point2D * p_b_pt = _find_intersection_with_boundary( p_obstacle->m_beta_ray );
 
         if ( p_a_pt ) {
-            double a_rad = 0.0;
-            p_obstacle->mp_alpha_seg = new LineSubSegmentSet( p_obstacle->m_bk, *p_a_pt, LINE_TYPE_ALPHA, a_rad );
+            p_obstacle->mp_alpha_seg = new LineSubSegmentSet( p_obstacle->m_bk, *p_a_pt, LINE_TYPE_ALPHA, p_obstacle->m_alpha_ray.direction(), p_obstacle );
+            _line_segments.push_back(p_obstacle->mp_alpha_seg);
         }
         if ( p_b_pt ) {
-            double b_rad = 0.0;
-            p_obstacle->mp_beta_seg = new LineSubSegmentSet( p_obstacle->m_bk, *p_b_pt, LINE_TYPE_ALPHA, b_rad );
+            p_obstacle->mp_beta_seg = new LineSubSegmentSet( p_obstacle->m_bk, *p_b_pt, LINE_TYPE_ALPHA, p_obstacle->m_beta_ray.direction(), p_obstacle );
+            _line_segments.push_back(p_obstacle->mp_beta_seg);
         }
     }
+
+    std::sort(_line_segments.begin(), _line_segments.end());
 
     return true;
 }
@@ -128,7 +135,8 @@ bool WorldMap::init_segments() {
         std::sort(p_obstacle->m_beta_intersection_points.begin(), p_obstacle->m_beta_intersection_points.end());
 
         p_obstacle->mp_alpha_seg->load( p_obstacle->m_alpha_intersection_points );
-        p_obstalce->mp_beta_seg->load( p_obstacle->m_beta_intersection_points );
+        p_obstacle->mp_beta_seg->load( p_obstacle->m_beta_intersection_points );
+
     }
     return true;
 }

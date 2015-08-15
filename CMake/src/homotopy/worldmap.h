@@ -31,9 +31,11 @@ private:
     int _sample_width_scale;
     int _sample_height_scale;
 
-    std::vector<Obstacle*> _obstacles;
-    std::vector<Line2D>    _obs_bk_pair_lines;
-    std::vector<Segment2D> _boundary_lines;
+    std::vector<Obstacle*>          _obstacles;
+    std::vector<Line2D>             _obs_bk_pair_lines;
+    std::vector<Segment2D>          _boundary_lines;
+    std::vector<LineSubSegmentSet*> _line_segments;
+
     Point2D                _central_point;
     Segment2D              _x_min_line;
     Segment2D              _x_max_line;

@@ -10,5 +10,6 @@ typedef K::Segment_2        Segment2D;
 typedef K::Ray_2            Ray2D;
 typedef K::Line_2           Line2D;
 typedef CGAL::Polygon_2<K>  Polygon2D;
+typedef K::Direction_2      Direction2D;
 
 #endif // WORLD_DATATYPE_H
