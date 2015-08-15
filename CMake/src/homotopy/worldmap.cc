@@ -84,10 +84,12 @@ bool WorldMap::init() {
         Point2D * p_b_pt = _find_intersection_with_boundary( p_obstacle->m_beta_ray );
 
         if ( p_a_pt ) {
-            p_obstacle->m_alpha_seg = Segment2D( p_obstacle->m_bk, *p_a_pt );
+            double a_rad = 0.0;
+            p_obstacle->mp_alpha_seg = new LineSubSegmentSet( p_obstacle->m_bk, *p_a_pt, LINE_TYPE_ALPHA, a_rad );
         }
         if ( p_b_pt ) {
-            p_obstacle->m_beta_seg = Segment2D( p_obstacle->m_bk, *p_b_pt );
+            double b_rad = 0.0;
+            p_obstacle->mp_beta_seg = new LineSubSegmentSet( p_obstacle->m_bk, *p_b_pt, LINE_TYPE_ALPHA, b_rad );
         }
     }
 
@@ -98,16 +100,38 @@ bool WorldMap::init_segments() {
 
     for( std::vector<Obstacle*>::iterator it=_obstacles.begin(); it!=_obstacles.end(); it++) {
         Obstacle* p_obstacle = (*it);
+        p_obstacle->m_alpha_intersection_points.clear();
+        p_obstacle->m_beta_intersection_points.clear();
+
         for( std::vector<Obstacle*>::iterator itr=_obstacles.begin(); itr!=_obstacles.end(); itr++) {
             Obstacle* p_ref_obstacle = (*itr);
             // check alpha_seg with obstacles
-            std::vector<Point2D> result = _intersect(p_obstacle->m_alpha_seg, p_ref_obstacle->m_segments);
+            std::vector< Point2D > a_ints = _intersect(p_obstacle->mp_alpha_seg->m_seg, p_ref_obstacle->m_segments);
+            std::vector< Point2D > b_ints = _intersect(p_obstacle->mp_beta_seg->m_seg, p_ref_obstacle->m_segments);
+            for( std::vector< Point2D >::iterator itp = a_ints.begin(); itp != a_ints.end(); itp++ ) {
+                Point2D p = (*itp);
+                IntersectionPoint ip;
+                ip.m_point = p;
+                ip.m_dist_to_bk = p_obstacle->distance_to_bk(p);
+                p_obstacle->m_alpha_intersection_points.push_back(ip);
+            }
+            for( std::vector< Point2D >::iterator itp = b_ints.begin(); itp != b_ints.end(); itp++ ) {
+                Point2D p = (*itp);
+                IntersectionPoint ip;
+                ip.m_point = p;
+                ip.m_dist_to_bk = p_obstacle->distance_to_bk(p);
+                p_obstacle->m_beta_intersection_points.push_back(ip);
+            }
         }
-    }
 
+        std::sort(p_obstacle->m_alpha_intersection_points.begin(), p_obstacle->m_alpha_intersection_points.end());
+        std::sort(p_obstacle->m_beta_intersection_points.begin(), p_obstacle->m_beta_intersection_points.end());
+
+        p_obstacle->mp_alpha_seg->load( p_obstacle->m_alpha_intersection_points );
+        p_obstalce->mp_beta_seg->load( p_obstacle->m_beta_intersection_points );
+    }
     return true;
 }
-
 
 bool WorldMap::_is_in_obs_bk_lines(Point2D point) {
 

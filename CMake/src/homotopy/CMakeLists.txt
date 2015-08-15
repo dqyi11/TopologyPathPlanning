@@ -4,6 +4,8 @@ set(LIB homotopy)
 add_library(${LIB} SHARED
             obstacle.h
             obstacle.cc
+            line_subsegment.h
+            line_subsegment.cc
             region.h
             region.cc
             worldmap.h

@@ -57,7 +57,7 @@ bool HomotopyViz::initWorld(QString filename) {
         mpWorld->load_obstacle_info(conts);
         std::cout << "INIT ... " << std::endl;
         mpWorld->init();
-        //mpWorld->init_segments();
+        mpWorld->init_segments();
     }
     return true;
 }
@@ -74,8 +74,8 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
         for( std::vector<Obstacle*>::iterator it=mpWorld->get_obstacles().begin();
              it!=mpWorld->get_obstacles().end(); it++ ) {
             Obstacle* p_obstacle = (*it);
-            Point2D a_src = p_obstacle->m_alpha_seg.source();
-            Point2D a_end = p_obstacle->m_alpha_seg.target();
+            Point2D a_src = p_obstacle->mp_alpha_seg->m_seg.source();
+            Point2D a_end = p_obstacle->mp_alpha_seg->m_seg.target();
             alpha_painter.drawLine(QPoint(a_src.x(), a_src.y()), QPoint(a_end.x(), a_end.y()) );
         }
 
@@ -87,8 +87,8 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
         for( std::vector<Obstacle*>::iterator it=mpWorld->get_obstacles().begin();
              it!=mpWorld->get_obstacles().end(); it++ ) {
             Obstacle* p_obstacle = (*it);
-            Point2D b_src = p_obstacle->m_beta_seg.source();
-            Point2D b_end = p_obstacle->m_beta_seg.target();
+            Point2D b_src = p_obstacle->mp_beta_seg->m_seg.source();
+            Point2D b_end = p_obstacle->mp_beta_seg->m_seg.target();
             beta_painter.drawLine(QPoint(b_src.x(), b_src.y()), QPoint(b_end.x(), b_end.y()) );
         }
 
@@ -109,5 +109,23 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
             bk_painter.drawPoint( QPoint(p_obstacle->m_bk.x(), p_obstacle->m_bk.y()) );
         }
 
+        QPainter intsec_painter(this);
+        QPen intsec_pen(QColor(160,160,160));
+        intsec_pen.setWidth(4);
+        intsec_painter.setPen(intsec_pen);
+        for( std::vector<Obstacle*>::iterator it=mpWorld->get_obstacles().begin();
+             it!=mpWorld->get_obstacles().end(); it++ ) {
+            Obstacle* p_obstacle = (*it);
+            for( std::vector< IntersectionPoint >::iterator itap = p_obstacle->m_alpha_intersection_points.begin();
+                 itap != p_obstacle->m_alpha_intersection_points.end(); itap++ ) {
+                IntersectionPoint alpha_intsec = (*itap);
+                intsec_painter.drawPoint( QPoint(alpha_intsec.m_point.x(), alpha_intsec.m_point.y()) );
+            }
+            for( std::vector< IntersectionPoint >::iterator itbp = p_obstacle->m_beta_intersection_points.begin();
+                 itbp != p_obstacle->m_beta_intersection_points.end(); itbp++ ) {
+                IntersectionPoint beta_intsec = (*itbp);
+                intsec_painter.drawPoint( QPoint(beta_intsec.m_point.x(), beta_intsec.m_point.y()) );
+            }
+        }
     }
 }

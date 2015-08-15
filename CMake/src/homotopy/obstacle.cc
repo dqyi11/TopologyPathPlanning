@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <CGAL/centroid.h>
+#include <CGAL/squared_distance_2.h>
 #include "obstacle.h"
 
 Obstacle::Obstacle(std::vector<Point2D> points, int index ){
@@ -32,6 +33,17 @@ Obstacle::Obstacle(std::vector<Point2D> points, int index ){
     _centroid = Point2D( (_min_x + _max_x)/2 , (_min_y + _max_y)/2 );
 }
 
+Obstacle::~Obstacle() {
+    m_points.clear();
+    m_segments.clear();
+}
+
+double Obstacle::distance_to_bk( Point2D& point ) {
+    double dist = 0.0;
+    dist = squared_distance( m_bk , point );
+    return dist;
+}
+
 Point2D Obstacle::sample_position() {
 
     bool found = false;
@@ -48,3 +60,4 @@ Point2D Obstacle::sample_position() {
     }
     return _centroid;
 }
+
