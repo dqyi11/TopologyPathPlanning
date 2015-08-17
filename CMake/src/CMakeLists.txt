@@ -4,6 +4,14 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 #set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -std=c++0x)
 
+# search for the libxml2 package, exit if not found
+find_package(LibXml2)
+if( NOT LIBXML2_FOUND )
+  message( FATAL_ERROR "libxml2 not found\n" )
+  return()
+endif()
+include_directories(${LIBXML2_INCLUDE_DIR})
+
 find_package(Boost COMPONENTS)
 include_directories(${Boost_INCLUDE_DIR})
 

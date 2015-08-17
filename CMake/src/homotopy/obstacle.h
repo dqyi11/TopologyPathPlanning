@@ -2,6 +2,7 @@
 #define OBSTACLE_H
 
 #include <vector>
+#include <libxml/tree.h>
 #include "world_datatype.h"
 #include "line_subsegment.h"
 
@@ -17,6 +18,11 @@ public:
     Point2D sample_position();
     double distance_to_bk( Point2D& point );
 
+    virtual void to_xml( const std::string& filename )const;
+    virtual void to_xml( xmlDocPtr doc, xmlNodePtr root )const;
+
+    virtual void from_xml( const std::string& filename );
+    virtual void from_xml( xmlNodePtr root );
 
     std::vector<Point2D> m_points;
     Polygon2D m_pgn;
@@ -47,5 +53,7 @@ protected:
     WorldMap* _p_world;
 
 };
+
+std::ostream& operator<<( std::ostream& out, const Obstacle& other );
 
 #endif // OBSTACLE_H

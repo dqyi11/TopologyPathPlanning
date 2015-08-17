@@ -10,7 +10,6 @@ public:
     explicit HomotopyViz( QWidget *parent = 0 );
     bool loadMap( QString filename );
 
-
 protected:
     bool initWorld(QString filename);
 

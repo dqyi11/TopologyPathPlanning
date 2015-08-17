@@ -14,5 +14,5 @@ add_library(${LIB} SHARED
             reference_frames.cc
             world_datatype.h)
 
-target_link_libraries(${LIB} ${CGAL_LIBRARIES} ${BOOST_LIBRARIES})
+target_link_libraries(${LIB} ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${LIBXML2_LIBRARIES})
 

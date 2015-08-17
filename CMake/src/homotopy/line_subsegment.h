@@ -2,6 +2,7 @@
 #define LINE_SUBSEGMENT_H
 
 #include <vector>
+#include <libxml/tree.h>
 #include "world_datatype.h"
 
 class Obstacle;
@@ -17,11 +18,19 @@ public:
     }
 };
 
+std::ostream& operator<<( std::ostream& out, const IntersectionPoint& other );
+
 class LineSubSegment {
 
 public:
-    LineSubSegment( Point2D& pos_a, Point2D& pos_b, LineSubSegmentSet* p_subseg_set, unsigned int index, bool is_connected_to_central_point = false );
+    LineSubSegment( Point2D pos_a, Point2D pos_b, LineSubSegmentSet* p_subseg_set, unsigned int index, bool is_connected_to_central_point = false );
     ~LineSubSegment();
+
+    virtual void to_xml( const std::string& filename )const;
+    virtual void to_xml( xmlDocPtr doc, xmlNodePtr root )const;
+
+    virtual void from_xml( const std::string& filename );
+    virtual void from_xml( xmlNodePtr root );
 
     Segment2D m_subseg;
     LineSubSegmentSet* _p_subseg_set;
@@ -30,6 +39,8 @@ protected:
     unsigned int _index;
 
 };
+
+std::ostream& operator<<( std::ostream& out, const LineSubSegment& other );
 
 typedef enum {
     LINE_TYPE_UNKNOWN,
@@ -41,7 +52,7 @@ typedef enum {
 class LineSubSegmentSet {
 
 public:
-    LineSubSegmentSet( Point2D& pos_a, Point2D& pos_b, unsigned int type, Direction2D direction, Obstacle* p_obstacle );
+    LineSubSegmentSet( Point2D pos_a, Point2D pos_b, unsigned int type, Direction2D direction, Obstacle* p_obstacle );
     ~LineSubSegmentSet();
 
     bool load( std::vector<IntersectionPoint>& intersections );
@@ -49,6 +60,12 @@ public:
     bool operator<(const  LineSubSegmentSet& other) const {
         return ( m_direction < other.m_direction );
     }
+
+    virtual void to_xml( const std::string& filename )const;
+    virtual void to_xml( xmlDocPtr doc, xmlNodePtr root )const;
+
+    virtual void from_xml( const std::string& filename );
+    virtual void from_xml( xmlNodePtr root );
 
     static std::string type_to_std_string ( const unsigned int& type );
     static unsigned int type_from_std_string ( const std::string& type_str );

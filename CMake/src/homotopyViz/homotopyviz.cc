@@ -92,6 +92,27 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
             beta_painter.drawLine(QPoint(b_src.x(), b_src.y()), QPoint(b_end.x(), b_end.y()) );
         }
 
+        QPainter subseg_painter(this);
+        QPen subseg_pen(QColor(255,255,0));
+        subseg_pen.setWidth(3);
+        subseg_painter.setPen(subseg_pen);
+        for( std::vector<Obstacle*>::iterator it=mpWorld->get_obstacles().begin();
+             it!=mpWorld->get_obstacles().end(); it++ ) {
+            Obstacle* p_obstacle = (*it);
+            for( std::vector< LineSubSegment* >::iterator itap = p_obstacle->mp_alpha_seg->m_subsegs.begin();
+                 itap != p_obstacle->mp_alpha_seg->m_subsegs.end(); itap++ ) {
+                LineSubSegment* p_subseg_a = (*itap);
+                subseg_painter.drawLine( QPoint(p_subseg_a->m_subseg.source().x(), p_subseg_a->m_subseg.source().y()),
+                                         QPoint(p_subseg_a->m_subseg.target().x(), p_subseg_a->m_subseg.target().y()));
+            }
+            for( std::vector< LineSubSegment* >::iterator itbp = p_obstacle->mp_beta_seg->m_subsegs.begin();
+                 itbp != p_obstacle->mp_beta_seg->m_subsegs.end(); itbp++ ) {
+                LineSubSegment* p_subseg_b = (*itbp);
+                subseg_painter.drawLine( QPoint(p_subseg_b->m_subseg.source().x(), p_subseg_b->m_subseg.source().y()),
+                                         QPoint(p_subseg_b->m_subseg.target().x(), p_subseg_b->m_subseg.target().y()));
+            }
+        }
+
         QPainter cp_painter(this);
         QPen cp_pen(QColor(255,0,0));
         cp_pen.setWidth(4);
@@ -128,25 +149,6 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
             }
         }
 
-        QPainter subseg_painter(this);
-        QPen subseg_pen(QColor(255,255,0));
-        subseg_pen.setWidth(3);
-        subseg_painter.setPen(subseg_pen);
-        for( std::vector<Obstacle*>::iterator it=mpWorld->get_obstacles().begin();
-             it!=mpWorld->get_obstacles().end(); it++ ) {
-            Obstacle* p_obstacle = (*it);
-            for( std::vector< LineSubSegment* >::iterator itap = p_obstacle->mp_alpha_seg->m_subsegs.begin();
-                 itap != p_obstacle->mp_alpha_seg->m_subsegs.end(); itap++ ) {
-                LineSubSegment* p_subseg_a = (*itap);
-                subseg_painter.drawLine( QPoint(p_subseg_a->m_subseg.source().x(), p_subseg_a->m_subseg.source().y()),
-                                         QPoint(p_subseg_a->m_subseg.target().x(), p_subseg_a->m_subseg.target().y()));
-            }
-            for( std::vector< LineSubSegment* >::iterator itbp = p_obstacle->mp_beta_seg->m_subsegs.begin();
-                 itbp != p_obstacle->mp_beta_seg->m_subsegs.end(); itbp++ ) {
-                LineSubSegment* p_subseg_b = (*itbp);
-                subseg_painter.drawLine( QPoint(p_subseg_b->m_subseg.source().x(), p_subseg_b->m_subseg.source().y()),
-                                         QPoint(p_subseg_b->m_subseg.target().x(), p_subseg_b->m_subseg.target().y()));
-            }
-        }
+
     }
 }

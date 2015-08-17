@@ -1,3 +1,4 @@
+#include <sstream>
 #include "opencv2/core/core.hpp"
 #include <CGAL/intersections.h>
 #include <CGAL/Polygon_2_algorithms.h>
@@ -15,6 +16,18 @@ WorldMap::WorldMap( int width, int height ) {
     _obs_bk_pair_lines.clear();
 
     _central_point = Point2D(width/2, height/2);
+}
+
+WorldMap::~WorldMap() {
+
+    for( unsigned int i=0; i < _obstacles.size(); i++ ) {
+        Obstacle* po = _obstacles[i];
+        delete po;
+        po = NULL;
+    }
+    _obstacles.clear();
+    _line_segments.clear();
+
 }
 
 bool WorldMap::load_obstacle_info( std::vector< std::vector<Point2D> > polygons ) {
@@ -134,6 +147,16 @@ bool WorldMap::init_segments() {
         std::sort(p_obstacle->m_alpha_intersection_points.begin(), p_obstacle->m_alpha_intersection_points.end());
         std::sort(p_obstacle->m_beta_intersection_points.begin(), p_obstacle->m_beta_intersection_points.end());
 
+        std::cout << *p_obstacle << std::endl;
+        std::cout << "ALPHA " << std::endl;
+        for( unsigned int i = 0; i < p_obstacle->m_alpha_intersection_points.size(); i++ ) {
+            std::cout << p_obstacle->m_alpha_intersection_points[i];
+        }
+        std::cout << "BETA " << std::endl;
+        for( unsigned int i = 0; i < p_obstacle->m_beta_intersection_points.size(); i++ ) {
+            std::cout << p_obstacle->m_beta_intersection_points[i];
+        }
+
         p_obstacle->mp_alpha_seg->load( p_obstacle->m_alpha_intersection_points );
         p_obstacle->mp_beta_seg->load( p_obstacle->m_beta_intersection_points );
 
@@ -190,4 +213,44 @@ std::vector<Point2D> WorldMap::_intersect( Segment2D seg, std::vector<Segment2D>
         }
     }
     return points;
+}
+
+
+void WorldMap::to_xml( const std::string& filename )const {
+    xmlDocPtr doc = xmlNewDoc( ( xmlChar* )( "1.0" ) );
+    xmlNodePtr root = xmlNewDocNode( doc, NULL, ( xmlChar* )( "root" ), NULL );
+    xmlDocSetRootElement( doc, root );
+    to_xml( doc, root );
+    xmlSaveFormatFileEnc( filename.c_str(), doc, "UTF-8", 1 );
+    xmlFreeDoc( doc );
+    return;
+}
+
+void WorldMap::to_xml( xmlDocPtr doc, xmlNodePtr root )const {
+    xmlNodePtr world_node = xmlNewDocNode( doc, NULL, ( xmlChar* )( "world" ), NULL );
+    std::stringstream width_str, height_str;
+    width_str << _map_width;
+    height_str << _map_height;
+    xmlNewProp( world_node, ( const xmlChar* )( "width" ), ( const xmlChar* )( width_str.str().c_str() ) );
+    xmlNewProp( world_node, ( const xmlChar* )( "height" ), ( const xmlChar* )( height_str.str().c_str() ) );
+    xmlAddChild( root, world_node );
+
+    return;
+}
+
+void WorldMap::from_xml( const std::string& filename ) {
+
+}
+
+void WorldMap::from_xml( xmlNodePtr root ) {
+
+}
+
+std::ostream& operator<<( std::ostream& out, const WorldMap& other ) {
+
+    out << "Size[" << other.get_width() << "*" << other.get_height() << "]  " << std::endl;
+    for( unsigned int i=0; i < other.get_obstacles().size(); i++ ) {
+        out << other.get_obstacles()[i] << std::endl;
+    }
+    return out;
 }

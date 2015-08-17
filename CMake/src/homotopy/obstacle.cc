@@ -38,6 +38,16 @@ Obstacle::Obstacle(std::vector<Point2D> points, int index, WorldMap* world ){
 }
 
 Obstacle::~Obstacle() {
+
+    if ( mp_alpha_seg ) {
+        delete mp_alpha_seg;
+        mp_alpha_seg = NULL;
+    }
+    if ( mp_beta_seg ) {
+        delete mp_beta_seg;
+        mp_beta_seg = NULL;
+    }
+
     m_points.clear();
     m_segments.clear();
 }
@@ -45,6 +55,7 @@ Obstacle::~Obstacle() {
 double Obstacle::distance_to_bk( Point2D& point ) {
     double dist = 0.0;
     dist = squared_distance( m_bk , point );
+    dist = sqrt(dist);
     return dist;
 }
 
@@ -65,3 +76,47 @@ Point2D Obstacle::sample_position() {
     return _centroid;
 }
 
+void Obstacle::to_xml( const std::string& filename )const {
+    xmlDocPtr doc = xmlNewDoc( ( xmlChar* )( "1.0" ) );
+    xmlNodePtr root = xmlNewDocNode( doc, NULL, ( xmlChar* )( "root" ), NULL );
+    xmlDocSetRootElement( doc, root );
+    to_xml( doc, root );
+    xmlSaveFormatFileEnc( filename.c_str(), doc, "UTF-8", 1 );
+    xmlFreeDoc( doc );
+    return;
+}
+
+void Obstacle::to_xml( xmlDocPtr doc, xmlNodePtr root )const {
+
+}
+
+void Obstacle::from_xml( const std::string& filename ) {
+    xmlDoc * doc = NULL;
+    xmlNodePtr root = NULL;
+    doc = xmlReadFile( filename.c_str(), NULL, 0 );
+    if( doc != NULL ){
+      root = xmlDocGetRootElement( doc );
+      if( root->type == XML_ELEMENT_NODE ){
+        xmlNodePtr l1 = NULL;
+        for( l1 = root->children; l1; l1 = l1->next ){
+          if( l1->type == XML_ELEMENT_NODE ){
+            if( xmlStrcmp( l1->name, ( const xmlChar* )( "obstacle" ) ) == 0 ){
+              from_xml( l1 );
+            }
+          }
+        }
+      }
+      xmlFreeDoc( doc );
+    }
+    return;
+}
+
+void Obstacle::from_xml( xmlNodePtr root ) {
+
+}
+
+std::ostream& operator<<( std::ostream& out, const Obstacle& other ) {
+    out << "bk[" << other.m_bk.x() << "," << other.m_bk.y() << "]";
+    out << "    (" << other.m_dist_bk2cp << ")";
+    return out;
+}
