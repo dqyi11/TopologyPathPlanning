@@ -117,66 +117,81 @@ bool LineSubSegmentSet::load( std::vector<IntersectionPoint>& intersections ) {
     }
     if( m_type == LINE_TYPE_ALPHA ) {
 
-        bool pass_central_point = false;
         unsigned int idx = 0;
-        for( unsigned int i = 1; i < intersections.size()-1; i+=2 ) {
+        for( unsigned int i = 0; i < intersections.size()-1; i ++ ) {
             IntersectionPoint sec1 = intersections[i];
             IntersectionPoint sec2 = intersections[i+1];
 
-            if ( pass_central_point == false ) {
+            Point2D mid_point = Point2D( (sec1.m_point.x()+sec2.m_point.x())/2, (sec1.m_point.y()+sec2.m_point.y())/2);
+            if (_p_obstacle->get_world()->_is_in_obstacle(mid_point) == false ) {
+
                 if ( sec1.m_dist_to_bk <= _p_obstacle->m_dist_bk2cp && sec2.m_dist_to_bk >= _p_obstacle->m_dist_bk2cp ) {
                     LineSubSegment* p_subseg = new LineSubSegment( sec1.m_point , _p_obstacle->get_world()->get_central_point(), this, idx, true );
                     m_subsegs.push_back(p_subseg);
                     idx += 1;
 
-                    pass_central_point = true;
-
                     LineSubSegment* p_subseg2 = new LineSubSegment( _p_obstacle->get_world()->get_central_point(), sec2.m_point, this, idx, true );
                     m_subsegs.push_back(p_subseg2);
                     idx += 1;
-
                 }
-            }
-            else {
-                LineSubSegment* p_subseg = new LineSubSegment( sec1.m_point, sec2.m_point, this, idx );
-                m_subsegs.push_back(p_subseg);
-                idx += 1;
+                else {
+                    LineSubSegment* p_subseg = new LineSubSegment( sec1.m_point, sec2.m_point, this, idx );
+                    m_subsegs.push_back(p_subseg);
+                    idx += 1;
+                }
+
             }
         }
 
         if ( intersections[intersections.size()-1].m_dist_to_bk > _p_obstacle->m_dist_bk2cp ) {
             Point2D end_point = static_cast<Point2D>(m_seg.target());
-            LineSubSegment* p_subseg = new LineSubSegment( intersections[intersections.size()-1].m_point, end_point, this, idx );
-            m_subsegs.push_back(p_subseg);
-            idx += 1;
+            Point2D last_sec_point = intersections[intersections.size()-1].m_point;
+
+            Point2D mid_point = Point2D( (end_point.x()+last_sec_point.x())/2, (end_point.y()+last_sec_point.y())/2);
+            if (_p_obstacle->get_world()->_is_in_obstacle(mid_point) == false ) {
+                LineSubSegment* p_subseg = new LineSubSegment( intersections[intersections.size()-1].m_point, end_point, this, idx );
+                m_subsegs.push_back(p_subseg);
+                idx += 1;
+            }
         }
         else {
-            LineSubSegment* p_subseg = new LineSubSegment( intersections[intersections.size()-1].m_point, _p_obstacle->get_world()->get_central_point(), this, idx, true );
-            m_subsegs.push_back(p_subseg);
-            idx += 1;
-
-            pass_central_point = true;
-
             Point2D end_point = static_cast<Point2D>(m_seg.target());
-            LineSubSegment* p_subseg2 = new LineSubSegment( _p_obstacle->get_world()->get_central_point(), end_point, this, idx, true );
-            m_subsegs.push_back(p_subseg2);
-            idx += 1;
+            Point2D last_sec_point = intersections[intersections.size()-1].m_point;
+
+            Point2D mid_point = Point2D( (end_point.x()+last_sec_point.x())/2, (end_point.y()+last_sec_point.y())/2);
+            if (_p_obstacle->get_world()->_is_in_obstacle(mid_point) == false ) {
+                LineSubSegment* p_subseg = new LineSubSegment( intersections[intersections.size()-1].m_point, _p_obstacle->get_world()->get_central_point(), this, idx, true );
+                m_subsegs.push_back(p_subseg);
+                idx += 1;
+                LineSubSegment* p_subseg2 = new LineSubSegment( _p_obstacle->get_world()->get_central_point(), end_point, this, idx, true );
+                m_subsegs.push_back(p_subseg2);
+                idx += 1;
+            }
         }
     }
     else if( m_type == LINE_TYPE_BETA ) {
         unsigned int idx = 0;
-        for( unsigned int i = 1; i < intersections.size()-1; i+=2 ) {
+        for( unsigned int i = 0; i < intersections.size()-1; i++ ) {
             IntersectionPoint sec1 = intersections[i];
             IntersectionPoint sec2 = intersections[i+1];
 
-            LineSubSegment* p_subseg = new LineSubSegment( sec1.m_point, sec2.m_point, this, idx );
+            Point2D mid_point = Point2D( (sec1.m_point.x()+sec2.m_point.x())/2, (sec1.m_point.y()+sec2.m_point.y())/2);
+            if (_p_obstacle->get_world()->_is_in_obstacle(mid_point) == false ) {
+                LineSubSegment* p_subseg = new LineSubSegment( sec1.m_point, sec2.m_point, this, idx );
+                m_subsegs.push_back(p_subseg);
+                idx += 1;
+            }
+
+        }
+        Point2D end_point = static_cast<Point2D>(m_seg.target());
+        Point2D last_sec_point = intersections[intersections.size()-1].m_point;
+
+        Point2D mid_point = Point2D( (end_point.x()+last_sec_point.x())/2, (end_point.y()+last_sec_point.y())/2);
+        if (_p_obstacle->get_world()->_is_in_obstacle(mid_point) == false ) {
+            LineSubSegment* p_subseg = new LineSubSegment( last_sec_point, end_point, this, idx );
             m_subsegs.push_back(p_subseg);
             idx += 1;
         }
-        Point2D end_point = static_cast<Point2D>(m_seg.target());
-        LineSubSegment* p_subseg = new LineSubSegment( intersections[intersections.size()-1].m_point, end_point, this, idx );
-        m_subsegs.push_back(p_subseg);
-        idx += 1;
 
     }else {
         return false;
@@ -228,4 +243,12 @@ void LineSubSegmentSet::from_xml( const std::string& filename ) {
 
 void LineSubSegmentSet::from_xml( xmlNodePtr root ) {
 
+}
+
+std::ostream& operator<<( std::ostream& out, const LineSubSegmentSet& other ) {
+    for( unsigned int i =0; i < other.m_subsegs.size(); i++ ) {
+        LineSubSegment* seg = other.m_subsegs[i];
+        out << (*seg) << std::endl;
+    }
+    return out;
 }

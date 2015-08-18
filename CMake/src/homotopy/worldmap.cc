@@ -106,7 +106,7 @@ bool WorldMap::init() {
             _line_segments.push_back(p_obstacle->mp_alpha_seg);
         }
         if ( p_b_pt ) {
-            p_obstacle->mp_beta_seg = new LineSubSegmentSet( p_obstacle->m_bk, *p_b_pt, LINE_TYPE_ALPHA, p_obstacle->m_beta_ray.direction(), p_obstacle );
+            p_obstacle->mp_beta_seg = new LineSubSegmentSet( p_obstacle->m_bk, *p_b_pt, LINE_TYPE_BETA, p_obstacle->m_beta_ray.direction(), p_obstacle );
             _line_segments.push_back(p_obstacle->mp_beta_seg);
         }
     }
@@ -147,18 +147,22 @@ bool WorldMap::init_segments() {
         std::sort(p_obstacle->m_alpha_intersection_points.begin(), p_obstacle->m_alpha_intersection_points.end());
         std::sort(p_obstacle->m_beta_intersection_points.begin(), p_obstacle->m_beta_intersection_points.end());
 
+        p_obstacle->mp_alpha_seg->load( p_obstacle->m_alpha_intersection_points );
+        p_obstacle->mp_beta_seg->load( p_obstacle->m_beta_intersection_points );
+
+        /*
         std::cout << *p_obstacle << std::endl;
         std::cout << "ALPHA " << std::endl;
         for( unsigned int i = 0; i < p_obstacle->m_alpha_intersection_points.size(); i++ ) {
             std::cout << p_obstacle->m_alpha_intersection_points[i];
         }
+        std::cout << p_obstacle->mp_alpha_seg;
         std::cout << "BETA " << std::endl;
         for( unsigned int i = 0; i < p_obstacle->m_beta_intersection_points.size(); i++ ) {
             std::cout << p_obstacle->m_beta_intersection_points[i];
         }
-
-        p_obstacle->mp_alpha_seg->load( p_obstacle->m_alpha_intersection_points );
-        p_obstacle->mp_beta_seg->load( p_obstacle->m_beta_intersection_points );
+        std::cout << p_obstacle->mp_beta_seg;
+        */
 
     }
     return true;
@@ -209,7 +213,12 @@ std::vector<Point2D> WorldMap::_intersect( Segment2D seg, std::vector<Segment2D>
         CGAL::Object result = intersection(seg, bound);
         Point2D p;
         if ( CGAL::assign(p, result) ) {
+            /*
+            if ( points.size()>1 && squared_distance(p, points[points.size()-1]) <= 1.0 ) {
+                continue;
+            }*/
             points.push_back(p);
+
         }
     }
     return points;

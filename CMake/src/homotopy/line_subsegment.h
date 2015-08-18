@@ -80,4 +80,6 @@ protected:
     Obstacle*    _p_obstacle;
 };
 
+std::ostream& operator<<( std::ostream& out, const LineSubSegmentSet& other );
+
 #endif // LINE_SUBSEGMENT_H
