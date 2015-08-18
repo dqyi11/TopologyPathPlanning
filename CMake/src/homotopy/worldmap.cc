@@ -13,7 +13,9 @@ WorldMap::WorldMap( int width, int height ) {
     _sample_height_scale = _map_width/5;
 
     _obstacles.clear();
+    _boundary_lines.clear();
     _obs_bk_pair_lines.clear();
+    _line_segments.clear();
 
     _central_point = Point2D(width/2, height/2);
 }
@@ -26,8 +28,9 @@ WorldMap::~WorldMap() {
         po = NULL;
     }
     _obstacles.clear();
+    _boundary_lines.clear();
+    _obs_bk_pair_lines.clear();
     _line_segments.clear();
-
 }
 
 bool WorldMap::load_obstacle_info( std::vector< std::vector<Point2D> > polygons ) {
@@ -39,11 +42,18 @@ bool WorldMap::load_obstacle_info( std::vector< std::vector<Point2D> > polygons 
         obs_idx ++;
         _obstacles.push_back(p_obs);
     }
-
     return true;
 }
 
 bool WorldMap::init() {
+    _init_points();
+    _init_rays();
+    _init_segments();
+    _init_regions();
+    return true;
+}
+
+bool WorldMap::_init_points() {
 
     // select random point for each obstacle
     for( std::vector<Obstacle*>::iterator it = _obstacles.begin(); it != _obstacles.end(); it++ ) {
@@ -79,6 +89,11 @@ bool WorldMap::init() {
         p_obstacle->m_dist_bk2cp = p_obstacle->distance_to_bk(_central_point);
     }
 
+    return true;
+}
+
+bool WorldMap::_init_rays() {
+
     // init four boundary line
     _boundary_lines.clear();
     _x_min_line = Segment2D(Point2D(0,0), Point2D(_map_width-1,0));
@@ -95,18 +110,20 @@ bool WorldMap::init() {
     // init alpha and beta segments
     for( std::vector<Obstacle*>::iterator it=_obstacles.begin(); it!=_obstacles.end(); it++) {
         Obstacle* p_obstacle = (*it);
-        p_obstacle->m_alpha_ray = Ray2D( p_obstacle->m_bk, _central_point );
-        p_obstacle->m_beta_ray = Ray2D( p_obstacle->m_bk, Point2D(2*p_obstacle->m_bk.x()-_central_point.x(), 2*p_obstacle->m_bk.y()-_central_point.y()) );
+        //p_obstacle->mp_alpha_ray = new Ray2D( p_obstacle->m_bk, _central_point );
+        //p_obstacle->mp_beta_ray = new Ray2D( p_obstacle->m_bk, Point2D(2*p_obstacle->m_bk.x()-_central_point.x(), 2*p_obstacle->m_bk.y()-_central_point.y()) );
+        p_obstacle->mp_alpha_ray = new Ray2D( _central_point, Point2D(2*_central_point.x()-p_obstacle->m_bk.x(), 2*_central_point.y()-p_obstacle->m_bk.y()) );
+        p_obstacle->mp_beta_ray = new Ray2D( _central_point, p_obstacle->m_bk );
 
-        Point2D * p_a_pt = _find_intersection_with_boundary( p_obstacle->m_alpha_ray );
-        Point2D * p_b_pt = _find_intersection_with_boundary( p_obstacle->m_beta_ray );
+        Point2D * p_a_pt = _find_intersection_with_boundary( p_obstacle->mp_alpha_ray );
+        Point2D * p_b_pt = _find_intersection_with_boundary( p_obstacle->mp_beta_ray );
 
         if ( p_a_pt ) {
-            p_obstacle->mp_alpha_seg = new LineSubSegmentSet( p_obstacle->m_bk, *p_a_pt, LINE_TYPE_ALPHA, p_obstacle->m_alpha_ray.direction(), p_obstacle );
+            p_obstacle->mp_alpha_seg = new LineSubSegmentSet( p_obstacle->m_bk, *p_a_pt, LINE_TYPE_ALPHA, p_obstacle->mp_alpha_ray->direction(), p_obstacle );
             _line_segments.push_back(p_obstacle->mp_alpha_seg);
         }
         if ( p_b_pt ) {
-            p_obstacle->mp_beta_seg = new LineSubSegmentSet( p_obstacle->m_bk, *p_b_pt, LINE_TYPE_BETA, p_obstacle->m_beta_ray.direction(), p_obstacle );
+            p_obstacle->mp_beta_seg = new LineSubSegmentSet( p_obstacle->m_bk, *p_b_pt, LINE_TYPE_BETA, p_obstacle->mp_beta_ray->direction(), p_obstacle );
             _line_segments.push_back(p_obstacle->mp_beta_seg);
         }
     }
@@ -116,7 +133,7 @@ bool WorldMap::init() {
     return true;
 }
 
-bool WorldMap::init_segments() {
+bool WorldMap::_init_segments() {
 
     for( std::vector<Obstacle*>::iterator it=_obstacles.begin(); it!=_obstacles.end(); it++) {
         Obstacle* p_obstacle = (*it);
@@ -126,8 +143,8 @@ bool WorldMap::init_segments() {
         for( std::vector<Obstacle*>::iterator itr=_obstacles.begin(); itr!=_obstacles.end(); itr++) {
             Obstacle* p_ref_obstacle = (*itr);
             // check alpha_seg with obstacles
-            std::vector< Point2D > a_ints = _intersect(p_obstacle->mp_alpha_seg->m_seg, p_ref_obstacle->m_segments);
-            std::vector< Point2D > b_ints = _intersect(p_obstacle->mp_beta_seg->m_seg, p_ref_obstacle->m_segments);
+            std::vector< Point2D > a_ints = _intersect(p_obstacle->mp_alpha_seg->m_seg, p_ref_obstacle->m_border_segments);
+            std::vector< Point2D > b_ints = _intersect(p_obstacle->mp_beta_seg->m_seg, p_ref_obstacle->m_border_segments);
             for( std::vector< Point2D >::iterator itp = a_ints.begin(); itp != a_ints.end(); itp++ ) {
                 Point2D p = (*itp);
                 IntersectionPoint ip;
@@ -163,8 +180,14 @@ bool WorldMap::init_segments() {
         }
         std::cout << p_obstacle->mp_beta_seg;
         */
-
     }
+    return true;
+}
+
+bool WorldMap::_init_regions() {
+
+    _regionSets.clear();
+
     return true;
 }
 
@@ -179,11 +202,11 @@ bool WorldMap::_is_in_obs_bk_lines(Point2D point) {
     return false;
 }
 
-Point2D* WorldMap::_find_intersection_with_boundary(Ray2D ray) {
+Point2D* WorldMap::_find_intersection_with_boundary(Ray2D* p_ray) {
 
     for(std::vector<Segment2D>::iterator it=_boundary_lines.begin(); it!=_boundary_lines.end(); it++) {
         Segment2D seg = (*it);
-        CGAL::Object result = intersection(seg, ray);
+        CGAL::Object result = intersection(seg, (*p_ray));
         Point2D* p = new Point2D();
         if ( CGAL::assign(*p, result) ) {
             return p;

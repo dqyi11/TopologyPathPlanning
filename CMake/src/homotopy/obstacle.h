@@ -27,10 +27,10 @@ public:
     std::vector<Point2D> m_points;
     Polygon2D m_pgn;
     Point2D m_bk;
-    std::vector<Segment2D> m_segments;
+    std::vector<Segment2D> m_border_segments;
 
-    Ray2D m_alpha_ray;
-    Ray2D m_beta_ray;
+    Ray2D* mp_alpha_ray;
+    Ray2D* mp_beta_ray;
 
     LineSubSegmentSet* mp_alpha_seg;
     LineSubSegmentSet* mp_beta_seg;

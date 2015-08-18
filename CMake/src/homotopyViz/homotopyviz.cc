@@ -59,7 +59,6 @@ bool HomotopyViz::initWorld(QString filename) {
         mpWorld->load_obstacle_info(conts);
         std::cout << "INIT ... " << std::endl;
         mpWorld->init();
-        mpWorld->init_segments();
     }
     return true;
 }

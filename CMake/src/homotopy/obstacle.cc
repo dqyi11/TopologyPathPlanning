@@ -11,7 +11,7 @@ Obstacle::Obstacle(std::vector<Point2D> points, int index, WorldMap* world ){
     m_dist_bk2cp = 0.0;
 
     m_points.clear();
-    m_segments.clear();
+    m_border_segments.clear();
     for( std::vector<Point2D>::iterator it = points.begin(); it != points.end(); it++ ) {
         Point2D pos = (*it);
         m_points.push_back(pos);
@@ -21,11 +21,11 @@ Obstacle::Obstacle(std::vector<Point2D> points, int index, WorldMap* world ){
     for( unsigned int i=0; i< m_points.size(); i++ ) {
         if( i < m_points.size()-1 ) {
             Segment2D seg( m_points[i], m_points[i+1] );
-            m_segments.push_back(seg);
+            m_border_segments.push_back(seg);
         }
         else {
             Segment2D seg( m_points[i], m_points[0] );
-            m_segments.push_back(seg);
+            m_border_segments.push_back(seg);
         }
     }
 
@@ -49,7 +49,7 @@ Obstacle::~Obstacle() {
     }
 
     m_points.clear();
-    m_segments.clear();
+    m_border_segments.clear();
 }
 
 double Obstacle::distance_to_bk( Point2D& point ) {
