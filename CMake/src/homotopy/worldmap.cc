@@ -2,6 +2,8 @@
 #include "opencv2/core/core.hpp"
 #include <CGAL/intersections.h>
 #include <CGAL/Polygon_2_algorithms.h>
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/Boolean_set_operations_2.h>
 #include "worldmap.h"
 
 bool Segment2DSort(const Segment2D& lhs, const Segment2D& rhs) {
@@ -121,10 +123,6 @@ bool WorldMap::_init_rays() {
     _center_corner_lines.push_back(Segment2D(_central_point, Point2D(0, _map_height)));
     std::sort(_center_corner_lines.begin(), _center_corner_lines.end(), Segment2DSort);
 
-    std::cout << "CENTER " << _central_point << std::endl;
-    for( unsigned int i=0; i< _center_corner_lines.size(); i++ ) {
-        std::cout << "CORNER " << i << " " << _center_corner_lines[i].direction() << std::endl;
-    }
 
     // init alpha and beta segments
     for( std::vector<Obstacle*>::iterator it=_obstacles.begin(); it!=_obstacles.end(); it++) {
@@ -275,6 +273,26 @@ std::vector<Point2D> WorldMap::_intersect( Segment2D seg, std::vector<Segment2D>
     return points;
 }
 
+
+std::vector<SubRegion*>  WorldMap::_get_subregions( SubRegionSet* p_region ) {
+    std::vector<SubRegion*> sr_set;
+
+    for( std::vector<Obstacle*>::iterator it = _obstacles.begin(); it != _obstacles.end(); it++ ) {
+        Obstacle * p_obstacle = (*it);
+        std::list<CGAL::Object> results;
+        CGAL::difference( p_region->m_polygon, p_obstacle->m_pgn, std::back_inserter(results) );
+
+        for( std::list<CGAL::Object>::iterator it=results.begin();
+             it!= results.end(); it++ ) {
+            CGAL::Object obj = (*it);
+            Polygon2D poly;
+            if( CGAL::assign( poly, *it ) ) {
+
+            }
+        }
+    }
+    return sr_set;
+}
 
 void WorldMap::to_xml( const std::string& filename )const {
     xmlDocPtr doc = xmlNewDoc( ( xmlChar* )( "1.0" ) );

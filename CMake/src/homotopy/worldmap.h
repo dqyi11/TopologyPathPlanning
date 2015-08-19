@@ -38,7 +38,8 @@ public:
     std::vector<Obstacle*> get_obstacles() const { return _obstacles; }
     std::vector<SubRegionSet*> get_subregion_set() const { return _regionSets; }
 protected:
-    std::vector<Point2D> _intersect_with_boundaries( LineSubSegmentSet* p_segment1, LineSubSegmentSet* p_segment2 );
+    std::vector<Point2D>     _intersect_with_boundaries( LineSubSegmentSet* p_segment1, LineSubSegmentSet* p_segment2 );
+    std::vector<SubRegion*>  _get_subregions( SubRegionSet* p_region );
 
 private:
     int _map_width;

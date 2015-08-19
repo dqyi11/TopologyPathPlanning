@@ -2,6 +2,7 @@
 #define WORLD_DATATYPE_H
 
 #include <CGAL/Simple_cartesian.h>
+#include <CGAL/Polygon_traits_2.h>
 #include <CGAL/Polygon_2.h>
 
 typedef CGAL::Simple_cartesian<double> K;

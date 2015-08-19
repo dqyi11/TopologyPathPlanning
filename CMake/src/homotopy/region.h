@@ -7,10 +7,11 @@
 
 class SubRegion {
 public:
-    SubRegion( std::vector<Point2D> points);
+    SubRegion( Polygon2D poly );
     ~SubRegion();
 
     std::vector<Point2D> m_points;
+    Polygon2D            m_polygon;
 };
 
 
@@ -19,6 +20,7 @@ public:
     SubRegionSet(std::vector<Point2D> points, unsigned int idx);
     ~SubRegionSet();
 
+    Polygon2D    m_polygon;
     unsigned int m_index;    
     std::vector<Point2D>    m_boundary_points;
     std::vector<SubRegion*> m_subregions;    
