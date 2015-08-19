@@ -8,19 +8,16 @@
 
 class WorldMap {
 public:
+    WorldMap();
     WorldMap( int width, int height );
-    ~WorldMap();
+    virtual ~WorldMap();
 
+    bool resize( int width, int height );
     bool load_obstacle_info( std::vector< std::vector<Point2D> > polygons);
-    bool init();
-    bool _init_points();
-    bool _init_rays();
-    bool _init_segments();
-    bool _init_regions();
+    bool init( bool rand_init_points = true );
 
     bool _is_in_obstacle( Point2D point );
     bool _is_in_obs_bk_lines( Point2D point );
-
 
     virtual void to_xml( const std::string& filename )const;
     virtual void to_xml( xmlDocPtr doc, xmlNodePtr root )const;
@@ -38,6 +35,11 @@ public:
     std::vector<Obstacle*> get_obstacles() const { return _obstacles; }
     std::vector<SubRegionSet*> get_subregion_set() const { return _regionSets; }
 protected:
+    bool _init_points();
+    bool _init_rays();
+    bool _init_segments();
+    bool _init_regions();
+
     std::vector<Point2D>     _intersect_with_boundaries( LineSubSegmentSet* p_segment1, LineSubSegmentSet* p_segment2 );
     std::vector<SubRegion*>  _get_subregions( SubRegionSet* p_region );
 

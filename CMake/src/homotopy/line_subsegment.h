@@ -24,7 +24,7 @@ class LineSubSegment {
 
 public:
     LineSubSegment( Point2D pos_a, Point2D pos_b, LineSubSegmentSet* p_subseg_set, unsigned int index, bool is_connected_to_central_point = false );
-    ~LineSubSegment();
+    virtual ~LineSubSegment();
 
     virtual void to_xml( const std::string& filename )const;
     virtual void to_xml( xmlDocPtr doc, xmlNodePtr root )const;
@@ -53,7 +53,7 @@ class LineSubSegmentSet {
 
 public:
     LineSubSegmentSet( Point2D pos_a, Point2D pos_b, unsigned int type, Obstacle* p_obstacle );
-    ~LineSubSegmentSet();
+    virtual ~LineSubSegmentSet();
 
     bool load( std::vector<IntersectionPoint>& intersections );
 

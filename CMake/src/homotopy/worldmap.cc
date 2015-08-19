@@ -14,12 +14,12 @@ bool LineSubSegmentSetSort(const LineSubSegmentSet* lhs, const LineSubSegmentSet
     return lhs->m_seg.direction() < rhs->m_seg.direction();
 }
 
-WorldMap::WorldMap( int width, int height ) {
-    _map_width = width;
-    _map_height = height;
+WorldMap::WorldMap() {
+    _map_width = 0;
+    _map_height = 0;
 
-    _sample_width_scale = _map_width/5;
-    _sample_height_scale = _map_width/5;
+    _sample_width_scale = 0;
+    _sample_height_scale = 0;
 
     _obstacles.clear();
     _boundary_lines.clear();
@@ -27,16 +27,12 @@ WorldMap::WorldMap( int width, int height ) {
     _line_segments.clear();
     _center_corner_lines.clear();
 
-    _central_point = Point2D(width/2, height/2);
+    _central_point = Point2D(0, 0);
+}
 
-    Polygon2D mapPoly;
-    mapPoly.push_back(Point2D(0,0));
-    mapPoly.push_back(Point2D(_map_width, 0));
-    mapPoly.push_back(Point2D(_map_width, _map_height));
-    mapPoly.push_back(Point2D(0,_map_height));
-
-    _accessible_region = PolygonWithHoles2D(mapPoly);
-
+WorldMap::WorldMap( int width, int height ) {
+    WorldMap();
+    resize(width, height);
 }
 
 WorldMap::~WorldMap() {
@@ -51,6 +47,25 @@ WorldMap::~WorldMap() {
     _obs_bk_pair_lines.clear();
     _line_segments.clear();
     _center_corner_lines.clear();
+}
+
+bool WorldMap::resize( int width, int height ) {
+    if ( width < 0 || height < 0 ) {
+        return false;
+    }
+    _map_width = width;
+    _map_height = height;
+    _sample_width_scale = _map_width/5;
+    _sample_height_scale = _map_width/5;
+    _central_point = Point2D(width/2, height/2);
+
+    Polygon2D mapPoly;
+    mapPoly.push_back(Point2D(0,0));
+    mapPoly.push_back(Point2D(_map_width, 0));
+    mapPoly.push_back(Point2D(_map_width, _map_height));
+    mapPoly.push_back(Point2D(0,_map_height));
+    _accessible_region = PolygonWithHoles2D(mapPoly);
+    return false;
 }
 
 bool WorldMap::load_obstacle_info( std::vector< std::vector<Point2D> > polygons ) {
@@ -71,8 +86,10 @@ bool WorldMap::load_obstacle_info( std::vector< std::vector<Point2D> > polygons 
     return true;
 }
 
-bool WorldMap::init() {
-    _init_points();
+bool WorldMap::init( bool rand_init_points ) {
+    if ( rand_init_points == true ) {
+        _init_points();
+    }
     _init_rays();
     _init_segments();
     _init_regions();
@@ -333,7 +350,7 @@ std::vector<SubRegion*>  WorldMap::_get_subregions( SubRegionSet* p_region ) {
 
 void WorldMap::to_xml( const std::string& filename )const {
     xmlDocPtr doc = xmlNewDoc( ( xmlChar* )( "1.0" ) );
-    xmlNodePtr root = xmlNewDocNode( doc, NULL, ( xmlChar* )( "root" ), NULL );
+    xmlNodePtr root = xmlNewDocNode( doc, NULL, ( xmlChar* )( "world" ), NULL );
     xmlDocSetRootElement( doc, root );
     to_xml( doc, root );
     xmlSaveFormatFileEnc( filename.c_str(), doc, "UTF-8", 1 );
@@ -342,23 +359,138 @@ void WorldMap::to_xml( const std::string& filename )const {
 }
 
 void WorldMap::to_xml( xmlDocPtr doc, xmlNodePtr root )const {
-    xmlNodePtr world_node = xmlNewDocNode( doc, NULL, ( xmlChar* )( "world" ), NULL );
     std::stringstream width_str, height_str;
     width_str << _map_width;
     height_str << _map_height;
-    xmlNewProp( world_node, ( const xmlChar* )( "width" ), ( const xmlChar* )( width_str.str().c_str() ) );
-    xmlNewProp( world_node, ( const xmlChar* )( "height" ), ( const xmlChar* )( height_str.str().c_str() ) );
-    xmlAddChild( root, world_node );
+    xmlNewProp( root, ( const xmlChar* )( "width" ), ( const xmlChar* )( width_str.str().c_str() ) );
+    xmlNewProp( root, ( const xmlChar* )( "height" ), ( const xmlChar* )( height_str.str().c_str() ) );
+    std::stringstream cpx_str, cpy_str;
+    cpx_str << _central_point.x();
+    cpy_str << _central_point.y();
+    xmlNewProp( root, ( const xmlChar* )( "central_x" ), ( const xmlChar* )( cpx_str.str().c_str() ) );
+    xmlNewProp( root, ( const xmlChar* )( "central_y" ), ( const xmlChar* )( cpy_str.str().c_str() ) );
 
+    for( unsigned int i=0; i<_obstacles.size(); i++ ) {
+        Obstacle* p_obs = _obstacles[i];
+        xmlNodePtr obs_node = xmlNewDocNode( doc, NULL, ( xmlChar* )( "obstacle" ), NULL );
+        std::stringstream index_str, bkx_str, bky_str;
+        index_str << p_obs->get_index();
+        bkx_str << p_obs->m_bk.x();
+        bky_str << p_obs->m_bk.y();
+        xmlNewProp( obs_node, ( const xmlChar* )( "index" ), ( const xmlChar* )( index_str.str().c_str() ) );
+        xmlNewProp( obs_node, ( const xmlChar* )( "bk_x" ), ( const xmlChar* )( bkx_str.str().c_str() ) );
+        xmlNewProp( obs_node, ( const xmlChar* )( "bk_y" ), ( const xmlChar* )( bky_str.str().c_str() ) );
+        for( unsigned int j=0; j < p_obs->m_points.size(); j++ ) {
+            xmlNodePtr point_node = xmlNewDocNode( doc, NULL, ( xmlChar* )( "point" ), NULL );
+            std::stringstream px_str, py_str;
+            px_str << p_obs->m_points[j].x();
+            py_str << p_obs->m_points[j].y();
+            xmlNewProp( point_node, ( const xmlChar* )( "x" ), ( const xmlChar* )( px_str.str().c_str() ) );
+            xmlNewProp( point_node, ( const xmlChar* )( "y" ), ( const xmlChar* )( py_str.str().c_str() ) );
+            xmlAddChild( obs_node, point_node );
+        } 
+        xmlAddChild( root, obs_node );
+    }
     return;
 }
 
 void WorldMap::from_xml( const std::string& filename ) {
-
+    xmlDoc * doc = NULL;
+    xmlNodePtr root = NULL;
+    doc = xmlReadFile( filename.c_str(), NULL, 0 );
+    if( doc != NULL ) {
+        root = xmlDocGetRootElement( doc );
+        if( root->type == XML_ELEMENT_NODE ){
+            if( xmlStrcmp( root->name, ( const xmlChar* )( "world" ) ) == 0 ){
+                from_xml(root);
+            }
+        }
+        xmlFreeDoc( doc );
+    }
+    return;
 }
 
 void WorldMap::from_xml( xmlNodePtr root ) {
+    int width = 0, height = 0;
+    xmlChar* tmpw = xmlGetProp( root, ( const xmlChar* )( "width" ) );
+    if( tmpw != NULL ) {
+        width =  std::atoi( ( char* )( tmpw ) );
+        xmlFree( tmpw );
+    }
+    xmlChar* tmph = xmlGetProp( root, ( const xmlChar* )( "height" ) );
+    if( tmph != NULL ) {
+        height =  std::atoi( ( char* )( tmph ) );
+        xmlFree( tmph );
+    }
+    resize( width, height );
+    xmlChar* tmpx = xmlGetProp( root, ( const xmlChar* )( "central_x" ) );
+    xmlChar* tmpy = xmlGetProp( root, ( const xmlChar* )( "central_y" ) );
+    if( tmpx != NULL && tmpy != NULL ) {
+        _central_point = Point2D( std::atoi( (char*)(tmpx) ) , std::atoi( (char*)(tmpy) ) );
+        xmlFree( tmpx );
+        xmlFree( tmpy );
+    }
 
+    for( xmlNodePtr l1 = root->children; l1; l1 = l1->next ){
+        if( l1->type == XML_ELEMENT_NODE ) {
+            if( xmlStrcmp( l1->name, ( const xmlChar* )( "obstacle" ) ) == 0 ){
+                int idx = 0;
+                double bk_x = 0, bk_y = 0;
+                xmlChar* tmpIdx = xmlGetProp( l1, ( const xmlChar* )( "index" ) );
+                if( tmpIdx != NULL ) {
+                    idx = std::atoi( ( char* )( tmpIdx ) );
+                    xmlFree( tmpIdx );
+                }
+                xmlChar* tmpBKx = xmlGetProp( l1, ( const xmlChar* )( "bk_x" ) );
+                if( tmpBKx != NULL ) {
+                    bk_x = std::atoi( ( char* )( tmpBKx ) );
+                    xmlFree( tmpIdx );
+                }
+                xmlChar* tmpBKy = xmlGetProp( l1, ( const xmlChar* )( "bk_y" ) );
+                if( tmpIdx != NULL ) {
+                    bk_y = std::atoi( ( char* )( tmpBKy ) );
+                    xmlFree( tmpBKy );
+                }
+                std::vector<Point2D> points;
+                for( xmlNodePtr l2 = l1->children; l2; l2 = l2->next ){
+                    if( l2->type == XML_ELEMENT_NODE ) {
+                        if( xmlStrcmp( l2->name, ( const xmlChar* )( "point" ) ) == 0 ){
+                            int p_x = 0, p_y = 0;
+                            xmlChar* tmpPx = xmlGetProp( l2, ( const xmlChar* )( "x" ) );
+                            if( tmpPx != NULL ) {
+                                p_x = std::atoi( ( char* )( tmpPx ) );
+                                xmlFree( tmpPx );
+                            }
+                            xmlChar* tmpPy = xmlGetProp( l2, ( const xmlChar* )( "y" ) );
+                            if( tmpPy != NULL ) {
+                                p_y = std::atoi( ( char* )( tmpPy ) );
+                                xmlFree( tmpPy );
+                            }
+                            points.push_back(Point2D(p_x, p_y) );
+                        }
+                    }
+                }
+
+                Obstacle* p_obs = new Obstacle(points, idx, this);
+                p_obs->m_bk = Point2D( bk_x, bk_y );
+                _obstacles.push_back(p_obs);
+
+                Polygon2D obs_poly;
+                for(unsigned int i=0; i<points.size(); i++) {
+                    obs_poly.push_back(points[i]);
+                }
+                _accessible_region.add_hole( obs_poly );
+            }
+        }
+    }
+
+    _obs_bk_pair_lines.clear();
+    for( unsigned int i=0; i < _obstacles.size(); i++ ) {
+        for( unsigned int j=i+1; j < _obstacles.size(); j++ ) {
+            Line2D pline(_obstacles[i]->m_bk, _obstacles[j]->m_bk);
+            _obs_bk_pair_lines.push_back(pline);
+        }
+    }
 }
 
 std::ostream& operator<<( std::ostream& out, const WorldMap& other ) {

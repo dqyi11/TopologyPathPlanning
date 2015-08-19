@@ -13,7 +13,7 @@ class Obstacle {
 public:
 
     Obstacle(std::vector<Point2D> points, int index, WorldMap* world);
-    ~Obstacle();
+    virtual ~Obstacle();
 
     Point2D sample_position();
     double distance_to_bk( Point2D& point );
@@ -38,7 +38,7 @@ public:
     WorldMap* get_world() { return _p_world; }
 
     double m_dist_bk2cp;
-
+    int get_index () { return _index; }
 protected:
 
     int _index;

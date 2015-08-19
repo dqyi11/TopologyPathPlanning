@@ -27,9 +27,13 @@ protected:
 private:
     QMenu*        mpFileMenu;
     QAction*      mpOpenAction;
+    QAction*      mpSaveAction;
+    QAction*      mpLoadAction;
 
 private slots:
     void onOpen();
+    void onSave();
+    void onLoad();
 };
 
 #endif // MAINWINDOW_H

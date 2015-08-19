@@ -11,7 +11,12 @@ SubRegion::SubRegion( Polygon2D poly ) {
         m_points.push_back(p);
         m_polygon.push_back(p);
     }
+}
 
+SubRegion::~SubRegion() {
+
+    m_points.clear();
+    m_polygon.clear();
 }
 
 SubRegionSet::SubRegionSet(std::vector<Point2D> points, unsigned int idx) {

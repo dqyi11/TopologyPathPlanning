@@ -26,18 +26,41 @@ MainWindow::~MainWindow() {
 void MainWindow::createMenuBar() {
     mpFileMenu = menuBar()->addMenu("&File");
     mpFileMenu->addAction(mpOpenAction);
+    mpFileMenu->addAction(mpSaveAction);
+    mpFileMenu->addAction(mpLoadAction);
 }
 
 void MainWindow::createActions() {
     mpOpenAction = new QAction("Open", this);
     connect(mpOpenAction, SIGNAL(triggered()), this, SLOT(onOpen()));
+    mpSaveAction = new QAction("Save", this);
+    connect(mpSaveAction, SIGNAL(triggered()), this, SLOT(onSave()));
+    mpLoadAction = new QAction("Load", this);
+    connect(mpLoadAction, SIGNAL(triggered()), this, SLOT(onLoad()));
 }
 
 void MainWindow::onOpen() {
     QString tempFilename = QFileDialog::getOpenFileName(this,
              tr("Open File"), "./", tr("Map Files (*.*)"));
+    if( tempFilename.isEmpty() == false ) {
+        mpViz->loadMap(tempFilename);
+    }
+}
 
-    mpViz->loadMap(tempFilename);
+void MainWindow::onSave() {
+    QString tempFilename = QFileDialog::getSaveFileName(this,
+             tr("Save File"), "./", tr("XML Files (*.xml)"));
+    if( tempFilename.isEmpty() == false ) {
+        mpViz->save(tempFilename);
+    }
+}
+
+void MainWindow::onLoad() {
+    QString tempFilename = QFileDialog::getOpenFileName(this,
+             tr("Save File"), "./", tr("XML Files (*.xml)"));
+    if( tempFilename.isEmpty() == false ) {
+        mpViz->load(tempFilename);
+    }
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {

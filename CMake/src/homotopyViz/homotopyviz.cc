@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <QtGui>
+#include <QFile>
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include <opencv2/highgui/highgui.hpp>
@@ -49,9 +50,6 @@ bool HomotopyViz::initWorld(QString filename) {
            cont.push_back(ip);
         }
         conts.push_back(cont);
-
-        mColors.push_back(QColor( rand()%255, rand()%255, rand()%255 ));
-        mColors.push_back(QColor( rand()%255, rand()%255, rand()%255 ));
     }
 
     if (mpWorld) {
@@ -67,6 +65,12 @@ bool HomotopyViz::initWorld(QString filename) {
         mpWorld->load_obstacle_info(conts);
         std::cout << "INIT ... " << std::endl;
         mpWorld->init();
+
+        mColors.clear();
+        for( unsigned int i=0; i< mpWorld->get_obstacles().size(); i++ ) {
+            mColors.push_back(QColor( rand()%255, rand()%255, rand()%255 ));
+            mColors.push_back(QColor( rand()%255, rand()%255, rand()%255 ));
+        }
     }
     return true;
 }
@@ -235,7 +239,6 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                 }
             }
         }
-
     }
 }
 
@@ -259,4 +262,36 @@ void HomotopyViz::nextRegion() {
             mRegionIdx = -1;
         }
     }
+}
+
+bool HomotopyViz::save( QString filename ) {
+    if( mpWorld ) {
+        mpWorld->to_xml(filename.toStdString());
+        return true;
+    }
+    return false;
+}
+
+bool HomotopyViz::load( QString filename ) {
+    if ( mpWorld == NULL) {
+        mpWorld = new WorldMap();
+    }
+
+    mpWorld->from_xml(filename.toStdString());
+
+    QPixmap emptyPix( mpWorld->get_width(), mpWorld->get_height() );
+    emptyPix.fill(QColor("white"));
+    std::cout << " EMPTY PIX " << emptyPix.width() << " * " << emptyPix.height() << std::endl;
+    //setPixmap(pix);
+    setPixmap(emptyPix);
+
+    mpWorld->init(false);
+    mColors.clear();
+    for( unsigned int i=0; i< mpWorld->get_obstacles().size(); i++ ) {
+        mColors.push_back(QColor( rand()%255, rand()%255, rand()%255 ));
+        mColors.push_back(QColor( rand()%255, rand()%255, rand()%255 ));
+    }
+    repaint();
+
+    return true;
 }

@@ -114,6 +114,11 @@ bool LineSubSegmentSet::load( std::vector<IntersectionPoint>& intersections ) {
     if( _p_obstacle->get_world() == NULL ) {
         return false;
     }
+
+    if( intersections.size()==0 ) {
+        return false;
+    }
+
     if( m_type == LINE_TYPE_ALPHA ) {
 
         unsigned int idx = 0;

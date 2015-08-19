@@ -16,8 +16,8 @@ public:
     void prevRegion();
     void nextRegion();
 
-    bool save( QString json_filename );
-    bool load( QString json_filename );
+    bool save( QString filename );
+    bool load( QString filename );
 protected:
     bool initWorld(QString filename);
 
