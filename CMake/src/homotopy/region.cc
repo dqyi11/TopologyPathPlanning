@@ -3,12 +3,13 @@
 SubRegion::SubRegion( Polygon2D poly ) {
 
     m_points.clear();
-    m_polygon = Polygon2D(poly);
+    m_polygon = Polygon2D();
 
     for( Polygon2D::Vertex_iterator it = poly.vertices_begin();
          it != poly.vertices_end(); it++ ) {
         Point2D p = *it;
         m_points.push_back(p);
+        m_polygon.push_back(p);
     }
 
 }

@@ -81,13 +81,26 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
             region_painter.setPen(Qt::NoPen);
             SubRegionSet* p_subregion_set = subregion_sets[i];
             if (p_subregion_set) {
+                /*
                 QPolygon poly;
                 for( unsigned int j=0; j < p_subregion_set->m_boundary_points.size(); j++ ) {
                     poly << QPoint( p_subregion_set->m_boundary_points[j].x(), p_subregion_set->m_boundary_points[j].y() );
                 }
                 QPainterPath tmpPath;
                 tmpPath.addPolygon(poly);
-                region_painter.fillPath(tmpPath, region_brush);
+                region_painter.fillPath(tmpPath, region_brush); */
+                for( unsigned int k=0; k < p_subregion_set->m_subregions.size(); k++ ) {
+                    SubRegion* p_subreg = p_subregion_set->m_subregions[k];
+                    if( p_subreg ) {
+                        QPolygon poly;
+                        for( unsigned int j=0; j < p_subreg->m_points.size(); j++ ) {
+                            poly << QPoint( p_subreg->m_points[j].x(), p_subreg->m_points[j].y() );
+                        }
+                        QPainterPath tmpPath;
+                        tmpPath.addPolygon(poly);
+                        region_painter.fillPath(tmpPath, region_brush);
+                    }
+                }
             }
         }
 

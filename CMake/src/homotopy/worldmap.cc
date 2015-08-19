@@ -2,8 +2,8 @@
 #include "opencv2/core/core.hpp"
 #include <CGAL/intersections.h>
 #include <CGAL/Polygon_2_algorithms.h>
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Boolean_set_operations_2.h>
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include "worldmap.h"
 
 bool Segment2DSort(const Segment2D& lhs, const Segment2D& rhs) {
@@ -205,6 +205,11 @@ bool WorldMap::_init_regions() {
         }
     }
 
+    for( unsigned int i=0; i < _regionSets.size(); i++ ) {
+        SubRegionSet* p_subregions_set = _regionSets[i];
+        p_subregions_set->m_subregions = _get_subregions(p_subregions_set);
+    }
+
     return true;
 }
 
@@ -279,15 +284,17 @@ std::vector<SubRegion*>  WorldMap::_get_subregions( SubRegionSet* p_region ) {
 
     for( std::vector<Obstacle*>::iterator it = _obstacles.begin(); it != _obstacles.end(); it++ ) {
         Obstacle * p_obstacle = (*it);
-        std::list<CGAL::Object> results;
+        std::list<PolygonWithHoles2D> results;
         CGAL::difference( p_region->m_polygon, p_obstacle->m_pgn, std::back_inserter(results) );
 
-        for( std::list<CGAL::Object>::iterator it=results.begin();
+        for( std::list<PolygonWithHoles2D>::iterator it=results.begin();
              it!= results.end(); it++ ) {
-            CGAL::Object obj = (*it);
-            Polygon2D poly;
-            if( CGAL::assign( poly, *it ) ) {
-
+            PolygonWithHoles2D obj = (*it);
+            //std::cout << "POLy " << obj.has_holes() << std::endl;
+            if (obj.has_holes()==false) {
+                Polygon2D poly = obj.outer_boundary();
+                SubRegion* p_subregion = new SubRegion(poly);
+                sr_set.push_back(p_subregion);
             }
         }
     }
