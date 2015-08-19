@@ -36,6 +36,9 @@ public:
 
     Point2D get_central_point() const { return _central_point; }
     std::vector<Obstacle*> get_obstacles() const { return _obstacles; }
+    std::vector<SubRegionSet*> get_subregion_set() const { return _regionSets; }
+protected:
+    std::vector<Point2D> _intersect_with_boundaries( LineSubSegmentSet* p_segment1, LineSubSegmentSet* p_segment2 );
 
 private:
     int _map_width;
@@ -44,12 +47,13 @@ private:
     int _sample_width_scale;
     int _sample_height_scale;
 
-    std::vector<Line2D>             _obs_bk_pair_lines;
-    std::vector<Segment2D>          _boundary_lines;
     std::vector<Obstacle*>          _obstacles;
     std::vector<LineSubSegmentSet*> _line_segments;
     std::vector<SubRegionSet*>      _regionSets;
 
+    std::vector<Line2D>             _obs_bk_pair_lines;
+    std::vector<Segment2D>          _boundary_lines;
+    std::vector<Segment2D>          _center_corner_lines;
 
     Point2D                _central_point;
     Segment2D              _x_min_line;

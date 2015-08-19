@@ -29,9 +29,6 @@ public:
     Point2D m_bk;
     std::vector<Segment2D> m_border_segments;
 
-    Ray2D* mp_alpha_ray;
-    Ray2D* mp_beta_ray;
-
     LineSubSegmentSet* mp_alpha_seg;
     LineSubSegmentSet* mp_beta_seg;
 

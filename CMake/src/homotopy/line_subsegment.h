@@ -52,14 +52,15 @@ typedef enum {
 class LineSubSegmentSet {
 
 public:
-    LineSubSegmentSet( Point2D pos_a, Point2D pos_b, unsigned int type, Direction2D direction, Obstacle* p_obstacle );
+    LineSubSegmentSet( Point2D pos_a, Point2D pos_b, unsigned int type, Obstacle* p_obstacle );
     ~LineSubSegmentSet();
 
     bool load( std::vector<IntersectionPoint>& intersections );
 
+    /*
     bool operator<(const  LineSubSegmentSet& other) const {
         return ( m_direction < other.m_direction );
-    }
+    }*/
 
     virtual void to_xml( const std::string& filename )const;
     virtual void to_xml( xmlDocPtr doc, xmlNodePtr root )const;
@@ -73,7 +74,6 @@ public:
     Obstacle* get_obstacle() { return _p_obstacle; }
 
     Segment2D    m_seg;
-    Direction2D  m_direction;
     unsigned int m_type;
     std::vector< LineSubSegment* > m_subsegs;
 protected:

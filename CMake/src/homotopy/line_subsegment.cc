@@ -68,11 +68,10 @@ std::ostream& operator<<( std::ostream& out, const LineSubSegment& other ) {
     return out;
 }
 
-LineSubSegmentSet::LineSubSegmentSet( Point2D pos_a, Point2D pos_b, unsigned int type, Direction2D direction, Obstacle* p_obstacle ) {
+LineSubSegmentSet::LineSubSegmentSet( Point2D pos_a, Point2D pos_b, unsigned int type, Obstacle* p_obstacle ) {
 
     m_seg = Segment2D(pos_a, pos_b);
     m_type = type;
-    m_direction = direction;
     _p_obstacle = p_obstacle;
     m_subsegs.clear();
 }

@@ -1,6 +1,7 @@
 #ifndef HOMOTOPYVIZ_H
 #define HOMOTOPYVIZ_H
 
+#include <vector>
 #include <QLabel>
 #include "worldmap.h"
 
@@ -13,9 +14,10 @@ public:
 protected:
     bool initWorld(QString filename);
 
-    WorldMap* mpWorld;
-    int mWorldWidth;
-    int mWorldHeight;
+    WorldMap*            mpWorld;
+    int                  mWorldWidth;
+    int                  mWorldHeight;
+    std::vector<QColor>  mColors;
 signals:
 
 public slots:

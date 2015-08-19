@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <QtGui>
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
@@ -44,6 +45,9 @@ bool HomotopyViz::initWorld(QString filename) {
            cont.push_back(ip);
         }
         conts.push_back(cont);
+
+        mColors.push_back(QColor( rand()%255, rand()%255, rand()%255 ));
+        mColors.push_back(QColor( rand()%255, rand()%255, rand()%255 ));
     }
 
     if (mpWorld) {
@@ -67,6 +71,25 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
     QLabel::paintEvent(e);
 
     if (mpWorld) {
+
+        std::vector<SubRegionSet*> subregion_sets = mpWorld->get_subregion_set();
+        //{   unsigned int i = 0;
+        for( unsigned int i=0; i < subregion_sets.size(); i++ ) {
+            QPainter region_painter(this);
+            region_painter.setRenderHint(QPainter::Antialiasing);
+            QBrush region_brush(mColors[i]);
+            region_painter.setPen(Qt::NoPen);
+            SubRegionSet* p_subregion_set = subregion_sets[i];
+            if (p_subregion_set) {
+                QPolygon poly;
+                for( unsigned int j=0; j < p_subregion_set->m_boundary_points.size(); j++ ) {
+                    poly << QPoint( p_subregion_set->m_boundary_points[j].x(), p_subregion_set->m_boundary_points[j].y() );
+                }
+                QPainterPath tmpPath;
+                tmpPath.addPolygon(poly);
+                region_painter.fillPath(tmpPath, region_brush);
+            }
+        }
 
         std::vector<Obstacle*> obstacles =  mpWorld->get_obstacles();
 
@@ -119,7 +142,7 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
 
         QPainter a_subseg_painter(this);
         QPen a_subseg_pen(QColor(255,255,0));
-        a_subseg_pen.setWidth(3);
+        a_subseg_pen.setWidth(2);
         a_subseg_painter.setPen(a_subseg_pen);
         for( std::vector<Obstacle*>::iterator it = obstacles.begin();
              it != obstacles.end(); it++ ) {
@@ -137,7 +160,7 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
 
         QPainter b_subseg_painter(this);
         QPen b_subseg_pen(QColor(255,0,255));
-        b_subseg_pen.setWidth(3);
+        b_subseg_pen.setWidth(2);
         b_subseg_painter.setPen(b_subseg_pen);
         for( std::vector<Obstacle*>::iterator it = obstacles.begin();
              it != obstacles.end(); it++ ) {
