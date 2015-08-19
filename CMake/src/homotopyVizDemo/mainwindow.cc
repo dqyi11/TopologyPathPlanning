@@ -43,11 +43,22 @@ void MainWindow::onOpen() {
 void MainWindow::keyPressEvent(QKeyEvent *event) {
    if (event->key() == Qt::Key_R  ) {
        if(mpViz) {
-           if(mpViz->mShowSubregion==true) {
+           if(mpViz->mShowSubregion == true) {
                mpViz->mShowSubregion = false;
            }
            else {
                mpViz->mShowSubregion = true;
+           }
+           repaint();
+       }
+   }
+   else if (event->key() == Qt::Key_S  ) {
+       if(mpViz) {
+           if(mpViz->mShowSubsegment == true) {
+               mpViz->mShowSubsegment = false;
+           }
+           else {
+               mpViz->mShowSubsegment = true;
            }
            repaint();
        }

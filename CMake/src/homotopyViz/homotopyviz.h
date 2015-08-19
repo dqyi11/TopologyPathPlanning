@@ -12,8 +12,12 @@ public:
     bool loadMap( QString filename );
 
     bool                 mShowSubregion;
+    bool                 mShowSubsegment;
     void prevRegion();
     void nextRegion();
+
+    bool save( QString json_filename );
+    bool load( QString json_filename );
 protected:
     bool initWorld(QString filename);
 
