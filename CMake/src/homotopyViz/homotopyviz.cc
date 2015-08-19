@@ -11,6 +11,8 @@ HomotopyViz::HomotopyViz(QWidget *parent) :
     mpWorld = NULL;
     mWorldWidth = 0;
     mWorldHeight = 0;
+    mShowSubregion = false;
+    mRegionIdx = -1;
 }
 
 bool HomotopyViz::loadMap( QString filename ) {
@@ -19,10 +21,11 @@ bool HomotopyViz::loadMap( QString filename ) {
     if( pix.isNull() == true ) {
         return false;
     }
-
-    QImage img = pix.toImage();
-    resize( img.width(), img.height() );
-    setPixmap(pix);
+    QPixmap emptyPix(pix.width(), pix.height());
+    emptyPix.fill(QColor("white"));
+    std::cout << " EMPTY PIX " << emptyPix.width() << " * " << emptyPix.height() << std::endl;
+    //setPixmap(pix);
+    setPixmap(emptyPix);
     initWorld(filename);
     return true;
 }
@@ -72,36 +75,39 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
 
     if (mpWorld) {
 
-        std::vector<SubRegionSet*> subregion_sets = mpWorld->get_subregion_set();
-        for( unsigned int i=0; i < subregion_sets.size(); i++ ) {
+        if( mRegionIdx >= 0 ) {
             QPainter region_painter(this);
             region_painter.setRenderHint(QPainter::Antialiasing);
-            QBrush region_brush(mColors[i]);
+            QBrush region_brush(mColors[mRegionIdx]);
             region_painter.setPen(Qt::NoPen);
-            SubRegionSet* p_subregion_set = subregion_sets[i];
+            SubRegionSet* p_subregion_set = mpWorld->get_subregion_set()[mRegionIdx];
             if (p_subregion_set) {
-                /*
-                QPolygon poly;
-                for( unsigned int j=0; j < p_subregion_set->m_boundary_points.size(); j++ ) {
-                    poly << QPoint( p_subregion_set->m_boundary_points[j].x(), p_subregion_set->m_boundary_points[j].y() );
+                if ( mShowSubregion == false ) {
+                    QPolygon poly;
+                    for( unsigned int j=0; j < p_subregion_set->m_boundary_points.size(); j++ ) {
+                        poly << QPoint( p_subregion_set->m_boundary_points[j].x(), p_subregion_set->m_boundary_points[j].y() );
+                    }
+                    QPainterPath tmpPath;
+                    tmpPath.addPolygon(poly);
+                    region_painter.fillPath(tmpPath, region_brush);
                 }
-                QPainterPath tmpPath;
-                tmpPath.addPolygon(poly);
-                region_painter.fillPath(tmpPath, region_brush); */
-                for( unsigned int k=0; k < p_subregion_set->m_subregions.size(); k++ ) {
-                    SubRegion* p_subreg = p_subregion_set->m_subregions[k];
-                    if( p_subreg ) {
-                        QPolygon poly;
-                        for( unsigned int j=0; j < p_subreg->m_points.size(); j++ ) {
-                            poly << QPoint( p_subreg->m_points[j].x(), p_subreg->m_points[j].y() );
+                else {
+                    for( unsigned int k=0; k < p_subregion_set->m_subregions.size(); k++ ) {
+                        SubRegion* p_subreg = p_subregion_set->m_subregions[k];
+                        if( p_subreg ) {
+                            QPolygon poly;
+                            for( unsigned int j=0; j < p_subreg->m_points.size(); j++ ) {
+                                poly << QPoint( p_subreg->m_points[j].x(), p_subreg->m_points[j].y() );
+                            }
+                            QPainterPath tmpPath;
+                            tmpPath.addPolygon(poly);
+                            region_painter.fillPath(tmpPath, region_brush);
                         }
-                        QPainterPath tmpPath;
-                        tmpPath.addPolygon(poly);
-                        region_painter.fillPath(tmpPath, region_brush);
                     }
                 }
             }
         }
+
 
         std::vector<Obstacle*> obstacles =  mpWorld->get_obstacles();
 
@@ -228,5 +234,27 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
         }
 
 
+    }
+}
+
+void HomotopyViz::prevRegion() {
+    if( mpWorld ) {
+        if ( mRegionIdx >= 0 ) {
+            mRegionIdx--;
+        }
+        else {
+            mRegionIdx = static_cast<int>(mpWorld->get_subregion_set().size())-1;
+        }
+    }
+}
+
+void HomotopyViz::nextRegion() {
+    if( mpWorld ) {
+        if ( mRegionIdx < static_cast<int>(mpWorld->get_subregion_set().size())-1 ) {
+            mRegionIdx++;
+        }
+        else {
+            mRegionIdx = -1;
+        }
     }
 }

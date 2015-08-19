@@ -11,6 +11,9 @@ public:
     explicit HomotopyViz( QWidget *parent = 0 );
     bool loadMap( QString filename );
 
+    bool                 mShowSubregion;
+    void prevRegion();
+    void nextRegion();
 protected:
     bool initWorld(QString filename);
 
@@ -18,6 +21,8 @@ protected:
     int                  mWorldWidth;
     int                  mWorldHeight;
     std::vector<QColor>  mColors;
+
+    int                  mRegionIdx;
 signals:
 
 public slots:

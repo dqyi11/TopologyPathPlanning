@@ -23,6 +23,7 @@ protected:
     void createMenuBar();
     void createActions();
 
+    void keyPressEvent(QKeyEvent * e);
 private:
     QMenu*        mpFileMenu;
     QAction*      mpOpenAction;

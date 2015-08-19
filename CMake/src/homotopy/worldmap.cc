@@ -67,6 +67,7 @@ bool WorldMap::load_obstacle_info( std::vector< std::vector<Point2D> > polygons 
         }
         _accessible_region.add_hole( obs_poly );
     }
+    std::cout << " NUM OF HOLES " << _accessible_region.number_of_holes() << std::endl;
     return true;
 }
 
@@ -231,7 +232,9 @@ std::vector<Point2D> WorldMap::_intersect_with_boundaries( LineSubSegmentSet* p_
     points.push_back( _central_point );
     points.push_back( p_segment1->m_seg.target() );
     for( unsigned int j=0; j < _center_corner_lines.size(); j++ ) {
-        if( true == _center_corner_lines[j].direction().counterclockwise_in_between( p_segment1->m_seg.direction(), p_segment2->m_seg.direction() ) ) {
+        Direction2D d1 = Ray2D( _central_point, p_segment1->m_seg.target() ).direction();
+        Direction2D d2 = Ray2D( _central_point, p_segment2->m_seg.target() ).direction();
+        if( true == _center_corner_lines[j].direction().counterclockwise_in_between( d1, d2 ) ) {
             points.push_back( _center_corner_lines[j].target() );
         }
     }

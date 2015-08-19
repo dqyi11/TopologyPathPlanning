@@ -40,5 +40,28 @@ void MainWindow::onOpen() {
     mpViz->loadMap(tempFilename);
 }
 
-
-
+void MainWindow::keyPressEvent(QKeyEvent *event) {
+   if (event->key() == Qt::Key_R  ) {
+       if(mpViz) {
+           if(mpViz->mShowSubregion==true) {
+               mpViz->mShowSubregion = false;
+           }
+           else {
+               mpViz->mShowSubregion = true;
+           }
+           repaint();
+       }
+   }
+   else if(event->key() == Qt::Key_Up ) {
+       if(mpViz) {
+           mpViz->nextRegion();
+           repaint();
+       }
+   }
+   else if(event->key() == Qt::Key_Down ) {
+       if(mpViz) {
+           mpViz->prevRegion();
+           repaint();
+       }
+   }
+}
