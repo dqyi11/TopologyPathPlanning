@@ -28,6 +28,15 @@ WorldMap::WorldMap( int width, int height ) {
     _center_corner_lines.clear();
 
     _central_point = Point2D(width/2, height/2);
+
+    Polygon2D mapPoly;
+    mapPoly.push_back(Point2D(0,0));
+    mapPoly.push_back(Point2D(_map_width, 0));
+    mapPoly.push_back(Point2D(_map_width, _map_height));
+    mapPoly.push_back(Point2D(0,_map_height));
+
+    _accessible_region = PolygonWithHoles2D(mapPoly);
+
 }
 
 WorldMap::~WorldMap() {
@@ -52,6 +61,11 @@ bool WorldMap::load_obstacle_info( std::vector< std::vector<Point2D> > polygons 
         Obstacle* p_obs = new Obstacle(points, obs_idx, this);
         obs_idx ++;
         _obstacles.push_back(p_obs);
+        Polygon2D obs_poly;
+        for(unsigned int i=0; i<points.size(); i++) {
+            obs_poly.push_back(points[i]);
+        }
+        _accessible_region.add_hole( obs_poly );
     }
     return true;
 }
@@ -122,7 +136,6 @@ bool WorldMap::_init_rays() {
     _center_corner_lines.push_back(Segment2D(_central_point, Point2D(_map_width, _map_height)));
     _center_corner_lines.push_back(Segment2D(_central_point, Point2D(0, _map_height)));
     std::sort(_center_corner_lines.begin(), _center_corner_lines.end(), Segment2DSort);
-
 
     // init alpha and beta segments
     for( std::vector<Obstacle*>::iterator it=_obstacles.begin(); it!=_obstacles.end(); it++) {
@@ -282,6 +295,7 @@ std::vector<Point2D> WorldMap::_intersect( Segment2D seg, std::vector<Segment2D>
 std::vector<SubRegion*>  WorldMap::_get_subregions( SubRegionSet* p_region ) {
     std::vector<SubRegion*> sr_set;
 
+    /*
     for( std::vector<Obstacle*>::iterator it = _obstacles.begin(); it != _obstacles.end(); it++ ) {
         Obstacle * p_obstacle = (*it);
         std::list<PolygonWithHoles2D> results;
@@ -296,6 +310,19 @@ std::vector<SubRegion*>  WorldMap::_get_subregions( SubRegionSet* p_region ) {
                 SubRegion* p_subregion = new SubRegion(poly);
                 sr_set.push_back(p_subregion);
             }
+        }
+    }*/
+
+    std::list<PolygonWithHoles2D> results;
+    CGAL::intersection( p_region->m_polygon, _accessible_region, std::back_inserter(results) );
+    for( std::list<PolygonWithHoles2D>::iterator it=results.begin();
+         it!= results.end(); it++ ) {
+        PolygonWithHoles2D obj = (*it);
+        //std::cout << "POLy " << obj.has_holes() << std::endl;
+        if (obj.has_holes()==false) {
+            Polygon2D poly = obj.outer_boundary();
+            SubRegion* p_subregion = new SubRegion(poly);
+            sr_set.push_back(p_subregion);
         }
     }
     return sr_set;

@@ -73,7 +73,6 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
     if (mpWorld) {
 
         std::vector<SubRegionSet*> subregion_sets = mpWorld->get_subregion_set();
-        //{   unsigned int i = 0;
         for( unsigned int i=0; i < subregion_sets.size(); i++ ) {
             QPainter region_painter(this);
             region_painter.setRenderHint(QPainter::Antialiasing);

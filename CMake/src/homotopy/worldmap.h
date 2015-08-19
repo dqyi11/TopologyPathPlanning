@@ -56,6 +56,7 @@ private:
     std::vector<Segment2D>          _boundary_lines;
     std::vector<Segment2D>          _center_corner_lines;
 
+    PolygonWithHoles2D     _accessible_region;
     Point2D                _central_point;
     Segment2D              _x_min_line;
     Segment2D              _x_max_line;
