@@ -251,7 +251,6 @@ std::list<Point2D> WorldMap::_intersect_with_boundaries( LineSubSegmentSet* p_se
     Direction2D d1 = Ray2D( _central_point, p_segment1->m_seg.target() ).direction();
     Direction2D d2 = Ray2D( _central_point, p_segment2->m_seg.target() ).direction();
 
-    //std::cout << " COMPARE " << ( d1 < d2 ) << std::endl;
     if( d1 < d2 ) {
 
         for( unsigned int j=0; j < _center_corner_lines.size(); j++ ) {
