@@ -19,16 +19,17 @@ SubRegion::~SubRegion() {
     m_polygon.clear();
 }
 
-SubRegionSet::SubRegionSet(std::vector<Point2D> points, unsigned int idx) {
+SubRegionSet::SubRegionSet(std::list<Point2D> points, unsigned int idx) {
 
     m_boundary_points.clear();
     m_index = idx;
     m_subregions.clear();
     m_polygon = Polygon2D();
 
-    for( unsigned int i=0; i < points.size(); i++ ) {
-        m_boundary_points.push_back((points[i]));
-        m_polygon.push_back(points[i]);
+    for( std::list<Point2D>::iterator it=points.begin(); it != points.end(); it++ ) {
+        Point2D p = *it;
+        m_boundary_points.push_back(p);
+        m_polygon.push_back(p);
     }
 }
 

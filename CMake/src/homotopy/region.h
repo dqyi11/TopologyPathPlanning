@@ -17,7 +17,7 @@ public:
 
 class SubRegionSet {
 public:
-    SubRegionSet(std::vector<Point2D> points, unsigned int idx);
+    SubRegionSet(std::list<Point2D> points, unsigned int idx);
     virtual ~SubRegionSet();
 
     Polygon2D    m_polygon;

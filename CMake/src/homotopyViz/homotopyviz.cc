@@ -113,7 +113,6 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
             }
         }
 
-
         std::vector<Obstacle*> obstacles =  mpWorld->get_obstacles();
 
         QPainter obstacle_painter(this);
@@ -177,7 +176,7 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                          itap != p_obstacle->mp_alpha_seg->m_subsegs.end(); itap++ ) {
                         LineSubSegment* p_subseg_a = (*itap);
                         a_subseg_painter.drawLine( QPoint(p_subseg_a->m_subseg.source().x(), p_subseg_a->m_subseg.source().y()),
-                                                 QPoint(p_subseg_a->m_subseg.target().x(), p_subseg_a->m_subseg.target().y()));
+                                                   QPoint(p_subseg_a->m_subseg.target().x(), p_subseg_a->m_subseg.target().y()));
                     }
                 }
             }
@@ -194,7 +193,7 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                          itbp != p_obstacle->mp_beta_seg->m_subsegs.end(); itbp++ ) {
                         LineSubSegment* p_subseg_b = (*itbp);
                         b_subseg_painter.drawLine( QPoint(p_subseg_b->m_subseg.source().x(), p_subseg_b->m_subseg.source().y()),
-                                                 QPoint(p_subseg_b->m_subseg.target().x(), p_subseg_b->m_subseg.target().y()));
+                                                   QPoint(p_subseg_b->m_subseg.target().x(), p_subseg_b->m_subseg.target().y()));
                     }
                 }
             }
@@ -204,8 +203,7 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
         QPen cp_pen(QColor(255,0,0));
         cp_pen.setWidth(4);
         cp_painter.setPen(cp_pen);
-        cp_painter.drawPoint(QPoint(mpWorld->get_central_point().x(),
-                                 mpWorld->get_central_point().y()));
+        cp_painter.drawPoint(QPoint(mpWorld->get_central_point().x(), mpWorld->get_central_point().y()));
 
         QPainter bk_painter(this);
         QPen bk_pen(QColor(255,140,0));

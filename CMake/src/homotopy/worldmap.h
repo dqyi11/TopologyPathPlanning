@@ -40,7 +40,7 @@ protected:
     bool _init_segments();
     bool _init_regions();
 
-    std::vector<Point2D>     _intersect_with_boundaries( LineSubSegmentSet* p_segment1, LineSubSegmentSet* p_segment2 );
+    std::list<Point2D>     _intersect_with_boundaries( LineSubSegmentSet* p_segment1, LineSubSegmentSet* p_segment2 );
     std::vector<SubRegion*>  _get_subregions( SubRegionSet* p_region );
 
 private:

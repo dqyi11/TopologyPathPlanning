@@ -223,13 +223,13 @@ bool WorldMap::_init_regions() {
     unsigned int index = 0;
     for( unsigned int i=0; i < _line_segments.size(); i++ ) {
         if ( i == _line_segments.size()-1 ) {
-            std::vector<Point2D> points = _intersect_with_boundaries( _line_segments[i], _line_segments[0] );
+            std::list<Point2D> points = _intersect_with_boundaries( _line_segments[i], _line_segments[0] );
             SubRegionSet* p_subregion_set = new SubRegionSet( points, index );
             index ++;
             _regionSets.push_back( p_subregion_set );
         }
         else {
-            std::vector<Point2D> points = _intersect_with_boundaries( _line_segments[i], _line_segments[i+1] );
+            std::list<Point2D> points = _intersect_with_boundaries( _line_segments[i], _line_segments[i+1] );
             SubRegionSet* p_subregion_set = new SubRegionSet( points, index );
             index ++;
             _regionSets.push_back( p_subregion_set );
@@ -244,18 +244,43 @@ bool WorldMap::_init_regions() {
     return true;
 }
 
-std::vector<Point2D> WorldMap::_intersect_with_boundaries( LineSubSegmentSet* p_segment1, LineSubSegmentSet* p_segment2 ) {
-    std::vector<Point2D> points;
-    points.push_back( _central_point );
-    points.push_back( p_segment1->m_seg.target() );
-    for( unsigned int j=0; j < _center_corner_lines.size(); j++ ) {
-        Direction2D d1 = Ray2D( _central_point, p_segment1->m_seg.target() ).direction();
-        Direction2D d2 = Ray2D( _central_point, p_segment2->m_seg.target() ).direction();
-        if( true == _center_corner_lines[j].direction().counterclockwise_in_between( d1, d2 ) ) {
-            points.push_back( _center_corner_lines[j].target() );
+std::list<Point2D> WorldMap::_intersect_with_boundaries( LineSubSegmentSet* p_segment1, LineSubSegmentSet* p_segment2 ) {
+
+
+    std::list<Point2D> points;
+    Direction2D d1 = Ray2D( _central_point, p_segment1->m_seg.target() ).direction();
+    Direction2D d2 = Ray2D( _central_point, p_segment2->m_seg.target() ).direction();
+
+    //std::cout << " COMPARE " << ( d1 < d2 ) << std::endl;
+    if( d1 < d2 ) {
+
+        for( unsigned int j=0; j < _center_corner_lines.size(); j++ ) {
+            Direction2D corner_d = _center_corner_lines[j].direction();
+            if( true == corner_d.counterclockwise_in_between( d1, d2 ) ) {
+                points.push_back( _center_corner_lines[j].target() );
+            }
         }
+        points.push_front( p_segment1->m_seg.target() );
+        points.push_front( _central_point );
+        points.push_back( p_segment2->m_seg.target() );
     }
-    points.push_back( p_segment2->m_seg.target() );
+    else {
+        for( unsigned int j=0; j < _center_corner_lines.size(); j++ ) {
+            Direction2D corner_d = _center_corner_lines[j].direction();
+            if( true == corner_d.counterclockwise_in_between( d1, d2 ) ) {
+                if ( corner_d < d2 ) {
+                    points.push_front( _center_corner_lines[j].target() );
+                }
+                else if ( d1 < corner_d ) {
+                    points.push_back( _center_corner_lines[j].target() );
+                }
+            }
+        }
+        points.push_front( p_segment2->m_seg.target() );
+        points.push_back( p_segment1->m_seg.target() );
+        points.push_back( _central_point );
+        points.reverse();
+    }
     return points;
 }
 
