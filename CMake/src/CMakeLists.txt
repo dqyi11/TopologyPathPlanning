@@ -16,9 +16,9 @@ find_package(Boost COMPONENTS)
 include_directories(${Boost_INCLUDE_DIR})
 
 # search for CGAL, exit if not found
-find_package(CGAL COMPONENTS Core)
+find_package(CGAL QUIET COMPONENTS Core)
 if( NOT CGAL_FOUND )
-  message( FATAL_ERROR "CGAK not found\n" ) 
+  message( FATAL_ERROR "CGAL not found\n" ) 
   return()
 endif()
 #message( "CGAL FOUND ")

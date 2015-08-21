@@ -1,19 +1,23 @@
 #ifndef WORLD_DATATYPE_H
 #define WORLD_DATATYPE_H
 
-#include <CGAL/Simple_cartesian.h>
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+//#include <CGAL/Simple_cartesian.h>
+#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <CGAL/Polygon_traits_2.h>
 #include <CGAL/Polygon_2.h>
+#include <CGAL/General_polygon_with_holes_2.h>
+#include <CGAL/General_polygon_set_2.h>
 #include <CGAL/Polygon_with_holes_2.h>
 
-typedef CGAL::Simple_cartesian<double> K;
-typedef K::Point_2                     Point2D;
-typedef K::Segment_2                   Segment2D;
-typedef K::Ray_2                       Ray2D;
-typedef K::Line_2                      Line2D;
-typedef CGAL::Polygon_2<K>             Polygon2D;
-typedef CGAL::Polygon_with_holes_2<K>  PolygonWithHoles2D;
-typedef K::Direction_2                 Direction2D;
+typedef CGAL::Simple_cartesian<double> Kernel;
+//typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel;
+typedef Kernel::Point_2                        Point2D;
+typedef Kernel::Segment_2                      Segment2D;
+typedef Kernel::Ray_2                          Ray2D;
+typedef Kernel::Line_2                         Line2D;
+typedef CGAL::Polygon_2<Kernel>                Polygon2D;
+typedef CGAL::Polygon_with_holes_2<Kernel>     PolygonWithHoles2D;
+typedef Kernel::Direction_2                    Direction2D;
+typedef CGAL::General_polygon_set_2<Polygon2D> Polygon_set;
 
 #endif // WORLD_DATATYPE_H

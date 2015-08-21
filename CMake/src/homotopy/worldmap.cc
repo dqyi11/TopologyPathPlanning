@@ -332,17 +332,15 @@ std::vector<Point2D> WorldMap::_intersect( Segment2D seg, std::vector<Segment2D>
     return points;
 }
 
-
 std::vector<SubRegion*>  WorldMap::_get_subregions( SubRegionSet* p_region ) {
     std::vector<SubRegion*> sr_set;
-
     std::list<PolygonWithHoles2D> results;
     CGAL::intersection( p_region->m_polygon, _accessible_region,  std::back_inserter(results) );
 
     for( std::list<PolygonWithHoles2D>::iterator it=results.begin();
          it!= results.end(); it++ ) {
         PolygonWithHoles2D obj = (*it);
-        std::cout << "POLy " << obj.has_holes() << std::endl;
+        std::cout << "POLY " << obj.has_holes() << std::endl;
         if (obj.has_holes()==false) {
             Polygon2D poly = obj.outer_boundary();
             SubRegion* p_subregion = new SubRegion(poly);
