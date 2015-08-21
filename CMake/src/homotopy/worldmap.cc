@@ -239,7 +239,7 @@ bool WorldMap::_init_regions() {
     for( unsigned int i=0; i < _regionSets.size(); i++ ) {
         SubRegionSet* p_subregions_set = _regionSets[i];
         p_subregions_set->m_subregions = _get_subregions(p_subregions_set);
-        std::cout << "GENERATE FOR REGION " << i << " NUM_OF_SUB (" << p_subregions_set->m_subregions.size() << ")" << std::endl;
+        //std::cout << "GENERATE FOR REGION " << i << " NUM_OF_SUB (" << p_subregions_set->m_subregions.size() << ")" << std::endl;
     }
 
     return true;
@@ -334,6 +334,7 @@ std::vector<Point2D> WorldMap::_intersect( Segment2D seg, std::vector<Segment2D>
 
 std::vector<SubRegion*>  WorldMap::_get_subregions( SubRegionSet* p_region ) {
     std::vector<SubRegion*> sr_set;
+    /*
     std::list<PolygonWithHoles2D> results;
     CGAL::intersection( p_region->m_polygon, _accessible_region,  std::back_inserter(results) );
 
@@ -347,6 +348,31 @@ std::vector<SubRegion*>  WorldMap::_get_subregions( SubRegionSet* p_region ) {
             sr_set.push_back(p_subregion);
         }
     }
+    */
+    if ( p_region == NULL ) {
+        return sr_set;
+    }
+    std::vector<Polygon2D> candidates;
+    candidates.push_back(p_region->m_polygon);
+    for( std::vector< Obstacle* >::iterator itO = _obstacles.begin(); itO != _obstacles.end(); itO ++ ) {
+        Obstacle* p_obs = (*itO);
+        if( do_intersect( p_region->m_polygon , p_obs->m_pgn ) ) {
+            std::cout << " REGION " << p_region->m_index << " intersect with " << p_obs->get_index() << std::endl;
+
+            std::vector<PolygonWithHoles2D> res;
+            CGAL::difference( p_region->m_polygon, p_obs->m_pgn, std::back_inserter(res) );
+            for( std::vector< PolygonWithHoles2D >::iterator itP = res.begin();
+                 itP != res.end(); itP ++ ) {
+                PolygonWithHoles2D poly = (*itP);
+                if ( poly.has_holes() == false ) {
+                    Polygon2D poly_out = poly.outer_boundary();
+                    SubRegion* p_subregion = new SubRegion( poly_out );
+                    sr_set.push_back( p_subregion );
+                }
+            }
+        }
+    }
+
     return sr_set;
 }
 
