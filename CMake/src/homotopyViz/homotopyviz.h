@@ -16,6 +16,9 @@ public:
     void prevRegion();
     void nextRegion();
 
+    void prevSubregion();
+    void nextSubregion();
+
     bool save( QString filename );
     bool load( QString filename );
 protected:
@@ -27,6 +30,7 @@ protected:
     std::vector<QColor>  mColors;
 
     int                  mRegionIdx;
+    int                  mSubRegionIdx;
 signals:
 
 public slots:

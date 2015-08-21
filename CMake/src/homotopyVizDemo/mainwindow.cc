@@ -98,4 +98,16 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
            repaint();
        }
    }
+   else if(event->key() == Qt::Key_Right ) {
+       if(mpViz) {
+           mpViz->nextSubregion();
+           repaint();
+       }
+   }
+   else if(event->key() == Qt::Key_Left ) {
+       if(mpViz) {
+           mpViz->prevSubregion();
+           repaint();
+       }
+   }
 }

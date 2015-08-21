@@ -61,10 +61,14 @@ bool WorldMap::resize( int width, int height ) {
 
     Polygon2D mapPoly;
     mapPoly.push_back(Point2D(0,0));
-    mapPoly.push_back(Point2D(_map_width, 0));
-    mapPoly.push_back(Point2D(_map_width, _map_height));
-    mapPoly.push_back(Point2D(0,_map_height));
+    mapPoly.push_back(Point2D(_map_width-1, 0));
+    mapPoly.push_back(Point2D(_map_width-1, _map_height-1));
+    mapPoly.push_back(Point2D(0,_map_height-1));
+    if( mapPoly.orientation() == CGAL::CLOCKWISE ) {
+        mapPoly.reverse_orientation();
+    }
     _accessible_region = PolygonWithHoles2D(mapPoly);
+
     return false;
 }
 
@@ -76,11 +80,11 @@ bool WorldMap::load_obstacle_info( std::vector< std::vector<Point2D> > polygons 
         Obstacle* p_obs = new Obstacle(points, obs_idx, this);
         obs_idx ++;
         _obstacles.push_back(p_obs);
-        Polygon2D obs_poly;
-        for(unsigned int i=0; i<points.size(); i++) {
-            obs_poly.push_back(points[i]);
-        }
-        _accessible_region.add_hole( obs_poly );
+    }
+
+    for( unsigned int i=0 ; i < _obstacles.size(); i++ ) {
+        Obstacle* p_obs = _obstacles[i];
+        _accessible_region.add_hole( p_obs->m_pgn );
     }
     std::cout << " NUM OF HOLES " << _accessible_region.number_of_holes() << std::endl;
     return true;
@@ -97,7 +101,6 @@ bool WorldMap::init( bool rand_init_points ) {
 }
 
 bool WorldMap::_init_points() {
-
     // select random point for each obstacle
     for( std::vector<Obstacle*>::iterator it = _obstacles.begin(); it != _obstacles.end(); it++ ) {
         Obstacle * p_obstacle = (*it);
@@ -136,7 +139,6 @@ bool WorldMap::_init_points() {
 }
 
 bool WorldMap::_init_rays() {
-
     // init four boundary line
     _boundary_lines.clear();
     _x_min_line = Segment2D(Point2D(0,0), Point2D(_map_width-1,0));
@@ -181,7 +183,6 @@ bool WorldMap::_init_rays() {
 }
 
 bool WorldMap::_init_segments() {
-
     for( std::vector<Obstacle*>::iterator it=_obstacles.begin(); it!=_obstacles.end(); it++) {
         Obstacle* p_obstacle = (*it);
         p_obstacle->m_alpha_intersection_points.clear();
@@ -218,7 +219,6 @@ bool WorldMap::_init_segments() {
 }
 
 bool WorldMap::_init_regions() {
-
     _regionSets.clear();
     unsigned int index = 0;
     for( unsigned int i=0; i < _line_segments.size(); i++ ) {
@@ -239,14 +239,13 @@ bool WorldMap::_init_regions() {
     for( unsigned int i=0; i < _regionSets.size(); i++ ) {
         SubRegionSet* p_subregions_set = _regionSets[i];
         p_subregions_set->m_subregions = _get_subregions(p_subregions_set);
+        std::cout << "GENERATE FOR REGION " << i << " NUM_OF_SUB (" << p_subregions_set->m_subregions.size() << ")" << std::endl;
     }
 
     return true;
 }
 
 std::list<Point2D> WorldMap::_intersect_with_boundaries( LineSubSegmentSet* p_segment1, LineSubSegmentSet* p_segment2 ) {
-
-
     std::list<Point2D> points;
     Direction2D d1 = Ray2D( _central_point, p_segment1->m_seg.target() ).direction();
     Direction2D d2 = Ray2D( _central_point, p_segment2->m_seg.target() ).direction();
@@ -284,7 +283,6 @@ std::list<Point2D> WorldMap::_intersect_with_boundaries( LineSubSegmentSet* p_se
 }
 
 bool WorldMap::_is_in_obs_bk_lines(Point2D point) {
-
     for( std::vector<Line2D>::iterator it = _obs_bk_pair_lines.begin(); it != _obs_bk_pair_lines.end(); it++ ) {
         Line2D bk_line = (*it);
         if ( bk_line.has_on( point )==true ) {
@@ -295,7 +293,6 @@ bool WorldMap::_is_in_obs_bk_lines(Point2D point) {
 }
 
 Point2D* WorldMap::_find_intersection_with_boundary(Ray2D* p_ray) {
-
     for(std::vector<Segment2D>::iterator it=_boundary_lines.begin(); it!=_boundary_lines.end(); it++) {
         Segment2D seg = (*it);
         CGAL::Object result = intersection(seg, (*p_ray));
@@ -339,30 +336,13 @@ std::vector<Point2D> WorldMap::_intersect( Segment2D seg, std::vector<Segment2D>
 std::vector<SubRegion*>  WorldMap::_get_subregions( SubRegionSet* p_region ) {
     std::vector<SubRegion*> sr_set;
 
-    /*
-    for( std::vector<Obstacle*>::iterator it = _obstacles.begin(); it != _obstacles.end(); it++ ) {
-        Obstacle * p_obstacle = (*it);
-        std::list<PolygonWithHoles2D> results;
-        CGAL::difference( p_region->m_polygon, p_obstacle->m_pgn, std::back_inserter(results) );
-
-        for( std::list<PolygonWithHoles2D>::iterator it=results.begin();
-             it!= results.end(); it++ ) {
-            PolygonWithHoles2D obj = (*it);
-            //std::cout << "POLy " << obj.has_holes() << std::endl;
-            if (obj.has_holes()==false) {
-                Polygon2D poly = obj.outer_boundary();
-                SubRegion* p_subregion = new SubRegion(poly);
-                sr_set.push_back(p_subregion);
-            }
-        }
-    }*/
-
     std::list<PolygonWithHoles2D> results;
-    CGAL::intersection( p_region->m_polygon, _accessible_region, std::back_inserter(results) );
+    CGAL::intersection( p_region->m_polygon, _accessible_region,  std::back_inserter(results) );
+
     for( std::list<PolygonWithHoles2D>::iterator it=results.begin();
          it!= results.end(); it++ ) {
         PolygonWithHoles2D obj = (*it);
-        //std::cout << "POLy " << obj.has_holes() << std::endl;
+        std::cout << "POLy " << obj.has_holes() << std::endl;
         if (obj.has_holes()==false) {
             Polygon2D poly = obj.outer_boundary();
             SubRegion* p_subregion = new SubRegion(poly);

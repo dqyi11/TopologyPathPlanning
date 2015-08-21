@@ -15,6 +15,7 @@ HomotopyViz::HomotopyViz(QWidget *parent) :
     mShowSubregion = false;
     mShowSubsegment = true;
     mRegionIdx = -1;
+    mSubRegionIdx = 0;
 }
 
 bool HomotopyViz::loadMap( QString filename ) {
@@ -96,18 +97,16 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                     tmpPath.addPolygon(poly);
                     region_painter.fillPath(tmpPath, region_brush);
                 }
-                else {
-                    for( unsigned int k=0; k < p_subregion_set->m_subregions.size(); k++ ) {
-                        SubRegion* p_subreg = p_subregion_set->m_subregions[k];
-                        if( p_subreg ) {
-                            QPolygon poly;
-                            for( unsigned int j=0; j < p_subreg->m_points.size(); j++ ) {
-                                poly << QPoint( p_subreg->m_points[j].x(), p_subreg->m_points[j].y() );
-                            }
-                            QPainterPath tmpPath;
-                            tmpPath.addPolygon(poly);
-                            region_painter.fillPath(tmpPath, region_brush);
+                else {                    
+                    SubRegion* p_subreg = p_subregion_set->m_subregions[mSubRegionIdx];
+                    if( p_subreg ) {
+                        QPolygon poly;
+                        for( unsigned int j=0; j < p_subreg->m_points.size(); j++ ) {
+                            poly << QPoint( p_subreg->m_points[j].x(), p_subreg->m_points[j].y() );
                         }
+                        QPainterPath tmpPath;
+                        tmpPath.addPolygon(poly);
+                        region_painter.fillPath(tmpPath, region_brush);
                     }
                 }
             }
@@ -124,8 +123,10 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
             Obstacle* p_obstacle = (*it);
             if (p_obstacle) {
                 QPolygon poly;
-                for( unsigned int i = 0; i < p_obstacle->m_points.size(); i++ ) {
-                    poly << QPoint( p_obstacle->m_points[i].x(), p_obstacle->m_points[i].y()) ;
+                for( Polygon2D::Vertex_iterator itP=p_obstacle->m_pgn.vertices_begin();
+                     itP != p_obstacle->m_pgn.vertices_end(); itP++ ) {
+                    Point2D p = (*itP);
+                    poly << QPoint( p.x(), p.y() );
                 }
                 obstacle_painter.drawPolygon(poly);
             }
@@ -244,9 +245,11 @@ void HomotopyViz::prevRegion() {
     if( mpWorld ) {
         if ( mRegionIdx >= 0 ) {
             mRegionIdx--;
+            mSubRegionIdx = 0;
         }
         else {
             mRegionIdx = static_cast<int>(mpWorld->get_subregion_set().size())-1;
+            mSubRegionIdx = 0;
         }
     }
 }
@@ -255,9 +258,41 @@ void HomotopyViz::nextRegion() {
     if( mpWorld ) {
         if ( mRegionIdx < static_cast<int>(mpWorld->get_subregion_set().size())-1 ) {
             mRegionIdx++;
+            mSubRegionIdx = 0;
         }
         else {
             mRegionIdx = -1;
+            mSubRegionIdx = 0;
+        }
+    }
+}
+
+void HomotopyViz::prevSubregion() {
+    if ( mpWorld ) {
+        if ( mRegionIdx >= 0 && mRegionIdx < static_cast<int>(mpWorld->get_subregion_set().size()) ) {
+            SubRegionSet* p_subregions = mpWorld->get_subregion_set() [mRegionIdx];
+            int sub_num = static_cast<int>( p_subregions->m_subregions.size() );
+            if ( mSubRegionIdx > 0) {
+                mSubRegionIdx --;
+            }
+            else{
+                mSubRegionIdx = sub_num - 1;
+            }
+        }
+    }
+}
+
+void HomotopyViz::nextSubregion() {
+    if ( mpWorld ) {
+        if ( mRegionIdx >= 0 && mRegionIdx < static_cast<int>(mpWorld->get_subregion_set().size()) ) {
+            SubRegionSet* p_subregions = mpWorld->get_subregion_set() [mRegionIdx];
+            int sub_num = static_cast<int>( p_subregions->m_subregions.size() );
+            if ( mSubRegionIdx < sub_num-1) {
+                mSubRegionIdx ++;
+            }
+            else{
+                mSubRegionIdx = 0;
+            }
         }
     }
 }

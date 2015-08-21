@@ -11,6 +11,10 @@ SubRegion::SubRegion( Polygon2D poly ) {
         m_points.push_back(p);
         m_polygon.push_back(p);
     }
+
+    if (m_polygon.orientation() == CGAL::CLOCKWISE) {
+        m_polygon.reverse_orientation();
+    }
 }
 
 SubRegion::~SubRegion() {
@@ -30,6 +34,10 @@ SubRegionSet::SubRegionSet(std::list<Point2D> points, unsigned int idx) {
         Point2D p = *it;
         m_boundary_points.push_back(p);
         m_polygon.push_back(p);
+    }
+
+    if(m_polygon.orientation() == CGAL::CLOCKWISE) {
+        m_polygon.reverse_orientation();
     }
 }
 
