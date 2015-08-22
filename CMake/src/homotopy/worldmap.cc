@@ -59,15 +59,6 @@ bool WorldMap::resize( int width, int height ) {
     _sample_height_scale = _map_width/5;
     _central_point = Point2D(width/2, height/2);
 
-    Polygon2D mapPoly;
-    mapPoly.push_back(Point2D(0,0));
-    mapPoly.push_back(Point2D(_map_width-1, 0));
-    mapPoly.push_back(Point2D(_map_width-1, _map_height-1));
-    mapPoly.push_back(Point2D(0,_map_height-1));
-    if( mapPoly.orientation() == CGAL::CLOCKWISE ) {
-        mapPoly.reverse_orientation();
-    }
-
     return false;
 }
 

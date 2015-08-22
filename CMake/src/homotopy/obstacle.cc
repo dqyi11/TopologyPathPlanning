@@ -32,7 +32,6 @@ Obstacle::Obstacle(std::vector<Point2D> points, int index, WorldMap* world ){
     if ( m_pgn.orientation() == CGAL::CLOCKWISE ) {
         m_pgn.reverse_orientation();
     }
-
     _min_x = m_pgn.bbox().xmin();
     _min_y = m_pgn.bbox().ymin();
     _max_x = m_pgn.bbox().xmax();
