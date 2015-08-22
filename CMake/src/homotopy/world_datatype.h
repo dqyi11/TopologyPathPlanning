@@ -1,7 +1,7 @@
 #ifndef WORLD_DATATYPE_H
 #define WORLD_DATATYPE_H
 
-//#include <CGAL/Simple_cartesian.h>
+#include <CGAL/Cartesian.h>
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <CGAL/Polygon_traits_2.h>
 #include <CGAL/Polygon_2.h>
@@ -9,8 +9,8 @@
 #include <CGAL/General_polygon_set_2.h>
 #include <CGAL/Polygon_with_holes_2.h>
 
-typedef CGAL::Simple_cartesian<double> Kernel;
-//typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel;
+//typedef CGAL::Cartesian<double> Kernel;
+typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel;
 typedef Kernel::Point_2                        Point2D;
 typedef Kernel::Segment_2                      Segment2D;
 typedef Kernel::Ray_2                          Ray2D;

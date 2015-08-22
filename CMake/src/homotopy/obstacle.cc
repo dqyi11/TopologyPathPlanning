@@ -57,7 +57,12 @@ Obstacle::~Obstacle() {
 
 double Obstacle::distance_to_bk( Point2D& point ) {
     double dist = 0.0;
-    dist = CGAL::squared_distance( m_bk , point );
+    double bk_x = CGAL::to_double( m_bk.x() );
+    double bk_y = CGAL::to_double( m_bk.y() );
+    double p_x = CGAL::to_double( point.x() );
+    double p_y = CGAL::to_double( point.y() );
+    dist = pow( bk_x - p_x , 2 ) + pow( bk_y - p_y , 2 );
+    //dist = CGAL::squared_distance( m_bk , point );
     dist = sqrt(dist);
     return dist;
 }

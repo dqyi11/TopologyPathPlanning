@@ -91,8 +91,8 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                 if ( mShowSubregion == false ) {
                     QPolygon poly;
                     for( unsigned int j=0; j < p_subregion_set->m_boundary_points.size(); j++ ) {
-                        double x = p_subregion_set->m_boundary_points[j].x();
-                        double y = p_subregion_set->m_boundary_points[j].y();
+                        double x = CGAL::to_double( p_subregion_set->m_boundary_points[j].x() );
+                        double y = CGAL::to_double( p_subregion_set->m_boundary_points[j].y() );
                         poly << QPoint( x, y );
                     }
                     QPainterPath tmpPath;
@@ -104,8 +104,8 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                     if( p_subreg ) {
                         QPolygon poly;
                         for( unsigned int j=0; j < p_subreg->m_points.size(); j++ ) {
-                            double x = p_subreg->m_points[j].x();
-                            double y = p_subreg->m_points[j].y();
+                            double x = CGAL::to_double( p_subreg->m_points[j].x() );
+                            double y = CGAL::to_double( p_subreg->m_points[j].y() );
                             poly << QPoint( x, y );
                         }
                         QPainterPath tmpPath;
@@ -130,8 +130,8 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                 for( Polygon2D::Vertex_iterator itP=p_obstacle->m_pgn.vertices_begin();
                      itP != p_obstacle->m_pgn.vertices_end(); itP++ ) {
                     Point2D p = (*itP);
-                    double p_x = p.x();
-                    double p_y = p.y();
+                    double p_x = CGAL::to_double( p.x() );
+                    double p_y = CGAL::to_double( p.y() );
                     poly << QPoint( p_x, p_y );
                 }
                 obstacle_painter.drawPolygon(poly);
@@ -151,10 +151,10 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                 if ( p_obstacle ) {
                     Point2D a_src = p_obstacle->mp_alpha_seg->m_seg.source();
                     Point2D a_end = p_obstacle->mp_alpha_seg->m_seg.target();
-                    double a_src_x = a_src.x();
-                    double a_src_y = a_src.y();
-                    double a_end_x = a_end.x();
-                    double a_end_y = a_end.y();
+                    double a_src_x = CGAL::to_double( a_src.x() );
+                    double a_src_y = CGAL::to_double( a_src.y() );
+                    double a_end_x = CGAL::to_double( a_end.x() );
+                    double a_end_y = CGAL::to_double( a_end.y() );
                     alpha_painter.drawLine( QPoint( a_src_x, a_src_y ), QPoint( a_end_x, a_end_y ) );
                 }
             }
@@ -170,10 +170,10 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                 if ( p_obstacle ) {
                     Point2D b_src = p_obstacle->mp_beta_seg->m_seg.source();
                     Point2D b_end = p_obstacle->mp_beta_seg->m_seg.target();
-                    double b_src_x = b_src.x();
-                    double b_src_y = b_src.y();
-                    double b_end_x = b_end.x();
-                    double b_end_y = b_end.y();
+                    double b_src_x = CGAL::to_double( b_src.x() );
+                    double b_src_y = CGAL::to_double( b_src.y() );
+                    double b_end_x = CGAL::to_double( b_end.x() );
+                    double b_end_y = CGAL::to_double( b_end.y() );
                     beta_painter.drawLine( QPoint( b_src_x, b_src_y ), QPoint( b_end_x, b_end_y ) );
                 }
             }
@@ -190,10 +190,10 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                     for( std::vector< LineSubSegment* >::iterator itap = p_obstacle->mp_alpha_seg->m_subsegs.begin();
                          itap != p_obstacle->mp_alpha_seg->m_subsegs.end(); itap++ ) {
                         LineSubSegment* p_subseg_a = (*itap);
-                        double a_src_x = p_subseg_a->m_subseg.source().x();
-                        double a_src_y = p_subseg_a->m_subseg.source().y();
-                        double a_end_x = p_subseg_a->m_subseg.target().x();
-                        double a_end_y = p_subseg_a->m_subseg.target().y();
+                        double a_src_x = CGAL::to_double( p_subseg_a->m_subseg.source().x() );
+                        double a_src_y = CGAL::to_double( p_subseg_a->m_subseg.source().y() );
+                        double a_end_x = CGAL::to_double( p_subseg_a->m_subseg.target().x() );
+                        double a_end_y = CGAL::to_double( p_subseg_a->m_subseg.target().y() );
                         a_subseg_painter.drawLine( QPoint( a_src_x , a_src_y ), QPoint( a_end_x , a_end_y ));
                     }
                 }
@@ -210,10 +210,10 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                     for( std::vector< LineSubSegment* >::iterator itbp = p_obstacle->mp_beta_seg->m_subsegs.begin();
                          itbp != p_obstacle->mp_beta_seg->m_subsegs.end(); itbp++ ) {
                         LineSubSegment* p_subseg_b = (*itbp);
-                        double b_src_x = p_subseg_b->m_subseg.source().x();
-                        double b_src_y = p_subseg_b->m_subseg.source().y();
-                        double b_end_x = p_subseg_b->m_subseg.target().x();
-                        double b_end_y = p_subseg_b->m_subseg.target().y();
+                        double b_src_x = CGAL::to_double( p_subseg_b->m_subseg.source().x() );
+                        double b_src_y = CGAL::to_double( p_subseg_b->m_subseg.source().y() );
+                        double b_end_x = CGAL::to_double( p_subseg_b->m_subseg.target().x() );
+                        double b_end_y = CGAL::to_double( p_subseg_b->m_subseg.target().y() );
                         b_subseg_painter.drawLine( QPoint( b_src_x , b_src_y ), QPoint( b_end_x , b_end_y ));
                     }
                 }
@@ -224,8 +224,8 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
         QPen cp_pen(QColor(255,0,0));
         cp_pen.setWidth(4);
         cp_painter.setPen(cp_pen);
-        double cp_x = mpWorld->get_central_point().x();
-        double cp_y = mpWorld->get_central_point().y();
+        double cp_x = CGAL::to_double( mpWorld->get_central_point().x() );
+        double cp_y = CGAL::to_double( mpWorld->get_central_point().y() );
         cp_painter.drawPoint( QPoint( cp_x , cp_y ) );
 
         QPainter bk_painter(this);
@@ -236,8 +236,8 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
              it != obstacles.end(); it++ ) {
             Obstacle* p_obstacle = (*it);
             if ( p_obstacle ) {
-                double bk_x = p_obstacle->m_bk.x();
-                double bk_y = p_obstacle->m_bk.y();
+                double bk_x = CGAL::to_double( p_obstacle->m_bk.x() );
+                double bk_y = CGAL::to_double( p_obstacle->m_bk.y() );
                 bk_painter.drawPoint( QPoint( bk_x , bk_y ) );
             }
         }
@@ -253,15 +253,15 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                 for( std::vector< IntersectionPoint >::iterator itap = p_obstacle->m_alpha_intersection_points.begin();
                      itap != p_obstacle->m_alpha_intersection_points.end(); itap++ ) {
                     IntersectionPoint alpha_intsec = (*itap);
-                    double alpha_intsec_x = alpha_intsec.m_point.x();
-                    double alpha_intsec_y = alpha_intsec.m_point.y();
+                    double alpha_intsec_x = CGAL::to_double( alpha_intsec.m_point.x() );
+                    double alpha_intsec_y = CGAL::to_double( alpha_intsec.m_point.y() );
                     intsec_painter.drawPoint( QPoint( alpha_intsec_x , alpha_intsec_y ) );
                 }
                 for( std::vector< IntersectionPoint >::iterator itbp = p_obstacle->m_beta_intersection_points.begin();
                      itbp != p_obstacle->m_beta_intersection_points.end(); itbp++ ) {
                     IntersectionPoint beta_intsec = (*itbp);
-                    double beta_intsec_x = beta_intsec.m_point.x();
-                    double beta_intsec_y = beta_intsec.m_point.y();
+                    double beta_intsec_x = CGAL::to_double( beta_intsec.m_point.x() );
+                    double beta_intsec_y = CGAL::to_double( beta_intsec.m_point.y() );
                     intsec_painter.drawPoint( QPoint( beta_intsec_x, beta_intsec_y ) );
                 }
             }
