@@ -11,13 +11,13 @@
 
 //typedef CGAL::Cartesian<double> Kernel;
 typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel;
-typedef Kernel::Point_2                        Point2D;
-typedef Kernel::Segment_2                      Segment2D;
-typedef Kernel::Ray_2                          Ray2D;
-typedef Kernel::Line_2                         Line2D;
-typedef CGAL::Polygon_2<Kernel>                Polygon2D;
-typedef CGAL::Polygon_with_holes_2<Kernel>     PolygonWithHoles2D;
-typedef Kernel::Direction_2                    Direction2D;
-typedef CGAL::General_polygon_set_2<Polygon2D> Polygon_set;
+typedef Kernel::Point_2                                   Point2D;
+typedef Kernel::Segment_2                                 Segment2D;
+typedef Kernel::Ray_2                                     Ray2D;
+typedef Kernel::Line_2                                    Line2D;
+typedef CGAL::Polygon_2<Kernel>                           Polygon2D;
+typedef CGAL::Polygon_with_holes_2<Kernel>                PolygonWithHoles2D;
+typedef Kernel::Direction_2                               Direction2D;
+typedef CGAL::General_polygon_set_2<Polygon2D>            Polygon_set;
 
 #endif // WORLD_DATATYPE_H
