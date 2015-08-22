@@ -73,6 +73,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
            else {
                mpViz->mShowSubregion = true;
            }
+           updateStatusBar();
            repaint();
        }
    }
@@ -84,6 +85,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
            else {
                mpViz->mShowSubsegment = true;
            }
+           updateStatusBar();
            repaint();
        }
    }

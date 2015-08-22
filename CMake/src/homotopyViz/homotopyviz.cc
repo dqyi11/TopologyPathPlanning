@@ -41,7 +41,7 @@ bool HomotopyViz::initWorld(QString filename) {
     cv::threshold(src, src, 200, 255, cv::THRESH_BINARY_INV);
     std::vector< std::vector<cv::Point> > contours;
     std::vector<cv::Vec4i> hierarchy;
-    cv::findContours( src, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE );
+    cv::findContours( src, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_NONE );
 
     for( unsigned int i=0; i<contours.size(); i++ ) {
         std::vector<Point2D> cont;

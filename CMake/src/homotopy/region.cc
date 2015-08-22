@@ -11,7 +11,6 @@ SubRegion::SubRegion( Polygon2D poly ) {
         m_points.push_back(p);
         m_polygon.push_back(p);
     }
-
     if (m_polygon.orientation() == CGAL::CLOCKWISE) {
         m_polygon.reverse_orientation();
     }
