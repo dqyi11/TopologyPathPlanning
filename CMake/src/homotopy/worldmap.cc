@@ -67,7 +67,6 @@ bool WorldMap::resize( int width, int height ) {
     if( mapPoly.orientation() == CGAL::CLOCKWISE ) {
         mapPoly.reverse_orientation();
     }
-    _accessible_region = PolygonWithHoles2D(mapPoly);
 
     return false;
 }
@@ -82,11 +81,6 @@ bool WorldMap::load_obstacle_info( std::vector< std::vector<Point2D> > polygons 
         _obstacles.push_back(p_obs);
     }
 
-    for( unsigned int i=0 ; i < _obstacles.size(); i++ ) {
-        Obstacle* p_obs = _obstacles[i];
-        _accessible_region.add_hole( p_obs->m_pgn );
-    }
-    std::cout << " NUM OF HOLES " << _accessible_region.number_of_holes() << std::endl;
     return true;
 }
 
@@ -334,21 +328,6 @@ std::vector<Point2D> WorldMap::_intersect( Segment2D seg, std::vector<Segment2D>
 
 std::vector<SubRegion*>  WorldMap::_get_subregions( SubRegionSet* p_region ) {
     std::vector<SubRegion*> sr_set;
-    /*
-    std::list<PolygonWithHoles2D> results;
-    CGAL::intersection( p_region->m_polygon, _accessible_region,  std::back_inserter(results) );
-
-    for( std::list<PolygonWithHoles2D>::iterator it=results.begin();
-         it!= results.end(); it++ ) {
-        PolygonWithHoles2D obj = (*it);
-        std::cout << "POLY " << obj.has_holes() << std::endl;
-        if (obj.has_holes()==false) {
-            Polygon2D poly = obj.outer_boundary();
-            SubRegion* p_subregion = new SubRegion(poly);
-            sr_set.push_back(p_subregion);
-        }
-    }
-    */
     if ( p_region == NULL ) {
         return sr_set;
     }
@@ -364,8 +343,8 @@ std::vector<SubRegion*>  WorldMap::_get_subregions( SubRegionSet* p_region ) {
             if( do_intersect( subpoly , p_obs->m_pgn ) ) {
                 std::vector<PolygonWithHoles2D> res;
                 CGAL::difference( subpoly, p_obs->m_pgn, std::back_inserter(res) );
-
-                std::cout << "DIFF SIZE " << res.size() << std::endl;
+                std::cout << "REG " << p_region->m_index << " INTERSECT " << p_obs->get_index();
+                std::cout << " DIFF SIZE " << res.size() << std::endl;
                 for( std::vector< PolygonWithHoles2D >::iterator itP = res.begin();
                      itP != res.end(); itP ++ ) {
                     PolygonWithHoles2D poly = (*itP);
@@ -379,20 +358,17 @@ std::vector<SubRegion*>  WorldMap::_get_subregions( SubRegionSet* p_region ) {
                 new_candidates.push_back( subpoly );
             }
         }
-        if ( new_candidates.size() > 0 ) {
+        //if ( new_candidates.size() > 0 ) {
             candidates = new_candidates;
-        }
-
-        std::cout << "REG " << p_region->m_index << " CAN " << candidates.size() << " NEWCAN " << new_candidates.size() << std::endl;
+        //}
+        //std::cout << "REG " << p_region->m_index << " CAN " << candidates.size() << " NEWCAN " << new_candidates.size() << std::endl;
     }
-
 
     for( std::vector<Polygon2D>::iterator itP = candidates.begin(); itP != candidates.end(); itP++ ) {
         Polygon2D poly = (*itP);
         SubRegion* p_subregion = new SubRegion( poly );
         sr_set.push_back( p_subregion );
     }
-
     return sr_set;
 }
 
@@ -522,12 +498,6 @@ void WorldMap::from_xml( xmlNodePtr root ) {
                 Obstacle* p_obs = new Obstacle(points, idx, this);
                 p_obs->m_bk = Point2D( bk_x, bk_y );
                 _obstacles.push_back(p_obs);
-
-                Polygon2D obs_poly;
-                for(unsigned int i=0; i<points.size(); i++) {
-                    obs_poly.push_back(points[i]);
-                }
-                _accessible_region.add_hole( obs_poly );
             }
         }
     }

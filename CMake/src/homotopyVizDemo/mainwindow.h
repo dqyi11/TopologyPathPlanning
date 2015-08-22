@@ -22,6 +22,7 @@ public:
 protected:
     void createMenuBar();
     void createActions();
+    void updateStatusBar();
 
     void keyPressEvent(QKeyEvent * e);
 private:
@@ -29,6 +30,7 @@ private:
     QAction*      mpOpenAction;
     QAction*      mpSaveAction;
     QAction*      mpLoadAction;
+    QLabel*       mpStatusLabel;
 
 private slots:
     void onOpen();

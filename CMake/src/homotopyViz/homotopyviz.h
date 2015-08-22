@@ -19,6 +19,9 @@ public:
     void prevSubregion();
     void nextSubregion();
 
+    int  getRegionIdx()    { return mRegionIdx; }
+    int  getSubregionIdx() { return mSubRegionIdx; }
+
     bool save( QString filename );
     bool load( QString filename );
 protected:

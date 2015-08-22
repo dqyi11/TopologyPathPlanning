@@ -11,12 +11,12 @@ MainWindow::MainWindow(QWidget *parent)
 
     createActions();
     createMenuBar();
-
+    mpStatusLabel = new QLabel();
+    statusBar()->addWidget(mpStatusLabel);
     setCentralWidget(mpViz);
 }
 
 MainWindow::~MainWindow() {
-
     if(mpViz) {
         delete mpViz;
         mpViz = NULL;
@@ -44,6 +44,7 @@ void MainWindow::onOpen() {
              tr("Open File"), "./", tr("Map Files (*.*)"));
     if( tempFilename.isEmpty() == false ) {
         mpViz->loadMap(tempFilename);
+        updateStatusBar();
     }
 }
 
@@ -89,25 +90,42 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
    else if(event->key() == Qt::Key_Up ) {
        if(mpViz) {
            mpViz->nextRegion();
+           updateStatusBar();
            repaint();
        }
    }
    else if(event->key() == Qt::Key_Down ) {
        if(mpViz) {
            mpViz->prevRegion();
+           updateStatusBar();
            repaint();
        }
    }
    else if(event->key() == Qt::Key_Right ) {
        if(mpViz) {
            mpViz->nextSubregion();
+           updateStatusBar();
            repaint();
        }
    }
    else if(event->key() == Qt::Key_Left ) {
        if(mpViz) {
            mpViz->prevSubregion();
+           updateStatusBar();
            repaint();
        }
    }
+}
+
+void MainWindow::updateStatusBar() {
+
+    if(mpStatusLabel) {
+        QString status = "";
+        status += "Region (" + QString::number(mpViz->getRegionIdx()) + ")";
+        if ( mpViz->mShowSubregion ) {
+            status += "- (" + QString::number(mpViz->getSubregionIdx()) + ")";
+        }
+        mpStatusLabel->setText(status);
+    }
+    repaint();
 }

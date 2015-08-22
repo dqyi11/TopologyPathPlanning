@@ -266,6 +266,19 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                 }
             }
         }
+
+        QPainter text_painter(this);
+        QPen text_pen(QColor(0,0,0));
+        text_painter.setPen(text_pen);
+        for( std::vector<Obstacle*>::iterator it = obstacles.begin();
+             it != obstacles.end(); it++ ) {
+            Obstacle* p_obstacle = (*it);
+            if( p_obstacle ) {
+                int c_x = (p_obstacle->m_pgn.bbox().xmax() + p_obstacle->m_pgn.bbox().xmin() )/2;
+                int c_y = (p_obstacle->m_pgn.bbox().ymax() + p_obstacle->m_pgn.bbox().ymin() )/2;
+                text_painter.drawText( c_x, c_y, QString::number(p_obstacle->get_index()) );
+            }
+        }
     }
 }
 
