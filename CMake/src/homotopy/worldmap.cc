@@ -239,7 +239,7 @@ bool WorldMap::_init_regions() {
     for( unsigned int i=0; i < _regionSets.size(); i++ ) {
         SubRegionSet* p_subregions_set = _regionSets[i];
         p_subregions_set->m_subregions = _get_subregions(p_subregions_set);
-        //std::cout << "GENERATE FOR REGION " << i << " NUM_OF_SUB (" << p_subregions_set->m_subregions.size() << ")" << std::endl;
+        std::cout << "GENERATE FOR REGION " << i << " NUM_OF_SUB (" << p_subregions_set->m_subregions.size() << ")" << std::endl;
     }
 
     return true;
@@ -353,24 +353,44 @@ std::vector<SubRegion*>  WorldMap::_get_subregions( SubRegionSet* p_region ) {
         return sr_set;
     }
     std::vector<Polygon2D> candidates;
+    std::vector<Polygon2D> new_candidates;
     candidates.push_back(p_region->m_polygon);
     for( std::vector< Obstacle* >::iterator itO = _obstacles.begin(); itO != _obstacles.end(); itO ++ ) {
         Obstacle* p_obs = (*itO);
-        if( do_intersect( p_region->m_polygon , p_obs->m_pgn ) ) {
-            std::cout << " REGION " << p_region->m_index << " intersect with " << p_obs->get_index() << std::endl;
+        new_candidates.clear();
+        for( std::vector<Polygon2D>::iterator itP = candidates.begin(); itP != candidates.end(); itP++ ) {
+            Polygon2D subpoly = (*itP);
 
-            std::vector<PolygonWithHoles2D> res;
-            CGAL::difference( p_region->m_polygon, p_obs->m_pgn, std::back_inserter(res) );
-            for( std::vector< PolygonWithHoles2D >::iterator itP = res.begin();
-                 itP != res.end(); itP ++ ) {
-                PolygonWithHoles2D poly = (*itP);
-                if ( poly.has_holes() == false ) {
-                    Polygon2D poly_out = poly.outer_boundary();
-                    SubRegion* p_subregion = new SubRegion( poly_out );
-                    sr_set.push_back( p_subregion );
+            if( do_intersect( subpoly , p_obs->m_pgn ) ) {
+                std::vector<PolygonWithHoles2D> res;
+                CGAL::difference( subpoly, p_obs->m_pgn, std::back_inserter(res) );
+
+                std::cout << "DIFF SIZE " << res.size() << std::endl;
+                for( std::vector< PolygonWithHoles2D >::iterator itP = res.begin();
+                     itP != res.end(); itP ++ ) {
+                    PolygonWithHoles2D poly = (*itP);
+                    if ( poly.has_holes() == false ) {
+                        Polygon2D poly_out = poly.outer_boundary();
+                        new_candidates.push_back( poly_out );
+                    }
                 }
             }
+            else {
+                new_candidates.push_back( subpoly );
+            }
         }
+        if ( new_candidates.size() > 0 ) {
+            candidates = new_candidates;
+        }
+
+        std::cout << "REG " << p_region->m_index << " CAN " << candidates.size() << " NEWCAN " << new_candidates.size() << std::endl;
+    }
+
+
+    for( std::vector<Polygon2D>::iterator itP = candidates.begin(); itP != candidates.end(); itP++ ) {
+        Polygon2D poly = (*itP);
+        SubRegion* p_subregion = new SubRegion( poly );
+        sr_set.push_back( p_subregion );
     }
 
     return sr_set;
