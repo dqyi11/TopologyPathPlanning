@@ -7,6 +7,8 @@
 
 class Obstacle;
 class LineSubSegmentSet;
+class SubRegionSet;
+class SubRegion;
 
 class IntersectionPoint {
 public:
@@ -32,9 +34,12 @@ public:
     virtual void from_xml( const std::string& filename );
     virtual void from_xml( xmlNodePtr root );
 
+    std::string get_name();
+
     Segment2D m_subseg;
     LineSubSegmentSet* _p_subseg_set;
     bool m_is_connected_to_central_point;
+    std::vector< SubRegion* > m_neighbors;
 protected:
     unsigned int _index;
 
@@ -73,9 +78,12 @@ public:
 
     Obstacle* get_obstacle() { return _p_obstacle; }
 
+    std::string get_name();
+
     Segment2D    m_seg;
     unsigned int m_type;
     std::vector< LineSubSegment* > m_subsegs;
+    std::vector< SubRegionSet* >   m_neighbors;
 protected:
     Obstacle*    _p_obstacle;
 };

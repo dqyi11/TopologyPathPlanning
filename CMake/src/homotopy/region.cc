@@ -1,9 +1,11 @@
+#include <CGAL/centroid.h>
 #include "region.h"
 
-SubRegion::SubRegion( Polygon2D poly ) {
+SubRegion::SubRegion( Polygon2D poly , SubRegionSet* p_parent ) {
 
     m_points.clear();
     m_polygon = Polygon2D();
+    mp_parent = p_parent;
 
     for( Polygon2D::Vertex_iterator it = poly.vertices_begin();
          it != poly.vertices_end(); it++ ) {
@@ -14,12 +16,25 @@ SubRegion::SubRegion( Polygon2D poly ) {
     if (m_polygon.orientation() == CGAL::CLOCKWISE) {
         m_polygon.reverse_orientation();
     }
+    m_centroid = Point2D( (CGAL::to_double(m_polygon.bbox().xmax())+CGAL::to_double(m_polygon.bbox().xmin()))/2 ,
+                          (CGAL::to_double(m_polygon.bbox().ymax())+CGAL::to_double(m_polygon.bbox().ymin()))/2 );
+    m_dist_to_cp = 0.0;
+    m_index = 0;
 }
 
 SubRegion::~SubRegion() {
 
     m_points.clear();
     m_polygon.clear();
+}
+
+std::string SubRegion:: get_name() {
+    if( mp_parent ) {
+        std::stringstream ss;
+        ss << mp_parent->get_name().c_str() << "-" << m_index;
+        return ss.str();
+    }
+    return "NA";
 }
 
 SubRegionSet::SubRegionSet(std::list<Point2D> points, unsigned int idx) {
@@ -43,4 +58,10 @@ SubRegionSet::SubRegionSet(std::list<Point2D> points, unsigned int idx) {
 SubRegionSet::~SubRegionSet() {
 
     m_boundary_points.clear();
+}
+
+std::string SubRegionSet:: get_name() {
+    std::stringstream ss;
+    ss << "R" << m_index;
+    return ss.str();
 }

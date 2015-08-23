@@ -1,3 +1,4 @@
+#include <sstream>
 #include <CGAL/squared_distance_2.h>
 #include "line_subsegment.h"
 #include "obstacle.h"
@@ -21,6 +22,15 @@ LineSubSegment::LineSubSegment( Point2D pos_a, Point2D pos_b, LineSubSegmentSet*
 
 LineSubSegment::~LineSubSegment() {
     _p_subseg_set = NULL;
+}
+
+std::string LineSubSegment::get_name() {
+    if( _p_subseg_set ) {
+        std::stringstream ss;
+        ss << _p_subseg_set->get_name().c_str() << "-" << _index;
+        return ss.str();
+    }
+    return "NA";
 }
 
 void LineSubSegment::to_xml( const std::string& filename )const {
@@ -143,7 +153,6 @@ bool LineSubSegmentSet::load( std::vector<IntersectionPoint>& intersections ) {
                     m_subsegs.push_back(p_subseg);
                     idx += 1;
                 }
-
             }
         }
 
@@ -201,6 +210,18 @@ bool LineSubSegmentSet::load( std::vector<IntersectionPoint>& intersections ) {
         return false;
     }
     return true;
+}
+
+std::string LineSubSegmentSet::get_name() {
+    std::stringstream ss;
+    if( m_type == LINE_TYPE_ALPHA ) {
+        ss << "A";
+    }
+    else if( m_type == LINE_TYPE_BETA ) {
+        ss << "B";
+    }
+    ss << _p_obstacle->get_index();
+    return ss.str();
 }
 
 void LineSubSegmentSet::to_xml( const std::string& filename )const {

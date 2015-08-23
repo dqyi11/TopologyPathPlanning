@@ -34,14 +34,17 @@ public:
     Point2D get_central_point() const { return _central_point; }
     std::vector<Obstacle*> get_obstacles() const { return _obstacles; }
     std::vector<SubRegionSet*> get_subregion_set() const { return _regionSets; }
+
+    double get_distance_to_central_point( Point2D point );
 protected:
     bool _init_points();
     bool _init_rays();
     bool _init_segments();
     bool _init_regions();
 
-    std::list<Point2D>     _intersect_with_boundaries( LineSubSegmentSet* p_segment1, LineSubSegmentSet* p_segment2 );
+    std::list<Point2D>       _intersect_with_boundaries( LineSubSegmentSet* p_segment1, LineSubSegmentSet* p_segment2 );
     std::vector<SubRegion*>  _get_subregions( SubRegionSet* p_region );
+    bool                     _is_intersected( Polygon2D poly, Segment2D seg );
 
 private:
     int _map_width;

@@ -14,6 +14,10 @@ bool LineSubSegmentSetSort(const LineSubSegmentSet* lhs, const LineSubSegmentSet
     return lhs->m_seg.direction() < rhs->m_seg.direction();
 }
 
+bool SubregionSetSort(const SubRegion* lhs, const SubRegion* rhs ) {
+    return lhs->m_dist_to_cp < rhs->m_dist_to_cp;
+}
+
 WorldMap::WorldMap() {
     _map_width = 0;
     _map_height = 0;
@@ -205,18 +209,28 @@ bool WorldMap::_init_segments() {
 
 bool WorldMap::_init_regions() {
     _regionSets.clear();
+
+    // generate regions
     unsigned int index = 0;
     for( unsigned int i=0; i < _line_segments.size(); i++ ) {
         if ( i == _line_segments.size()-1 ) {
             std::list<Point2D> points = _intersect_with_boundaries( _line_segments[i], _line_segments[0] );
             SubRegionSet* p_subregion_set = new SubRegionSet( points, index );
             index ++;
+            p_subregion_set->mp_line_segments_a =  _line_segments[i];
+            p_subregion_set->mp_line_segments_b =  _line_segments[0];
+            _line_segments[i]->m_neighbors.push_back( p_subregion_set );
+            _line_segments[0]->m_neighbors.push_back( p_subregion_set );
             _regionSets.push_back( p_subregion_set );
         }
         else {
             std::list<Point2D> points = _intersect_with_boundaries( _line_segments[i], _line_segments[i+1] );
             SubRegionSet* p_subregion_set = new SubRegionSet( points, index );
             index ++;
+            p_subregion_set->mp_line_segments_a =  _line_segments[i];
+            p_subregion_set->mp_line_segments_b =  _line_segments[i+1];
+            _line_segments[i]->m_neighbors.push_back( p_subregion_set );
+            _line_segments[i+1]->m_neighbors.push_back( p_subregion_set );
             _regionSets.push_back( p_subregion_set );
         }
     }
@@ -225,9 +239,78 @@ bool WorldMap::_init_regions() {
         SubRegionSet* p_subregions_set = _regionSets[i];
         p_subregions_set->m_subregions = _get_subregions(p_subregions_set);
         std::cout << "GENERATE FOR REGION " << i << " NUM_OF_SUB (" << p_subregions_set->m_subregions.size() << ")" << std::endl;
+        for( unsigned int j=0; j < p_subregions_set->m_subregions.size(); j++ ) {
+            SubRegion* p_subreg = p_subregions_set->m_subregions[j];
+            p_subreg->m_dist_to_cp = get_distance_to_central_point( p_subreg->m_centroid );
+        }
+        std::sort( p_subregions_set->m_subregions.begin(), p_subregions_set->m_subregions.end(), SubregionSetSort );
+        for ( unsigned int sub_idx = 0; sub_idx < p_subregions_set->m_subregions.size(); sub_idx ++ ) {
+            p_subregions_set->m_subregions[sub_idx]->m_index = sub_idx;
+        }
+    }
+
+    // associate line segments with subregions
+    for( unsigned int i=0; i < _line_segments.size(); i++ ) {
+        LineSubSegmentSet* p_line_subsegment_set = _line_segments[i];
+        for( std::vector< LineSubSegment* >::iterator itS = p_line_subsegment_set->m_subsegs.begin();
+             itS != p_line_subsegment_set->m_subsegs.end(); itS++ ) {
+            LineSubSegment* p_line_subseg = (*itS);
+            if ( p_line_subseg ) {
+                for ( unsigned int j=0; j < _regionSets.size(); j++ ) {
+                    SubRegionSet* p_subregion_set = _regionSets[j];
+                    for( std::vector<SubRegion*>::iterator itSR =  p_subregion_set->m_subregions.begin();
+                         itSR != p_subregion_set->m_subregions.end(); itSR++ ) {
+                        SubRegion* p_sr = (*itSR);
+                        if (p_sr) {
+                            if( _is_intersected( p_sr->m_polygon , p_line_subseg->m_subseg ) ) {
+                            //if( p_sr->m_polygon.bounded_side( mid_point ) != CGAL::ON_UNBOUNDED_SIDE ) {
+                                p_line_subseg->m_neighbors.push_back( p_sr );
+                                p_sr->m_neighbors.push_back( p_line_subseg );
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     return true;
+}
+
+bool WorldMap::_is_intersected( Polygon2D poly, Segment2D seg ) {
+
+    double mid_x = ( CGAL::to_double( seg.source().x() ) + CGAL::to_double( seg.target().x() ) ) / 2;
+    double mid_y = ( CGAL::to_double( seg.source().y() ) + CGAL::to_double( seg.target().y() ) ) / 2;
+
+    if ( poly.bounded_side( Point2D( mid_x, mid_y ) ) != CGAL::ON_UNBOUNDED_SIDE  ) {
+        return true;
+    }
+    Line2D perp_line = seg.supporting_line().perpendicular( Point2D( mid_x, mid_y ) );
+    if( perp_line.direction().dx() > perp_line.direction().dy() ) {
+        double l_mid_x = mid_x - 1;
+        double l_mid_y = CGAL::to_double( perp_line.y_at_x( l_mid_x ) );
+        if ( poly.bounded_side( Point2D( l_mid_x, l_mid_y ) ) != CGAL::ON_UNBOUNDED_SIDE  ) {
+            return true;
+        }
+        double r_mid_x = mid_x + 1;
+        double r_mid_y = CGAL::to_double( perp_line.y_at_x( r_mid_x ) );
+        if ( poly.bounded_side( Point2D( r_mid_x, r_mid_y ) ) != CGAL::ON_UNBOUNDED_SIDE  ) {
+            return true;
+        }
+    }
+    else {
+        double l_mid_y = mid_y - 1;
+        double l_mid_x = CGAL::to_double( perp_line.x_at_y( l_mid_y ) );
+        if ( poly.bounded_side( Point2D( l_mid_x, l_mid_y ) ) != CGAL::ON_UNBOUNDED_SIDE  ) {
+            return true;
+        }
+        double r_mid_y = mid_y + 1;
+        double r_mid_x = CGAL::to_double( perp_line.x_at_y( r_mid_y ) );
+        if ( poly.bounded_side( Point2D( r_mid_x, r_mid_y ) ) != CGAL::ON_UNBOUNDED_SIDE  ) {
+            return true;
+        }
+    }
+    return false;
 }
 
 std::list<Point2D> WorldMap::_intersect_with_boundaries( LineSubSegmentSet* p_segment1, LineSubSegmentSet* p_segment2 ) {
@@ -275,6 +358,17 @@ bool WorldMap::_is_in_obs_bk_lines(Point2D point) {
         }
     }
     return false;
+}
+
+double WorldMap::get_distance_to_central_point( Point2D point ) {
+    double dist = 0.0;
+    double cp_x = CGAL::to_double( _central_point.x() );
+    double cp_y = CGAL::to_double( _central_point.y() );
+    double p_x = CGAL::to_double( point.x() );
+    double p_y = CGAL::to_double( point.y() );
+    dist = pow(cp_x - p_x, 2) + pow(cp_y - p_y, 2);
+    dist = sqrt( dist );
+    return dist;
 }
 
 Point2D* WorldMap::_find_intersection_with_boundary(Ray2D* p_ray) {
@@ -357,7 +451,7 @@ std::vector<SubRegion*>  WorldMap::_get_subregions( SubRegionSet* p_region ) {
 
     for( std::vector<Polygon2D>::iterator itP = candidates.begin(); itP != candidates.end(); itP++ ) {
         Polygon2D poly = (*itP);
-        SubRegion* p_subregion = new SubRegion( poly );
+        SubRegion* p_subregion = new SubRegion( poly , p_region );
         sr_set.push_back( p_subregion );
     }
     return sr_set;

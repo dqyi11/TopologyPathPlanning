@@ -6,6 +6,18 @@
 #include <opencv2/highgui/highgui.hpp>
 #include "homotopyviz.h"
 
+#define LINE_WIDTH             1
+#define LINE_WIDTH_HIGHLIGHTED 5
+#define POINT_SIZE             4
+#define ALPHA_COLOR            QColor(0,0,255)
+#define BETA_COLOR             QColor(0,255,0)
+#define CENTER_POINT_COLOR     QColor(255,0,0)
+#define BK_COLOR               QColor(255,140,0)
+#define INTERSECTION_COLOR     QColor(160,160,160)
+#define TEXT_COLOR             QColor(0,0,0)
+#define OBSTACLE_COLOR         QColor(125,125,125)
+#define LINE_HIGHLIGHTED_COLOR QColor(204,204,0)
+
 HomotopyViz::HomotopyViz(QWidget *parent) :
     QLabel(parent) {
 
@@ -84,7 +96,7 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
         if( mRegionIdx >= 0 ) {
             QPainter region_painter(this);
             region_painter.setRenderHint(QPainter::Antialiasing);
-            QBrush region_brush(mColors[mRegionIdx]);
+            QBrush region_brush( mColors[mRegionIdx] );
             region_painter.setPen(Qt::NoPen);
             SubRegionSet* p_subregion_set = mpWorld->get_subregion_set()[mRegionIdx];
             if (p_subregion_set) {
@@ -98,6 +110,39 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                     QPainterPath tmpPath;
                     tmpPath.addPolygon(poly);
                     region_painter.fillPath(tmpPath, region_brush);
+                    /*
+                    if( p_subregion_set->mp_line_segments_a ) {
+                        QPainter line_hl_painter(this);
+                        QPen line_hl_pen( LINE_HIGHLIGHTED_COLOR );
+                        line_hl_pen.setWidth( LINE_WIDTH_HIGHLIGHTED );
+                        line_hl_painter.setPen( line_hl_pen );
+
+                        Point2D line_hl_src = p_subregion_set->mp_line_segments_a->m_seg.source();
+                        Point2D line_hl_end = p_subregion_set->mp_line_segments_a->m_seg.target();
+                        double line_hl_src_x = CGAL::to_double( line_hl_src.x() );
+                        double line_hl_src_y = CGAL::to_double( line_hl_src.y() );
+                        double line_hl_end_x = CGAL::to_double( line_hl_end.x() );
+                        double line_hl_end_y = CGAL::to_double( line_hl_end.y() );
+
+                        line_hl_painter.drawLine( QPoint( line_hl_src_x, line_hl_src_y ),
+                                                  QPoint( line_hl_end_x, line_hl_end_y ) );
+                    }
+                    if( p_subregion_set->mp_line_segments_b ) {
+                        QPainter line_hl_painter(this);
+                        QPen line_hl_pen( LINE_HIGHLIGHTED_COLOR );
+                        line_hl_pen.setWidth( LINE_WIDTH_HIGHLIGHTED );
+                        line_hl_painter.setPen( line_hl_pen );
+
+                        Point2D line_hl_src = p_subregion_set->mp_line_segments_b->m_seg.source();
+                        Point2D line_hl_end = p_subregion_set->mp_line_segments_b->m_seg.target();
+                        double line_hl_src_x = CGAL::to_double( line_hl_src.x() );
+                        double line_hl_src_y = CGAL::to_double( line_hl_src.y() );
+                        double line_hl_end_x = CGAL::to_double( line_hl_end.x() );
+                        double line_hl_end_y = CGAL::to_double( line_hl_end.y() );
+
+                        line_hl_painter.drawLine( QPoint( line_hl_src_x, line_hl_src_y ),
+                                                  QPoint( line_hl_end_x, line_hl_end_y ) );
+                    }*/
                 }
                 else {                    
                     SubRegion* p_subreg = p_subregion_set->m_subregions[mSubRegionIdx];
@@ -111,6 +156,26 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                         QPainterPath tmpPath;
                         tmpPath.addPolygon(poly);
                         region_painter.fillPath(tmpPath, region_brush);
+
+                        for( std::vector< LineSubSegment* >::iterator itLSS = p_subreg->m_neighbors.begin();
+                             itLSS != p_subreg->m_neighbors.end(); itLSS++ ) {
+                            LineSubSegment* p_line_subsegment = (*itLSS);
+
+                            QPainter line_hl_painter(this);
+                            QPen line_hl_pen( LINE_HIGHLIGHTED_COLOR );
+                            line_hl_pen.setWidth( LINE_WIDTH_HIGHLIGHTED );
+                            line_hl_painter.setPen( line_hl_pen );
+
+                            Point2D line_hl_src = p_line_subsegment->m_subseg.source();
+                            Point2D line_hl_end = p_line_subsegment->m_subseg.target();
+                            double line_hl_src_x = CGAL::to_double( line_hl_src.x() );
+                            double line_hl_src_y = CGAL::to_double( line_hl_src.y() );
+                            double line_hl_end_x = CGAL::to_double( line_hl_end.x() );
+                            double line_hl_end_y = CGAL::to_double( line_hl_end.y() );
+
+                            line_hl_painter.drawLine( QPoint( line_hl_src_x, line_hl_src_y ),
+                                                      QPoint( line_hl_end_x, line_hl_end_y ) );
+                        }
                     }
                 }
             }
@@ -120,7 +185,7 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
 
         QPainter obstacle_painter(this);
         obstacle_painter.setRenderHint(QPainter::Antialiasing);
-        QPen obstacle_pen(QColor(125,125,125));
+        QPen obstacle_pen( OBSTACLE_COLOR );
         obstacle_painter.setPen(obstacle_pen);
         for( std::vector<Obstacle*>::iterator it = obstacles.begin();
              it != obstacles.end(); it++ ) {
@@ -141,9 +206,9 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
         if ( mShowSubsegment == false ) {
 
             QPainter alpha_painter(this);
-            QPen alpha_pen(QColor(0,0,255));
-            alpha_pen.setWidth(2);
-            alpha_painter.setPen(alpha_pen);
+            QPen alpha_pen( ALPHA_COLOR );
+            alpha_pen.setWidth( LINE_WIDTH );
+            alpha_painter.setPen( alpha_pen );
 
             for( std::vector<Obstacle*>::iterator it= obstacles.begin();
                  it != obstacles.end(); it++ ) {
@@ -160,9 +225,9 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
             }
 
             QPainter beta_painter(this);
-            QPen beta_pen(QColor(0,255,0));
-            beta_pen.setWidth(2);
-            beta_painter.setPen(beta_pen);
+            QPen beta_pen( BETA_COLOR );
+            beta_pen.setWidth( LINE_WIDTH );
+            beta_painter.setPen( beta_pen );
 
             for( std::vector<Obstacle*>::iterator it = obstacles.begin();
                  it != obstacles.end(); it++ ) {
@@ -180,9 +245,9 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
         }
         else {
             QPainter a_subseg_painter(this);
-            QPen a_subseg_pen(QColor(0,0,255));
-            a_subseg_pen.setWidth(2);
-            a_subseg_painter.setPen(a_subseg_pen);
+            QPen a_subseg_pen( ALPHA_COLOR );
+            a_subseg_pen.setWidth( LINE_WIDTH );
+            a_subseg_painter.setPen( a_subseg_pen );
             for( std::vector<Obstacle*>::iterator it = obstacles.begin();
                  it != obstacles.end(); it++ ) {
                 Obstacle* p_obstacle = (*it);
@@ -200,9 +265,9 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
             }
 
             QPainter b_subseg_painter(this);
-            QPen b_subseg_pen(QColor(0,255,0));
-            b_subseg_pen.setWidth(2);
-            b_subseg_painter.setPen(b_subseg_pen);
+            QPen b_subseg_pen( BETA_COLOR );
+            b_subseg_pen.setWidth( LINE_WIDTH );
+            b_subseg_painter.setPen( b_subseg_pen );
             for( std::vector<Obstacle*>::iterator it = obstacles.begin();
                  it != obstacles.end(); it++ ) {
                 Obstacle* p_obstacle = (*it);
@@ -221,17 +286,17 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
         }
 
         QPainter cp_painter(this);
-        QPen cp_pen(QColor(255,0,0));
-        cp_pen.setWidth(4);
-        cp_painter.setPen(cp_pen);
+        QPen cp_pen( CENTER_POINT_COLOR );
+        cp_pen.setWidth( POINT_SIZE );
+        cp_painter.setPen( cp_pen );
         double cp_x = CGAL::to_double( mpWorld->get_central_point().x() );
         double cp_y = CGAL::to_double( mpWorld->get_central_point().y() );
         cp_painter.drawPoint( QPoint( cp_x , cp_y ) );
 
         QPainter bk_painter(this);
-        QPen bk_pen(QColor(255,140,0));
-        bk_pen.setWidth(4);
-        bk_painter.setPen(bk_pen);
+        QPen bk_pen( BK_COLOR );
+        bk_pen.setWidth( POINT_SIZE );
+        bk_painter.setPen( bk_pen );
         for( std::vector<Obstacle*>::iterator it = obstacles.begin();
              it != obstacles.end(); it++ ) {
             Obstacle* p_obstacle = (*it);
@@ -243,9 +308,9 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
         }
 
         QPainter intsec_painter(this);
-        QPen intsec_pen(QColor(160,160,160));
-        intsec_pen.setWidth(4);
-        intsec_painter.setPen(intsec_pen);
+        QPen intsec_pen( INTERSECTION_COLOR );
+        intsec_pen.setWidth( POINT_SIZE );
+        intsec_painter.setPen( intsec_pen );
         for( std::vector<Obstacle*>::iterator it = obstacles.begin();
              it != obstacles.end(); it++ ) {
             Obstacle* p_obstacle = (*it);
@@ -268,7 +333,7 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
         }
 
         QPainter text_painter(this);
-        QPen text_pen(QColor(0,0,0));
+        QPen text_pen( TEXT_COLOR );
         text_painter.setPen(text_pen);
         for( std::vector<Obstacle*>::iterator it = obstacles.begin();
              it != obstacles.end(); it++ ) {
