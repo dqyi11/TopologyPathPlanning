@@ -8,10 +8,14 @@ add_library(${LIB} SHARED
             line_subsegment.cc
             region.h
             region.cc
-            worldmap.h
-            worldmap.cc
+            string_grammar.h
+            string_grammar.cc
+            homotopic_grammar.h
+            homotopic_grammar.cc
             reference_frames.h
             reference_frames.cc
+            worldmap.h
+            worldmap.cc
             world_datatype.h)
 
 target_link_libraries(${LIB} ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${LIBXML2_LIBRARIES})
