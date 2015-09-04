@@ -40,6 +40,24 @@ HomotopicGrammar* ReferenceFrames::get_homotopic_grammar( SubRegion* p_init, Sub
 
 std::string ReferenceFrames::get_character_id( Point2D start, Point2D end, grammar_type_t type ) {
    std::string character_id = "";
-   
+   Segment2D line(start, end);
+   if (type == STRING_GRAMMAR_TYPE) {
+     for( std::vector<LineSubSegmentSet*>::iterator it = _p_world_map->get_sublinesegment_set().begin();
+          it != _p_world_map->get_sublinesegment_set().end(); it ++ ) {
+       LineSubSegmentSet* p_linesubsegment_set = (*it);
+       for( std::vector<LineSubSegment*>::iterator itl = p_linesubsegment_set->m_subsegs.begin();
+            itl != p_linesubsegment_set->m_subsegs.end(); itl ++ ) {
+          LineSubSegment* p_linesubsegment = (*itl);
+          CGAL::Object result = intersection( p_linesubsegment->m_subseg, line );
+          Point2D po;
+          if ( CGAL::assign( po, result ) ) {
+            return p_linesubsegment->get_name();
+          }
+       }
+     }
+   }
+   else if (type == HOMOTOPIC_GRAMMAR_TYPE) {
+
+   }        
    return character_id;
 }
