@@ -1,6 +1,7 @@
 #include "reference_frames.h"
 
 ReferenceFrame::ReferenceFrame() {
+  m_name = "";
 }
 
 ReferenceFrame::~ReferenceFrame() {
@@ -59,7 +60,7 @@ HomotopicGrammar* ReferenceFrameSet::get_homotopic_grammar( SubRegion* p_init, S
   HomotopicGrammar* p_grammar = NULL;
   if( _p_world_map ) {
     p_grammar = new HomotopicGrammar();
-    
+     
   }
   return p_grammar;
 }
