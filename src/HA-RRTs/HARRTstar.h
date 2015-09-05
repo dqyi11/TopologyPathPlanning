@@ -33,11 +33,11 @@ public:
     std::vector<POS2D> m_way_points;
 };
 
-class BiRRTstar {
+class HARRTstar {
 
 public:
-    BiRRTstar(int width, int height, int segment_length);
-    ~BiRRTstar();
+    HARRTstar(int width, int height, int segment_length);
+    ~HARRTstar();
 
     RRTNode* init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp_cost_distrinution );
 
@@ -89,6 +89,11 @@ private:
     POS2D    _goal;
     RRTNode* _p_st_root;
     RRTNode* _p_gt_root;
+
+    RRTNode* _p_st_new_node;
+    RRTNode* _p_gt_new_node;
+    RRTNode* _p_st_connected_node;
+    RRTNode* _p_gt_connected_node;
 
     int _sampling_width;
     int _sampling_height;

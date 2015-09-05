@@ -1,5 +1,5 @@
 
-set(LIB rrtstar)
+set(LIB harrtstar)
 
 add_library(${LIB} SHARED
             kdtree++/allocator.hpp
@@ -8,8 +8,8 @@ add_library(${LIB} SHARED
             kdtree++/kdtree.hpp
             kdtree++/node.hpp
             kdtree++/region.hpp
-            BiRRTstar.h
-            BiRRTstar.cc
+            HARRTstar.h
+            HARRTstar.cc
            )
 
 target_link_libraries(${LIB})
