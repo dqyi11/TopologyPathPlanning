@@ -9,7 +9,7 @@
 #include <QDebug>
 #include <math.h>
 
-#include "rrtstar.h"
+#include "HARRTstar.h"
 
 class PathPlanningInfo {
 public:
@@ -50,7 +50,7 @@ public:
 
     static double calc_cost( POS2D pos_a, POS2D pos_b, double** pp_distribution, void* tree ) {
         double cost = 0.0;
-        RRTstar* rrts = (RRTstar*)tree;
+        HARRTstar* rrts = (HARRTstar*)tree;
         if ( pos_a == pos_b ) {
             return cost;
         }

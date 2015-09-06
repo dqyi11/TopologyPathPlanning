@@ -1,4 +1,3 @@
-
 set(LIB harrtstar-viz)
 
 set(CMAKE_AUTOMOC ON)

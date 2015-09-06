@@ -27,17 +27,16 @@ endif()
 include(${CGAL_USE_FILE})
 include_directories(${CGAL_INCLUDE_DIR})
 
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # search for the QT package, exit if not found
-find_package(Qt4 COMPONENTS QtCore QtGui REQUIRED)
-if( NOT QT4_FOUND )
-  message( FATAL_ERROR "Qt4 not found\n")
+find_package(Qt5Widgets REQUIRED)
+if( NOT Qt5Widgets_FOUND )
+  message( FATAL_ERROR "Qt5Widgets not found\n" )
   return()
 endif()
-#message( "QT4 FOUND ")
-#message( "QT_USE_FILE: " ${QT_USE_FILE} )
-#message( "QT_INCLUDE_DIR: " ${QT_INCLUDE_DIR} )
-include(${QT_USE_FILE})
-include_directories(${QT_INCLUDE_DIR})
+include_directories(${Qt5Widgets_INCLUDES})
+message( "Qt5Widgets_INCLUDES: " ${Qt5Widgets_INCLUDES} )
 
 # search for Open CV, exit if not found
 find_package( OpenCV REQUIRED )
@@ -56,16 +55,15 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(${PROJECT_SOURCE_DIR}/src/homotopy
                     ${PROJECT_SOURCE_DIR}/src/homotopyViz 
                     ${PROJECT_SOURCE_DIR}/src/homotopyVizDemo
-                    ${PROJECT_SOURCE_DIR}/src/HA-RRTs
-                    ${PROJECT_SOURCE_DIR}/src/HA-RRTsVizDemo
-                    ${PROJECT_SOURCE_DIR}/src/HA-RRTsDemo)
-
+                    ${PROJECT_SOURCE_DIR}/src/HARRTs
+                    ${PROJECT_SOURCE_DIR}/src/HARRTsViz
+                    ${PROJECT_SOURCE_DIR}/src/HARRTsDemo)
 
 add_definitions(-Wall -g -O3)
 
 add_subdirectory(homotopy)
 add_subdirectory(homotopyViz)
 add_subdirectory(homotopyVizDemo)
-add_subdirectory(HA-RRTs)
-add_subdirectory(HA-RRTsViz)
-add_subdirectory(HA-RRTsDemo)
+add_subdirectory(HARRTs)
+add_subdirectory(HARRTsViz)
+add_subdirectory(HARRTsDemo)

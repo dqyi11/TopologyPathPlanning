@@ -1,18 +1,18 @@
 #include <QtGui>
 
-#include "rrtstar_viz.h"
+#include "HARRTstarViz.h"
 
-RRTstarViz::RRTstarViz( QWidget *parent ) :
+HARRTstarViz::HARRTstarViz( QWidget *parent ) :
     QLabel(parent) {
     mp_tree = NULL;
 }
 
-void RRTstarViz::setTree( RRTstar* p_tree ) {
+void HARRTstarViz::setTree( HARRTstar* p_tree ) {
     mp_tree = p_tree;
 }
 
 
-void RRTstarViz::paintEvent( QPaintEvent * e ) {
+void HARRTstarViz::paintEvent( QPaintEvent * e ) {
     QLabel::paintEvent(e);
 
     if(mp_tree) {
@@ -28,15 +28,6 @@ void RRTstarViz::paintEvent( QPaintEvent * e ) {
                 if(p_node->mp_parent) {
                     painter.drawLine(QPoint(p_node->m_pos[0], p_node->m_pos[1]), QPoint(p_node->mp_parent->m_pos[0], p_node->mp_parent->m_pos[1]));
                 }
-
-                /*
-                for(std::list<RRTNode*>::iterator itc= p_node->m_child_nodes.begin(); itc!=p_node->m_child_nodes.end();itc++) {
-                    RRTNode* p_child_node = (*itc);
-                    if(p_child_node)
-                    {
-                        painter.drawLine(QPoint(p_node->m_pos[0], p_node->m_pos[1]), QPoint(p_child_node->m_pos[0], p_child_node->m_pos[1]));
-                    }
-                }*/
             }
         }
 
@@ -74,7 +65,7 @@ void RRTstarViz::paintEvent( QPaintEvent * e ) {
     }
 }
 
-bool RRTstarViz::drawPath(QString filename) {
+bool HARRTstarViz::drawPath(QString filename) {
 
     QPixmap pix(m_PPInfo.m_objective_file);
 
@@ -91,7 +82,7 @@ bool RRTstarViz::drawPath(QString filename) {
     return false;
 }
 
-void RRTstarViz::drawPathOnMap(QPixmap& map) {
+void HARRTstarViz::drawPathOnMap(QPixmap& map) {
 
     Path * p = m_PPInfo.mp_found_path;
     QPainter painter(&map);
@@ -123,6 +114,4 @@ void RRTstarViz::drawPathOnMap(QPixmap& map) {
     endPainter.setPen(paintpen2);
     endPainter.drawPoint( QPoint(p->m_way_points[lastIdx][0], p->m_way_points[lastIdx][1]) );
     endPainter.end();
-
-
 }
