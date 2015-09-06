@@ -12,4 +12,6 @@ add_library(${LIB} SHARED
             HARRTstar.cc
            )
 
-target_link_libraries(${LIB})
+target_link_libraries(${LIB}
+                      homotopy
+                     ) 

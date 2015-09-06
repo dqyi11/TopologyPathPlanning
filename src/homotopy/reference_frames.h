@@ -1,6 +1,7 @@
 #ifndef REFERENCE_FRAMES_H
 #define REFERENCE_FRAMES_H
 
+#include <string>
 #include "worldmap.h"
 #include "string_grammar.h"
 #include "homotopic_grammar.h"
@@ -22,9 +23,10 @@ public:
 class ReferenceFrameSet {
 
 public:
-    ReferenceFrameSet( WorldMap* p_world_map );
+    ReferenceFrameSet();
     virtual ~ReferenceFrameSet();
 
+    void init(int width, int height, std::vector< std::vector<Point2D> > obstacles); 
     StringGrammar* get_string_grammar( SubRegion* p_init, SubRegion* p_goal );
     HomotopicGrammar* get_homotopic_grammar( SubRegion* p_init, SubRegion* p_goal );
 

@@ -1,9 +1,7 @@
 #include <cstdlib>
 #include <QPainter>
-#include "opencv2/core/core.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
-#include <opencv2/highgui/highgui.hpp>
 #include "homotopyviz.h"
+#include "img_load_util.h"
 
 #define LINE_WIDTH             1
 #define LINE_WIDTH_HIGHLIGHTED 5
@@ -47,31 +45,16 @@ bool HomotopyViz::loadMap( QString filename ) {
 bool HomotopyViz::initWorld(QString filename) {
 
     std::vector< std::vector<Point2D> > conts;
-    cv::Mat src;
-    src = cv::imread(filename.toStdString(),  CV_LOAD_IMAGE_GRAYSCALE);
-    cv::threshold(src, src, 200, 255, cv::THRESH_BINARY_INV);
-    std::vector< std::vector<cv::Point> > contours;
-    std::vector<cv::Vec4i> hierarchy;
-    cv::findContours( src, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_NONE );
-
-    for( unsigned int i=0; i<contours.size(); i++ ) {
-        std::vector<Point2D> cont;
-        for( std::vector<cv::Point>::iterator it=contours[i].begin(); it!=contours[i].end(); it++ ) {
-           cv::Point p = (cv::Point)(*it);
-           Point2D ip(p.x, p.y);
-           cont.push_back(ip);
-        }
-        conts.push_back(cont);
-    }
-
+    int map_width = 0, map_height = 0;
     if (mpWorld) {
         delete mpWorld;
         mpWorld = NULL;
     }
 
-    std::cout << "CREATE WORLD " << src.cols << " * " << src.rows << std::endl;
+    load_map_info( filename.toStdString(), map_width, map_height, conts );   
+    std::cout << "CREATE WORLD " << map_width << " * " << map_height << std::endl;
 
-    mpWorld = new WorldMap(src.cols, src.rows);
+    mpWorld = new WorldMap(map_width, map_height);
     std::cout << "NUM OF OBS " << conts.size() << std::endl;
     if (mpWorld) {
         mpWorld->load_obstacle_info(conts);

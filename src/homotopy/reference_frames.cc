@@ -8,8 +8,29 @@ ReferenceFrame::~ReferenceFrame() {
 
 }
 
-ReferenceFrameSet::ReferenceFrameSet( WorldMap* p_world_map ) {
-  _p_world_map = p_world_map;
+ReferenceFrameSet::ReferenceFrameSet() {
+  _p_world_map = NULL;
+  _reference_frames.clear();
+}
+
+ReferenceFrameSet::~ReferenceFrameSet() {
+  for( std::vector<ReferenceFrame*>::iterator it = _reference_frames.begin();
+       it != _reference_frames.end(); it ++ ) {
+    ReferenceFrame* p_rf = (*it);
+    delete p_rf;
+    p_rf = NULL;
+  }
+  _reference_frames.clear();
+}
+
+void ReferenceFrameSet::init(int width, int height, std::vector< std::vector<Point2D> > obstacles) {
+  if( _p_world_map ) {
+    delete _p_world_map;
+    _p_world_map = NULL;
+  }
+  _p_world_map = new WorldMap(width, height);
+  _p_world_map->load_obstacle_info(obstacles);   
+  
   _reference_frames.clear();
   for( std::vector<LineSubSegmentSet*>::iterator it = _p_world_map->get_sublinesegment_set().begin();
        it != _p_world_map->get_sublinesegment_set().end(); it ++ ) {
@@ -23,16 +44,6 @@ ReferenceFrameSet::ReferenceFrameSet( WorldMap* p_world_map ) {
       _reference_frames.push_back(p_rf);
     }
   }  
-}
-
-ReferenceFrameSet::~ReferenceFrameSet() {
-  for( std::vector<ReferenceFrame*>::iterator it = _reference_frames.begin();
-       it != _reference_frames.end(); it ++ ) {
-    ReferenceFrame* p_rf = (*it);
-    delete p_rf;
-    p_rf = NULL;
-  }
-  _reference_frames.clear();
 }
 
 StringGrammar* ReferenceFrameSet::get_string_grammar( SubRegion* p_init, SubRegion* p_goal ) {
