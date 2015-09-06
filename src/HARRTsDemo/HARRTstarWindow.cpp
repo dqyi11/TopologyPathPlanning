@@ -3,12 +3,12 @@
 #include <QtDebug>
 #include <QKeyEvent>
 #include <QStatusBar>
-#include "harrtconfig.h"
-#include "harrtwindow.h"
+#include "HARRTstarConfig.h"
+#include "HARRTstarWindow.h"
 
-HARRTWindow::HARRTWindow(QWidget *parent)
+HARRTstarWindow::HARRTstarWindow(QWidget *parent)
     : QMainWindow(parent) {
-    mpViz = new RRTstarViz();
+    mpViz = new HARRTstarViz();
 
     createActions();
     createMenuBar();
@@ -16,8 +16,8 @@ HARRTWindow::HARRTWindow(QWidget *parent)
     mpMap = NULL;
     mpHARRTstar = NULL;
 
-    mpConfigObjDialog = new ConfigObjDialog(this);
-    mpConfigObjDialog->hide();
+    mpHARRTstarConfig = new HARRTstarConfig(this);
+    mpHARRTstarConfig->hide();
 
     setCentralWidget(mpViz);
 
@@ -30,10 +30,10 @@ HARRTWindow::HARRTWindow(QWidget *parent)
     updateTitle();
 }
 
-HARRTWindow::~HARRTWindow() {
-    if(mpConfigObjDialog) {
-        delete mpConfigObjDialog;
-        mpConfigObjDialog = NULL;
+HARRTstarWindow::~HARRTstarWindow() {
+    if(mpHARRTstarConfig) {
+        delete mpHARRTstarConfig;
+        mpHARRTstarConfig = NULL;
     }
     if(mpViz) {
         delete mpViz;
@@ -41,7 +41,7 @@ HARRTWindow::~HARRTWindow() {
     }
 }
 
-void HARRTWindow::createMenuBar() {
+void HARRTstarWindow::createMenuBar() {
     mpFileMenu = menuBar()->addMenu("&File");
     mpFileMenu->addAction(mpOpenAction);
     mpFileMenu->addAction(mpSaveAction);
@@ -60,7 +60,7 @@ void HARRTWindow::createMenuBar() {
 
 }
 
-void HARRTWindow::createActions()
+void HARRTstarWindow::createActions()
 {
     mpOpenAction = new QAction("Open", this);
     mpSaveAction = new QAction("Save", this);
@@ -85,8 +85,7 @@ void HARRTWindow::createActions()
     connect(this, SIGNAL(customContextMenuRequested(const QPoint)),this, SLOT(contextMenuRequested(QPoint)));
 }
 
-void HARRTWindow::onOpen()
-{
+void HARRTstarWindow::onOpen() {
     QString tempFilename = QFileDialog::getOpenFileName(this,
              tr("Open File"), "./", tr("Json Files (*.json)"));
 
@@ -95,19 +94,19 @@ void HARRTWindow::onOpen()
     }
 }
 
-bool HARRTWindow::setupPlanning(QString filename) {
+bool HARRTstarWindow::setupPlanning(QString filename) {
     if(mpViz) {
         mpViz->m_PPInfo.load_from_file(filename);
         openMap(mpViz->m_PPInfo.m_map_fullpath);
-        if(mpConfigObjDialog) {
-            mpConfigObjDialog->updateDisplay();
+        if(mpHARRTstarConfig) {
+            mpHARRTstarConfig->updateDisplay();
         }
         return true;
     }
     return false;
 }
 
-void HARRTWindow::onSave() {
+void HARRTstarWindow::onSave() {
     QString tempFilename = QFileDialog::getSaveFileName(this, tr("Save File"), "./", tr("Json Files (*.json)"));
 
     if(mpViz) {
@@ -115,7 +114,7 @@ void HARRTWindow::onSave() {
     }
 }
 
-void HARRTWindow::onExport() {
+void HARRTstarWindow::onExport() {
     QString pathFilename = QFileDialog::getSaveFileName(this, tr("Save File"), "./", tr("Txt Files (*.txt)"));
     if (pathFilename != "") {
         mpViz->m_PPInfo.m_paths_output = pathFilename;
@@ -123,7 +122,7 @@ void HARRTWindow::onExport() {
     }
 }
 
-bool HARRTWindow::exportPaths() {
+bool HARRTstarWindow::exportPaths() {
     if(mpViz) {
         bool success = false;
         success = mpViz->m_PPInfo.export_path(mpViz->m_PPInfo.m_paths_output);
@@ -133,7 +132,7 @@ bool HARRTWindow::exportPaths() {
     return false;
 }
 
-void HARRTWindow::onLoadMap() {
+void HARRTstarWindow::onLoadMap() {
     QString tempFilename = QFileDialog::getOpenFileName(this,
              tr("Open Map File"), "./", tr("Map Files (*.*)"));
 
@@ -142,13 +141,13 @@ void HARRTWindow::onLoadMap() {
     mpViz->m_PPInfo.m_map_filename = filename;
     mpViz->m_PPInfo.m_map_fullpath = tempFilename;
     qDebug("OPENING ");
-    qDebug(mpViz->m_PPInfo.m_map_filename.toStdString().c_str());
+    //qDebug(mpViz->m_PPInfo.m_map_filename.toStdString().c_str());
 
     openMap(mpViz->m_PPInfo.m_map_fullpath);
 }
 
 
-bool HARRTWindow::openMap(QString filename) {
+bool HARRTstarWindow::openMap(QString filename) {
     if(mpMap) {
         delete mpMap;
         mpMap = NULL;
@@ -164,12 +163,12 @@ bool HARRTWindow::openMap(QString filename) {
     return false;
 }
 
-void HARRTWindow::onLoadObj() {
-    mpConfigObjDialog->exec();
+void HARRTstarWindow::onLoadObj() {
+    mpHARRTstarConfig->exec();
     updateTitle();
 }
 
-void HARRTWindow::onRun() {
+void HARRTstarWindow::onRun() {
     if (mpViz->m_PPInfo.m_map_width <= 0 || mpViz->m_PPInfo.m_map_height <= 0) {
         QMessageBox msgBox;
         msgBox.setText("Map is not initialized.");
@@ -193,7 +192,7 @@ void HARRTWindow::onRun() {
     repaint();
 }
 
-void HARRTWindow::planPath() {
+void HARRTstarWindow::planPath() {
     if(mpHARRTstar) {
         delete mpHARRTstar;
         mpHARRTstar = NULL;
@@ -207,9 +206,9 @@ void HARRTWindow::planPath() {
     QString msg = "RUNNING RRTstar ... \n";
     msg += "SegmentLen( " + QString::number(mpViz->m_PPInfo.m_segment_length) + " ) \n";
     msg += "MaxIterationNum( " + QString::number(mpViz->m_PPInfo.m_max_iteration_num) + " ) \n";
-    qDebug(msg.toStdString().c_str());
+    //qDebug(msg.toStdString().c_str());
 
-    mpHARRTstar = new RRTstar(mpMap->width(), mpMap->height(), mpViz->m_PPInfo.m_segment_length);
+    mpHARRTstar = new HARRTstar(mpMap->width(), mpMap->height(), mpViz->m_PPInfo.m_segment_length);
 
     POS2D start(mpViz->m_PPInfo.m_start.x(), mpViz->m_PPInfo.m_start.y());
     POS2D goal(mpViz->m_PPInfo.m_goal.x(), mpViz->m_PPInfo.m_goal.y());
@@ -235,27 +234,27 @@ void HARRTWindow::planPath() {
     mpViz->m_PPInfo.load_path(path);
 }
 
-void HARRTWindow::onAddStart() {
+void HARRTstarWindow::onAddStart() {
     mpViz->m_PPInfo.m_start = mCursorPoint;
     repaint();
 }
 
-void HARRTWindow::onAddGoal() {
+void HARRTstarWindow::onAddGoal() {
     mpViz->m_PPInfo.m_goal = mCursorPoint;
     repaint();
 }
 
-void HARRTWindow::contextMenuRequested(QPoint point) {
+void HARRTstarWindow::contextMenuRequested(QPoint point) {
     mCursorPoint = point;
     mpContextMenu->popup(mapToGlobal(point));
 }
 
-void HARRTWindow::updateTitle() {
+void HARRTstarWindow::updateTitle() {
     QString title = mpViz->m_PPInfo.m_map_filename;
     setWindowTitle(title);
 }
 
-void HARRTWindow::updateStatus() {
+void HARRTstarWindow::updateStatus() {
     if(mpViz==NULL || mpHARRTstar==NULL) {
         return;
     }

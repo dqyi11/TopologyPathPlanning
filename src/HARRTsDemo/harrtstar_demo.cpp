@@ -1,6 +1,6 @@
 //#include <QtGui/QApplication>
 #include <QApplication>
-#include "harrtwindow.h"
+#include "HARRTstarWindow.h"
 
 int main(int argc, char *argv[]) {
     bool no_gui = false;
@@ -10,7 +10,7 @@ int main(int argc, char *argv[]) {
         filename = QString(argv[1]);
     }
     QApplication a(argc, argv);
-    HARRTWindow w;
+    HARRTstarWindow w;
     if(no_gui) {
         //std::cout << "NO GUI" << std::endl;
         if(w.setupPlanning(filename)) {

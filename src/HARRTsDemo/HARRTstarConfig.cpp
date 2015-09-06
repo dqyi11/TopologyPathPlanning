@@ -5,7 +5,7 @@
 #include "HARRTstarWindow.h"
 #include "HARRTstarConfig.h"
 
-HARRTConfig::HARRTConfig(HARRTWindow * parent) {
+HARRTstarConfig::HARRTstarConfig(HARRTstarWindow * parent) {
     mpParentWindow = parent;
 
     mpCheckMinDist = new QCheckBox();
@@ -66,16 +66,16 @@ HARRTConfig::HARRTConfig(HARRTWindow * parent) {
     setLayout(mainLayout);
 }
 
-void HARRTConfig::onBtnOKClicked() {
+void HARRTstarConfig::onBtnOKClicked() {
     updateConfiguration();
     close();
 }
 
-void HARRTConfig::onBtnCancelClicked() {
+void HARRTstarConfig::onBtnCancelClicked() {
     close();
 }
 
-void HARRTConfig::onBtnAddClicked() {
+void HARRTstarConfig::onBtnAddClicked() {
    QString objFilename = QFileDialog::getOpenFileName(this,
                  tr("Open Objective File"), "./", tr("Objective Files (*.*)"));
    if (objFilename!="") {
@@ -94,7 +94,7 @@ void HARRTConfig::onBtnAddClicked() {
 }
 
 
-void HARRTConfig::updateDisplay() {
+void HARRTstarConfig::updateDisplay() {
     if(mpParentWindow) {
         if(mpParentWindow->mpViz) {
             if( mpParentWindow->mpViz->m_PPInfo.m_min_dist_enabled==true ) {
@@ -111,7 +111,7 @@ void HARRTConfig::updateDisplay() {
 
 }
 
-void HARRTConfig::updateConfiguration() {
+void HARRTstarConfig::updateConfiguration() {
     int numObj = 0;
     if (mpCheckMinDist->isChecked()==true) {
         numObj += 1;
@@ -126,7 +126,7 @@ void HARRTConfig::updateConfiguration() {
     mpParentWindow->mpViz->m_PPInfo.m_segment_length = mpLineEditSegmentLength->text().toDouble();
 }
 
-bool HARRTConfig::isCompatible(QString fitnessFile) {
+bool HARRTstarConfig::isCompatible(QString fitnessFile) {
     QPixmap pixmap(fitnessFile);
     if (pixmap.width()==mpParentWindow->mpViz->m_PPInfo.m_map_width
             && pixmap.height()==mpParentWindow->mpViz->m_PPInfo.m_map_height) {
@@ -135,7 +135,7 @@ bool HARRTConfig::isCompatible(QString fitnessFile) {
     return false;
 }
 
-void HARRTConfig::checkBoxStateChanged(int state) {
+void HARRTstarConfig::checkBoxStateChanged(int state) {
     if(mpCheckMinDist->checkState()==Qt::Checked) {
         mpLineEditCost->setEnabled(false);
         mpBtnAdd->setEnabled(false);

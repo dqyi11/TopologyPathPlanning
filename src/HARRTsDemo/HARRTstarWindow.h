@@ -9,14 +9,14 @@
 #include <QProgressBar>
 #include "HARRTstarViz.h"
 
-class HARRTConfigDialog;
+class HARRTstarConfig;
 
-class HARRTWindow : public QMainWindow {
+class HARRTstarWindow : public QMainWindow {
     Q_OBJECT
     
 public:
-    HARRTWindow(QWidget *parent = 0);
-    ~HARRTWindow();
+    HARRTstarWindow(QWidget *parent = 0);
+    ~HARRTstarWindow();
 
     bool exportPaths();
     void planPath();
@@ -53,8 +53,8 @@ private:
     QPixmap* mpMap;
     QPoint   mCursorPoint;
 
-    HARRTConfigDialog* mpHARRTConfigDialog;
-    HARRTstar*         mpHARRTstar;
+    HARRTstarConfig* mpHARRTstarConfig;
+    HARRTstar*       mpHARRTstar;
 
 
 private slots:

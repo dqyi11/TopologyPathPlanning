@@ -9,12 +9,12 @@
 #include <QLineEdit>
 #include <QComboBox>
 
-class HARRTWindow;
+class HARRTstarWindow;
 
-class HARRTConfig : public QDialog {
+class HARRTstarConfig : public QDialog {
     Q_OBJECT
 public:
-    HARRTConfig(HARRTWindow * parent);
+    HARRTstarConfig(HARRTstarWindow * parent);
 
     void updateConfiguration();
     void updateDisplay();
@@ -36,7 +36,7 @@ private:
     QLabel    * mpLabelSegmentLength;
     QLineEdit * mpLineEditSegmentLength;
 
-    HARRTWindow * mpParentWindow;
+    HARRTstarWindow * mpParentWindow;
 
     bool isCompatible(QString fitnessFile);
 
