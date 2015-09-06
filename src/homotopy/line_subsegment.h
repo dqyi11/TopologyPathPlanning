@@ -76,7 +76,7 @@ public:
     static std::string type_to_std_string ( const unsigned int& type );
     static unsigned int type_from_std_string ( const std::string& type_str );
 
-    Obstacle* get_obstacle() { return _p_obstacle; }
+    Obstacle* const get_obstacle() { return _p_obstacle; }
 
     std::string get_name();
 

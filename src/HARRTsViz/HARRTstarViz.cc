@@ -2,10 +2,11 @@
 
 #include "HARRTstarViz.h"
 
-#define START_TREE_COLOR QColor(160,160,0)
-#define GOAL_TREE_COLOR  QColor(0,160,160)
-#define START_COLOR QColor(255,0,0)
-#define GOAL_COLOR  QColor(0,0,255)
+#define START_TREE_COLOR      QColor(160,160,0)
+#define GOAL_TREE_COLOR       QColor(0,160,160)
+#define START_COLOR           QColor(255,0,0)
+#define GOAL_COLOR            QColor(0,0,255)
+#define REFERENCE_FRAME_COLOR QColor(0,255,0)
 
 HARRTstarViz::HARRTstarViz( QWidget *parent ) :
     QLabel(parent) {
@@ -16,6 +17,9 @@ void HARRTstarViz::setTree( HARRTstar* p_tree ) {
     mp_tree = p_tree;
 }
 
+void HARRTstarViz::setReferenceFrameSet(ReferenceFrameSet* p_rf) {
+    mp_reference_frames = p_rf;
+}
 
 void HARRTstarViz::paintEvent( QPaintEvent * e ) {
     QLabel::paintEvent(e);
@@ -78,6 +82,19 @@ void HARRTstarViz::paintEvent( QPaintEvent * e ) {
         gt_paintpen.setWidth(8);
         gt_painter.setPen(gt_paintpen);
         gt_painter.drawPoint(m_PPInfo.m_goal);
+    }
+
+    if( mp_reference_frames ) {
+        QPainter rf_painter(this);
+        QPen rf_paintpen( REFERENCE_FRAME_COLOR );
+        rf_paintpen.setWidth(2);
+        rf_painter.setPen(rf_paintpen);
+        for( std::vector<ReferenceFrame*>::iterator it = mp_reference_frames->get_reference_frames().begin();
+             it != mp_reference_frames->get_reference_frames().end(); it ++ ) {
+            ReferenceFrame* rf = (*it);
+            rf_painter.drawLine( QPoint( CGAL::to_double(rf->m_segment.source().x()), CGAL::to_double(rf->m_segment.source().y()) ), 
+                                 QPoint( CGAL::to_double(rf->m_segment.target().x()), CGAL::to_double(rf->m_segment.target().y()) ) );
+        }
     }
 }
 

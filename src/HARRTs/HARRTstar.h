@@ -1,9 +1,10 @@
-#ifndef RRTSTAR_H
-#define RRTSTAR_H
+#ifndef HARRTSTAR_H
+#define HARRTSTAR_H
 
 #include <vector>
 #include <list>
 #include "KDTree2D.h"
+#include "reference_frames.h"
 
 typedef double (*COST_FUNC_PTR)(POS2D, POS2D, double**, void*);
 
@@ -61,6 +62,9 @@ public:
     void extend();
     Path* find_path();
 
+    void set_reference_frames( ReferenceFrameSet* p_reference_frames ) { _reference_frames = p_reference_frames; }
+    ReferenceFrameSet* get_reference_frames() { return _reference_frames; }
+
     void dump_distribution(std::string filename);
 
 protected:
@@ -92,6 +96,8 @@ protected:
     RRTNode* _find_ancestor( RRTNode* p_node );
 
 private:
+    ReferenceFrameSet* _reference_frames;
+ 
     POS2D    _start;
     POS2D    _goal;
     RRTNode* _p_st_root;
@@ -146,4 +152,4 @@ inline void get_parent_node_list( RRTNode * node, std::list<RRTNode*>& path ) {
     return;
 }
 
-#endif // RRTSTAR_H
+#endif // HARRTSTAR_H

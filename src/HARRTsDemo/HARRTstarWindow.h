@@ -8,6 +8,7 @@
 #include <QPixmap>
 #include <QProgressBar>
 #include "HARRTstarViz.h"
+#include "reference_frames.h"
 
 class HARRTstarConfig;
 
@@ -53,9 +54,9 @@ private:
     QPixmap* mpMap;
     QPoint   mCursorPoint;
 
-    HARRTstarConfig* mpHARRTstarConfig;
-    HARRTstar*       mpHARRTstar;
-
+    HARRTstarConfig*   mpHARRTstarConfig;
+    HARRTstar*         mpHARRTstar;
+    ReferenceFrameSet* mpReferenceFrameSet;
 
 private slots:
     void contextMenuRequested(QPoint point);

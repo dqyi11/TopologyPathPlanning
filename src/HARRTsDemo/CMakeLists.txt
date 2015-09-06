@@ -15,6 +15,8 @@ include_directories(
                    )
 
 target_link_libraries(harrtstar-demo
+                      homotopy
+                      homotopy-viz
                       harrtstar
                       harrtstar-viz
                       ${Qt5Widgets_LIBRARIES}

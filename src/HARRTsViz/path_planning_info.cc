@@ -182,7 +182,7 @@ bool PathPlanningInfo::export_path(QString filename) {
             // Save scores
             stream << mp_found_path->m_cost << "\n";
             stream << "\n";
-            for(int i=0;i<mp_found_path->m_way_points.size();i++) {
+            for(unsigned int i=0;i<mp_found_path->m_way_points.size();i++) {
                 stream << mp_found_path->m_way_points[i][0] << " " << mp_found_path->m_way_points[i][1] << "\t";
             }
             stream << "\n";

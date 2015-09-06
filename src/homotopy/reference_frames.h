@@ -31,7 +31,7 @@ public:
     HomotopicGrammar* get_homotopic_grammar( SubRegion* p_init, SubRegion* p_goal );
 
     std::string get_character_id( Point2D start, Point2D end, grammar_type_t type );
-
+    std::vector<ReferenceFrame*>& get_reference_frames() { return _reference_frames; }
 private:
     WorldMap*                    _p_world_map;
     std::vector<ReferenceFrame*> _reference_frames;

@@ -5,6 +5,7 @@
 #include <QStatusBar>
 #include "HARRTstarConfig.h"
 #include "HARRTstarWindow.h"
+#include "img_load_util.h"
 
 HARRTstarWindow::HARRTstarWindow(QWidget *parent)
     : QMainWindow(parent) {
@@ -15,6 +16,7 @@ HARRTstarWindow::HARRTstarWindow(QWidget *parent)
 
     mpMap = NULL;
     mpHARRTstar = NULL;
+    mpReferenceFrameSet = NULL;
 
     mpHARRTstarConfig = new HARRTstarConfig(this);
     mpHARRTstarConfig->hide();
@@ -34,6 +36,14 @@ HARRTstarWindow::~HARRTstarWindow() {
     if(mpHARRTstarConfig) {
         delete mpHARRTstarConfig;
         mpHARRTstarConfig = NULL;
+    }
+    if(mpHARRTstar) {
+        delete mpHARRTstar;
+        mpHARRTstar = NULL;
+    }
+    if(mpReferenceFrameSet) {
+        delete mpReferenceFrameSet;
+        mpReferenceFrameSet = NULL;
     }
     if(mpViz) {
         delete mpViz;
@@ -158,6 +168,13 @@ bool HARRTstarWindow::openMap(QString filename) {
         mpViz->m_PPInfo.m_map_height = mpMap->height();
         mpViz->setPixmap(*mpMap);
         updateTitle();
+
+        int map_width = 0, map_height = 0;
+        std::vector< std::vector< Point2D > > obstacles;
+        mpReferenceFrameSet = new ReferenceFrameSet();
+        load_map_info( filename.toStdString(), map_width, map_height, obstacles );
+        mpReferenceFrameSet->init( map_width, map_height, obstacles );
+        mpViz->setReferenceFrameSet( mpReferenceFrameSet );        
         return true;
     }
     return false;

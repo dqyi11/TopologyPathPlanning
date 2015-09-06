@@ -29,7 +29,8 @@ void ReferenceFrameSet::init(int width, int height, std::vector< std::vector<Poi
     _p_world_map = NULL;
   }
   _p_world_map = new WorldMap(width, height);
-  _p_world_map->load_obstacle_info(obstacles);   
+  _p_world_map->load_obstacle_info(obstacles); 
+  _p_world_map->init();
   
   _reference_frames.clear();
   for( std::vector<LineSubSegmentSet*>::iterator it = _p_world_map->get_sublinesegment_set().begin();

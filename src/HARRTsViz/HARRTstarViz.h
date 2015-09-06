@@ -5,6 +5,7 @@
 
 #include "HARRTstar.h"
 #include "path_planning_info.h"
+#include "reference_frames.h"
 
 class HARRTstarViz : public QLabel
 {
@@ -12,6 +13,7 @@ class HARRTstarViz : public QLabel
 public:
     explicit HARRTstarViz(QWidget *parent = 0);
     void setTree(HARRTstar* p_tree);
+    void setReferenceFrameSet(ReferenceFrameSet* p_rf);
     bool drawPath(QString filename);
 
     PathPlanningInfo m_PPInfo;
@@ -21,7 +23,8 @@ public slots:
 
 private:
     void drawPathOnMap(QPixmap& map);
-    HARRTstar* mp_tree;
+    HARRTstar*         mp_tree;
+    ReferenceFrameSet* mp_reference_frames;
 
 private slots:
     void paintEvent(QPaintEvent * e);
