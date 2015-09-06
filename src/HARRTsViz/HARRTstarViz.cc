@@ -2,6 +2,9 @@
 
 #include "HARRTstarViz.h"
 
+#define START_TREE_COLOR QColor(160,0,0)
+#define GOAL_TREE_COLOR  QColor(0,0,160)
+
 HARRTstarViz::HARRTstarViz( QWidget *parent ) :
     QLabel(parent) {
     mp_tree = NULL;
@@ -17,16 +20,19 @@ void HARRTstarViz::paintEvent( QPaintEvent * e ) {
 
     if(mp_tree) {
 
-        QPainter painter(this);
-        QPen paintpen(QColor(0,255,0));
-        paintpen.setWidth(2);
-        painter.setPen(paintpen);
-
+        QPainter st_tree_painter(this);
+        QPen st_tree_paintpen(START_TREE_COLOR);
+        st_tree_paintpen.setWidth(2);
+        st_tree_painter.setPen(st_tree_paintpen);
+        QPainter gt_tree_painter(this);
+        QPen gt_tree_paintpen(GOAL_TREE_COLOR);
+        gt_tree_paintpen.setWidth(2);
+        gt_tree_painter.setPen(gt_tree_paintpen);
         for( std::list<RRTNode*>::iterator it= mp_tree->get_st_nodes().begin(); it!=mp_tree->get_st_nodes().end();it++ ) {
             RRTNode* p_node = (*it);
             if(p_node) {
                 if(p_node->mp_parent) {
-                    painter.drawLine(QPoint(p_node->m_pos[0], p_node->m_pos[1]), QPoint(p_node->mp_parent->m_pos[0], p_node->mp_parent->m_pos[1]));
+                    st_tree_painter.drawLine(QPoint(p_node->m_pos[0], p_node->m_pos[1]), QPoint(p_node->mp_parent->m_pos[0], p_node->mp_parent->m_pos[1]));
                 }
             }
         }
@@ -34,7 +40,7 @@ void HARRTstarViz::paintEvent( QPaintEvent * e ) {
             RRTNode* p_node = (*it);
             if(p_node) {
                 if(p_node->mp_parent) {
-                    painter.drawLine(QPoint(p_node->m_pos[0], p_node->m_pos[1]), QPoint(p_node->mp_parent->m_pos[0], p_node->mp_parent->m_pos[1]));
+                    gt_tree_painter.drawLine(QPoint(p_node->m_pos[0], p_node->m_pos[1]), QPoint(p_node->mp_parent->m_pos[0], p_node->mp_parent->m_pos[1]));
                 }
             }
         }
