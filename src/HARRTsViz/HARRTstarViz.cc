@@ -2,8 +2,10 @@
 
 #include "HARRTstarViz.h"
 
-#define START_TREE_COLOR QColor(160,0,0)
-#define GOAL_TREE_COLOR  QColor(0,0,160)
+#define START_TREE_COLOR QColor(160,160,0)
+#define GOAL_TREE_COLOR  QColor(0,160,160)
+#define START_COLOR QColor(255,0,0)
+#define GOAL_COLOR  QColor(0,0,255)
 
 HARRTstarViz::HARRTstarViz( QWidget *parent ) :
     QLabel(parent) {
@@ -22,12 +24,8 @@ void HARRTstarViz::paintEvent( QPaintEvent * e ) {
 
         QPainter st_tree_painter(this);
         QPen st_tree_paintpen(START_TREE_COLOR);
-        st_tree_paintpen.setWidth(2);
+        st_tree_paintpen.setWidth(1);
         st_tree_painter.setPen(st_tree_paintpen);
-        QPainter gt_tree_painter(this);
-        QPen gt_tree_paintpen(GOAL_TREE_COLOR);
-        gt_tree_paintpen.setWidth(2);
-        gt_tree_painter.setPen(gt_tree_paintpen);
         for( std::list<RRTNode*>::iterator it= mp_tree->get_st_nodes().begin(); it!=mp_tree->get_st_nodes().end();it++ ) {
             RRTNode* p_node = (*it);
             if(p_node) {
@@ -36,6 +34,10 @@ void HARRTstarViz::paintEvent( QPaintEvent * e ) {
                 }
             }
         }
+        QPainter gt_tree_painter(this);
+        QPen gt_tree_paintpen(GOAL_TREE_COLOR);
+        gt_tree_paintpen.setWidth(1);
+        gt_tree_painter.setPen(gt_tree_paintpen);
         for( std::list<RRTNode*>::iterator it= mp_tree->get_gt_nodes().begin(); it!=mp_tree->get_gt_nodes().end();it++ ) {
             RRTNode* p_node = (*it);
             if(p_node) {
@@ -49,7 +51,7 @@ void HARRTstarViz::paintEvent( QPaintEvent * e ) {
             Path * p = m_PPInfo.mp_found_path;
             QPainter painter(this);
             QPen paintpen(QColor(255,140,0));
-            paintpen.setWidth(4);
+            paintpen.setWidth(2);
             painter.setPen(paintpen);
 
             int point_num = p->m_way_points.size();
@@ -63,19 +65,19 @@ void HARRTstarViz::paintEvent( QPaintEvent * e ) {
     }
 
     if(m_PPInfo.m_start.x() >= 0 && m_PPInfo.m_start.y() >= 0) {
-        QPainter painter(this);
-        QPen paintpen(QColor(255,0,0));
-        paintpen.setWidth(10);
-        painter.setPen(paintpen);
-        painter.drawPoint(m_PPInfo.m_start);
+        QPainter st_painter(this);
+        QPen st_paintpen( START_COLOR );
+        st_paintpen.setWidth(8);
+        st_painter.setPen(st_paintpen);
+        st_painter.drawPoint(m_PPInfo.m_start);
     }
 
     if(m_PPInfo.m_goal.x() >= 0 && m_PPInfo.m_goal.y() >= 0) {
-        QPainter painter(this);
-        QPen paintpen(QColor(0,0,255));
-        paintpen.setWidth(10);
-        painter.setPen(paintpen);
-        painter.drawPoint(m_PPInfo.m_goal);
+        QPainter gt_painter(this);
+        QPen gt_paintpen( GOAL_COLOR );
+        gt_paintpen.setWidth(8);
+        gt_painter.setPen(gt_paintpen);
+        gt_painter.drawPoint(m_PPInfo.m_goal);
     }
 }
 

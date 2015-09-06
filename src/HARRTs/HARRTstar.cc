@@ -32,8 +32,10 @@ HARRTstar::HARRTstar( int width, int height, int segment_length ) {
   _sampling_height = height;
   _segment_length = segment_length;
   _p_st_root = NULL;
+  _p_gt_root = NULL;
 
   _p_st_kd_tree = new KDTree2D( std::ptr_fun(tac) );
+  _p_gt_kd_tree = new KDTree2D( std::ptr_fun(tac) );
 
   _range = (_sampling_width > _sampling_height) ? _sampling_width:_sampling_height;
   _st_ball_radius = _range;
