@@ -22,7 +22,15 @@ void HARRTstarViz::paintEvent( QPaintEvent * e ) {
         paintpen.setWidth(2);
         painter.setPen(paintpen);
 
-        for( std::list<RRTNode*>::iterator it= mp_tree->get_nodes().begin(); it!=mp_tree->get_nodes().end();it++ ) {
+        for( std::list<RRTNode*>::iterator it= mp_tree->get_st_nodes().begin(); it!=mp_tree->get_st_nodes().end();it++ ) {
+            RRTNode* p_node = (*it);
+            if(p_node) {
+                if(p_node->mp_parent) {
+                    painter.drawLine(QPoint(p_node->m_pos[0], p_node->m_pos[1]), QPoint(p_node->mp_parent->m_pos[0], p_node->mp_parent->m_pos[1]));
+                }
+            }
+        }
+        for( std::list<RRTNode*>::iterator it= mp_tree->get_gt_nodes().begin(); it!=mp_tree->get_gt_nodes().end();it++ ) {
             RRTNode* p_node = (*it);
             if(p_node) {
                 if(p_node->mp_parent) {

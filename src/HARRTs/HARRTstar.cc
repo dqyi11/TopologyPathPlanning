@@ -36,7 +36,8 @@ HARRTstar::HARRTstar( int width, int height, int segment_length ) {
   _p_st_kd_tree = new KDTree2D( std::ptr_fun(tac) );
 
   _range = (_sampling_width > _sampling_height) ? _sampling_width:_sampling_height;
-  _ball_radius = _range;
+  _st_ball_radius = _range;
+  _gt_ball_radius = _range;
   _obs_check_resolution = 1;
   _current_iteration = 0;
   _segment_length = segment_length;
@@ -53,7 +54,8 @@ HARRTstar::HARRTstar( int width, int height, int segment_length ) {
     }
   }
 
-  _nodes.clear();
+  _st_nodes.clear();
+  _gt_nodes.clear();
 }
 
 HARRTstar::~HARRTstar() {
@@ -63,10 +65,14 @@ HARRTstar::~HARRTstar() {
   }
 }
 
-RRTNode* HARRTstar::init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp_cost_distribution ) {
+void HARRTstar::init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp_cost_distribution ) {
   if( _p_st_root ) {
     delete _p_st_root;
     _p_st_root = NULL;
+  }
+  if( _p_gt_root ) {
+    delete _p_gt_root;
+    _p_gt_root = NULL;
   }
   _start = start;
   _goal = goal;
@@ -91,16 +97,20 @@ RRTNode* HARRTstar::init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double*
     }
   }
 
-  KDNode2D root( start );
-
+  KDNode2D st_root( start );
   _p_st_root = new RRTNode( start );
-  _nodes.push_back(_p_st_root);
-  root.setRRTNode(_p_st_root);
+  _st_nodes.push_back(_p_st_root);
+  st_root.setRRTNode(_p_st_root);
+  _p_st_kd_tree->insert( st_root );
+  
+  KDNode2D gt_root( start );
+  _p_gt_root = new RRTNode( goal );
+  _gt_nodes.push_back(_p_gt_root);
+  gt_root.setRRTNode(_p_gt_root);
+  _p_gt_kd_tree->insert( gt_root );
 
-  _p_st_kd_tree->insert( root );
   _current_iteration = 0;
 
-  return _p_st_root;
 }
 
 void HARRTstar::load_map( int** pp_map ) {
@@ -211,10 +221,15 @@ bool HARRTstar::_is_obstacle_free( POS2D pos_a, POS2D pos_b ) {
 }
 
 void HARRTstar::extend() {
+  extend(START_TREE_TYPE);
+  extend(GOAL_TREE_TYPE);
+}
+
+void HARRTstar::extend( RRTree_type_t type ) {
   bool node_inserted = false;
   while( false==node_inserted ) {
     POS2D rnd_pos = _sampling();
-    KDNode2D nearest_node = _find_nearest( rnd_pos );
+    KDNode2D nearest_node = _find_nearest( rnd_pos, type );
 
     if (rnd_pos[0]==nearest_node[0] && rnd_pos[1]==nearest_node[1]) {
       continue;
@@ -229,14 +244,18 @@ void HARRTstar::extend() {
     }
 
     if( true == _is_obstacle_free( nearest_node, new_pos ) ) {
-      std::list<KDNode2D> near_list = _find_near( new_pos );
+      std::list<KDNode2D> near_list = _find_near( new_pos, type );
       KDNode2D new_node( new_pos );
 
       // create new node
-      RRTNode * p_new_rnode = _create_new_node( new_pos );
+      RRTNode * p_new_rnode = _create_new_node( new_pos, type );
       new_node.setRRTNode( p_new_rnode );
-
-      _p_st_kd_tree->insert( new_node );
+      if (type == START_TREE_TYPE) {
+        _p_st_kd_tree->insert( new_node );
+      }
+      else if(type == GOAL_TREE_TYPE) {
+        _p_gt_kd_tree->insert( new_node );
+      }
       node_inserted = true;
 
       RRTNode* p_nearest_rnode = nearest_node.getRRTNode();
@@ -257,24 +276,38 @@ void HARRTstar::extend() {
   _current_iteration++;
 }
 
-KDNode2D HARRTstar::_find_nearest( POS2D pos ) {
-    KDNode2D node( pos );
-
+KDNode2D HARRTstar::_find_nearest( POS2D pos, RRTree_type_t type ) {
+  KDNode2D node( pos );
+  if( START_TREE_TYPE == type) {
     std::pair<KDTree2D::const_iterator,double> found = _p_st_kd_tree->find_nearest( node );
     KDNode2D near_node = *found.first;
     return near_node;
+  }
+  else if( GOAL_TREE_TYPE == type ) {
+    std::pair<KDTree2D::const_iterator,double> found = _p_gt_kd_tree->find_nearest( node );
+    KDNode2D near_node = *found.first;
+    return near_node;
+  }
+  return node;
 }
 
-std::list<KDNode2D> HARRTstar::_find_near(POS2D pos) {
+std::list<KDNode2D> HARRTstar::_find_near( POS2D pos, RRTree_type_t type ) {
   std::list<KDNode2D> near_list;
   KDNode2D node(pos);
 
-  int num_vertices = _p_st_kd_tree->size();
   int num_dimensions = 2;
-  _ball_radius =  _theta * _range * pow( log((double)(num_vertices + 1.0))/((double)(num_vertices + 1.0)), 1.0/((double)num_dimensions) );
+  if ( START_TREE_TYPE == type ) {
+    int num_vertices = _p_st_kd_tree->size();
+    _st_ball_radius =  _theta * _range * pow( log((double)(num_vertices + 1.0))/((double)(num_vertices + 1.0)), 1.0/((double)num_dimensions) );
 
-  _p_st_kd_tree->find_within_range( node, _ball_radius, std::back_inserter( near_list ) );
+    _p_st_kd_tree->find_within_range( node, _st_ball_radius, std::back_inserter( near_list ) );
+  }
+  else if ( GOAL_TREE_TYPE == type ) {
+    int num_vertices = _p_gt_kd_tree->size();
+    _gt_ball_radius =  _theta * _range * pow( log((double)(num_vertices + 1.0))/((double)(num_vertices + 1.0)), 1.0/((double)num_dimensions) );
 
+    _p_gt_kd_tree->find_within_range( node, _gt_ball_radius, std::back_inserter( near_list ) );
+  }
   return near_list;
 }
 
@@ -297,14 +330,18 @@ double HARRTstar::_calculate_cost( POS2D& pos_a, POS2D& pos_b ) {
   return _p_cost_func(pos_a, pos_b, _pp_cost_distribution, this);
 }
 
-RRTNode* HARRTstar::_create_new_node(POS2D pos) {
+RRTNode* HARRTstar::_create_new_node(POS2D pos, RRTree_type_t type) {
   RRTNode * pNode = new RRTNode(pos);
-  _nodes.push_back(pNode);
-
+  if( type == START_TREE_TYPE ) {
+    _st_nodes.push_back(pNode);
+  }
+  else if( type == GOAL_TREE_TYPE ) {
+    _gt_nodes.push_back(pNode);
+  }
   return pNode;
 }
 
-bool HARRTstar::_remove_edge(RRTNode* p_node_parent, RRTNode*  p_node_child) {
+bool HARRTstar::_remove_edge( RRTNode* p_node_parent, RRTNode*  p_node_child ) {
   if( p_node_parent==NULL ) {
     return false;
   }
@@ -421,7 +458,7 @@ Path* HARRTstar::find_path() {
 
   RRTNode * p_first_node = NULL;
   double delta_cost = 0.0;
-  _get_closet_to_goal( p_first_node, delta_cost );
+  _get_closet_to_goal( p_first_node, delta_cost, START_TREE_TYPE );
 
   if( p_first_node != NULL ) {
     get_parent_node_list( p_first_node, node_list );
@@ -501,10 +538,10 @@ void HARRTstar::_update_cost_to_children( RRTNode* p_node, double delta_cost ) {
   }
 }
 
-bool HARRTstar::_get_closet_to_goal( RRTNode*& p_node_closet_to_goal, double& delta_cost ) {
+bool HARRTstar::_get_closet_to_goal( RRTNode*& p_node_closet_to_goal, double& delta_cost, RRTree_type_t type ) {
   bool found = false;
 
-  std::list<KDNode2D> near_nodes = _find_near( _goal );
+  std::list<KDNode2D> near_nodes = _find_near( _goal, type );
   double min_total_cost = std::numeric_limits<double>::max();
 
   for(std::list<KDNode2D>::iterator it=near_nodes.begin();

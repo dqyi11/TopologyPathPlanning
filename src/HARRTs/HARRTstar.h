@@ -8,6 +8,11 @@
 
 typedef double (*COST_FUNC_PTR)(POS2D, POS2D, double**, void*);
 
+typedef enum{
+  START_TREE_TYPE,
+  GOAL_TREE_TYPE
+} RRTree_type_t;
+
 class RRTNode {
 
 public:
@@ -39,7 +44,7 @@ public:
     HARRTstar(int width, int height, int segment_length);
     ~HARRTstar();
 
-    RRTNode* init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp_cost_distrinution );
+    void init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp_cost_distrinution );
 
     void load_map( int** pp_map );
 
@@ -47,10 +52,12 @@ public:
     int get_sampling_height() { return _sampling_height; }
     int get_current_iteration() { return _current_iteration; }
 
-    std::list<RRTNode*>& get_nodes() { return _nodes; }
+    std::list<RRTNode*>& get_st_nodes() { return _st_nodes; }
+    std::list<RRTNode*>& get_gt_nodes() { return _gt_nodes; }
 
     int**& get_map_info() { return _pp_map_info; }
-    double get_ball_radius() { return _ball_radius; }
+    double get_st_ball_radius() { return _st_ball_radius; }
+    double get_gt_ball_radius() { return _gt_ball_radius; }
 
     void extend();
     Path* find_path();
@@ -60,9 +67,10 @@ public:
 protected:
     POS2D _sampling();
     POS2D _steer( POS2D pos_a, POS2D pos_b );
+    void extend(RRTree_type_t type);
 
-    KDNode2D _find_nearest( POS2D pos );
-    std::list<KDNode2D> _find_near( POS2D pos );
+    KDNode2D _find_nearest( POS2D pos, RRTree_type_t type );
+    std::list<KDNode2D> _find_near( POS2D pos, RRTree_type_t type );
 
     bool _is_obstacle_free( POS2D pos_a, POS2D pos_b );
     bool _is_in_obstacle( POS2D pos );
@@ -70,7 +78,7 @@ protected:
 
     double _calculate_cost( POS2D& pos_a, POS2D& pos_b );
 
-    RRTNode* _create_new_node( POS2D pos );
+    RRTNode* _create_new_node( POS2D pos, RRTree_type_t type );
     bool _remove_edge( RRTNode* p_node_parent, RRTNode* p_node_child );
     bool _has_edge( RRTNode* p_node_parent, RRTNode* p_node_child );
     bool _add_edge( RRTNode* p_node_parent, RRTNode* p_node_child );
@@ -80,7 +88,7 @@ protected:
     void _attach_new_node( RRTNode* p_node_new, RRTNode* p_nearest_node, std::list<RRTNode*> near_nodes );
     void _rewire_near_nodes( RRTNode* p_node_new, std::list<RRTNode*> near_nodes );
     void _update_cost_to_children( RRTNode* p_node, double delta_cost );
-    bool _get_closet_to_goal( RRTNode*& p_node_closet_to_goal, double& delta_cost );
+    bool _get_closet_to_goal( RRTNode*& p_node_closet_to_goal, double& delta_cost, RRTree_type_t type );
 
     RRTNode* _find_ancestor( RRTNode* p_node );
 
@@ -105,10 +113,12 @@ private:
     COST_FUNC_PTR _p_cost_func;
     double**      _pp_cost_distribution;
 
-    std::list<RRTNode*> _nodes;
+    std::list<RRTNode*> _st_nodes;
+    std::list<RRTNode*> _gt_nodes;
 
     double _range;
-    double _ball_radius;
+    double _st_ball_radius;
+    double _gt_ball_radius;
     double _segment_length;
     int    _obs_check_resolution;
 
