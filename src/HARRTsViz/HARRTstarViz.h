@@ -15,6 +15,12 @@ public:
     void setTree(HARRTstar* p_tree);
     void setReferenceFrameSet(ReferenceFrameSet* p_rf);
     bool drawPath(QString filename);
+    void set_show_reference_frames( bool show );
+    bool show_reference_frames() { return m_show_reference_frames; }
+    void prev_reference_frame();
+    void next_reference_frame();
+    int  get_reference_frame_index() { return m_reference_frame_index; }
+    std::string get_reference_frame_name();
 
     PathPlanningInfo m_PPInfo;
 signals:
@@ -25,6 +31,8 @@ private:
     void drawPathOnMap(QPixmap& map);
     HARRTstar*         mp_tree;
     ReferenceFrameSet* mp_reference_frames;
+    bool               m_show_reference_frames;
+    int                m_reference_frame_index;
 
 private slots:
     void paintEvent(QPaintEvent * e);

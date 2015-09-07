@@ -24,6 +24,8 @@ public:
     bool setupPlanning(QString filename);
     HARRTstarViz * mpViz;
 
+    void keyPressEvent(QKeyEvent * e);
+
 protected:
     void createMenuBar();
     void createActions();

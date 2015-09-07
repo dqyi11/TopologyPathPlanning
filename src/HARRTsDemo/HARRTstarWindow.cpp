@@ -24,6 +24,7 @@ HARRTstarWindow::HARRTstarWindow(QWidget *parent)
     setCentralWidget(mpViz);
 
     mpStatusLabel = new QLabel();
+    mpStatusLabel->setFixedWidth(10);
     mpStatusProgressBar = new QProgressBar();
 
     statusBar()->addWidget(mpStatusProgressBar);
@@ -281,10 +282,38 @@ void HARRTstarWindow::updateStatus() {
         mpStatusProgressBar->setValue(mpHARRTstar->get_current_iteration());
     }
     if(mpStatusLabel) {
-        QString status = "";
+        QString status = QString::fromStdString(mpViz->get_reference_frame_name());
         mpStatusLabel->setText(status);
     }
     repaint();
 }
 
+void HARRTstarWindow::keyPressEvent(QKeyEvent *event) {
+   if ( event->key() == Qt::Key_R  ) {
+       if(mpViz) {
+           if(mpViz->show_reference_frames() == true) {
+               mpViz->set_show_reference_frames( false );
+           }
+           else {
+               mpViz->set_show_reference_frames( true );
+           }
+           updateStatus();
+           repaint();
+       }
+   }
+   else if ( event->key() == Qt::Key_Up ) {
+       if(mpViz) {
+           mpViz->prev_reference_frame();
+           updateStatus();
+           repaint();
+       }
 
+   }
+   else if ( event->key() == Qt::Key_Down ) {
+       if(mpViz) {
+           mpViz->next_reference_frame();
+           updateStatus();
+           repaint();
+       }
+   }
+}

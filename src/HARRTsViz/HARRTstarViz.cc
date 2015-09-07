@@ -11,6 +11,7 @@
 HARRTstarViz::HARRTstarViz( QWidget *parent ) :
     QLabel(parent) {
     mp_tree = NULL;
+    m_show_reference_frames = false;
 }
 
 void HARRTstarViz::setTree( HARRTstar* p_tree ) {
@@ -84,19 +85,32 @@ void HARRTstarViz::paintEvent( QPaintEvent * e ) {
         gt_painter.drawPoint(m_PPInfo.m_goal);
     }
 
-    if( mp_reference_frames ) {
-        QPainter rf_painter(this);
-        QPen rf_paintpen( REFERENCE_FRAME_COLOR );
-        rf_paintpen.setWidth(2);
-        rf_painter.setPen(rf_paintpen);
+    if( m_show_reference_frames ) {
+        if( mp_reference_frames ) {
+            QPainter rf_painter(this);
+            QPen rf_paintpen( REFERENCE_FRAME_COLOR );
+            rf_paintpen.setWidth(2);
+            rf_painter.setPen(rf_paintpen);
 
-        for( std::vector<ReferenceFrame*>::iterator it = mp_reference_frames->get_reference_frames().begin();
-             it != mp_reference_frames->get_reference_frames().end(); it ++ ) {
-            ReferenceFrame* rf = (*it);
-            rf_painter.drawLine( QPoint( CGAL::to_double(rf->m_segment.source().x()), CGAL::to_double(rf->m_segment.source().y()) ), 
-                                 QPoint( CGAL::to_double(rf->m_segment.target().x()), CGAL::to_double(rf->m_segment.target().y()) ) );
+            if ( m_reference_frame_index >= mp_reference_frames->get_reference_frames().size() ) {
+                for( unsigned int rf_i = 0; rf_i < mp_reference_frames->get_reference_frames().size(); rf_i ++ ) {
+                    ReferenceFrame* rf = mp_reference_frames->get_reference_frames()[rf_i];
+                    rf_painter.drawLine( QPoint( CGAL::to_double(rf->m_segment.source().x()), CGAL::to_double(rf->m_segment.source().y()) ),
+                                         QPoint( CGAL::to_double(rf->m_segment.target().x()), CGAL::to_double(rf->m_segment.target().y()) ) );
+                }
+            }
+            else{
+                ReferenceFrame* rf = mp_reference_frames->get_reference_frames()[m_reference_frame_index];
+                rf_painter.drawLine( QPoint( CGAL::to_double(rf->m_segment.source().x()), CGAL::to_double(rf->m_segment.source().y()) ),
+                                     QPoint( CGAL::to_double(rf->m_segment.target().x()), CGAL::to_double(rf->m_segment.target().y()) ) );
+            }
         }
     }
+}
+
+void HARRTstarViz::set_show_reference_frames(bool show) {
+    m_show_reference_frames = show;
+    m_reference_frame_index = 0;
 }
 
 bool HARRTstarViz::drawPath(QString filename) {
@@ -138,9 +152,9 @@ void HARRTstarViz::drawPathOnMap(QPixmap& map) {
     QPen paintpen1(QColor(255,0,0));
     paintpen.setWidth(10);
     startPainter.setPen(paintpen1);
-    startPainter.drawPoint( QPoint(p->m_way_points[0][0], p->m_way_points[0][1]) );
     startPainter.end();
 
+    startPainter.drawPoint( QPoint(p->m_way_points[0][0], p->m_way_points[0][1]) );
     int lastIdx = p->m_way_points.size() - 1;
     QPainter endPainter(&map);
     QPen paintpen2(QColor(0,0,255));
@@ -148,4 +162,32 @@ void HARRTstarViz::drawPathOnMap(QPixmap& map) {
     endPainter.setPen(paintpen2);
     endPainter.drawPoint( QPoint(p->m_way_points[lastIdx][0], p->m_way_points[lastIdx][1]) );
     endPainter.end();
+}
+
+void HARRTstarViz::prev_reference_frame() {
+    if (m_show_reference_frames) {
+        if ( m_reference_frame_index <= 0) {
+            m_reference_frame_index = mp_reference_frames->get_reference_frames().size();
+        }else{
+            m_reference_frame_index -- ;
+        }
+    }
+}
+
+void HARRTstarViz::next_reference_frame() {
+    if (m_show_reference_frames) {
+        if ( m_reference_frame_index >= mp_reference_frames->get_reference_frames().size() ) {
+            m_reference_frame_index = 0;
+        }else{
+            m_reference_frame_index ++;
+        }
+    }
+}
+
+std::string HARRTstarViz::get_reference_frame_name() {
+
+    if ( m_reference_frame_index < mp_reference_frames->get_reference_frames().size() ) {
+        return mp_reference_frames->get_reference_frames()[m_reference_frame_index]->m_name;
+    }
+    return "";
 }
