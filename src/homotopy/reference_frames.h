@@ -32,6 +32,8 @@ public:
 
     std::string get_character_id( Point2D start, Point2D end, grammar_type_t type );
     std::vector<ReferenceFrame*>& get_reference_frames() { return _reference_frames; }
+
+    WorldMap* get_world_map() { return _p_world_map; }
 private:
     WorldMap*                    _p_world_map;
     std::vector<ReferenceFrame*> _reference_frames;

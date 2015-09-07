@@ -14,4 +14,6 @@ add_library(${LIB} SHARED
 
 target_link_libraries(${LIB}
                       homotopy
+                      ${CGAL_LIBRARIES}
+                      ${BOOST_LIBRARIES}
                      ) 

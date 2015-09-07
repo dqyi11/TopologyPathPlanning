@@ -52,13 +52,13 @@ bool HomotopyViz::initWorld(QString filename) {
     }
 
     load_map_info( filename.toStdString(), map_width, map_height, conts );   
-    std::cout << "CREATE WORLD " << map_width << " * " << map_height << std::endl;
+    //std::cout << "CREATE WORLD " << map_width << " * " << map_height << std::endl;
 
     mpWorld = new WorldMap(map_width, map_height);
-    std::cout << "NUM OF OBS " << conts.size() << std::endl;
+    //std::cout << "NUM OF OBS " << conts.size() << std::endl;
     if (mpWorld) {
         mpWorld->load_obstacle_info(conts);
-        std::cout << "INIT ... " << std::endl;
+        //std::cout << "INIT ... " << std::endl;
         mpWorld->init();
 
         mColors.clear();

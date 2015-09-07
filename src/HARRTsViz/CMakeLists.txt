@@ -17,4 +17,6 @@ include_directories(
 target_link_libraries(${LIB} 
                       harrtstar
                       ${Qt5Widgets_LIBRARIES}
+                      ${CGAL_LIBRARIES}
+                      ${BOOST_LIBRARIES}
                      )

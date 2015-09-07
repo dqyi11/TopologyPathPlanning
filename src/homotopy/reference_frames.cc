@@ -34,15 +34,12 @@ void ReferenceFrameSet::init(int width, int height, std::vector< std::vector<Poi
   
   _reference_frames.clear();
 
-  for( std::vector<Obstacle*>::iterator it = _p_world_map->get_obstacles().begin();
-       it != _p_world_map->get_obstacles().end(); it++ ) {
-    Obstacle* p_obstacle = (*it);
+  for( unsigned int obs_i = 0; obs_i < _p_world_map->get_obstacles().size(); obs_i++ ) {
+    Obstacle* p_obstacle = _p_world_map->get_obstacles()[obs_i];
     if ( p_obstacle ) {
-      LineSubSegmentSet * p_alpha_segs = p_obstacle->mp_alpha_seg;
-      if (p_alpha_segs) {
-        for( std::vector< LineSubSegment* >::iterator itap = p_obstacle->mp_alpha_seg->m_subsegs.begin();
-             itap != p_obstacle->mp_alpha_seg->m_subsegs.end(); itap++ ) {
-          LineSubSegment* p_subseg_a = (*itap);
+      if (p_obstacle->mp_alpha_seg) {
+        for( unsigned int a_i = 0; a_i < p_obstacle->mp_alpha_seg->m_subsegs.size(); a_i ++ ) {
+          LineSubSegment* p_subseg_a = p_obstacle->mp_alpha_seg->m_subsegs[a_i];
           if (p_subseg_a) {
             ReferenceFrame* p_rf = new ReferenceFrame();
             p_rf->m_name = p_subseg_a->get_name();
@@ -51,11 +48,10 @@ void ReferenceFrameSet::init(int width, int height, std::vector< std::vector<Poi
           }
         }
       }
-      LineSubSegmentSet * p_beta_segs = p_obstacle->mp_beta_seg;
-      if (p_beta_segs) {
-        for( std::vector< LineSubSegment* >::iterator itbp = p_obstacle->mp_beta_seg->m_subsegs.begin();
-             itbp != p_obstacle->mp_beta_seg->m_subsegs.end(); itbp++ ) {
-          LineSubSegment* p_subseg_b = (*itbp);
+
+      if (p_obstacle->mp_beta_seg) {
+        for( unsigned int b_i = 0; b_i < p_obstacle->mp_beta_seg->m_subsegs.size(); b_i ++ ) {
+          LineSubSegment* p_subseg_b = p_obstacle->mp_beta_seg->m_subsegs[b_i];
           if (p_subseg_b) {
             ReferenceFrame* p_rf = new ReferenceFrame();
             p_rf->m_name = p_subseg_b->get_name();
@@ -65,7 +61,7 @@ void ReferenceFrameSet::init(int width, int height, std::vector< std::vector<Poi
         }
       }
     }
-  }  
+  }
 }
 
 StringGrammar* ReferenceFrameSet::get_string_grammar( SubRegion* p_init, SubRegion* p_goal ) {

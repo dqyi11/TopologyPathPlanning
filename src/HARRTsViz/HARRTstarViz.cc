@@ -89,6 +89,7 @@ void HARRTstarViz::paintEvent( QPaintEvent * e ) {
         QPen rf_paintpen( REFERENCE_FRAME_COLOR );
         rf_paintpen.setWidth(2);
         rf_painter.setPen(rf_paintpen);
+
         for( std::vector<ReferenceFrame*>::iterator it = mp_reference_frames->get_reference_frames().begin();
              it != mp_reference_frames->get_reference_frames().end(); it ++ ) {
             ReferenceFrame* rf = (*it);

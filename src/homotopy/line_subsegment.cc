@@ -15,10 +15,6 @@ LineSubSegment::LineSubSegment( Point2D pos_a, Point2D pos_b, LineSubSegmentSet*
     m_is_connected_to_central_point = is_connected_to_central_point;
     m_subseg = Segment2D( pos_a, pos_b );
     _p_subseg_set = p_subseg_set;
-    /*
-    if( _p_subseg_set ) {
-        _p_subseg_set->m_subsegs.push_back(this);
-    }*/
 }
 
 LineSubSegment::~LineSubSegment() {
