@@ -24,7 +24,7 @@ HARRTstarWindow::HARRTstarWindow(QWidget *parent)
     setCentralWidget(mpViz);
 
     mpStatusLabel = new QLabel();
-    mpStatusLabel->setFixedWidth(10);
+    mpStatusLabel->setFixedWidth(40);
     mpStatusProgressBar = new QProgressBar();
 
     statusBar()->addWidget(mpStatusProgressBar);
