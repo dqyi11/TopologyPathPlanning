@@ -26,7 +26,7 @@ public:
     ReferenceFrameSet();
     virtual ~ReferenceFrameSet();
 
-    void init(int width, int height, std::vector< std::vector<Point2D> > obstacles); 
+    void init(int width, int height, std::vector< std::vector<Point2D> >& obstacles);
     StringGrammar* get_string_grammar( SubRegion* p_init, SubRegion* p_goal );
     HomotopicGrammar* get_homotopic_grammar( SubRegion* p_init, SubRegion* p_goal );
 

@@ -23,7 +23,7 @@ ReferenceFrameSet::~ReferenceFrameSet() {
   _reference_frames.clear();
 }
 
-void ReferenceFrameSet::init(int width, int height, std::vector< std::vector<Point2D> > obstacles) {
+void ReferenceFrameSet::init(int width, int height, std::vector< std::vector<Point2D> >& obstacles) {
   if( _p_world_map ) {
     delete _p_world_map;
     _p_world_map = NULL;
@@ -33,16 +33,37 @@ void ReferenceFrameSet::init(int width, int height, std::vector< std::vector<Poi
   _p_world_map->init();
   
   _reference_frames.clear();
-  for( std::vector<LineSubSegmentSet*>::iterator it = _p_world_map->get_sublinesegment_set().begin();
-       it != _p_world_map->get_sublinesegment_set().end(); it ++ ) {
-    LineSubSegmentSet* p_linesubsegment_set = (*it);
-    for( std::vector<LineSubSegment*>::iterator its = p_linesubsegment_set->m_subsegs.begin();
-         its != p_linesubsegment_set->m_subsegs.end(); its ++ ) {
-      LineSubSegment* p_linesubsegment = (*its);
-      ReferenceFrame* p_rf = new ReferenceFrame();
-      p_rf->m_name = p_linesubsegment->get_name();
-      p_rf->m_segment = p_linesubsegment->m_subseg;
-      _reference_frames.push_back(p_rf);
+
+  for( std::vector<Obstacle*>::iterator it = _p_world_map->get_obstacles().begin();
+       it != _p_world_map->get_obstacles().end(); it++ ) {
+    Obstacle* p_obstacle = (*it);
+    if ( p_obstacle ) {
+      LineSubSegmentSet * p_alpha_segs = p_obstacle->mp_alpha_seg;
+      if (p_alpha_segs) {
+        for( std::vector< LineSubSegment* >::iterator itap = p_obstacle->mp_alpha_seg->m_subsegs.begin();
+             itap != p_obstacle->mp_alpha_seg->m_subsegs.end(); itap++ ) {
+          LineSubSegment* p_subseg_a = (*itap);
+          if (p_subseg_a) {
+            ReferenceFrame* p_rf = new ReferenceFrame();
+            p_rf->m_name = p_subseg_a->get_name();
+            p_rf->m_segment = Segment2D( p_subseg_a->m_subseg.source(), p_subseg_a->m_subseg.target());
+            _reference_frames.push_back(p_rf);
+          }
+        }
+      }
+      LineSubSegmentSet * p_beta_segs = p_obstacle->mp_beta_seg;
+      if (p_beta_segs) {
+        for( std::vector< LineSubSegment* >::iterator itbp = p_obstacle->mp_beta_seg->m_subsegs.begin();
+             itbp != p_obstacle->mp_beta_seg->m_subsegs.end(); itbp++ ) {
+          LineSubSegment* p_subseg_b = (*itbp);
+          if (p_subseg_b) {
+            ReferenceFrame* p_rf = new ReferenceFrame();
+            p_rf->m_name = p_subseg_b->get_name();
+            p_rf->m_segment = Segment2D( p_subseg_b->m_subseg.source(), p_subseg_b->m_subseg.target());
+            _reference_frames.push_back(p_rf);
+          }
+        }
+      }
     }
   }  
 }

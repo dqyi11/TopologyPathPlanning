@@ -234,6 +234,7 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                  it != obstacles.end(); it++ ) {
                 Obstacle* p_obstacle = (*it);
                 if ( p_obstacle ) {
+                    std::cout << "OBS " << p_obstacle->get_index() << " ALPHA:" << p_obstacle->mp_alpha_seg->m_subsegs.size() << std::endl;
                     for( std::vector< LineSubSegment* >::iterator itap = p_obstacle->mp_alpha_seg->m_subsegs.begin();
                          itap != p_obstacle->mp_alpha_seg->m_subsegs.end(); itap++ ) {
                         LineSubSegment* p_subseg_a = (*itap);
@@ -241,6 +242,8 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                         double a_src_y = CGAL::to_double( p_subseg_a->m_subseg.source().y() );
                         double a_end_x = CGAL::to_double( p_subseg_a->m_subseg.target().x() );
                         double a_end_y = CGAL::to_double( p_subseg_a->m_subseg.target().y() );
+                        std::cout << p_subseg_a << std::endl;
+                        std::cout << p_subseg_a->get_name() << " (" << a_src_x << "," << a_src_y << ") (" << a_end_x << "," << a_end_y << ")" << std::endl;
                         a_subseg_painter.drawLine( QPoint( a_src_x , a_src_y ), QPoint( a_end_x , a_end_y ));
                     }
                 }
@@ -254,6 +257,7 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                  it != obstacles.end(); it++ ) {
                 Obstacle* p_obstacle = (*it);
                 if ( p_obstacle ) {
+                    std::cout << "OBS " << p_obstacle->get_index() << " BETA:" << p_obstacle->mp_beta_seg->m_subsegs.size() << std::endl;
                     for( std::vector< LineSubSegment* >::iterator itbp = p_obstacle->mp_beta_seg->m_subsegs.begin();
                          itbp != p_obstacle->mp_beta_seg->m_subsegs.end(); itbp++ ) {
                         LineSubSegment* p_subseg_b = (*itbp);
@@ -261,6 +265,8 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                         double b_src_y = CGAL::to_double( p_subseg_b->m_subseg.source().y() );
                         double b_end_x = CGAL::to_double( p_subseg_b->m_subseg.target().x() );
                         double b_end_y = CGAL::to_double( p_subseg_b->m_subseg.target().y() );
+                        std::cout << p_subseg_b << std::endl;
+                        std::cout << p_subseg_b->get_name() << " (" << b_src_x << "," << b_src_y << ") (" << b_end_x << "," << b_end_y << ")" << std::endl;
                         b_subseg_painter.drawLine( QPoint( b_src_x , b_src_y ), QPoint( b_end_x , b_end_y ));
                     }
                 }
