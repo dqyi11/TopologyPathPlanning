@@ -113,3 +113,63 @@ std::string ReferenceFrameSet::get_character_id( Point2D start, Point2D end, gra
   }        
   return character_id;
 }
+
+
+std::vector< std::string > ReferenceFrameSet::get_string( Point2D start, Point2D end, grammar_type_t type ) {
+  std::vector< std::string > id_string;
+ 
+  float x1 = CGAL::to_double( start.x() );
+  float y1 = CGAL::to_double( start.y() );
+  float x2 = CGAL::to_double( end.x() );
+  float y2 = CGAL::to_double( end.y() );
+
+  const bool steep = (fabs(y2 - y1) > fabs(x2 - x1));
+  if (steep) {
+    std::swap(x1, y1);
+    std::swap(x2, y2);
+  }
+
+  if (x1 > x2) {
+    std::swap(x1, x2);
+    std::swap(y1, y2);
+  }
+
+  const float dx = x2 - x1;
+  const float dy = fabs(y2 - y1);
+
+  float error = dx / 2.0f;
+  const int ystep = (y1 < y2) ? 1 : -1;
+  int y = (int)y1;
+
+  const int maxX = (int)x2;
+
+  Point2D lastPos(x1, y1);
+  Point2D newPos(x1, y1);
+  std::string lastString = "";
+  for(int x=(int)x1; x<maxX; x++) {
+    if(steep) {
+      newPos = Point2D( x, y );
+      std::string ref_str = get_character_id(lastPos, newPos, type);
+      if (ref_str!="") {
+        id_string.push_back(ref_str);
+      }
+      lastPos = newPos;
+    }
+    else {
+      newPos = Point2D( x, y );
+      std::string ref_str = get_character_id(lastPos, newPos, type);
+      if (ref_str!="") {
+        id_string.push_back(ref_str);
+      }
+      lastPos = newPos;
+    }
+
+    error -= dy;
+    if(error < 0) {
+      y += ystep;
+      error += dx;
+    }
+  }
+
+  return id_string;
+}

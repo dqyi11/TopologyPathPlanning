@@ -239,7 +239,6 @@ void HARRTstarWindow::planPath() {
         //QString msg = "CurrentIteration " + QString::number(mpHARRTstar->get_current_iteration()) + " ";
         //msg += QString::number(mpHARRTstar->get_ball_radius());
         //qDebug(msg.toStdString().c_str());
-
         mpHARRTstar->extend();
 
         updateStatus();

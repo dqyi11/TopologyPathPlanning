@@ -24,6 +24,7 @@ public:
     RRTNode* mp_parent;
     POS2D    m_pos;
     std::list<RRTNode*> m_child_nodes;
+    std::vector< std::string > m_substring;
 };
 
 class Path {
@@ -36,6 +37,7 @@ public:
     POS2D  m_start;
     POS2D  m_goal;
     std::vector<POS2D> m_way_points;
+    std::vector< std::string > m_string;
 };
 
 class HARRTstar {
