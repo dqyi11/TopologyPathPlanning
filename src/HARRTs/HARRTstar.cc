@@ -370,6 +370,7 @@ bool HARRTstar::_remove_edge( RRTNode* p_node_parent, RRTNode*  p_node_child ) {
     RRTNode* p_current = (RRTNode*)(*it);
     if ( p_current == p_node_child || p_current->m_pos==p_node_child->m_pos ) {
       p_current->mp_parent = NULL;
+      p_current->clear_string();
       it = p_node_parent->m_child_nodes.erase(it);
       removed = true;
     }
