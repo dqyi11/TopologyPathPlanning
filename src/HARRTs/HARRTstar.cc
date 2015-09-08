@@ -10,16 +10,32 @@ RRTNode::RRTNode(POS2D pos) {
   m_pos = pos;
   m_cost = 0.0;
   mp_parent = NULL;
+  m_child_nodes.clear();
+  m_substring.clear();
 }
 
 bool RRTNode::operator==(const RRTNode &other) {
   return m_pos==other.m_pos;
 }
 
+void RRTNode::clear_string() {
+  m_substring.clear();
+}
+
+void RRTNode::append_to_string( std::vector< std::string > ids ) {
+  for( unsigned int i = 0; i < ids.size(); i ++ ) {
+    std::string id = ids[i];
+    m_substring.push_back( id );
+  }
+}
+
 Path::Path(POS2D start, POS2D goal) {
   m_start = start;
   m_goal = goal;
   m_cost = 0.0;
+
+  m_way_points.clear();
+  m_string.clear();
 }
 
 Path::~Path() {
@@ -385,6 +401,16 @@ bool HARRTstar::_add_edge( RRTNode* p_node_parent, RRTNode* p_node_child ) {
   if ( p_node_parent->m_pos == p_node_child->m_pos ) {
     return false;
   }
+  // generate the string of ID characters
+  Point2D start = Point2D( p_node_parent->m_pos[0],
+                           p_node_parent->m_pos[1] );
+  Point2D goal = Point2D( p_node_child->m_pos[0],
+                          p_node_child->m_pos[1] );
+  std::vector< std::string > ids = _reference_frames->get_string( start, goal, STRING_GRAMMAR_TYPE );
+  p_node_child->clear_string();
+  p_node_child->append_to_string( p_node_parent->m_substring );
+  p_node_child->append_to_string( ids );
+
   if ( true == _has_edge( p_node_parent, p_node_child ) ) {
     p_node_child->mp_parent = p_node_parent;
   }

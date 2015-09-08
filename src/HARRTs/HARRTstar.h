@@ -20,6 +20,9 @@ public:
 
     bool operator==( const RRTNode &other );
 
+    void clear_string();
+    void append_to_string( std::vector< std::string > ids );
+ 
     double   m_cost;
     RRTNode* mp_parent;
     POS2D    m_pos;
