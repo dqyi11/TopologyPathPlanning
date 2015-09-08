@@ -29,7 +29,6 @@ HARRTstarWindow::HARRTstarWindow(QWidget *parent)
 
     statusBar()->addWidget(mpStatusProgressBar);
     statusBar()->addWidget(mpStatusLabel);
-
     updateTitle();
 }
 
@@ -71,8 +70,7 @@ void HARRTstarWindow::createMenuBar() {
 
 }
 
-void HARRTstarWindow::createActions()
-{
+void HARRTstarWindow::createActions() {
     mpOpenAction = new QAction("Open", this);
     mpSaveAction = new QAction("Save", this);
     mpExportAction = new QAction("Export", this);
@@ -235,7 +233,7 @@ void HARRTstarWindow::planPath() {
     mpViz->m_PPInfo.get_obstacle_info(mpHARRTstar->get_map_info());
     mpViz->setTree(mpHARRTstar);
 
-    mpHARRTstar->dump_distribution("dist.txt");
+    //mpHARRTstar->dump_distribution("dist.txt");
 
     while(mpHARRTstar->get_current_iteration() <= mpViz->m_PPInfo.m_max_iteration_num) {
         //QString msg = "CurrentIteration " + QString::number(mpHARRTstar->get_current_iteration()) + " ";
