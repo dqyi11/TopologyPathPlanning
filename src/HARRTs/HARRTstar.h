@@ -20,6 +20,9 @@ public:
 
     bool operator==( const RRTNode &other );
 
+    void clear_string();
+    void append_to_string( std::vector< std::string > ids );
+ 
     double   m_cost;
     RRTNode* mp_parent;
     POS2D    m_pos;
@@ -32,6 +35,9 @@ class Path {
 public:
     Path(POS2D start, POS2D goal);
     ~Path();
+
+    void append_waypoints( std::vector<POS2D> waypoints, bool reverse = false );
+    void append_substring( std::vector< std::string > ids, bool reverse = false );
 
     double m_cost;
     POS2D  m_start;
@@ -73,6 +79,9 @@ protected:
     POS2D _sampling();
     POS2D _steer( POS2D pos_a, POS2D pos_b );
     void extend(RRTree_type_t type);
+
+    Path concatenate_paths( Path from_path, Path to_path );
+    Path get_subpath( RRTNode* p_end_node, RRTree_type_t type );
 
     KDNode2D _find_nearest( POS2D pos, RRTree_type_t type );
     std::list<KDNode2D> _find_near( POS2D pos, RRTree_type_t type );

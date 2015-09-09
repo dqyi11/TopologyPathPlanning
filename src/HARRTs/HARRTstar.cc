@@ -10,20 +10,62 @@ RRTNode::RRTNode(POS2D pos) {
   m_pos = pos;
   m_cost = 0.0;
   mp_parent = NULL;
+  m_child_nodes.clear();
+  m_substring.clear();
 }
 
 bool RRTNode::operator==(const RRTNode &other) {
   return m_pos==other.m_pos;
 }
 
+void RRTNode::clear_string() {
+  m_substring.clear();
+}
+
+void RRTNode::append_to_string( std::vector< std::string > ids ) {
+  for( unsigned int i = 0; i < ids.size(); i ++ ) {
+    std::string id = ids[i];
+    m_substring.push_back( id );
+  }
+}
+
 Path::Path(POS2D start, POS2D goal) {
   m_start = start;
   m_goal = goal;
   m_cost = 0.0;
+
+  m_way_points.clear();
+  m_string.clear();
 }
 
 Path::~Path() {
   m_cost = 0.0;
+}
+
+void Path::append_waypoints( std::vector<POS2D> waypoints, bool reverse ) {
+  if ( reverse ) {
+    for( unsigned int i = waypoints.size()-1; i >= 0; i -- ) {
+      m_way_points.push_back( waypoints[i] );  
+    }
+  }
+  else {
+    for( unsigned int i = 0; i < waypoints.size(); i ++ )  {
+      m_way_points.push_back( waypoints[i] );
+    }
+  }
+}
+
+void Path::append_substring( std::vector< std::string > ids, bool reverse ) {
+  if ( reverse ) {
+    for( unsigned int i = ids.size()-1; i >= 0; i -- ) {
+      m_string.push_back( ids[i] );     
+    }
+  }
+  else {
+    for( unsigned int i = 0; i < ids.size(); i ++ )  {
+      m_string.push_back( ids[i] );
+    }
+  }
 }
 
 HARRTstar::HARRTstar( int width, int height, int segment_length ) {
@@ -354,6 +396,7 @@ bool HARRTstar::_remove_edge( RRTNode* p_node_parent, RRTNode*  p_node_child ) {
     RRTNode* p_current = (RRTNode*)(*it);
     if ( p_current == p_node_child || p_current->m_pos==p_node_child->m_pos ) {
       p_current->mp_parent = NULL;
+      p_current->clear_string();
       it = p_node_parent->m_child_nodes.erase(it);
       removed = true;
     }
@@ -385,6 +428,16 @@ bool HARRTstar::_add_edge( RRTNode* p_node_parent, RRTNode* p_node_child ) {
   if ( p_node_parent->m_pos == p_node_child->m_pos ) {
     return false;
   }
+  // generate the string of ID characters
+  Point2D start = Point2D( p_node_parent->m_pos[0],
+                           p_node_parent->m_pos[1] );
+  Point2D goal = Point2D( p_node_child->m_pos[0],
+                          p_node_child->m_pos[1] );
+  std::vector< std::string > ids = _reference_frames->get_string( start, goal, STRING_GRAMMAR_TYPE );
+  p_node_child->clear_string();
+  p_node_child->append_to_string( p_node_parent->m_substring );
+  p_node_child->append_to_string( ids );
+
   if ( true == _has_edge( p_node_parent, p_node_child ) ) {
     p_node_child->mp_parent = p_node_parent;
   }
@@ -574,4 +627,42 @@ void HARRTstar::dump_distribution(std::string filename) {
     }
   }
   myfile.close();
+}
+
+Path HARRTstar::concatenate_paths( Path from_path, Path to_path ) {
+  Path new_path = Path( from_path.m_start, to_path.m_start );
+  Point2D from_path_end = Point2D( from_path.m_goal[0], from_path.m_goal[1] );
+  Point2D to_path_end = Point2D( to_path.m_goal[0], to_path.m_goal[1] );
+  std::vector< std::string > between_ids = _reference_frames->get_string( from_path_end, to_path_end , STRING_GRAMMAR_TYPE );
+  double delta_cost = _calculate_cost( from_path.m_goal, to_path.m_goal );
+
+  new_path.append_waypoints( from_path.m_way_points );
+  new_path.append_substring( from_path.m_string );
+  new_path.append_substring( between_ids );
+  new_path.append_waypoints( to_path.m_way_points, true );
+  new_path.append_substring( to_path.m_string, true );
+  new_path.m_cost = from_path.m_cost + delta_cost + to_path.m_cost;
+  
+  return new_path;
+}
+
+Path HARRTstar::get_subpath( RRTNode* p_end_node, RRTree_type_t type ) {
+  Path subpath( p_end_node->m_pos, p_end_node->m_pos );
+  std::list<RRTNode*> node_list;
+  get_parent_node_list( p_end_node , node_list );
+  if( type == START_TREE_TYPE ) {
+    subpath = Path( _p_st_root->m_pos, p_end_node->m_pos );
+  }
+  else if ( type == GOAL_TREE_TYPE ) {
+    subpath = Path( _p_gt_root->m_pos, p_end_node->m_pos );
+  }
+  subpath.m_cost = p_end_node->m_cost;
+  subpath.append_substring( p_end_node->m_substring ); 
+  subpath.m_way_points.clear();
+  for( std::list<RRTNode*>::iterator it = node_list.begin();
+       it != node_list.end(); it ++ ) {
+    RRTNode* p_rrt_node = (*it);
+    subpath.m_way_points.push_back( p_rrt_node->m_pos ); 
+  }
+  return subpath;
 }
