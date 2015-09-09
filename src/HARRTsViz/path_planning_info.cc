@@ -17,7 +17,7 @@ PathPlanningInfo::PathPlanningInfo() {
     m_goal.setY(-1);
 
     m_paths_output = "";
-    mp_found_path = NULL;
+    mp_found_paths.clear();
 
     m_min_dist_enabled = false;
 
@@ -169,22 +169,24 @@ bool PathPlanningInfo::load_from_file(QString filename) {
     return true;
 }
 
-void PathPlanningInfo::load_path(Path* path) {
-    mp_found_path = path;
+void PathPlanningInfo::load_paths( std::vector<Path*> paths) {
+    mp_found_paths = paths;
 }
 
-bool PathPlanningInfo::export_path(QString filename) {
+bool PathPlanningInfo::export_paths(QString filename) {
     QFile file(filename);
     if( file.open(QIODevice::ReadWrite) ) {
         QTextStream stream( & file );
-
-        if( mp_found_path ) {
+        for( std::vector<Path*>::iterator it = mp_found_paths.begin();
+             it != mp_found_paths.end(); it++) {
+            Path* p_path = (*it);
             // Save scores
-            stream << mp_found_path->m_cost << "\n";
+            stream << p_path->m_cost << "\n";
             stream << "\n";
-            for(unsigned int i=0;i<mp_found_path->m_way_points.size();i++) {
-                stream << mp_found_path->m_way_points[i][0] << " " << mp_found_path->m_way_points[i][1] << "\t";
+            for(unsigned int i=0;i<p_path->m_way_points.size();i++) {
+                stream << p_path->m_way_points[i][0] << " " << p_path->m_way_points[i][1] << "\t";
             }
+            stream << "\n";
             stream << "\n";
         }
         return true;

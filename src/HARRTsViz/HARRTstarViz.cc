@@ -12,6 +12,8 @@ HARRTstarViz::HARRTstarViz( QWidget *parent ) :
     QLabel(parent) {
     mp_tree = NULL;
     m_show_reference_frames = false;
+    m_reference_frame_index = -1;
+    m_found_path_index = -1;
 }
 
 void HARRTstarViz::setTree( HARRTstar* p_tree ) {
@@ -51,9 +53,9 @@ void HARRTstarViz::paintEvent( QPaintEvent * e ) {
                 }
             }
         }
-
-        if(m_PPInfo.mp_found_path) {
-            Path * p = m_PPInfo.mp_found_path;
+        
+        if(m_PPInfo.mp_found_paths.size() > 0 && m_found_path_index >= 0  ) {
+            Path * p = m_PPInfo.mp_found_paths[m_found_path_index];
             QPainter painter(this);
             QPen paintpen(QColor(255,140,0));
             paintpen.setWidth(2);
@@ -121,7 +123,7 @@ bool HARRTstarViz::drawPath(QString filename) {
 
     QFile file(filename);
     if(file.open(QIODevice::WriteOnly)) {
-        if(m_PPInfo.mp_found_path) {
+        if(m_PPInfo.mp_found_paths[ m_found_path_index ]) {
             drawPathOnMap(pix);
         }
         pix.save(&file, "PNG");
@@ -132,7 +134,7 @@ bool HARRTstarViz::drawPath(QString filename) {
 
 void HARRTstarViz::drawPathOnMap(QPixmap& map) {
 
-    Path * p = m_PPInfo.mp_found_path;
+    Path * p = m_PPInfo.mp_found_paths[ m_found_path_index ];
     QPainter painter(&map);
     QPen paintpen(QColor(255,140,0));
     paintpen.setWidth(2);
@@ -190,4 +192,26 @@ std::string HARRTstarViz::get_reference_frame_name() {
         return mp_reference_frames->get_reference_frames()[m_reference_frame_index]->m_name;
     }
     return "";
+}
+
+void HARRTstarViz::prev_found_path() {
+    if ( m_PPInfo.mp_found_paths.size() == 0 ) {
+        return;
+    }
+    if ( m_found_path_index < 0 ) {
+        m_found_path_index = m_PPInfo.mp_found_paths.size() - 1;
+    } else {
+        m_found_path_index --;
+    }
+}
+
+void HARRTstarViz::next_found_path() {
+    if ( m_PPInfo.mp_found_paths.size() == 0 ) {
+        return;
+    }
+    if ( m_found_path_index >= m_PPInfo.mp_found_paths.size()-1 ) {
+        m_found_path_index = -1;
+    } else {
+        m_found_path_index ++;
+    }
 }

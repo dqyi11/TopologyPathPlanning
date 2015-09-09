@@ -30,8 +30,8 @@ public:
     void read( const QJsonObject &json );
     void write( QJsonObject &json ) const;
 
-    void load_path( Path* path );
-    bool export_path( QString filename );
+    void load_paths( std::vector<Path*> paths );
+    bool export_paths( QString filename );
 
     static double calc_dist( POS2D pos_a, POS2D pos_b, double** pp_distribution, void* tree ) {
         double dist = 0.0;
@@ -125,7 +125,7 @@ public:
     int m_max_iteration_num;
     double m_segment_length;
 
-    Path* mp_found_path;
+    std::vector<Path*> mp_found_paths;
 };
 
 #endif //  PATHPLANNINGINFO_H_

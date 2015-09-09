@@ -134,7 +134,7 @@ void HARRTstarWindow::onExport() {
 bool HARRTstarWindow::exportPaths() {
     if(mpViz) {
         bool success = false;
-        success = mpViz->m_PPInfo.export_path(mpViz->m_PPInfo.m_paths_output);
+        success = mpViz->m_PPInfo.export_paths(mpViz->m_PPInfo.m_paths_output);
         success = mpViz->drawPath(mpViz->m_PPInfo.m_paths_output+".png");
         return success;
     }
@@ -213,9 +213,14 @@ void HARRTstarWindow::planPath() {
         delete mpHARRTstar;
         mpHARRTstar = NULL;
     }
-    if(mpViz->m_PPInfo.mp_found_path) {
-        delete mpViz->m_PPInfo.mp_found_path;
-        mpViz->m_PPInfo.mp_found_path = NULL;
+    if (mpViz) {
+        for( std::vector<Path*>::iterator it = mpViz->m_PPInfo.mp_found_paths.begin();
+             it != mpViz->m_PPInfo.mp_found_paths.end(); it ++ ) {
+            Path * p_path = (*it);
+            delete p_path;
+            p_path = NULL;
+        }
+        mpViz->m_PPInfo.mp_found_paths.clear();
     }
 
     mpViz->m_PPInfo.init_func_param();
@@ -245,8 +250,9 @@ void HARRTstarWindow::planPath() {
         repaint();
     }
 
-    Path* path = mpHARRTstar->find_path();
-    mpViz->m_PPInfo.load_path(path);
+    //Path* path = mpHARRTstar->find_path();
+    std::vector<Path*> p_paths = mpHARRTstar->get_paths();
+    mpViz->m_PPInfo.load_paths(p_paths);
 }
 
 void HARRTstarWindow::onAddStart() {
