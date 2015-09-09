@@ -52,18 +52,18 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 
 
 #add the include directories to the build
-include_directories(${PROJECT_SOURCE_DIR}/src/homotopy
-                    ${PROJECT_SOURCE_DIR}/src/homotopyViz 
-                    ${PROJECT_SOURCE_DIR}/src/homotopyDemo
+include_directories(${PROJECT_SOURCE_DIR}/src/Homotopy
+                    ${PROJECT_SOURCE_DIR}/src/HomotopyViz 
+                    ${PROJECT_SOURCE_DIR}/src/HomotopyDemo
                     ${PROJECT_SOURCE_DIR}/src/HARRTs
                     ${PROJECT_SOURCE_DIR}/src/HARRTsViz
                     ${PROJECT_SOURCE_DIR}/src/HARRTsDemo)
 
 add_definitions(-Wall -g -O3)
 
-add_subdirectory(homotopy)
-add_subdirectory(homotopyViz)
-add_subdirectory(homotopyDemo)
+add_subdirectory(Homotopy)
+add_subdirectory(HomotopyViz)
+add_subdirectory(HomotopyDemo)
 add_subdirectory(HARRTs)
 add_subdirectory(HARRTsViz)
 add_subdirectory(HARRTsDemo)
