@@ -265,11 +265,14 @@ bool HARRTstar::_is_obstacle_free( POS2D pos_a, POS2D pos_b ) {
 }
 
 void HARRTstar::extend() {
-  extend(START_TREE_TYPE);
-  extend(GOAL_TREE_TYPE);
+  RRTNode* p_st_new_node = _extend(START_TREE_TYPE);
+  RRTNode* p_gt_new_node = _extend(GOAL_TREE_TYPE);
+  Path* p_st_new_path = find_path( p_st_new_node->m_pos );
+  Path* p_gt_new_path = find_path( p_gt_new_node->m_pos ); 
+  _current_iteration++;
 }
 
-void HARRTstar::extend( RRTree_type_t type ) {
+RRTNode* HARRTstar::_extend( RRTree_type_t type ) {
   bool node_inserted = false;
   while( false==node_inserted ) {
     POS2D rnd_pos = _sampling();
@@ -315,9 +318,11 @@ void HARRTstar::extend( RRTree_type_t type ) {
       _attach_new_node( p_new_rnode, p_nearest_rnode, near_rnodes );
       // rewire near nodes of reference trees
       _rewire_near_nodes( p_new_rnode, near_rnodes );
+
+      return p_new_rnode;
     }
   }
-  _current_iteration++;
+  return NULL;
 }
 
 KDNode2D HARRTstar::_find_nearest( POS2D pos, RRTree_type_t type ) {
@@ -506,25 +511,21 @@ RRTNode* HARRTstar::_find_ancestor(RRTNode* p_node) {
   return get_ancestor( p_node );
 }
 
-Path* HARRTstar::find_path() {
-  Path* p_new_path = new Path( _start, _goal );
+Path* HARRTstar::find_path( POS2D via_pos ) {
+  Path* p_new_path = NULL; 
 
-  std::list<RRTNode*> node_list;
+  RRTNode * p_st_first_node = NULL;
+  RRTNode * p_gt_first_node = NULL;
+  double st_delta_cost = 0.0;
+  double gt_delta_cost = 0.0;
+  _get_closest_node( via_pos, p_st_first_node, st_delta_cost, START_TREE_TYPE );
+  _get_closest_node( via_pos, p_gt_first_node, gt_delta_cost, GOAL_TREE_TYPE );
 
-  RRTNode * p_first_node = NULL;
-  double delta_cost = 0.0;
-  _get_closet_to_goal( p_first_node, delta_cost, START_TREE_TYPE );
+  if( p_st_first_node != NULL && p_gt_first_node != NULL ) {
+    Path* p_from_path = _get_subpath( p_st_first_node, START_TREE_TYPE );
+    Path* p_to_path = _get_subpath( p_gt_first_node, GOAL_TREE_TYPE );
 
-  if( p_first_node != NULL ) {
-    get_parent_node_list( p_first_node, node_list );
-    for( std::list<RRTNode*>::reverse_iterator rit=node_list.rbegin();
-         rit!=node_list.rend(); ++rit ) {
-      RRTNode* p_node = (*rit);
-      p_new_path->m_way_points.push_back( p_node->m_pos );
-    }
-    p_new_path->m_way_points.push_back(_goal);
-
-    p_new_path->m_cost = p_first_node->m_cost + delta_cost;
+    p_new_path = _concatenate_paths( p_from_path, p_to_path ); 
   }
 
   return p_new_path;
@@ -593,10 +594,10 @@ void HARRTstar::_update_cost_to_children( RRTNode* p_node, double delta_cost ) {
   }
 }
 
-bool HARRTstar::_get_closet_to_goal( RRTNode*& p_node_closet_to_goal, double& delta_cost, RRTree_type_t type ) {
+bool HARRTstar::_get_closest_node ( POS2D pos, RRTNode*& p_node_closet_to_goal, double& delta_cost, RRTree_type_t type ) {
   bool found = false;
 
-  std::list<KDNode2D> near_nodes = _find_near( _goal, type );
+  std::list<KDNode2D> near_nodes = _find_near( pos, type );
   double min_total_cost = std::numeric_limits<double>::max();
 
   for(std::list<KDNode2D>::iterator it=near_nodes.begin();
@@ -629,40 +630,46 @@ void HARRTstar::dump_distribution(std::string filename) {
   myfile.close();
 }
 
-Path HARRTstar::concatenate_paths( Path from_path, Path to_path ) {
-  Path new_path = Path( from_path.m_start, to_path.m_start );
-  Point2D from_path_end = Point2D( from_path.m_goal[0], from_path.m_goal[1] );
-  Point2D to_path_end = Point2D( to_path.m_goal[0], to_path.m_goal[1] );
+Path* HARRTstar::_concatenate_paths( Path* p_from_path, Path* p_to_path ) {
+  Path* p_new_path = new Path( p_from_path->m_start, p_to_path->m_start );
+  Point2D from_path_end = Point2D( p_from_path->m_goal[0], p_from_path->m_goal[1] );
+  Point2D to_path_end = Point2D( p_to_path->m_goal[0], p_to_path->m_goal[1] );
   std::vector< std::string > between_ids = _reference_frames->get_string( from_path_end, to_path_end , STRING_GRAMMAR_TYPE );
-  double delta_cost = _calculate_cost( from_path.m_goal, to_path.m_goal );
+  double delta_cost = _calculate_cost( p_from_path->m_goal, p_to_path->m_goal );
 
-  new_path.append_waypoints( from_path.m_way_points );
-  new_path.append_substring( from_path.m_string );
-  new_path.append_substring( between_ids );
-  new_path.append_waypoints( to_path.m_way_points, true );
-  new_path.append_substring( to_path.m_string, true );
-  new_path.m_cost = from_path.m_cost + delta_cost + to_path.m_cost;
+  p_new_path->append_waypoints( p_from_path->m_way_points );
+  p_new_path->append_substring( p_from_path->m_string );
+  p_new_path->append_substring( between_ids );
+  p_new_path->append_waypoints( p_to_path->m_way_points, true );
+  p_new_path->append_substring( p_to_path->m_string, true );
+  p_new_path->m_cost = p_from_path->m_cost + delta_cost + p_to_path->m_cost;
   
-  return new_path;
+  return p_new_path;
 }
 
-Path HARRTstar::get_subpath( RRTNode* p_end_node, RRTree_type_t type ) {
-  Path subpath( p_end_node->m_pos, p_end_node->m_pos );
+Path* HARRTstar::_get_subpath( RRTNode* p_end_node, RRTree_type_t type ) {
+  Path* p_subpath = NULL; 
   std::list<RRTNode*> node_list;
   get_parent_node_list( p_end_node , node_list );
   if( type == START_TREE_TYPE ) {
-    subpath = Path( _p_st_root->m_pos, p_end_node->m_pos );
+    p_subpath = new Path( _p_st_root->m_pos, p_end_node->m_pos );
   }
   else if ( type == GOAL_TREE_TYPE ) {
-    subpath = Path( _p_gt_root->m_pos, p_end_node->m_pos );
+    p_subpath = new Path( _p_gt_root->m_pos, p_end_node->m_pos );
   }
-  subpath.m_cost = p_end_node->m_cost;
-  subpath.append_substring( p_end_node->m_substring ); 
-  subpath.m_way_points.clear();
+  p_subpath->m_cost = p_end_node->m_cost;
+  p_subpath->append_substring( p_end_node->m_substring ); 
+  p_subpath->m_way_points.clear();
   for( std::list<RRTNode*>::iterator it = node_list.begin();
        it != node_list.end(); it ++ ) {
     RRTNode* p_rrt_node = (*it);
-    subpath.m_way_points.push_back( p_rrt_node->m_pos ); 
+    p_subpath->m_way_points.push_back( p_rrt_node->m_pos ); 
   }
-  return subpath;
+  return p_subpath;
+}
+
+std::vector<Path*> HARRTstar::get_paths() {
+  std::vector<Path*> paths;
+
+  return paths;
 }

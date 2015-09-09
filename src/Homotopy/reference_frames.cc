@@ -114,7 +114,6 @@ std::string ReferenceFrameSet::get_character_id( Point2D start, Point2D end, gra
   return character_id;
 }
 
-
 std::vector< std::string > ReferenceFrameSet::get_string( Point2D start, Point2D end, grammar_type_t type ) {
   std::vector< std::string > id_string;
  

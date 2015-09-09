@@ -68,7 +68,8 @@ public:
     double get_gt_ball_radius() { return _gt_ball_radius; }
 
     void extend();
-    Path* find_path();
+    Path* find_path( POS2D via_pos );
+    std::vector<Path*> get_paths();
 
     void set_reference_frames( ReferenceFrameSet* p_reference_frames ) { _reference_frames = p_reference_frames; }
     ReferenceFrameSet* get_reference_frames() { return _reference_frames; }
@@ -78,10 +79,10 @@ public:
 protected:
     POS2D _sampling();
     POS2D _steer( POS2D pos_a, POS2D pos_b );
-    void extend(RRTree_type_t type);
+    RRTNode* _extend(RRTree_type_t type);
 
-    Path concatenate_paths( Path from_path, Path to_path );
-    Path get_subpath( RRTNode* p_end_node, RRTree_type_t type );
+    Path* _concatenate_paths( Path* p_from_path, Path* p_to_path );
+    Path* _get_subpath( RRTNode* p_end_node, RRTree_type_t type );
 
     KDNode2D _find_nearest( POS2D pos, RRTree_type_t type );
     std::list<KDNode2D> _find_near( POS2D pos, RRTree_type_t type );
@@ -102,7 +103,7 @@ protected:
     void _attach_new_node( RRTNode* p_node_new, RRTNode* p_nearest_node, std::list<RRTNode*> near_nodes );
     void _rewire_near_nodes( RRTNode* p_node_new, std::list<RRTNode*> near_nodes );
     void _update_cost_to_children( RRTNode* p_node, double delta_cost );
-    bool _get_closet_to_goal( RRTNode*& p_node_closet_to_goal, double& delta_cost, RRTree_type_t type );
+    bool _get_closest_node( POS2D pos, RRTNode*& p_node_closest, double& delta_cost, RRTree_type_t type );
 
     RRTNode* _find_ancestor( RRTNode* p_node );
 
