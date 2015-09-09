@@ -81,7 +81,7 @@ protected:
     void extend(RRTree_type_t type);
 
     Path concatenate_paths( Path from_path, Path to_path );
-    Path get_subpath( RRTNode end_node, RRTree_type_t type );
+    Path get_subpath( RRTNode* p_end_node, RRTree_type_t type );
 
     KDNode2D _find_nearest( POS2D pos, RRTree_type_t type );
     std::list<KDNode2D> _find_near( POS2D pos, RRTree_type_t type );

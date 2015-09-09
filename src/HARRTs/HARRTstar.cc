@@ -646,15 +646,23 @@ Path HARRTstar::concatenate_paths( Path from_path, Path to_path ) {
   return new_path;
 }
 
-Path HARRTstar::get_subpath( RRTNode end_node, RRTree_type_t type ) {
-  Path subpath( end_pos, end_pos );
+Path HARRTstar::get_subpath( RRTNode* p_end_node, RRTree_type_t type ) {
+  Path subpath( p_end_node->m_pos, p_end_node->m_pos );
   std::list<RRTNode*> node_list;
+  get_parent_node_list( p_end_node , node_list );
   if( type == START_TREE_TYPE ) {
-    get_parent_node_list( end_node , node_list );    
+    subpath = Path( _p_st_root->m_pos, p_end_node->m_pos );
   }
   else if ( type == GOAL_TREE_TYPE ) {
-    get_parent_node_list( end_node , node_list );    
+    subpath = Path( _p_gt_root->m_pos, p_end_node->m_pos );
   }
-  
+  subpath.m_cost = p_end_node->m_cost;
+  subpath.append_substring( p_end_node->m_substring ); 
+  subpath.m_way_points.clear();
+  for( std::list<RRTNode*>::iterator it = node_list.begin();
+       it != node_list.end(); it ++ ) {
+    RRTNode* p_rrt_node = (*it);
+    subpath.m_way_points.push_back( p_rrt_node->m_pos ); 
+  }
   return subpath;
 }
