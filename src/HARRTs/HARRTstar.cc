@@ -42,6 +42,32 @@ Path::~Path() {
   m_cost = 0.0;
 }
 
+void Path::append_waypoints( std::vector<POS2D> waypoints, bool reverse ) {
+  if ( reverse ) {
+    for( unsigned int i = waypoints.size()-1; i >= 0; i -- ) {
+      m_way_points.push_back( waypoints[i] );  
+    }
+  }
+  else {
+    for( unsigned int i = 0; i < waypoints.size(); i ++ )  {
+      m_way_points.push_back( waypoints[i] );
+    }
+  }
+}
+
+void Path::append_substring( std::vector< std::string > ids, bool reverse ) {
+  if ( reverse ) {
+    for( unsigned int i = ids.size()-1; i >= 0; i -- ) {
+      m_string.push_back( ids[i] );     
+    }
+  }
+  else {
+    for( unsigned int i = 0; i < ids.size(); i ++ )  {
+      m_string.push_back( ids[i] );
+    }
+  }
+}
+
 HARRTstar::HARRTstar( int width, int height, int segment_length ) {
 
   _sampling_width = width;
@@ -601,4 +627,34 @@ void HARRTstar::dump_distribution(std::string filename) {
     }
   }
   myfile.close();
+}
+
+Path HARRTstar::concatenate_paths( Path from_path, Path to_path ) {
+  Path new_path = Path( from_path.m_start, to_path.m_start );
+  Point2D from_path_end = Point2D( from_path.m_goal[0], from_path.m_goal[1] );
+  Point2D to_path_end = Point2D( to_path.m_goal[0], to_path.m_goal[1] );
+  std::vector< std::string > between_ids = _reference_frames->get_string( from_path_end, to_path_end , STRING_GRAMMAR_TYPE );
+  double delta_cost = _calculate_cost( from_path.m_goal, to_path.m_goal );
+
+  new_path.append_waypoints( from_path.m_way_points );
+  new_path.append_substring( from_path.m_string );
+  new_path.append_substring( between_ids );
+  new_path.append_waypoints( to_path.m_way_points, true );
+  new_path.append_substring( to_path.m_string, true );
+  new_path.m_cost = from_path.m_cost + delta_cost + to_path.m_cost;
+  
+  return new_path;
+}
+
+Path HARRTstar::get_subpath( RRTNode end_node, RRTree_type_t type ) {
+  Path subpath( end_pos, end_pos );
+  std::list<RRTNode*> node_list;
+  if( type == START_TREE_TYPE ) {
+    get_parent_node_list( end_node , node_list );    
+  }
+  else if ( type == GOAL_TREE_TYPE ) {
+    get_parent_node_list( end_node , node_list );    
+  }
+  
+  return subpath;
 }
