@@ -7,6 +7,7 @@
 #include <QAction>
 #include <QPixmap>
 #include <QProgressBar>
+#include <QMessageBox>
 #include "homotopyviz.h"
 
 
@@ -26,6 +27,7 @@ protected:
 
     void keyPressEvent(QKeyEvent * e);
 private:
+    QMessageBox*  mpMsgBox;
     QMenu*        mpFileMenu;
     QAction*      mpOpenAction;
     QAction*      mpSaveAction;

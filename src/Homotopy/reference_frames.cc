@@ -164,7 +164,13 @@ std::vector< std::string > ReferenceFrameSet::get_string( Point2D start, Point2D
       newPos = Point2D( x, y );
       std::string ref_str = get_character_id(lastPos, newPos, type);
       if (ref_str!="") {
-        if ( ref_str != id_string[id_string.size()-1] ) {
+        if( id_string.size() > 0 ) {
+          lastString = id_string[ id_string.size() - 1 ];
+        }
+        else{
+          lastString = "";
+        }
+        if ( ref_str != lastString ) {
           id_string.push_back(ref_str);
         }
       }
@@ -174,7 +180,13 @@ std::vector< std::string > ReferenceFrameSet::get_string( Point2D start, Point2D
       newPos = Point2D( x, y );
       std::string ref_str = get_character_id(lastPos, newPos, type);
       if (ref_str!="") {
-        if ( ref_str != id_string[id_string.size()-1] ) {
+        if( id_string.size() > 0 ) {
+          lastString = id_string[ id_string.size() - 1 ];
+        }
+        else{
+          lastString = "";
+        }
+        if ( ref_str != lastString ) {
           id_string.push_back(ref_str);
         }
       }

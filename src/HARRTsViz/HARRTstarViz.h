@@ -23,6 +23,7 @@ public:
     void next_found_path();
     int  get_reference_frame_index() { return m_reference_frame_index; }
     std::string get_reference_frame_name();
+    QString generate_string();
 
     PathPlanningInfo m_PPInfo;
 

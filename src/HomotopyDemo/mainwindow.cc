@@ -8,7 +8,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent) {
     mpViz = new HomotopyViz();
-
+    mpMsgBox = new QMessageBox();
     createActions();
     createMenuBar();
     mpStatusLabel = new QLabel();
@@ -17,6 +17,10 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 MainWindow::~MainWindow() {
+    if(mpMsgBox) {
+        delete mpMsgBox;
+        mpMsgBox = NULL;
+    }
     if(mpViz) {
         delete mpViz;
         mpViz = NULL;
@@ -89,6 +93,15 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
            repaint();
        }
    }
+   else if (event->key() == Qt::Key_X  ) {
+       if(mpViz) {
+           QString ref_str = mpViz->generate_string();
+           if (mpMsgBox) {
+               mpMsgBox->setText(ref_str);
+               mpMsgBox->show();
+           }
+       }
+   } 
    else if(event->key() == Qt::Key_Up ) {
        if(mpViz) {
            mpViz->nextRegion();

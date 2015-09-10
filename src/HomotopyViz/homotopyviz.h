@@ -25,6 +25,8 @@ public:
 
     bool save( QString filename );
     bool load( QString filename );
+    
+    QString generate_string();
 protected:
     void mousePressEvent( QMouseEvent * event );
     void mouseMoveEvent( QMouseEvent * event );
