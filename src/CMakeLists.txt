@@ -3,7 +3,8 @@ set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 #set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -std=c++0x)
-
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall")
+ 
 # search for the libxml2 package, exit if not found
 find_package(LibXml2)
 if( NOT LIBXML2_FOUND )
@@ -27,16 +28,17 @@ endif()
 include(${CGAL_USE_FILE})
 include_directories(${CGAL_INCLUDE_DIR})
 
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
+#set(CMAKE_AUTOMOC ON)
+#set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
 # search for the QT package, exit if not found
-find_package(Qt5Widgets REQUIRED)
-if( NOT Qt5Widgets_FOUND )
-  message( FATAL_ERROR "Qt5Widgets not found\n" )
+find_package(Qt4 COMPONENTS QtCore QtGui QtOpenGL REQUIRED)
+if( NOT QT4_FOUND ) 
+  message( FATAL_ERROR "Qt4 not found\n" )
   return()
 endif()
-include_directories(${Qt5Widgets_INCLUDES})
-message( "Qt5Widgets_INCLUDES: " ${Qt5Widgets_INCLUDES} )
+include(${QT_USE_FILE})
+include_directories(${QT_INCLUDE_DIR})
 
 # search for Open CV, exit if not found
 find_package( OpenCV REQUIRED )

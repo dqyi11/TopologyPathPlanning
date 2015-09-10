@@ -18,5 +18,9 @@ add_library(${LIB} SHARED
             worldmap.cc
             world_datatype.h)
 
-target_link_libraries(${LIB} ${CGAL_LIBRARIES} ${BOOST_LIBRARIES} ${LIBXML2_LIBRARIES})
+target_link_libraries(${LIB}
+                      ${CGAL_LIBRARIES}
+                      ${BOOST_LIBRARIES}
+                      ${LIBXML2_LIBRARIES}
+                     )
 

@@ -11,12 +11,11 @@ add_library(${LIB} SHARED
            )
 
 include_directories(
-                    ${Qt5Widgets_INCLUDE_DIRS}
                    )
 
 target_link_libraries(${LIB} 
                       harrtstar
-                      ${Qt5Widgets_LIBRARIES}
+                      ${QT_LIBRARIES}
                       ${CGAL_LIBRARIES}
                       ${BOOST_LIBRARIES}
                      )

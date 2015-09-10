@@ -7,10 +7,9 @@ add_executable(homotopy-demo
                homotopyVizDemo.cc) 
 
 include_directories(
-                   ${Qt5Widgets_INCLUDE_DIRS}
                    )
 
 target_link_libraries(homotopy-demo 
                       homotopy-viz
-                      ${Qt5Widgets_LIBRARIES}
+                      ${QT_LIBRARIES}
                      ) 

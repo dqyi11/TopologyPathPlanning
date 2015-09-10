@@ -3,7 +3,6 @@
 
 #include <QString>
 #include <QPoint>
-#include <QJsonObject>
 #include <list>
 #include <vector>
 #include <QDebug>
@@ -27,8 +26,8 @@ public:
     bool save_to_file( QString filename );
     bool load_from_file( QString filename );
 
-    void read( const QJsonObject &json );
-    void write( QJsonObject &json ) const;
+    void read( xmlNodePtr root );
+    void write( xmlDocPtr doc, xmlNodePtr root ) const;
 
     void load_paths( std::vector<Path*> paths );
     bool export_paths( QString filename );
