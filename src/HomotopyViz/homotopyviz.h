@@ -4,6 +4,7 @@
 #include <vector>
 #include <QLabel>
 #include "worldmap.h"
+#include "reference_frames.h"
 
 class HomotopyViz : public QLabel {
     Q_OBJECT
@@ -31,6 +32,7 @@ protected:
     bool initWorld(QString filename);
 
     WorldMap*            mpWorld;
+    ReferenceFrameSet*   mpReferenceFrameSet;
     int                  mWorldWidth;
     int                  mWorldHeight;
     std::vector<QColor>  mColors;

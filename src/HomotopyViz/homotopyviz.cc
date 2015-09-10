@@ -22,6 +22,7 @@ HomotopyViz::HomotopyViz(QWidget *parent) :
     QLabel(parent) {
 
     mpWorld = NULL;
+    mpReferenceFrameSet = NULL;
     mWorldWidth = 0;
     mWorldHeight = 0;
     mShowSubregion = false;
@@ -50,18 +51,18 @@ bool HomotopyViz::initWorld(QString filename) {
 
     std::vector< std::vector<Point2D> > conts;
     int map_width = 0, map_height = 0;
-    if (mpWorld) {
-        delete mpWorld;
-        mpWorld = NULL;
+    if (mpReferenceFrameSet) {
+        delete mpReferenceFrameSet;
+        mpReferenceFrameSet = NULL;
     }
 
     load_map_info( filename.toStdString(), map_width, map_height, conts );   
     //std::cout << "CREATE WORLD " << map_width << " * " << map_height << std::endl;
-
-    mpWorld = new WorldMap(map_width, map_height);
+    mpReferenceFrameSet = new ReferenceFrameSet();
+    mpReferenceFrameSet->init( map_width, map_height, conts );
     //std::cout << "NUM OF OBS " << conts.size() << std::endl;
+    mpWorld = mpReferenceFrameSet->get_world_map();
     if (mpWorld) {
-        mpWorld->load_obstacle_info(conts);
         //std::cout << "INIT ... " << std::endl;
         mpWorld->init();
 
