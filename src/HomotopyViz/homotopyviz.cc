@@ -28,6 +28,7 @@ HomotopyViz::HomotopyViz(QWidget *parent) :
     mShowSubsegment = true;
     mRegionIdx = -1;
     mSubRegionIdx = 0;
+    mDragging = false;
 }
 
 bool HomotopyViz::loadMap( QString filename ) {
@@ -95,39 +96,6 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                     QPainterPath tmpPath;
                     tmpPath.addPolygon(poly);
                     region_painter.fillPath(tmpPath, region_brush);
-                    /*
-                    if( p_subregion_set->mp_line_segments_a ) {
-                        QPainter line_hl_painter(this);
-                        QPen line_hl_pen( LINE_HIGHLIGHTED_COLOR );
-                        line_hl_pen.setWidth( LINE_WIDTH_HIGHLIGHTED );
-                        line_hl_painter.setPen( line_hl_pen );
-
-                        Point2D line_hl_src = p_subregion_set->mp_line_segments_a->m_seg.source();
-                        Point2D line_hl_end = p_subregion_set->mp_line_segments_a->m_seg.target();
-                        double line_hl_src_x = CGAL::to_double( line_hl_src.x() );
-                        double line_hl_src_y = CGAL::to_double( line_hl_src.y() );
-                        double line_hl_end_x = CGAL::to_double( line_hl_end.x() );
-                        double line_hl_end_y = CGAL::to_double( line_hl_end.y() );
-
-                        line_hl_painter.drawLine( QPoint( line_hl_src_x, line_hl_src_y ),
-                                                  QPoint( line_hl_end_x, line_hl_end_y ) );
-                    }
-                    if( p_subregion_set->mp_line_segments_b ) {
-                        QPainter line_hl_painter(this);
-                        QPen line_hl_pen( LINE_HIGHLIGHTED_COLOR );
-                        line_hl_pen.setWidth( LINE_WIDTH_HIGHLIGHTED );
-                        line_hl_painter.setPen( line_hl_pen );
-
-                        Point2D line_hl_src = p_subregion_set->mp_line_segments_b->m_seg.source();
-                        Point2D line_hl_end = p_subregion_set->mp_line_segments_b->m_seg.target();
-                        double line_hl_src_x = CGAL::to_double( line_hl_src.x() );
-                        double line_hl_src_y = CGAL::to_double( line_hl_src.y() );
-                        double line_hl_end_x = CGAL::to_double( line_hl_end.x() );
-                        double line_hl_end_y = CGAL::to_double( line_hl_end.y() );
-
-                        line_hl_painter.drawLine( QPoint( line_hl_src_x, line_hl_src_y ),
-                                                  QPoint( line_hl_end_x, line_hl_end_y ) );
-                    }*/
                 }
                 else {                    
                     SubRegion* p_subreg = p_subregion_set->m_subregions[mSubRegionIdx];
@@ -237,7 +205,7 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                  it != obstacles.end(); it++ ) {
                 Obstacle* p_obstacle = (*it);
                 if ( p_obstacle ) {
-                    std::cout << "OBS " << p_obstacle->get_index() << " ALPHA:" << p_obstacle->mp_alpha_seg->m_subsegs.size() << std::endl;
+                    //std::cout << "OBS " << p_obstacle->get_index() << " ALPHA:" << p_obstacle->mp_alpha_seg->m_subsegs.size() << std::endl;
                     for( std::vector< LineSubSegment* >::iterator itap = p_obstacle->mp_alpha_seg->m_subsegs.begin();
                          itap != p_obstacle->mp_alpha_seg->m_subsegs.end(); itap++ ) {
                         LineSubSegment* p_subseg_a = (*itap);
@@ -245,8 +213,8 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                         double a_src_y = CGAL::to_double( p_subseg_a->m_subseg.source().y() );
                         double a_end_x = CGAL::to_double( p_subseg_a->m_subseg.target().x() );
                         double a_end_y = CGAL::to_double( p_subseg_a->m_subseg.target().y() );
-                        std::cout << p_subseg_a << std::endl;
-                        std::cout << p_subseg_a->get_name() << " (" << a_src_x << "," << a_src_y << ") (" << a_end_x << "," << a_end_y << ")" << std::endl;
+                        //std::cout << p_subseg_a << std::endl;
+                        //std::cout << p_subseg_a->get_name() << " (" << a_src_x << "," << a_src_y << ") (" << a_end_x << "," << a_end_y << ")" << std::endl;
                         a_subseg_painter.drawLine( QPoint( a_src_x , a_src_y ), QPoint( a_end_x , a_end_y ));
                     }
                 }
@@ -260,7 +228,7 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                  it != obstacles.end(); it++ ) {
                 Obstacle* p_obstacle = (*it);
                 if ( p_obstacle ) {
-                    std::cout << "OBS " << p_obstacle->get_index() << " BETA:" << p_obstacle->mp_beta_seg->m_subsegs.size() << std::endl;
+                    //std::cout << "OBS " << p_obstacle->get_index() << " BETA:" << p_obstacle->mp_beta_seg->m_subsegs.size() << std::endl;
                     for( std::vector< LineSubSegment* >::iterator itbp = p_obstacle->mp_beta_seg->m_subsegs.begin();
                          itbp != p_obstacle->mp_beta_seg->m_subsegs.end(); itbp++ ) {
                         LineSubSegment* p_subseg_b = (*itbp);
@@ -268,8 +236,8 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                         double b_src_y = CGAL::to_double( p_subseg_b->m_subseg.source().y() );
                         double b_end_x = CGAL::to_double( p_subseg_b->m_subseg.target().x() );
                         double b_end_y = CGAL::to_double( p_subseg_b->m_subseg.target().y() );
-                        std::cout << p_subseg_b << std::endl;
-                        std::cout << p_subseg_b->get_name() << " (" << b_src_x << "," << b_src_y << ") (" << b_end_x << "," << b_end_y << ")" << std::endl;
+                        //std::cout << p_subseg_b << std::endl;
+                        //std::cout << p_subseg_b->get_name() << " (" << b_src_x << "," << b_src_y << ") (" << b_end_x << "," << b_end_y << ")" << std::endl;
                         b_subseg_painter.drawLine( QPoint( b_src_x , b_src_y ), QPoint( b_end_x , b_end_y ));
                     }
                 }
@@ -437,6 +405,7 @@ bool HomotopyViz::load( QString filename ) {
 }
 
 void HomotopyViz::mousePressEvent( QMouseEvent * event ) {
+    //std::cout << "mousePressEvent" << std::endl;
     if ( event->button() == Qt::LeftButton ) {
         mDragging = true;
         mPoints.clear();    
@@ -444,15 +413,17 @@ void HomotopyViz::mousePressEvent( QMouseEvent * event ) {
 }
 
 void HomotopyViz::mouseMoveEvent( QMouseEvent * event ) {
-    if ( event->button() == Qt::LeftButton ) {
-        if ( mDragging == true ) {
-            QPoint point( event->x(), event->y() );
-            mPoints.push_back( point );
-        }
+    //std::cout << "mouseMoveEvent" << mPoints.size() << std::endl;
+    if ( mDragging == true ) {
+        //std::cout << event->x() << " " << event->y() << std::endl;
+        QPoint point( event->x(), event->y() );
+        mPoints.push_back( point );
+        repaint();
     }
 }
 
-void HomotopyViz::mouseReleaseEvent( QMouseEvent * event ) {
+void HomotopyViz::mouseReleaseEvent( QMouseEvent * event ){
+    //std::cout << "mouseReleaseEvent" << std::endl;
     if ( event->button() == Qt::LeftButton ) {
         mDragging = false;
     }
