@@ -105,7 +105,6 @@ void PathPlanningInfo::init_func_param() {
 }
 
 void PathPlanningInfo::read( xmlNodePtr root ) {
-    //m_info_filename;
     if( root->type == XML_ELEMENT_NODE ){
         xmlChar* tmp = xmlGetProp( root, ( const xmlChar* )( "map_filename" ) );
         if ( tmp != NULL ) {
@@ -191,7 +190,7 @@ void PathPlanningInfo::write( xmlDocPtr doc, xmlNodePtr root ) const {
     
     xmlNodePtr node = xmlNewDocNode( doc, NULL, ( const xmlChar* )( "world" ), NULL );
     xmlNewProp( node, ( const xmlChar* )( "map_filename" ), ( const xmlChar* )( m_map_filename.toStdString().c_str() ) );
-    xmlNewProp( node, ( const xmlChar* )( "map_fullename" ), ( const xmlChar* )( m_map_fullpath.toStdString().c_str() ) );
+    xmlNewProp( node, ( const xmlChar* )( "map_fullpath" ), ( const xmlChar* )( m_map_fullpath.toStdString().c_str() ) );
     std::stringstream width_str;
     width_str << m_map_width;
     xmlNewProp( node, ( const xmlChar* )( "map_width" ), ( const xmlChar* )( width_str.str().c_str() ) );
@@ -227,12 +226,14 @@ void PathPlanningInfo::write( xmlDocPtr doc, xmlNodePtr root ) const {
     std::stringstream seg_len_str;
     seg_len_str << m_segment_length;
     xmlNewProp( node, ( const xmlChar* )( "segment_length" ), ( const xmlChar* )( seg_len_str.str().c_str() ) );
+    
+    xmlAddChild( root, node );
 }
 
 bool PathPlanningInfo::save_to_file(QString filename) {
     
     xmlDocPtr doc = xmlNewDoc( ( xmlChar* )( "1.0" ) );
-    xmlNodePtr root = xmlNewDocNode( doc, NULL, ( xmlChar* )( " root" ), NULL );    xmlDocSetRootElement( doc, root );
+    xmlNodePtr root = xmlNewDocNode( doc, NULL, ( xmlChar* )( "root" ), NULL );    xmlDocSetRootElement( doc, root );
     write( doc, root );
     xmlSaveFormatFileEnc( filename.toStdString().c_str(), doc, "UTF-8", 1 );
     xmlFreeDoc( doc );

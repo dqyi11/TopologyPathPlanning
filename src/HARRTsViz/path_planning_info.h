@@ -1,6 +1,7 @@
 #ifndef PATHPLANNINGINFO_H_
 #define PATHPLANNINGINFO_H_
 
+#include <libxml/tree.h>
 #include <QString>
 #include <QPoint>
 #include <list>
