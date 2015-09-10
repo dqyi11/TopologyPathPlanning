@@ -30,13 +30,14 @@ public:
     StringGrammar* get_string_grammar( Point2D init, Point2D goal );
     HomotopicGrammar* get_homotopic_grammar( Point2D init, Point2D goal );
 
-    std::string get_character_id( Point2D start, Point2D end, grammar_type_t type );
     std::vector< std::string > get_string ( Point2D start, Point2D end, grammar_type_t type );
+    std::vector< std::string > get_string ( std::vector<Point2D> points, grammar_type_t type );
     std::vector<ReferenceFrame*>& get_reference_frames() { return _reference_frames; }
 
     WorldMap* get_world_map() { return _p_world_map; }
 
 protected:
+    std::string get_character_id( Point2D start, Point2D end, grammar_type_t type );
     StringGrammar* get_string_grammar( SubRegion* p_init, SubRegion* p_goal );
     HomotopicGrammar* get_homotopic_grammar( SubRegion* p_init, SubRegion* p_goal );
 
