@@ -64,7 +64,7 @@ bool HomotopyViz::initWorld(QString filename) {
     mpWorld = mpReferenceFrameSet->get_world_map();
     if (mpWorld) {
         //std::cout << "INIT ... " << std::endl;
-        mpWorld->init();
+        //mpWorld->init();
 
         mColors.clear();
         for( unsigned int i=0; i< mpWorld->get_obstacles().size(); i++ ) {
