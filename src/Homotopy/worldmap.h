@@ -37,6 +37,8 @@ public:
     std::vector<LineSubSegmentSet*> get_sublinesegment_set() const { return _line_segments; }
 
     double get_distance_to_central_point( Point2D point );
+
+    SubRegion * in_subregion( Point2D point );
 protected:
     bool _init_points();
     bool _init_rays();

@@ -11,7 +11,9 @@ class SubRegion {
 public:
     SubRegion( Polygon2D poly , SubRegionSet* p_parent );
     virtual ~SubRegion();
-
+    
+    bool contains( Point2D point );
+    
     std::string get_name();
 
     std::vector<Point2D> m_points;

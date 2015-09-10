@@ -37,6 +37,13 @@ std::string SubRegion:: get_name() {
     return "NA";
 }
 
+bool SubRegion::contains( Point2D point ) {
+  if ( CGAL::ON_UNBOUNDED_SIDE != m_polygon.bounded_side( point ) ) { 
+    return true;
+  }
+  return false;
+}
+
 SubRegionSet::SubRegionSet(std::list<Point2D> points, unsigned int idx) {
 
     m_boundary_points.clear();

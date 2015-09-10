@@ -397,6 +397,24 @@ bool WorldMap::_is_in_obstacle( Point2D point ) {
     return false;
 }
 
+SubRegion* WorldMap::in_subregion( Point2D point ) {
+   
+   for( unsigned int i = 0; i < _regionSets.size(); i++ ) {
+     SubRegionSet* p_subregion_set = _regionSets[i];
+     if( p_subregion_set ) {
+       for( unsigned int j = 0; j < p_subregion_set->m_subregions.size(); j ++ ) {
+         SubRegion* p_subregion = p_subregion_set->m_subregions[j];
+         if ( p_subregion ) {
+           if ( p_subregion->contains( point ) ) {
+             return p_subregion;
+           }
+         }
+       }
+     } 
+   }
+   return NULL;
+}
+
 std::vector<Point2D> WorldMap::_intersect( Segment2D seg, std::vector<Segment2D> segments ) {
     std::vector<Point2D> points;
     for(std::vector<Segment2D>::iterator it=segments.begin(); it!=segments.end(); it++) {
@@ -604,3 +622,4 @@ std::ostream& operator<<( std::ostream& out, const WorldMap& other ) {
     }
     return out;
 }
+

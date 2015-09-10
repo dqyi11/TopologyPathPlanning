@@ -89,6 +89,7 @@ HARRTstar::HARRTstar( int width, int height, int segment_length ) {
   _theta = 10;
 
   _pp_cost_distribution = NULL;
+  _p_string_class_mgr = NULL;
 
   _pp_map_info = new int*[_sampling_width];
   for(int i=0;i<_sampling_width;i++) {
@@ -109,7 +110,7 @@ HARRTstar::~HARRTstar() {
   }
 }
 
-void HARRTstar::init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp_cost_distribution ) {
+bool HARRTstar::init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp_cost_distribution ) {
   if( _p_st_root ) {
     delete _p_st_root;
     _p_st_root = NULL;
@@ -118,6 +119,15 @@ void HARRTstar::init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp
     delete _p_gt_root;
     _p_gt_root = NULL;
   }
+  if( _p_string_class_mgr ) {
+    delete _p_string_class_mgr;
+    _p_string_class_mgr = NULL;
+  }
+ 
+  if (_reference_frames == NULL) {
+    return false;
+  }
+
   _start = start;
   _goal = goal;
   _p_cost_func = p_func;
@@ -140,6 +150,10 @@ void HARRTstar::init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp
       _pp_cost_distribution = NULL;
     }
   }
+
+  Point2D start_point( _start[0], _start[1] );
+  Point2D goal_point( _goal[0], _goal[1] );
+  _p_string_class_mgr = new StringClassMgr( _reference_frames->get_string_grammar( start_point, goal_point ) );
 
   KDNode2D st_root( start );
   _p_st_root = new RRTNode( start );
@@ -520,7 +534,11 @@ Path* HARRTstar::find_path( POS2D via_pos ) {
   double gt_delta_cost = 0.0;
   _get_closest_node( via_pos, p_st_first_node, st_delta_cost, START_TREE_TYPE );
   _get_closest_node( via_pos, p_gt_first_node, gt_delta_cost, GOAL_TREE_TYPE );
-
+   
+  if ( _is_obstacle_free( p_st_first_node->m_pos, p_gt_first_node->m_pos ) ) {
+    return p_new_path;
+  }
+   
   if( p_st_first_node != NULL && p_gt_first_node != NULL ) {
     Path* p_from_path = _get_subpath( p_st_first_node, START_TREE_TYPE );
     Path* p_to_path = _get_subpath( p_gt_first_node, GOAL_TREE_TYPE );
@@ -672,4 +690,8 @@ std::vector<Path*> HARRTstar::get_paths() {
   std::vector<Path*> paths;
 
   return paths;
+}
+
+void HARRTstar::set_reference_frames( ReferenceFrameSet* p_reference_frames ) {
+  _reference_frames = p_reference_frames;
 }

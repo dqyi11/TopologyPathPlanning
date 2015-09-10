@@ -4,18 +4,22 @@
 #include <vector>
 #include "string_grammar.h"
 
+class Path;
+
 class StringClass {
 
   std::vector< std::string > m_string;
   double m_cost;
-  Path   m_path;
-}
+  Path*  mp_path;
+};
 
 class StringClassMgr {
 
 public:
   StringClassMgr(StringGrammar* p_grammar);
   virtual ~StringClassMgr();
+
+  void import_path( Path* p_path );
 
 protected:
   StringGrammar* _p_grammar;
