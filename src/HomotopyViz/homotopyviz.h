@@ -25,12 +25,17 @@ public:
     bool save( QString filename );
     bool load( QString filename );
 protected:
+    void mousePressEvent( QMouseEvent * event );
+    void mouseMoveEvent( QMouseEvent * event );
+    void mouseReleaseEvent( QMouseEvent * event );
     bool initWorld(QString filename);
 
     WorldMap*            mpWorld;
     int                  mWorldWidth;
     int                  mWorldHeight;
     std::vector<QColor>  mColors;
+    std::vector<QPoint>  mPoints;
+    bool                 mDragging;
 
     int                  mRegionIdx;
     int                  mSubRegionIdx;

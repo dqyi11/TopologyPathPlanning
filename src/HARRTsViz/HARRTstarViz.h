@@ -25,6 +25,7 @@ public:
     std::string get_reference_frame_name();
 
     PathPlanningInfo m_PPInfo;
+
 signals:
     
 public slots:

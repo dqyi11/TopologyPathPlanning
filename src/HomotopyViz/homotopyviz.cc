@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <QPainter>
+#include <QMouseEvent>
 #include "homotopyviz.h"
 #include "img_load_util.h"
 
@@ -14,6 +15,8 @@
 #define TEXT_COLOR             QColor(0,0,0)
 #define OBSTACLE_COLOR         QColor(125,125,125)
 #define LINE_HIGHLIGHTED_COLOR QColor(204,204,0)
+#define DRAWING_LINE_COLOR     QColor(153,76,0)
+
 
 HomotopyViz::HomotopyViz(QWidget *parent) :
     QLabel(parent) {
@@ -332,6 +335,16 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                 text_painter.drawText( c_x, c_y, QString::number(p_obstacle->get_index()) );
             }
         }
+
+        QPainter draw_line_painter(this);
+        QPen draw_line_pen( DRAWING_LINE_COLOR );
+        draw_line_pen.setWidth( LINE_WIDTH );
+        draw_line_painter.setPen(draw_line_pen);
+        if( mPoints.size() > 1 ) {
+            for( unsigned int pi = 0; pi < mPoints.size()-1 ; pi ++ ) {
+                draw_line_painter.drawLine( mPoints[pi], mPoints[pi+1] );    
+            }
+        }
     }
 }
 
@@ -422,3 +435,26 @@ bool HomotopyViz::load( QString filename ) {
 
     return true;
 }
+
+void HomotopyViz::mousePressEvent( QMouseEvent * event ) {
+    if ( event->button() == Qt::LeftButton ) {
+        mDragging = true;
+        mPoints.clear();    
+    }
+}
+
+void HomotopyViz::mouseMoveEvent( QMouseEvent * event ) {
+    if ( event->button() == Qt::LeftButton ) {
+        if ( mDragging == true ) {
+            QPoint point( event->x(), event->y() );
+            mPoints.push_back( point );
+        }
+    }
+}
+
+void HomotopyViz::mouseReleaseEvent( QMouseEvent * event ) {
+    if ( event->button() == Qt::LeftButton ) {
+        mDragging = false;
+    }
+}
+
