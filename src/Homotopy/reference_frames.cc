@@ -196,13 +196,13 @@ std::vector< std::string > ReferenceFrameSet::get_string ( std::vector<Point2D> 
   std::vector< std::string > ids;
   std::string last_string = "";
   for( unsigned int i = 0; i < points.size()-1; i ++ ) {
-    if ( ids.size() > 0 ) {
-      last_string = ids.back();
-    }
     std::vector< std::string > sub_ids = get_string( points[i], points[i+1], type); 
     for( unsigned int j = 0; j < sub_ids.size(); j ++ ) {
       if( last_string != sub_ids[j] ) {
         ids.push_back( sub_ids[j] );
+      }
+      if ( ids.size() > 0 ) {
+        last_string = ids.back();
       }
     } 
   }
