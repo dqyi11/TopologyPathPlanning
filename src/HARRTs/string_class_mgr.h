@@ -25,7 +25,7 @@ public:
   void import_path( Path* p_path );
   std::vector<Path*> export_paths();
   StringClass* find_string_class( std::vector< std::string > str );
-   
+  std::vector< StringClass* >& get_string_classes() { return _classes; }  
 protected:
   StringGrammar* _p_grammar;
   std::vector< StringClass* > _classes;

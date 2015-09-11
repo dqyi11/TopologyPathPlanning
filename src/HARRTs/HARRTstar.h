@@ -70,6 +70,7 @@ public:
 
   void set_reference_frames( ReferenceFrameSet* p_reference_frames );
   ReferenceFrameSet* get_reference_frames() { return _reference_frames; }
+  StringClassMgr* get_string_class_mgr() { return _p_string_class_mgr; }
 
   void dump_distribution(std::string filename);
 

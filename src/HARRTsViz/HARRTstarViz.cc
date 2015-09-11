@@ -7,6 +7,7 @@
 #define START_COLOR           QColor(255,0,0)
 #define GOAL_COLOR            QColor(0,0,255)
 #define REFERENCE_FRAME_COLOR QColor(0,255,0)
+#define PATH_COLOR            QColor(255,153,21)
 
 HARRTstarViz::HARRTstarViz( QWidget *parent ) :
     QLabel(parent) {
@@ -106,6 +107,27 @@ void HARRTstarViz::paintEvent( QPaintEvent * e ) {
                 rf_painter.drawLine( QPoint( CGAL::to_double(rf->m_segment.source().x()), CGAL::to_double(rf->m_segment.source().y()) ),
                                      QPoint( CGAL::to_double(rf->m_segment.target().x()), CGAL::to_double(rf->m_segment.target().y()) ) );
             }
+        }
+    }
+
+    if( mp_tree ) {
+        if( mp_tree->get_string_class_mgr() ) {
+            std::vector< StringClass* > classes = mp_tree->get_string_class_mgr()->get_string_classes();
+            QPainter pt_painter(this);
+            QPen pt_paintpen( PATH_COLOR );
+            pt_paintpen.setWidth(2);
+            pt_painter.setPen(pt_paintpen);
+            for( unsigned int i = 0; i < classes.size(); i ++ ) {
+                Path* p_path = classes[i]->mp_path;
+                if( p_path && p_path->m_way_points.size() > 0 ) {
+                    for( unsigned int j = 0; j < p_path->m_way_points.size()-1; j ++ ){
+                        pt_painter.drawLine( QPoint( p_path->m_way_points[j][0],
+                                                     p_path->m_way_points[j][1] ), 
+                                             QPoint( p_path->m_way_points[j+1][0],
+                                                     p_path->m_way_points[j+1][1] ) );
+                    }
+                } 
+            } 
         }
     }
 }

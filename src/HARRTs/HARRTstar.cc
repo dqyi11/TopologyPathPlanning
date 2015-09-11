@@ -692,7 +692,6 @@ Path* HARRTstar::_get_subpath( RRTNode* p_end_node, RRTree_type_t type ) {
 
 std::vector<Path*> HARRTstar::get_paths() {
   std::vector<Path*> paths;
-  
   if ( _p_string_class_mgr ) {
     paths = _p_string_class_mgr->export_paths();  
   } 
