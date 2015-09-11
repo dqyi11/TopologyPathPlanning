@@ -7,7 +7,10 @@
 class Path;
 
 class StringClass {
-
+public:
+  StringClass( std::vector< std::string > string );
+  virtual ~StringClass();
+ 
   std::vector< std::string > m_string;
   double m_cost;
   Path*  mp_path;
@@ -20,10 +23,12 @@ public:
   virtual ~StringClassMgr();
 
   void import_path( Path* p_path );
-
+  std::vector<Path*> export_paths();
+  StringClass* find_string_class( std::vector< std::string > str );
+   
 protected:
   StringGrammar* _p_grammar;
-  std::vector< StringClass > _classes;
+  std::vector< StringClass* > _classes;
 };
 
 #endif /* STRING_CLASS_MGR_H */

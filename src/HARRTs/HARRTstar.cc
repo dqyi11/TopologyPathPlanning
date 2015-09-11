@@ -283,6 +283,10 @@ void HARRTstar::extend() {
   RRTNode* p_gt_new_node = _extend(GOAL_TREE_TYPE);
   Path* p_st_new_path = find_path( p_st_new_node->m_pos );
   Path* p_gt_new_path = find_path( p_gt_new_node->m_pos ); 
+
+  _p_string_class_mgr->import_path( p_st_new_path );
+  _p_string_class_mgr->import_path( p_gt_new_path );
+
   _current_iteration++;
 }
 
@@ -688,7 +692,10 @@ Path* HARRTstar::_get_subpath( RRTNode* p_end_node, RRTree_type_t type ) {
 
 std::vector<Path*> HARRTstar::get_paths() {
   std::vector<Path*> paths;
-
+  
+  if ( _p_string_class_mgr ) {
+    paths = _p_string_class_mgr->export_paths();  
+  } 
   return paths;
 }
 
