@@ -139,7 +139,23 @@ void MainWindow::updateStatusBar() {
         status += "Region (" + QString::number(mpViz->getRegionIdx()) + ")";
         if ( mpViz->mShowSubregion ) {
             status += "- (" + QString::number(mpViz->getSubregionIdx()) + ")";
+            status += " = ";
+            if ( mpViz->getSelectedSubregion() ) {
+                for( unsigned int i = 0; i < mpViz->getSelectedSubregion()->m_neighbors.size(); i ++ ) {
+                    LineSubSegment* p_line_subseg = mpViz->getSelectedSubregion()->m_neighbors[i];
+                    status += " [ " + QString::fromStdString(p_line_subseg->get_name())  + " ] ";
+                } 
+            }
         }
+        else {
+            status += " = ";
+            if ( mpViz->getSelectedRegion() ) {
+                status += " [ " + QString::fromStdString(mpViz->getSelectedRegion()->mp_line_segments_a->get_name())  + " ] ";
+                status += " [ " + QString::fromStdString(mpViz->getSelectedRegion()->mp_line_segments_b->get_name())  + " ] ";
+            }
+
+        }
+        
         mpStatusLabel->setText(status);
     }
     repaint();

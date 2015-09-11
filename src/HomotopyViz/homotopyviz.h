@@ -23,6 +23,9 @@ public:
     int  getRegionIdx()    { return mRegionIdx; }
     int  getSubregionIdx() { return mSubRegionIdx; }
 
+    SubRegionSet* getSelectedRegion();
+    SubRegion* getSelectedSubregion();
+
     bool save( QString filename );
     bool load( QString filename );
     

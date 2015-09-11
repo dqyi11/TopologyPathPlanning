@@ -446,3 +446,29 @@ QString HomotopyViz::generate_string() {
     } 
     return ref_str;
 }
+
+SubRegionSet* HomotopyViz::getSelectedRegion() {
+    SubRegionSet* p_region = NULL;
+    if ( mpWorld ) {
+        if ( mpWorld->get_subregion_set().size() > 0 ) {
+            if( mRegionIdx >= 0 && mRegionIdx < mpWorld->get_subregion_set().size() ) {
+                return mpWorld->get_subregion_set()[ mRegionIdx ];
+            }
+        }  
+    }
+    return p_region;
+}
+
+
+SubRegion* HomotopyViz::getSelectedSubregion() {
+    SubRegion* p_subregion = NULL;
+    SubRegionSet* p_region = getSelectedRegion(); 
+    if( p_region ) {
+        if( p_region->m_subregions.size() > 0 ) {
+            if( mSubRegionIdx >= 0 && mSubRegionIdx < p_region->m_subregions.size() ) {
+                return p_region->m_subregions[mSubRegionIdx];
+            }
+        }
+    }
+    return p_subregion;
+}
