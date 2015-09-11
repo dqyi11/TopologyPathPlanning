@@ -418,8 +418,17 @@ void HomotopyViz::mouseMoveEvent( QMouseEvent * event ) {
     //std::cout << "mouseMoveEvent" << mPoints.size() << std::endl;
     if ( mDragging == true ) {
         //std::cout << event->x() << " " << event->y() << std::endl;
-        QPoint point( event->x(), event->y() );
-        mPoints.push_back( point );
+        QPoint new_point( event->x(), event->y() );
+        if( mPoints.size() > 0 ) {
+            QPoint last_point = mPoints.back();
+            if( std::abs( new_point.x() - last_point.x() ) > 1 &&
+                std::abs( new_point.y() - last_point.y() ) > 1 ) {
+                mPoints.push_back( new_point );
+            }
+        }
+        else {
+            mPoints.push_back( new_point );
+        }
         repaint();
     }
 }
@@ -442,6 +451,9 @@ QString HomotopyViz::generate_string() {
     std::vector< std::string > refs = mpReferenceFrameSet->get_string( cgal_points, STRING_GRAMMAR_TYPE );
 
     for( unsigned int i = 0; i < refs.size(); i ++ ) {
+        if ( i > 0 ) {
+           ref_str += "  ";
+        }
         ref_str += QString::fromStdString( refs[i] );
     } 
     return ref_str;

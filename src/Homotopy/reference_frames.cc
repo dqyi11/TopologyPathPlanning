@@ -108,8 +108,8 @@ HomotopicGrammar* ReferenceFrameSet::get_homotopic_grammar( SubRegion* p_init, S
   return p_grammar;
 }
 
-std::string ReferenceFrameSet::get_character_id( Point2D start, Point2D end, grammar_type_t type ) {
-  std::string character_id = "";
+std::vector< std::string > ReferenceFrameSet::get_string( Point2D start, Point2D end, grammar_type_t type ) {
+  std::vector< std::string > id_string;
   Segment2D line(start, end);
   if (type == STRING_GRAMMAR_TYPE) {
     for( std::vector<ReferenceFrame*>::iterator it = _reference_frames.begin();
@@ -118,105 +118,33 @@ std::string ReferenceFrameSet::get_character_id( Point2D start, Point2D end, gra
       CGAL::Object result = intersection( p_rf->m_segment, line );
       Point2D po;
       if ( CGAL::assign( po, result ) ) {
-        return p_rf->m_name;
+        id_string.push_back( p_rf->m_name );
       }
     }
   }
   else if (type == HOMOTOPIC_GRAMMAR_TYPE) {
 
   }        
-  return character_id;
-}
-
-std::vector< std::string > ReferenceFrameSet::get_string( Point2D start, Point2D end, grammar_type_t type ) {
-  std::vector< std::string > id_string;
- 
-  float x1 = CGAL::to_double( start.x() );
-  float y1 = CGAL::to_double( start.y() );
-  float x2 = CGAL::to_double( end.x() );
-  float y2 = CGAL::to_double( end.y() );
-
-  const bool steep = (fabs(y2 - y1) > fabs(x2 - x1));
-  if (steep) {
-    std::swap(x1, y1);
-    std::swap(x2, y2);
-  }
-
-  if (x1 > x2) {
-    std::swap(x1, x2);
-    std::swap(y1, y2);
-  }
-
-  const float dx = x2 - x1;
-  const float dy = fabs(y2 - y1);
-
-  float error = dx / 2.0f;
-  const int ystep = (y1 < y2) ? 1 : -1;
-  int y = (int)y1;
-
-  const int maxX = (int)x2;
-
-  Point2D lastPos(x1, y1);
-  Point2D newPos(x1, y1);
-  std::string lastString = "";
-  for(int x=(int)x1; x<maxX; x++) {
-    if(steep) {
-      newPos = Point2D( x, y );
-      std::string ref_str = get_character_id(lastPos, newPos, type);
-      if (ref_str!="") {
-        if( id_string.size() > 0 ) {
-          lastString = id_string[ id_string.size() - 1 ];
-        }
-        else{
-          lastString = "";
-        }
-        if ( ref_str != lastString ) {
-          id_string.push_back(ref_str);
-        }
-      }
-      lastPos = newPos;
-    }
-    else {
-      newPos = Point2D( x, y );
-      std::string ref_str = get_character_id(lastPos, newPos, type);
-      if (ref_str!="") {
-        if( id_string.size() > 0 ) {
-          lastString = id_string[ id_string.size() - 1 ];
-        }
-        else{
-          lastString = "";
-        }
-        if ( ref_str != lastString ) {
-          id_string.push_back(ref_str);
-        }
-      }
-      lastPos = newPos;
-    }
-
-    error -= dy;
-    if(error < 0) {
-      y += ystep;
-      error += dx;
-    }
-  }
-
   return id_string;
 }
 
-
 std::vector< std::string > ReferenceFrameSet::get_string ( std::vector<Point2D> points, grammar_type_t type ) {
   std::vector< std::string > ids;
-  std::string last_string = "";
+  //std::string last_string = "";
   for( unsigned int i = 0; i < points.size()-1; i ++ ) {
     std::vector< std::string > sub_ids = get_string( points[i], points[i+1], type); 
     for( unsigned int j = 0; j < sub_ids.size(); j ++ ) {
-      if( last_string != sub_ids[j] ) {
+      //std::cout << sub_ids[j] << " ";
+      //if( last_string != sub_ids[j] ) {
         ids.push_back( sub_ids[j] );
-      }
-      if ( ids.size() > 0 ) {
-        last_string = ids.back();
-      }
-    } 
+      //}
+      //if ( ids.size() > 0 ) {
+      //  last_string = ids.back();
+      //}
+    }
+    /*if( sub_ids.size() > 0 ) {
+      std::cout << std::endl; 
+    }*/
   }
   return ids;
 }
