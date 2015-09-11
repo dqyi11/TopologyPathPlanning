@@ -17,7 +17,6 @@ public:
 };
 
 class StringClassMgr {
-
 public:
   StringClassMgr(StringGrammar* p_grammar);
   virtual ~StringClassMgr();

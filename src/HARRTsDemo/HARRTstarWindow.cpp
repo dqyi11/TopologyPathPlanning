@@ -224,10 +224,10 @@ void HARRTstarWindow::planPath() {
     }
 
     mpViz->m_PPInfo.init_func_param();
-    QString msg = "RUNNING RRTstar ... \n";
+    QString msg = "INIT RRTstar ... \n";
     msg += "SegmentLen( " + QString::number(mpViz->m_PPInfo.m_segment_length) + " ) \n";
     msg += "MaxIterationNum( " + QString::number(mpViz->m_PPInfo.m_max_iteration_num) + " ) \n";
-    //qDebug(msg.toStdString().c_str());
+    qDebug() << msg;
 
     mpHARRTstar = new HARRTstar(mpMap->width(), mpMap->height(), mpViz->m_PPInfo.m_segment_length);
 
@@ -239,11 +239,10 @@ void HARRTstarWindow::planPath() {
     mpViz->setTree(mpHARRTstar);
 
     //mpHARRTstar->dump_distribution("dist.txt");
-
+    qDebug() << "STARTING ... "; 
     while(mpHARRTstar->get_current_iteration() <= mpViz->m_PPInfo.m_max_iteration_num) {
-        //QString msg = "CurrentIteration " + QString::number(mpHARRTstar->get_current_iteration()) + " ";
-        //msg += QString::number(mpHARRTstar->get_ball_radius());
-        //qDebug(msg.toStdString().c_str());
+        QString msg = "CurrentIteration " + QString::number(mpHARRTstar->get_current_iteration()) + " ";
+        qDebug() << msg;
         mpHARRTstar->extend();
 
         updateStatus();

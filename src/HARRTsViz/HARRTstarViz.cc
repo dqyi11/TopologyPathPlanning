@@ -113,18 +113,20 @@ void HARRTstarViz::paintEvent( QPaintEvent * e ) {
     if( mp_tree ) {
         if( mp_tree->get_string_class_mgr() ) {
             std::vector< StringClass* > classes = mp_tree->get_string_class_mgr()->get_string_classes();
-            QPainter pt_painter(this);
-            QPen pt_paintpen( PATH_COLOR );
-            pt_paintpen.setWidth(2);
-            pt_painter.setPen(pt_paintpen);
+            QPainter path_painter(this);
+            QPen path_paintpen( PATH_COLOR );
+            path_paintpen.setWidth(2);
+            path_painter.setPen(path_paintpen);
             for( unsigned int i = 0; i < classes.size(); i ++ ) {
                 Path* p_path = classes[i]->mp_path;
-                if( p_path && p_path->m_way_points.size() > 0 ) {
-                    for( unsigned int j = 0; j < p_path->m_way_points.size()-1; j ++ ){
-                        pt_painter.drawLine( QPoint( p_path->m_way_points[j][0],
-                                                     p_path->m_way_points[j][1] ), 
-                                             QPoint( p_path->m_way_points[j+1][0],
-                                                     p_path->m_way_points[j+1][1] ) );
+                if( p_path ) {
+                    if( p_path->m_way_points.size() > 0 ) {
+                        for( unsigned int j = 0; j < p_path->m_way_points.size()-1; j ++ ){
+                            path_painter.drawLine( QPoint( p_path->m_way_points[j][0],
+                                                           p_path->m_way_points[j][1] ), 
+                                                   QPoint( p_path->m_way_points[j+1][0],
+                                                           p_path->m_way_points[j+1][1] ) );
+                        }
                     }
                 } 
             } 
