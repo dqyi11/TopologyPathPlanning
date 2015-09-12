@@ -16,7 +16,9 @@ public:
     void setReferenceFrameSet(ReferenceFrameSet* p_rf);
     bool drawPath(QString filename);
     void set_show_reference_frames( bool show );
+    void set_show_regions( bool show );
     bool show_reference_frames() { return m_show_reference_frames; }
+    bool show_regions() { return m_show_regions; }
     void prev_reference_frame();
     void next_reference_frame();
     void prev_found_path();
@@ -33,11 +35,13 @@ public slots:
 
 private:
     void drawPathOnMap(QPixmap& map);
-    HARRTstar*         mp_tree;
-    ReferenceFrameSet* mp_reference_frames;
-    bool               m_show_reference_frames;
-    int                m_reference_frame_index;
-    int                m_found_path_index;
+    HARRTstar*          mp_tree;
+    ReferenceFrameSet*  mp_reference_frames;
+    bool                m_show_reference_frames;
+    bool                m_show_regions;
+    int                 m_reference_frame_index;
+    int                 m_found_path_index;
+    std::vector<QColor> m_colors;
 
 private slots:
     void paintEvent(QPaintEvent * e);

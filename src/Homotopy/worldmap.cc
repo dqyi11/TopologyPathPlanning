@@ -208,7 +208,8 @@ bool WorldMap::_init_segments() {
 }
 
 bool WorldMap::_init_regions() {
-    _regionSets.clear();
+    _region_sets.clear();
+    _subregions.clear();
 
     // generate regions
     unsigned int index = 0;
@@ -221,7 +222,7 @@ bool WorldMap::_init_regions() {
             p_subregion_set->mp_line_segments_b =  _line_segments[0];
             _line_segments[i]->m_neighbors.push_back( p_subregion_set );
             _line_segments[0]->m_neighbors.push_back( p_subregion_set );
-            _regionSets.push_back( p_subregion_set );
+            _region_sets.push_back( p_subregion_set );
         }
         else {
             std::list<Point2D> points = _intersect_with_boundaries( _line_segments[i], _line_segments[i+1] );
@@ -231,17 +232,18 @@ bool WorldMap::_init_regions() {
             p_subregion_set->mp_line_segments_b =  _line_segments[i+1];
             _line_segments[i]->m_neighbors.push_back( p_subregion_set );
             _line_segments[i+1]->m_neighbors.push_back( p_subregion_set );
-            _regionSets.push_back( p_subregion_set );
+            _region_sets.push_back( p_subregion_set );
         }
     }
 
-    for( unsigned int i=0; i < _regionSets.size(); i++ ) {
-        SubRegionSet* p_subregions_set = _regionSets[i];
+    for( unsigned int i=0; i < _region_sets.size(); i++ ) {
+        SubRegionSet* p_subregions_set = _region_sets[i];
         p_subregions_set->m_subregions = _get_subregions(p_subregions_set);
         std::cout << "GENERATE FOR REGION " << i << " NUM_OF_SUB (" << p_subregions_set->m_subregions.size() << ")" << std::endl;
         for( unsigned int j=0; j < p_subregions_set->m_subregions.size(); j++ ) {
             SubRegion* p_subreg = p_subregions_set->m_subregions[j];
             p_subreg->m_dist_to_cp = get_distance_to_central_point( p_subreg->m_centroid );
+           _subregions.push_back( p_subreg );
         }
         std::sort( p_subregions_set->m_subregions.begin(), p_subregions_set->m_subregions.end(), SubregionSetSort );
         for ( unsigned int sub_idx = 0; sub_idx < p_subregions_set->m_subregions.size(); sub_idx ++ ) {
@@ -256,8 +258,8 @@ bool WorldMap::_init_regions() {
              itS != p_line_subsegment_set->m_subsegs.end(); itS++ ) {
             LineSubSegment* p_line_subseg = (*itS);
             if ( p_line_subseg ) {
-                for ( unsigned int j=0; j < _regionSets.size(); j++ ) {
-                    SubRegionSet* p_subregion_set = _regionSets[j];
+                for ( unsigned int j=0; j < _region_sets.size(); j++ ) {
+                    SubRegionSet* p_subregion_set = _region_sets[j];
                     for( std::vector<SubRegion*>::iterator itSR =  p_subregion_set->m_subregions.begin();
                          itSR != p_subregion_set->m_subregions.end(); itSR++ ) {
                         SubRegion* p_sr = (*itSR);
@@ -398,13 +400,18 @@ bool WorldMap::_is_in_obstacle( Point2D point ) {
 }
 
 SubRegion* WorldMap::in_subregion( Point2D point ) {
-   
-   for( unsigned int i = 0; i < _regionSets.size(); i++ ) {
-     SubRegionSet* p_subregion_set = _regionSets[i];
+   std::cout << "worldmap::in_subregion " << point << std::endl; 
+   std::cout << _subregions.size() << std::endl;
+   for( unsigned int i = 0; i < get_subregion_set().size(); i ++ ) {
+     std::cout << i << "/" << get_subregion_set().size() << std::endl;
+     SubRegionSet* p_subregion_set = get_subregion_set()[i]; 
      if( p_subregion_set ) {
-       for( unsigned int j = 0; j < p_subregion_set->m_subregions.size(); j ++ ) {
-         SubRegion* p_subregion = p_subregion_set->m_subregions[j];
+       std::cout << p_subregion_set->get_name() << std::endl;
+       for( std::vector<SubRegion*>::iterator itr = p_subregion_set->m_subregions.begin();
+            itr != p_subregion_set->m_subregions.end(); itr ++) { 
+         SubRegion* p_subregion = (*itr);
          if ( p_subregion ) {
+           std::cout << "IN SUB " << p_subregion->get_name() << std::endl;
            if ( p_subregion->contains( point ) ) {
              return p_subregion;
            }

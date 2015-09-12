@@ -33,7 +33,8 @@ public:
 
     Point2D get_central_point() const { return _central_point; }
     std::vector<Obstacle*> get_obstacles() const { return _obstacles; }
-    std::vector<SubRegionSet*> get_subregion_set() const { return _regionSets; }
+    std::vector<SubRegionSet*> get_subregion_set() const { return _region_sets; }
+    std::vector<SubRegion*> get_subregions() const { return _subregions; } 
     std::vector<LineSubSegmentSet*> get_sublinesegment_set() const { return _line_segments; }
 
     double get_distance_to_central_point( Point2D point );
@@ -58,7 +59,8 @@ private:
 
     std::vector<Obstacle*>          _obstacles;
     std::vector<LineSubSegmentSet*> _line_segments;
-    std::vector<SubRegionSet*>      _regionSets;
+    std::vector<SubRegionSet*>      _region_sets;
+    std::vector<SubRegion*>         _subregions;
 
     std::vector<Line2D>             _obs_bk_pair_lines;
     std::vector<Segment2D>          _boundary_lines;

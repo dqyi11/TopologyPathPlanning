@@ -230,18 +230,15 @@ void HARRTstarWindow::planPath() {
     qDebug() << msg;
 
     mpHARRTstar = new HARRTstar(mpMap->width(), mpMap->height(), mpViz->m_PPInfo.m_segment_length);
-
+    mpHARRTstar->set_reference_frames( mpReferenceFrameSet );
     POS2D start(mpViz->m_PPInfo.m_start.x(), mpViz->m_PPInfo.m_start.y());
     POS2D goal(mpViz->m_PPInfo.m_goal.x(), mpViz->m_PPInfo.m_goal.y());
-
-    qDebug() << "create HARRTstar";
+    
     mpHARRTstar->init(start, goal, mpViz->m_PPInfo.mp_func, mpViz->m_PPInfo.mCostDistribution);
-    qDebug() << "HARRT init..";
     mpViz->m_PPInfo.get_obstacle_info(mpHARRTstar->get_map_info());
     mpViz->setTree(mpHARRTstar);
 
     //mpHARRTstar->dump_distribution("dist.txt");
-    qDebug() << "STARTING ... "; 
     while(mpHARRTstar->get_current_iteration() <= mpViz->m_PPInfo.m_max_iteration_num) {
         QString msg = "CurrentIteration " + QString::number(mpHARRTstar->get_current_iteration()) + " ";
         qDebug() << msg;
@@ -300,6 +297,18 @@ void HARRTstarWindow::keyPressEvent(QKeyEvent *event) {
            }
            else {
                mpViz->set_show_reference_frames( true );
+           }
+           updateStatus();
+           repaint();
+       }
+   }
+   else if ( event->key() == Qt::Key_S ) {
+       if(mpViz) {
+           if(mpViz->show_regions() == true) {
+               mpViz->set_show_regions( false );
+           }
+           else {
+               mpViz->set_show_regions( true );
            }
            updateStatus();
            repaint();

@@ -13,8 +13,11 @@ HARRTstarViz::HARRTstarViz( QWidget *parent ) :
     QLabel(parent) {
     mp_tree = NULL;
     m_show_reference_frames = false;
+    m_show_regions = false;
     m_reference_frame_index = -1;
     m_found_path_index = -1;
+    mp_reference_frames = NULL;
+    m_colors.clear();
 }
 
 void HARRTstarViz::setTree( HARRTstar* p_tree ) {
@@ -23,10 +26,39 @@ void HARRTstarViz::setTree( HARRTstar* p_tree ) {
 
 void HARRTstarViz::setReferenceFrameSet(ReferenceFrameSet* p_rf) {
     mp_reference_frames = p_rf;
+    for( unsigned int i = 0; i < mp_reference_frames->get_world_map()->get_subregion_set().size(); i++) {
+        m_colors.push_back( QColor( rand()%255, rand()%255, rand()%255 ) );
+    }
 }
 
 void HARRTstarViz::paintEvent( QPaintEvent * e ) {
     QLabel::paintEvent(e);
+
+    if(m_show_regions) {
+        for( unsigned int i = 0; i < mp_reference_frames->get_world_map()->get_subregion_set().size(); i++) {
+            SubRegionSet* p_subregion_set = mp_reference_frames->get_world_map()->get_subregion_set()[i];
+            if(p_subregion_set) {
+                QPainter rg_painter(this);
+                rg_painter.setRenderHint(QPainter::Antialiasing);
+                QBrush rg_brush( m_colors[i] );
+                rg_painter.setPen(Qt::NoPen);
+                for( unsigned int j = 0; j < p_subregion_set->m_subregions.size(); j ++ ) {
+                    SubRegion* p_subreg = p_subregion_set->m_subregions[j];
+                    if(p_subreg) {
+                        QPolygon poly;
+                        for( unsigned int k = 0; k < p_subreg->m_points.size(); k++) {
+                            double x = CGAL::to_double( p_subreg->m_points[k].x() );
+                            double y = CGAL::to_double( p_subreg->m_points[k].y() );
+                            poly << QPoint(x , y);
+                        }
+                        QPainterPath tmpPath;
+                        tmpPath.addPolygon(poly);
+                        rg_painter.fillPath(tmpPath, rg_brush);
+                    }
+                }
+            }
+        }
+    }
 
     if(mp_tree) {
 
@@ -137,6 +169,10 @@ void HARRTstarViz::paintEvent( QPaintEvent * e ) {
 void HARRTstarViz::set_show_reference_frames(bool show) {
     m_show_reference_frames = show;
     m_reference_frame_index = 0;
+}
+
+void HARRTstarViz::set_show_regions(bool show) {
+    m_show_regions = show;
 }
 
 bool HARRTstarViz::drawPath(QString filename) {

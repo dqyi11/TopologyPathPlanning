@@ -29,11 +29,11 @@ void ReferenceFrameSet::init(int width, int height, std::vector< std::vector<Poi
     delete _p_world_map;
     _p_world_map = NULL;
   }
+  _reference_frames.clear();
+  
   _p_world_map = new WorldMap(width, height);
   _p_world_map->load_obstacle_info(obstacles); 
   _p_world_map->init();
-  
-  _reference_frames.clear();
 
   for( unsigned int obs_i = 0; obs_i < _p_world_map->get_obstacles().size(); obs_i++ ) {
     Obstacle* p_obstacle = _p_world_map->get_obstacles()[obs_i];
