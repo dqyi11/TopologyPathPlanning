@@ -101,6 +101,7 @@ StringGrammar* ReferenceFrameSet::get_string_grammar( SubRegion* p_init, SubRegi
         it != _p_world_map->get_sublinesegment_set().end(); it ++ ) {
       LineSubSegmentSet* p_linesubsegment_set = (*it);
       if(p_linesubsegment_set) {
+        std::cout << "LR " << p_linesubsegment_set->get_name() << std::endl;
         for( std::vector<LineSubSegment*>::iterator its = p_linesubsegment_set->m_subsegs.begin();
              its != p_linesubsegment_set->m_subsegs.end(); its ++ ) {
           LineSubSegment* p_linesubsegment = (*its);

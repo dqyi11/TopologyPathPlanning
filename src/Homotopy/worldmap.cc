@@ -400,10 +400,7 @@ bool WorldMap::_is_in_obstacle( Point2D point ) {
 }
 
 SubRegion* WorldMap::in_subregion( Point2D point ) {
-   std::cout << "worldmap::in_subregion " << point << std::endl; 
-   std::cout << _subregions.size() << std::endl;
    for( unsigned int i = 0; i < get_subregion_set().size(); i ++ ) {
-     std::cout << i << "/" << get_subregion_set().size() << std::endl;
      SubRegionSet* p_subregion_set = get_subregion_set()[i]; 
      if( p_subregion_set ) {
        std::cout << p_subregion_set->get_name() << std::endl;
@@ -411,7 +408,6 @@ SubRegion* WorldMap::in_subregion( Point2D point ) {
             itr != p_subregion_set->m_subregions.end(); itr ++) { 
          SubRegion* p_subregion = (*itr);
          if ( p_subregion ) {
-           std::cout << "IN SUB " << p_subregion->get_name() << std::endl;
            if ( p_subregion->contains( point ) ) {
              return p_subregion;
            }
