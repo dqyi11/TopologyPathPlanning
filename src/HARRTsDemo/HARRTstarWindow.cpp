@@ -234,6 +234,7 @@ void HARRTstarWindow::planPath() {
     POS2D start(mpViz->m_PPInfo.m_start.x(), mpViz->m_PPInfo.m_start.y());
     POS2D goal(mpViz->m_PPInfo.m_goal.x(), mpViz->m_PPInfo.m_goal.y());
 
+    qDebug() << "create HARRTstar";
     mpHARRTstar->init(start, goal, mpViz->m_PPInfo.mp_func, mpViz->m_PPInfo.mCostDistribution);
     mpViz->m_PPInfo.get_obstacle_info(mpHARRTstar->get_map_info());
     mpViz->setTree(mpHARRTstar);

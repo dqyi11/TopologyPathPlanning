@@ -44,26 +44,34 @@ Path::~Path() {
 
 void Path::append_waypoints( std::vector<POS2D> waypoints, bool reverse ) {
   if ( reverse ) {
-    for( unsigned int i = waypoints.size()-1; i >= 0; i -- ) {
-      m_way_points.push_back( waypoints[i] );  
+    for( std::vector<POS2D>::reverse_iterator itr = waypoints.rbegin();
+         itr != waypoints.rend(); itr++ ) {
+      POS2D pos = (*itr);
+      m_way_points.push_back( pos );
     }
   }
   else {
-    for( unsigned int i = 0; i < waypoints.size(); i ++ )  {
-      m_way_points.push_back( waypoints[i] );
+    for( std::vector<POS2D>::iterator it = waypoints.begin();
+         it != waypoints.end(); it++ ) {
+      POS2D pos = (*it);
+      m_way_points.push_back( pos );
     }
   }
 }
 
 void Path::append_substring( std::vector< std::string > ids, bool reverse ) {
   if ( reverse ) {
-    for( unsigned int i = ids.size()-1; i >= 0; i -- ) {
-      m_string.push_back( ids[i] );     
+    for( std::vector< std::string >::reverse_iterator itr = ids.rbegin();
+         itr != ids.rend(); itr++ ) {
+      std::string str = (*itr);
+      m_string.push_back( str );
     }
   }
   else {
-    for( unsigned int i = 0; i < ids.size(); i ++ )  {
-      m_string.push_back( ids[i] );
+    for( std::vector< std::string >::iterator it = ids.begin();
+         it != ids.end(); it++ ) {
+      std::string str = (*it);
+      m_string.push_back( str );
     }
   }
 }
@@ -279,8 +287,8 @@ bool HARRTstar::_is_obstacle_free( POS2D pos_a, POS2D pos_b ) {
 }
 
 void HARRTstar::extend() {
-  //RRTNode* p_st_new_node = _extend(START_TREE_TYPE);
-  //RRTNode* p_gt_new_node = _extend(GOAL_TREE_TYPE);
+  RRTNode* p_st_new_node = _extend(START_TREE_TYPE);
+  RRTNode* p_gt_new_node = _extend(GOAL_TREE_TYPE);
   //Path* p_st_new_path = find_path( p_st_new_node->m_pos );
   //Path* p_gt_new_path = find_path( p_gt_new_node->m_pos ); 
 
@@ -452,10 +460,9 @@ bool HARRTstar::_add_edge( RRTNode* p_node_parent, RRTNode* p_node_child ) {
     return false;
   }
   // generate the string of ID characters
-  Point2D start = Point2D( p_node_parent->m_pos[0],
-                           p_node_parent->m_pos[1] );
-  Point2D goal = Point2D( p_node_child->m_pos[0],
-                          p_node_child->m_pos[1] );
+  Point2D start( p_node_parent->m_pos[0], p_node_parent->m_pos[1] );
+  Point2D goal( p_node_child->m_pos[0], p_node_child->m_pos[1] );
+  std::cout << "START " << start << " END " << goal << std::endl;
   std::vector< std::string > ids = _reference_frames->get_string( start, goal, STRING_GRAMMAR_TYPE );
   p_node_child->clear_string();
   p_node_child->append_to_string( p_node_parent->m_substring );
@@ -472,7 +479,6 @@ bool HARRTstar::_add_edge( RRTNode* p_node_parent, RRTNode* p_node_child ) {
 
   return true;
 }
-
 
 std::list<RRTNode*> HARRTstar::_find_all_children( RRTNode* p_node ) {
   int level = 0;
