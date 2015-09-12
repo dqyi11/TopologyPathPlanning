@@ -158,17 +158,22 @@ bool HARRTstar::init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp
       _pp_cost_distribution = NULL;
     }
   }
-
+  
+  std::cout << "Init grammar ... " << std::endl; 
   Point2D start_point( _start[0], _start[1] );
   Point2D goal_point( _goal[0], _goal[1] );
-  _p_string_class_mgr = new StringClassMgr( _reference_frames->get_string_grammar( start_point, goal_point ) );
+  StringGrammar* p_string_grammar = _reference_frames->get_string_grammar( start_point, goal_point );
+  std::cout << "Init String Class Mgr ... " << std::endl;
+  _p_string_class_mgr = new StringClassMgr( p_string_grammar );
 
+  std::cout << "Init st_tree.." << std::endl;
   KDNode2D st_root( start );
   _p_st_root = new RRTNode( start );
   _st_nodes.push_back(_p_st_root);
   st_root.setRRTNode(_p_st_root);
   _p_st_kd_tree->insert( st_root );
   
+  std::cout << "Init gt_tree.." << std::endl;
   KDNode2D gt_root( start );
   _p_gt_root = new RRTNode( goal );
   _gt_nodes.push_back(_p_gt_root);
@@ -462,7 +467,7 @@ bool HARRTstar::_add_edge( RRTNode* p_node_parent, RRTNode* p_node_child ) {
   // generate the string of ID characters
   Point2D start( p_node_parent->m_pos[0], p_node_parent->m_pos[1] );
   Point2D goal( p_node_child->m_pos[0], p_node_child->m_pos[1] );
-  std::cout << "START " << start << " END " << goal << std::endl;
+  //std::cout << "START " << start << " END " << goal << std::endl;
   std::vector< std::string > ids = _reference_frames->get_string( start, goal, STRING_GRAMMAR_TYPE );
   p_node_child->clear_string();
   p_node_child->append_to_string( p_node_parent->m_substring );

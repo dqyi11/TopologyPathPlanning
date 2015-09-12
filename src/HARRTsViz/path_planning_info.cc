@@ -19,9 +19,9 @@ PathPlanningInfo::PathPlanningInfo() {
     m_paths_output = "";
     mp_found_paths.clear();
 
-    m_min_dist_enabled = false;
+    m_min_dist_enabled = true;
 
-    m_max_iteration_num = 100;
+    m_max_iteration_num = 1000;
     m_segment_length = 5.0;
     mCostDistribution = NULL;
 

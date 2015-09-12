@@ -236,6 +236,7 @@ void HARRTstarWindow::planPath() {
 
     qDebug() << "create HARRTstar";
     mpHARRTstar->init(start, goal, mpViz->m_PPInfo.mp_func, mpViz->m_PPInfo.mCostDistribution);
+    qDebug() << "HARRT init..";
     mpViz->m_PPInfo.get_obstacle_info(mpHARRTstar->get_map_info());
     mpViz->setTree(mpHARRTstar);
 
