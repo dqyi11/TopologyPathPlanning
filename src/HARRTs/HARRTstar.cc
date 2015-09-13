@@ -295,12 +295,15 @@ bool HARRTstar::_is_obstacle_free( POS2D pos_a, POS2D pos_b ) {
 void HARRTstar::extend() {
   RRTNode* p_st_new_node = _extend(START_TREE_TYPE);
   RRTNode* p_gt_new_node = _extend(GOAL_TREE_TYPE);
-  //Path* p_st_new_path = find_path( p_st_new_node->m_pos );
-  //Path* p_gt_new_path = find_path( p_gt_new_node->m_pos ); 
+  Path* p_st_new_path = find_path( p_st_new_node->m_pos );
+  Path* p_gt_new_path = find_path( p_gt_new_node->m_pos ); 
 
-  //_p_string_class_mgr->import_path( p_st_new_path );
-  //_p_string_class_mgr->import_path( p_gt_new_path );
-
+  if( p_st_new_path ) {
+    _p_string_class_mgr->import_path( p_st_new_path );
+  }
+  if( p_gt_new_path ) {
+    _p_string_class_mgr->import_path( p_gt_new_path );
+  }
   _current_iteration++;
 }
 
