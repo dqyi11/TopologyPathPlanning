@@ -665,8 +665,8 @@ void HARRTstar::dump_distribution(std::string filename) {
 
 Path* HARRTstar::_concatenate_paths( Path* p_from_path, Path* p_to_path ) {
   Path* p_new_path = new Path( p_from_path->m_start, p_to_path->m_start );
-  Point2D from_path_end = Point2D( p_from_path->m_goal[0], p_from_path->m_goal[1] );
-  Point2D to_path_end = Point2D( p_to_path->m_goal[0], p_to_path->m_goal[1] );
+  Point2D from_path_end( p_from_path->m_goal[0], p_from_path->m_goal[1] );
+  Point2D to_path_end( p_to_path->m_goal[0], p_to_path->m_goal[1] );
   std::vector< std::string > between_ids = _reference_frames->get_string( from_path_end, to_path_end , STRING_GRAMMAR_TYPE );
   double delta_cost = _calculate_cost( p_from_path->m_goal, p_to_path->m_goal );
 
