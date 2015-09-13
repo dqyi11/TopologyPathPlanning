@@ -14,6 +14,7 @@ HARRTstarViz::HARRTstarViz( QWidget *parent ) :
     mp_tree = NULL;
     m_show_reference_frames = false;
     m_show_regions = false;
+    m_finished_planning = false;
     m_reference_frame_index = -1;
     m_found_path_index = -1;
     mp_reference_frames = NULL;
@@ -62,8 +63,7 @@ void HARRTstarViz::paintEvent( QPaintEvent * e ) {
     }
 
     if(mp_tree) {
-
-        if(m_tree_show_type != GOAL_TREE_SHOW) {
+        if(m_tree_show_type == START_TREE_SHOW || m_tree_show_type == BOTH_TREES_SHOW ) {
             QPainter st_tree_painter(this);
             QPen st_tree_paintpen(START_TREE_COLOR);
             st_tree_paintpen.setWidth(1);
@@ -77,7 +77,7 @@ void HARRTstarViz::paintEvent( QPaintEvent * e ) {
                 }
             }
         }
-        if(m_tree_show_type != START_TREE_SHOW) {
+        if(m_tree_show_type == GOAL_TREE_SHOW || m_tree_show_type == BOTH_TREES_SHOW) {
             QPainter gt_tree_painter(this);
             QPen gt_tree_paintpen(GOAL_TREE_COLOR);
             gt_tree_paintpen.setWidth(1);
@@ -91,24 +91,22 @@ void HARRTstarViz::paintEvent( QPaintEvent * e ) {
                 }
             }
         }
-        
-        if(m_PPInfo.mp_found_paths.size() > 0 && m_found_path_index >= 0  ) {
-            Path * p = m_PPInfo.mp_found_paths[m_found_path_index];
-            QPainter painter(this);
-            QPen paintpen(QColor(255,140,0));
-            paintpen.setWidth(2);
-            painter.setPen(paintpen);
+    } 
+    if(m_PPInfo.mp_found_paths.size() > 0 && m_found_path_index >= 0  ) {
+        Path* p = m_PPInfo.mp_found_paths[m_found_path_index];
+        QPainter painter(this);
+        QPen paintpen(QColor(255,140,0));
+        paintpen.setWidth(2);
+        painter.setPen(paintpen);
 
-            int point_num = p->m_way_points.size();
-
-            if(point_num > 0) {
-                for(int i=0;i<point_num-1;i++) {
-                    painter.drawLine(QPoint(p->m_way_points[i][0], p->m_way_points[i][1]), QPoint(p->m_way_points[i+1][0], p->m_way_points[i+1][1]));
-                }
+        int point_num = p->m_way_points.size();
+        if(point_num > 0) {
+            for(int i=0;i<point_num-1;i++) {
+                painter.drawLine(QPoint(p->m_way_points[i][0], p->m_way_points[i][1]), QPoint(p->m_way_points[i+1][0], p->m_way_points[i+1][1]));
             }
         }
     }
-
+    
     if(m_PPInfo.m_start.x() >= 0 && m_PPInfo.m_start.y() >= 0) {
         QPainter st_painter(this);
         QPen st_paintpen( START_COLOR );
@@ -147,12 +145,13 @@ void HARRTstarViz::paintEvent( QPaintEvent * e ) {
         }
     }
 
-    if( mp_tree ) {
+    if( mp_tree!=NULL && m_finished_planning==false ) {
         if( mp_tree->get_string_class_mgr() ) {
             std::vector< StringClass* > classes = mp_tree->get_string_class_mgr()->get_string_classes();
             QPainter path_painter(this);
             QPen path_paintpen( PATH_COLOR );
             path_paintpen.setWidth(2);
+            path_paintpen.setStyle( Qt::DashDotLine );
             path_painter.setPen(path_paintpen);
             for( unsigned int i = 0; i < classes.size(); i ++ ) {
                 Path* p_path = classes[i]->mp_path;
@@ -199,6 +198,7 @@ bool HARRTstarViz::drawPath(QString filename) {
 
 void HARRTstarViz::drawPathOnMap(QPixmap& map) {
 
+
     Path * p = m_PPInfo.mp_found_paths[ m_found_path_index ];
     QPainter painter(&map);
     QPen paintpen(QColor(255,140,0));
@@ -234,6 +234,9 @@ void HARRTstarViz::drawPathOnMap(QPixmap& map) {
 void HARRTstarViz::switch_tree_show_type() {
 
     switch(m_tree_show_type) {
+    case NONE_TREE_SHOW:
+        m_tree_show_type = START_TREE_SHOW;
+        break;
     case START_TREE_SHOW:
         m_tree_show_type = GOAL_TREE_SHOW;
         break;
@@ -241,7 +244,7 @@ void HARRTstarViz::switch_tree_show_type() {
         m_tree_show_type = BOTH_TREES_SHOW;
         break;
     case BOTH_TREES_SHOW:
-        m_tree_show_type = START_TREE_SHOW;
+        m_tree_show_type = NONE_TREE_SHOW;
         break;
     }
 }

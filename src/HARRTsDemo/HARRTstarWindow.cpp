@@ -237,6 +237,7 @@ void HARRTstarWindow::planPath() {
     mpHARRTstar->init(start, goal, mpViz->m_PPInfo.mp_func, mpViz->m_PPInfo.mCostDistribution);
     mpViz->m_PPInfo.get_obstacle_info(mpHARRTstar->get_map_info());
     mpViz->setTree(mpHARRTstar);
+    mpViz->set_finished_planning( false );
 
     //mpHARRTstar->dump_distribution("dist.txt");
     while(mpHARRTstar->get_current_iteration() <= mpViz->m_PPInfo.m_max_iteration_num) {
@@ -252,6 +253,8 @@ void HARRTstarWindow::planPath() {
     //Path* path = mpHARRTstar->find_path();
     std::vector<Path*> p_paths = mpHARRTstar->get_paths();
     mpViz->m_PPInfo.load_paths(p_paths);
+    mpViz->set_finished_planning( true );
+    repaint();
 }
 
 void HARRTstarWindow::onAddStart() {
@@ -320,7 +323,6 @@ void HARRTstarWindow::keyPressEvent(QKeyEvent *event) {
            mpViz->switch_tree_show_type();
            std::cout << "TREE DISP " <<mpViz->get_tree_show_type();
        }
-
        updateStatus();
        repaint();
    }
@@ -335,6 +337,20 @@ void HARRTstarWindow::keyPressEvent(QKeyEvent *event) {
    else if ( event->key() == Qt::Key_Down ) {
        if(mpViz) {
            mpViz->next_reference_frame();
+           updateStatus();
+           repaint();
+       }
+   }
+   else if ( event->key() == Qt::Key_Left ) {
+       if(mpViz) {
+           mpViz->prev_found_path();
+           updateStatus();
+           repaint();
+       }
+   }
+   else if ( event->key() == Qt::Key_Right ) {
+       if(mpViz) {
+           mpViz->next_found_path();
            updateStatus();
            repaint();
        }

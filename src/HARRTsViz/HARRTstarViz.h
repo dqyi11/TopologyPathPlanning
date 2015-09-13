@@ -8,6 +8,7 @@
 #include "reference_frames.h"
 
 typedef enum{
+    NONE_TREE_SHOW,
     START_TREE_SHOW,
     GOAL_TREE_SHOW,
     BOTH_TREES_SHOW
@@ -21,10 +22,15 @@ public:
     void setTree(HARRTstar* p_tree);
     void setReferenceFrameSet(ReferenceFrameSet* p_rf);
     bool drawPath(QString filename);
+
     void set_show_reference_frames( bool show );
     void set_show_regions( bool show );
+    void set_finished_planning( bool finished ) { m_finished_planning = finished; }
+
     bool show_reference_frames() { return m_show_reference_frames; }
     bool show_regions() { return m_show_regions; }
+    bool is_finished_planning() { return m_finished_planning; }
+
     void prev_reference_frame();
     void next_reference_frame();
     void prev_found_path();
@@ -48,6 +54,7 @@ private:
     ReferenceFrameSet*  mp_reference_frames;
     bool                m_show_reference_frames;
     bool                m_show_regions;
+    bool                m_finished_planning;
     int                 m_reference_frame_index;
     int                 m_found_path_index;
     std::vector<QColor> m_colors;
