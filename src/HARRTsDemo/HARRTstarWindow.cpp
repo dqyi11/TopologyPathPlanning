@@ -241,8 +241,9 @@ void HARRTstarWindow::planPath() {
     //mpHARRTstar->dump_distribution("dist.txt");
     while(mpHARRTstar->get_current_iteration() <= mpViz->m_PPInfo.m_max_iteration_num) {
         QString msg = "CurrentIteration " + QString::number(mpHARRTstar->get_current_iteration()) + " ";
-        qDebug() << msg;
         mpHARRTstar->extend();
+        msg += QString::number(mpHARRTstar->get_string_class_mgr()->get_string_classes().size()); 
+        qDebug() << msg;
 
         updateStatus();
         repaint();

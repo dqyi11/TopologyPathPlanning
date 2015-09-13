@@ -35,6 +35,7 @@ void StringClassMgr::import_path( Path* p_path ) {
     p_string_class = new StringClass( p_path->m_string ); 
     p_string_class->m_cost = p_path->m_cost;
     p_string_class->mp_path = p_path;
+    _classes.push_back(p_string_class);
   }
 }
 

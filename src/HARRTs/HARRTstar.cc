@@ -547,14 +547,10 @@ RRTNode* HARRTstar::_find_ancestor(RRTNode* p_node) {
 Path* HARRTstar::find_path( POS2D via_pos ) {
   Path* p_new_path = NULL; 
 
-  RRTNode * p_st_first_node = NULL;
-  RRTNode * p_gt_first_node = NULL;
-  double st_delta_cost = 0.0;
-  double gt_delta_cost = 0.0;
-  _get_closest_node( via_pos, p_st_first_node, st_delta_cost, START_TREE_TYPE );
-  _get_closest_node( via_pos, p_gt_first_node, gt_delta_cost, GOAL_TREE_TYPE );
+  RRTNode * p_st_first_node = _find_nearest( via_pos, START_TREE_TYPE ).getRRTNode();
+  RRTNode * p_gt_first_node = _find_nearest( via_pos, GOAL_TREE_TYPE ).getRRTNode();
    
-  if ( _is_obstacle_free( p_st_first_node->m_pos, p_gt_first_node->m_pos ) ) {
+  if ( false == _is_obstacle_free( p_st_first_node->m_pos, p_gt_first_node->m_pos ) ) {
     return p_new_path;
   }
    
@@ -641,7 +637,7 @@ bool HARRTstar::_get_closest_node ( POS2D pos, RRTNode*& p_node_closet_to_goal, 
       it!=near_nodes.end();it++) {
     KDNode2D kd_node = (*it);
     RRTNode* p_node = kd_node.getRRTNode();
-    double new_delta_cost = _calculate_cost(p_node->m_pos, _goal);
+    double new_delta_cost = _calculate_cost(p_node->m_pos, pos);
     double new_total_cost= p_node->m_cost + new_delta_cost;
     if (new_total_cost < min_total_cost) {
       min_total_cost = new_total_cost;
