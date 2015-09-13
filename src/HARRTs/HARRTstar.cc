@@ -693,9 +693,9 @@ Path* HARRTstar::_get_subpath( RRTNode* p_end_node, RRTree_type_t type ) {
   p_subpath->m_cost = p_end_node->m_cost;
   p_subpath->append_substring( p_end_node->m_substring ); 
   p_subpath->m_way_points.clear();
-  for( std::list<RRTNode*>::iterator it = node_list.begin();
-       it != node_list.end(); it ++ ) {
-    RRTNode* p_rrt_node = (*it);
+  for( std::list<RRTNode*>::reverse_iterator itr = node_list.rbegin();
+       itr != node_list.rend(); itr ++ ) {
+    RRTNode* p_rrt_node = (*itr);
     p_subpath->m_way_points.push_back( p_rrt_node->m_pos ); 
   }
   return p_subpath;
