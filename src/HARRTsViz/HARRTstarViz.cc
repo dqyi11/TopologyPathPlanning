@@ -17,6 +17,7 @@ HARRTstarViz::HARRTstarViz( QWidget *parent ) :
     m_reference_frame_index = -1;
     m_found_path_index = -1;
     mp_reference_frames = NULL;
+    m_tree_show_type = BOTH_TREES_SHOW;
     m_colors.clear();
 }
 
@@ -62,27 +63,31 @@ void HARRTstarViz::paintEvent( QPaintEvent * e ) {
 
     if(mp_tree) {
 
-        QPainter st_tree_painter(this);
-        QPen st_tree_paintpen(START_TREE_COLOR);
-        st_tree_paintpen.setWidth(1);
-        st_tree_painter.setPen(st_tree_paintpen);
-        for( std::list<RRTNode*>::iterator it= mp_tree->get_st_nodes().begin(); it!=mp_tree->get_st_nodes().end();it++ ) {
-            RRTNode* p_node = (*it);
-            if(p_node) {
-                if(p_node->mp_parent) {
-                    st_tree_painter.drawLine(QPoint(p_node->m_pos[0], p_node->m_pos[1]), QPoint(p_node->mp_parent->m_pos[0], p_node->mp_parent->m_pos[1]));
+        if(m_tree_show_type != GOAL_TREE_SHOW) {
+            QPainter st_tree_painter(this);
+            QPen st_tree_paintpen(START_TREE_COLOR);
+            st_tree_paintpen.setWidth(1);
+            st_tree_painter.setPen(st_tree_paintpen);
+            for( std::list<RRTNode*>::iterator it= mp_tree->get_st_nodes().begin(); it!=mp_tree->get_st_nodes().end();it++ ) {
+                RRTNode* p_node = (*it);
+                if(p_node) {
+                    if(p_node->mp_parent) {
+                        st_tree_painter.drawLine(QPoint(p_node->m_pos[0], p_node->m_pos[1]), QPoint(p_node->mp_parent->m_pos[0], p_node->mp_parent->m_pos[1]));
+                    }
                 }
             }
         }
-        QPainter gt_tree_painter(this);
-        QPen gt_tree_paintpen(GOAL_TREE_COLOR);
-        gt_tree_paintpen.setWidth(1);
-        gt_tree_painter.setPen(gt_tree_paintpen);
-        for( std::list<RRTNode*>::iterator it= mp_tree->get_gt_nodes().begin(); it!=mp_tree->get_gt_nodes().end();it++ ) {
-            RRTNode* p_node = (*it);
-            if(p_node) {
-                if(p_node->mp_parent) {
-                    gt_tree_painter.drawLine(QPoint(p_node->m_pos[0], p_node->m_pos[1]), QPoint(p_node->mp_parent->m_pos[0], p_node->mp_parent->m_pos[1]));
+        if(m_tree_show_type != START_TREE_SHOW) {
+            QPainter gt_tree_painter(this);
+            QPen gt_tree_paintpen(GOAL_TREE_COLOR);
+            gt_tree_paintpen.setWidth(1);
+            gt_tree_painter.setPen(gt_tree_paintpen);
+            for( std::list<RRTNode*>::iterator it= mp_tree->get_gt_nodes().begin(); it!=mp_tree->get_gt_nodes().end();it++ ) {
+                RRTNode* p_node = (*it);
+                if(p_node) {
+                    if(p_node->mp_parent) {
+                        gt_tree_painter.drawLine(QPoint(p_node->m_pos[0], p_node->m_pos[1]), QPoint(p_node->mp_parent->m_pos[0], p_node->mp_parent->m_pos[1]));
+                    }
                 }
             }
         }
@@ -224,6 +229,21 @@ void HARRTstarViz::drawPathOnMap(QPixmap& map) {
     endPainter.setPen(paintpen2);
     endPainter.drawPoint( QPoint(p->m_way_points[lastIdx][0], p->m_way_points[lastIdx][1]) );
     endPainter.end();
+}
+
+void HARRTstarViz::switch_tree_show_type() {
+
+    switch(m_tree_show_type) {
+    case START_TREE_SHOW:
+        m_tree_show_type = GOAL_TREE_SHOW;
+        break;
+    case GOAL_TREE_SHOW:
+        m_tree_show_type = BOTH_TREES_SHOW;
+        break;
+    case BOTH_TREES_SHOW:
+        m_tree_show_type = START_TREE_SHOW;
+        break;
+    }
 }
 
 void HARRTstarViz::prev_reference_frame() {

@@ -314,6 +314,15 @@ void HARRTstarWindow::keyPressEvent(QKeyEvent *event) {
            repaint();
        }
    }
+   else if ( event->key() == Qt::Key_T ) {
+       if(mpViz) {
+           mpViz->switch_tree_show_type();
+           std::cout << "TREE DISP " <<mpViz->get_tree_show_type();
+       }
+
+       updateStatus();
+       repaint();
+   }
    else if ( event->key() == Qt::Key_Up ) {
        if(mpViz) {
            mpViz->prev_reference_frame();

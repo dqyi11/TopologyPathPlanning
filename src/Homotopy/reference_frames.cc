@@ -132,12 +132,12 @@ HomotopicGrammar* ReferenceFrameSet::get_homotopic_grammar( SubRegion* p_init, S
 std::vector< std::string > ReferenceFrameSet::get_string( Point2D start, Point2D end, grammar_type_t type ) {
   std::vector< std::string > id_string;
   Segment2D line(start, end);
-  std::cout << "LINE " << line << std::endl;
+  //std::cout << "LINE " << line << std::endl;
   if (type == STRING_GRAMMAR_TYPE) {
     for( std::vector<ReferenceFrame*>::iterator it = _reference_frames.begin();
          it != _reference_frames.end(); it ++ ) {
       ReferenceFrame* p_rf = (*it);
-      std::cout << "REF " << p_rf->m_segment << std::endl;
+      // std::cout << "REF " << p_rf->m_segment << std::endl;
       if ( CGAL::do_intersect( p_rf->m_segment, line ) ) {
         id_string.push_back( p_rf->m_name );
       }

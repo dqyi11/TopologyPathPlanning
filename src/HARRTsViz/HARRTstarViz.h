@@ -7,6 +7,12 @@
 #include "path_planning_info.h"
 #include "reference_frames.h"
 
+typedef enum{
+    START_TREE_SHOW,
+    GOAL_TREE_SHOW,
+    BOTH_TREES_SHOW
+} tree_show_type_t;
+
 class HARRTstarViz : public QLabel
 {
     Q_OBJECT
@@ -27,6 +33,9 @@ public:
     std::string get_reference_frame_name();
     QString generate_string();
 
+    tree_show_type_t get_tree_show_type() { return m_tree_show_type; }
+    void switch_tree_show_type();
+
     PathPlanningInfo m_PPInfo;
 
 signals:
@@ -42,6 +51,7 @@ private:
     int                 m_reference_frame_index;
     int                 m_found_path_index;
     std::vector<QColor> m_colors;
+    tree_show_type_t    m_tree_show_type;
 
 private slots:
     void paintEvent(QPaintEvent * e);
