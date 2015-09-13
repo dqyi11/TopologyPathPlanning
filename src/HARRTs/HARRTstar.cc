@@ -175,7 +175,7 @@ bool HARRTstar::init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp
   _p_st_kd_tree->insert( st_root );
   
   std::cout << "Init gt_tree.." << std::endl;
-  KDNode2D gt_root( start );
+  KDNode2D gt_root( goal );
   _p_gt_root = new RRTNode( goal );
   _gt_nodes.push_back(_p_gt_root);
   gt_root.setRRTNode(_p_gt_root);
