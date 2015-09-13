@@ -97,14 +97,15 @@ StringGrammar* ReferenceFrameSet::get_string_grammar( SubRegion* p_init, SubRegi
   StringGrammar* p_grammar = NULL;
   if( _p_world_map && p_init && p_goal ) {
     p_grammar = new StringGrammar();  
-    for( std::vector<LineSubSegmentSet*>::iterator it = _p_world_map->get_sublinesegment_set().begin();
-        it != _p_world_map->get_sublinesegment_set().end(); it ++ ) {
-      LineSubSegmentSet* p_linesubsegment_set = (*it);
+    //std::cout << "sublinesegment set " << _p_world_map->get_sublinesegment_set().size() << std::endl;
+
+    for( unsigned int i = 0; i < _p_world_map->get_sublinesegment_set().size(); i++ ) {
+      LineSubSegmentSet* p_linesubsegment_set = _p_world_map->get_sublinesegment_set()[i];
       if(p_linesubsegment_set) {
-        std::cout << "LR " << p_linesubsegment_set->get_name() << std::endl;
-        for( std::vector<LineSubSegment*>::iterator its = p_linesubsegment_set->m_subsegs.begin();
-             its != p_linesubsegment_set->m_subsegs.end(); its ++ ) {
-          LineSubSegment* p_linesubsegment = (*its);
+        //std::cout << p_linesubsegment_set->m_subsegs.size() << std::endl;
+        //std::cout << "LR " << p_linesubsegment_set->get_name() << std::endl;
+        for( unsigned int j = 0; j < p_linesubsegment_set->m_subsegs.size(); j++) {
+          LineSubSegment* p_linesubsegment = p_linesubsegment_set->m_subsegs[j];
           if (p_linesubsegment) {
             p_grammar->add_transition( p_linesubsegment->m_neighbors[0]->get_name(),
                                        p_linesubsegment->m_neighbors[1]->get_name(),
