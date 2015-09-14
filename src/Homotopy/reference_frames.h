@@ -15,9 +15,10 @@ class ReferenceFrame {
 public:
   ReferenceFrame();
   virtual ~ReferenceFrame();
-  
+ 
   std::string m_name; 
   Segment2D   m_segment;
+  bool        m_connect_to_cp;
 };
 
 class ReferenceFrameSet {

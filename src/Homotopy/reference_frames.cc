@@ -3,6 +3,7 @@
 
 ReferenceFrame::ReferenceFrame() {
   m_name = "";
+  m_connect_to_cp = false;
 }
 
 ReferenceFrame::~ReferenceFrame() {
@@ -44,6 +45,7 @@ void ReferenceFrameSet::init(int width, int height, std::vector< std::vector<Poi
           if (p_subseg_a) {
             ReferenceFrame* p_rf = new ReferenceFrame();
             p_rf->m_name = p_subseg_a->get_name();
+            p_rf->m_connect_to_cp = p_subseg_a->m_is_connected_to_central_point; 
             p_rf->m_segment = Segment2D( p_subseg_a->m_subseg.source(), p_subseg_a->m_subseg.target());
             _reference_frames.push_back(p_rf);
           }
@@ -56,6 +58,7 @@ void ReferenceFrameSet::init(int width, int height, std::vector< std::vector<Poi
           if (p_subseg_b) {
             ReferenceFrame* p_rf = new ReferenceFrame();
             p_rf->m_name = p_subseg_b->get_name();
+            p_rf->m_connect_to_cp = p_subseg_b->m_is_connected_to_central_point; 
             p_rf->m_segment = Segment2D( p_subseg_b->m_subseg.source(), p_subseg_b->m_subseg.target());
             _reference_frames.push_back(p_rf);
           }
@@ -151,11 +154,14 @@ std::vector< std::string > ReferenceFrameSet::get_string( Point2D start, Point2D
 
 std::vector< std::string > ReferenceFrameSet::get_string ( std::vector<Point2D> points, grammar_type_t type ) {
   std::vector< std::string > ids;
-
   for( unsigned int i = 0; i < points.size()-1; i ++ ) {
     std::vector< std::string > sub_ids = get_string( points[i], points[i+1], type); 
     for( unsigned int j = 0; j < sub_ids.size(); j ++ ) {
-      ids.push_back( sub_ids[j] );
+      if ( type == STRING_GRAMMAR_TYPE ) {
+        ids.push_back( sub_ids[j] ); 
+      }
+      else if( type == HOMOTOPIC_GRAMMAR_TYPE ) {
+      }
     }
   }
   return ids;
