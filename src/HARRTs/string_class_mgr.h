@@ -23,6 +23,7 @@ public:
 
   void import_path( Path* p_path );
   std::vector<Path*> export_paths();
+  void merge();
   StringClass* find_string_class( std::vector< std::string > str );
   std::vector< StringClass* >& get_string_classes() { return _classes; }  
 protected:

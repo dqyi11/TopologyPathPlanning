@@ -67,3 +67,7 @@ StringClass* StringClassMgr::find_string_class( std::vector< std::string > str )
   }
   return p_string_class;
 }
+
+void StringClassMgr::merge() {
+
+}
