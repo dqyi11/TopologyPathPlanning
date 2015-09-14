@@ -48,9 +48,8 @@ protected:
     HomotopicGrammar* get_homotopic_grammar( SubRegion* p_init, SubRegion* p_goal );
   bool is_eligible_substring( std::vector< std::string > substring, std::vector< std::string > ref_str, bool reverse );
   
-    WorldMap*                    _p_world_map;
-    std::vector<ReferenceFrame*> _reference_frames;
-
+    WorldMap*                                 _p_world_map;
+    std::vector<ReferenceFrame*>              _reference_frames;
     std::vector< std::vector< std::string > > _string_constraint; 
 };
 

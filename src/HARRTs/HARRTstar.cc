@@ -305,26 +305,26 @@ void HARRTstar::extend() {
   RRTNode* p_gt_new_node = NULL;
   Path* p_st_new_path = NULL;
   Path* p_gt_new_path = NULL;
-  if( _run_type != RUN_START_TREE_TYPE ) {
+  if( _run_type != RUN_GOAL_TREE_TYPE ) {
     p_st_new_node = _extend(START_TREE_TYPE);
   }
-  if( _run_type != RUN_GOAL_TREE_TYPE ) {
+  if( _run_type != RUN_START_TREE_TYPE ) {
     p_gt_new_node = _extend(GOAL_TREE_TYPE);
   }
   
-  if( _run_type != RUN_START_TREE_TYPE ) {
+  if( _run_type != RUN_GOAL_TREE_TYPE ) {
     p_st_new_path = find_path( p_st_new_node->m_pos );
   } 
-  if( _run_type != RUN_GOAL_TREE_TYPE ) {
+  if( _run_type != RUN_START_TREE_TYPE ) {
     p_gt_new_path = find_path( p_gt_new_node->m_pos ); 
   }
 
-  if( _run_type != RUN_START_TREE_TYPE ) {
+  if( _run_type != RUN_GOAL_TREE_TYPE ) {
     if( p_st_new_path ) {
       _p_string_class_mgr->import_path( p_st_new_path );
     }
   }
-  if( _run_type != RUN_GOAL_TREE_TYPE ) {
+  if( _run_type != RUN_START_TREE_TYPE ) {
     if( p_gt_new_path ) {
       _p_string_class_mgr->import_path( p_gt_new_path );
     }

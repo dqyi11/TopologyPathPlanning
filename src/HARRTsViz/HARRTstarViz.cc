@@ -2,14 +2,16 @@
 
 #include "HARRTstarViz.h"
 
-#define START_TREE_COLOR      QColor(160,160,0)
-#define GOAL_TREE_COLOR       QColor(0,160,160)
-#define START_COLOR           QColor(255,0,0)
-#define GOAL_COLOR            QColor(0,0,255)
-#define REFERENCE_FRAME_COLOR QColor(0,255,0)
-#define PATH_COLOR            QColor(255,153,21)
-#define DRAWING_LINE_COLOR    QColor(153,76,0)
-#define LINE_WIDTH            1
+#define START_TREE_COLOR        QColor(160,160,0)
+#define START_TREE_COLOR_ALPHA  QColor(160,160,0,50)
+#define GOAL_TREE_COLOR         QColor(0,160,160)
+#define GOAL_TREE_COLOR_ALPHA   QColor(0,160,160,50)
+#define START_COLOR             QColor(255,0,0)
+#define GOAL_COLOR              QColor(0,0,255)
+#define REFERENCE_FRAME_COLOR   QColor(0,255,0)
+#define PATH_COLOR              QColor(255,153,21)
+#define DRAWING_LINE_COLOR      QColor(153,76,0)
+#define LINE_WIDTH              2
 
 HARRTstarViz::HARRTstarViz( QWidget *parent ) :
     QLabel(parent) {
@@ -74,7 +76,13 @@ void HARRTstarViz::paint(QPaintDevice * device) {
     if(mp_tree) {
         if(m_tree_show_type == START_TREE_SHOW || m_tree_show_type == BOTH_TREES_SHOW ) {
             QPainter st_tree_painter(device);
-            QPen st_tree_paintpen(START_TREE_COLOR);
+            QPen st_tree_paintpen;
+            if(m_finished_planning) {
+                st_tree_paintpen.setColor(START_TREE_COLOR_ALPHA);
+            }
+            else{
+                st_tree_paintpen.setColor(START_TREE_COLOR);
+            }
             st_tree_paintpen.setWidth(1);
             st_tree_painter.setPen(st_tree_paintpen);
             for( std::list<RRTNode*>::iterator it= mp_tree->get_st_nodes().begin(); it!=mp_tree->get_st_nodes().end();it++ ) {
@@ -89,7 +97,13 @@ void HARRTstarViz::paint(QPaintDevice * device) {
         }
         if(m_tree_show_type == GOAL_TREE_SHOW || m_tree_show_type == BOTH_TREES_SHOW) {
             QPainter gt_tree_painter(device);
-            QPen gt_tree_paintpen(GOAL_TREE_COLOR);
+            QPen gt_tree_paintpen;
+            if(m_finished_planning) {
+                gt_tree_paintpen.setColor(GOAL_TREE_COLOR_ALPHA);
+            }
+            else{
+                gt_tree_paintpen.setColor(GOAL_TREE_COLOR);
+            }
             gt_tree_paintpen.setWidth(1);
             gt_tree_painter.setPen(gt_tree_paintpen);
             for( std::list<RRTNode*>::iterator it= mp_tree->get_gt_nodes().begin(); it!=mp_tree->get_gt_nodes().end();it++ ) {

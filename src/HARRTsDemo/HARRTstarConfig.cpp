@@ -82,8 +82,8 @@ HARRTstarConfig::HARRTstarConfig(HARRTstarWindow * parent) {
     QVBoxLayout * mainLayout = new QVBoxLayout();
     mainLayout->addLayout(minDistLayout);
     mainLayout->addLayout(costMapLayout);
-    mainLayout->addLayout(buttonsLayout);
     mainLayout->addLayout(typeLayout);
+    mainLayout->addLayout(buttonsLayout);
 
     setWindowTitle("Config Objectives");
 
