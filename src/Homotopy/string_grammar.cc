@@ -172,18 +172,31 @@ bool StringGrammar::is_valid_string( std::vector< std::string > str ) {
 bool StringGrammar::is_equivalent( std::vector< std::string > str_a , std::vector< std::string > str_b ) {
   std::vector< std::string > str_a_stack;
   std::vector< std::string > str_b_stack;
-  int index_a = 0; 
-  int index_b = 0;
-  while( index_a < str_a.size() && index_b < str_b.size() ) {
-    while(str_a_stack.size()>0 && str_a_stack.back()==str_a[index_a]) {
-      index_a ++;  
+  for( unsigned int i = 0; i < str_a.size(); i++) {
+    std::string id = str_a[i];
+    if( str_a_stack.size() > 0 && str_a_stack.back() == id ) {
+      str_a_stack.pop_back();  
+    } 
+    else { 
+      str_a_stack.push_back( id );
     }
-    while(str_a_stack.size()>0 && str_b_stack.back()==str_b[index_b]) {
-      index_b ++;
+  }
+  for( unsigned int i = 0; i < str_b.size(); i++) {
+    std::string id = str_b[i];
+    if( str_b_stack.size() > 0 && str_b_stack.back() == id ) {
+      str_b_stack.pop_back();  
+    } 
+    else { 
+      str_b_stack.push_back( id );
     }
-    if( str_a[index_a] != str_b[index_b] ) { 
+  }
+  if( str_a_stack.size() != str_b_stack.size() ) {
+    return false;
+  }
+  for( unsigned int i = 0; i < str_a_stack.size(); i ++ ) {
+    if( str_a_stack[i] != str_b_stack[i] ) {
       return false;
     }
-  } 
+  }
   return true;
 }

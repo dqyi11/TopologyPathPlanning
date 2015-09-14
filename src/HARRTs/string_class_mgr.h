@@ -10,7 +10,8 @@ class StringClass {
 public:
   StringClass( std::vector< std::string > string );
   virtual ~StringClass();
- 
+  std::string get_name();
+  
   std::vector< std::string > m_string;
   double m_cost;
   Path*  mp_path;

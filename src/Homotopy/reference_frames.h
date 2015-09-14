@@ -6,6 +6,8 @@
 #include "string_grammar.h"
 #include "homotopic_grammar.h"
 
+static std::string CENTER_POINT_ID_CHARACTER = "C";
+
 typedef enum {
     STRING_GRAMMAR_TYPE,
     HOMOTOPIC_GRAMMAR_TYPE

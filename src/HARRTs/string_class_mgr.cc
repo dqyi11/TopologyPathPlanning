@@ -13,6 +13,17 @@ StringClass::~StringClass() {
   mp_path = NULL;
 }
 
+std::string StringClass::get_name() {
+  std::string name = "";
+  for( unsigned int i = 0; i < m_string.size(); i ++ ) {
+    if (i > 0) { 
+      name += " ";
+    }
+    name += m_string[i];
+  }
+  return name;
+}
+
 
 StringClassMgr::StringClassMgr( StringGrammar* p_grammar ) {
   _p_grammar = p_grammar;
@@ -69,5 +80,36 @@ StringClass* StringClassMgr::find_string_class( std::vector< std::string > str )
 }
 
 void StringClassMgr::merge() {
+  std::vector< StringClass* > merged_classes;
+  std::cout << "NUM OF CLASSES " << _classes.size() << std::endl;
+  for( unsigned int i = 0; i < _classes.size(); i ++ ) {
+    StringClass* str_class = _classes[i];
+    if( merged_classes.size() == 0 ) {
+      merged_classes.push_back( str_class );
+    }
+    else {
+      std::cout << "MERGE CLASS SIZE " << merged_classes.size() << std::endl;
+      bool found_equivalence = false;
+      for( unsigned int j = 0; j < merged_classes.size(); j++) {
+        StringClass* str_class_in_mer = merged_classes[j];
+        std::cout << "COMPARE [" << str_class->get_name() << "] and [" << str_class_in_mer->get_name() << "]" << std::endl;
+        if( _p_grammar->is_equivalent( str_class_in_mer->m_string, str_class->m_string ) ) {
+          if( str_class_in_mer->m_string.size() < str_class->m_string.size() ) {
+            str_class_in_mer->m_string = str_class->m_string;
+          }
+          if ( str_class_in_mer->m_cost > str_class->m_cost ) {
+            str_class_in_mer->m_cost = str_class->m_cost;
+            str_class_in_mer->mp_path = str_class->mp_path;
+          }
+          found_equivalence = true;
+          break;
+        }
+      }
+      if( found_equivalence == false) {
+          merged_classes.push_back( str_class );
+      }
+    }
+  }
 
+  _classes = merged_classes;
 }
