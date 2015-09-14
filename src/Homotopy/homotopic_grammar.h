@@ -4,9 +4,12 @@
 #include "string_grammar.h"
 
 
-class HomotopicGrammar : StringGrammar {
+class HomotopicGrammar : public StringGrammar {
+public:
+  HomotopicGrammar();
+  virtual ~HomotopicGrammar();
 
-
+  virtual bool is_equivalent( std::vector< std::string > str_a , std::vector< std::string > str_b );
 };
 
 

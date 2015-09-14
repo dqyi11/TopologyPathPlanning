@@ -121,7 +121,7 @@ HARRTstar::~HARRTstar() {
   }
 }
 
-bool HARRTstar::init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp_cost_distribution ) {
+bool HARRTstar::init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp_cost_distribution, grammar_type_t grammar_type ) {
   if( _p_st_root ) {
     delete _p_st_root;
     _p_st_root = NULL;
@@ -165,9 +165,15 @@ bool HARRTstar::init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp
   std::cout << "Init grammar ... " << std::endl; 
   Point2D start_point( _start[0], _start[1] );
   Point2D goal_point( _goal[0], _goal[1] );
-  StringGrammar* p_string_grammar = _reference_frames->get_string_grammar( start_point, goal_point );
+  set_grammar_type(grammar_type);
+  if( STRING_GRAMMAR_TYPE == grammar_type) {
+    _string_grammar = _reference_frames->get_string_grammar( start_point, goal_point );
+  }
+  else if( HOMOTOPIC_GRAMMAR_TYPE == grammar_type ) {
+    _string_grammar = _reference_frames->get_homotopic_grammar(start_point, goal_point );
+  }
   std::cout << "Init String Class Mgr ... " << std::endl;
-  _p_string_class_mgr = new StringClassMgr( p_string_grammar );
+  _p_string_class_mgr = new StringClassMgr( _string_grammar );
 
   std::cout << "Init st_tree.." << std::endl;
   KDNode2D st_root( start );
@@ -326,11 +332,11 @@ void HARRTstar::extend() {
   _current_iteration++;
 }
 
-RRTNode* HARRTstar::_extend( RRTree_type_t type ) {
+RRTNode* HARRTstar::_extend( RRTree_type_t tree_type ) {
   bool node_inserted = false;
   while( false==node_inserted ) {
     POS2D rnd_pos = _sampling();
-    KDNode2D nearest_node = _find_nearest( rnd_pos, type );
+    KDNode2D nearest_node = _find_nearest( rnd_pos, tree_type );
 
     if (rnd_pos[0]==nearest_node[0] && rnd_pos[1]==nearest_node[1]) {
       continue;
@@ -345,48 +351,50 @@ RRTNode* HARRTstar::_extend( RRTree_type_t type ) {
     }
 
     if( true == _is_obstacle_free( nearest_node, new_pos ) ) {
-      std::list<KDNode2D> near_list = _find_near( new_pos, type );
-      KDNode2D new_node( new_pos );
+      if( true == _is_homotopy_eligible( nearest_node.getRRTNode(), new_pos, tree_type) ) {
+        std::list<KDNode2D> near_list = _find_near( new_pos, tree_type );
+        KDNode2D new_node( new_pos );
 
-      // create new node
-      RRTNode * p_new_rnode = _create_new_node( new_pos, type );
-      new_node.setRRTNode( p_new_rnode );
-      if (type == START_TREE_TYPE) {
-        _p_st_kd_tree->insert( new_node );
-      }
-      else if(type == GOAL_TREE_TYPE) {
-        _p_gt_kd_tree->insert( new_node );
-      }
-      node_inserted = true;
+        // create new node
+        RRTNode * p_new_rnode = _create_new_node( new_pos, tree_type );
+        new_node.setRRTNode( p_new_rnode );
+        if (tree_type == START_TREE_TYPE) {
+          _p_st_kd_tree->insert( new_node );
+        }
+        else if(tree_type == GOAL_TREE_TYPE) {
+          _p_gt_kd_tree->insert( new_node );
+        }
+        node_inserted = true;
 
-      RRTNode* p_nearest_rnode = nearest_node.getRRTNode();
-      std::list<RRTNode*> near_rnodes;
-      near_rnodes.clear();
-      for( std::list<KDNode2D>::iterator itr = near_list.begin();
-           itr != near_list.end(); itr++ ) {
-        KDNode2D kd_node = (*itr);
-        RRTNode* p_near_rnode = kd_node.getRRTNode();
-        near_rnodes.push_back( p_near_rnode );
-      }
-      // attach new node to reference trees
-      _attach_new_node( p_new_rnode, p_nearest_rnode, near_rnodes );
-      // rewire near nodes of reference trees
-      _rewire_near_nodes( p_new_rnode, near_rnodes );
+        RRTNode* p_nearest_rnode = nearest_node.getRRTNode();
+        std::list<RRTNode*> near_rnodes;
+        near_rnodes.clear();
+        for( std::list<KDNode2D>::iterator itr = near_list.begin();
+             itr != near_list.end(); itr++ ) {
+          KDNode2D kd_node = (*itr);
+          RRTNode* p_near_rnode = kd_node.getRRTNode();
+          near_rnodes.push_back( p_near_rnode );
+        }
+        // attach new node to reference trees
+        _attach_new_node( p_new_rnode, p_nearest_rnode, near_rnodes, tree_type );
+        // rewire near nodes of reference trees
+        _rewire_near_nodes( p_new_rnode, near_rnodes, tree_type );
 
-      return p_new_rnode;
+        return p_new_rnode;
+      }
     }
   }
   return NULL;
 }
 
-KDNode2D HARRTstar::_find_nearest( POS2D pos, RRTree_type_t type ) {
+KDNode2D HARRTstar::_find_nearest( POS2D pos, RRTree_type_t tree_type ) {
   KDNode2D node( pos );
-  if( START_TREE_TYPE == type) {
+  if( START_TREE_TYPE == tree_type) {
     std::pair<KDTree2D::const_iterator,double> found = _p_st_kd_tree->find_nearest( node );
     KDNode2D near_node = *found.first;
     return near_node;
   }
-  else if( GOAL_TREE_TYPE == type ) {
+  else if( GOAL_TREE_TYPE == tree_type ) {
     std::pair<KDTree2D::const_iterator,double> found = _p_gt_kd_tree->find_nearest( node );
     KDNode2D near_node = *found.first;
     return near_node;
@@ -394,18 +402,18 @@ KDNode2D HARRTstar::_find_nearest( POS2D pos, RRTree_type_t type ) {
   return node;
 }
 
-std::list<KDNode2D> HARRTstar::_find_near( POS2D pos, RRTree_type_t type ) {
+std::list<KDNode2D> HARRTstar::_find_near( POS2D pos, RRTree_type_t tree_type ) {
   std::list<KDNode2D> near_list;
   KDNode2D node(pos);
 
   int num_dimensions = 2;
-  if ( START_TREE_TYPE == type ) {
+  if ( START_TREE_TYPE == tree_type ) {
     int num_vertices = _p_st_kd_tree->size();
     _st_ball_radius =  _theta * _range * pow( log((double)(num_vertices + 1.0))/((double)(num_vertices + 1.0)), 1.0/((double)num_dimensions) );
 
     _p_st_kd_tree->find_within_range( node, _st_ball_radius, std::back_inserter( near_list ) );
   }
-  else if ( GOAL_TREE_TYPE == type ) {
+  else if ( GOAL_TREE_TYPE == tree_type ) {
     int num_vertices = _p_gt_kd_tree->size();
     _gt_ball_radius =  _theta * _range * pow( log((double)(num_vertices + 1.0))/((double)(num_vertices + 1.0)), 1.0/((double)num_dimensions) );
 
@@ -433,12 +441,12 @@ double HARRTstar::_calculate_cost( POS2D& pos_a, POS2D& pos_b ) {
   return _p_cost_func(pos_a, pos_b, _pp_cost_distribution, this);
 }
 
-RRTNode* HARRTstar::_create_new_node(POS2D pos, RRTree_type_t type) {
+RRTNode* HARRTstar::_create_new_node(POS2D pos, RRTree_type_t tree_type) {
   RRTNode * pNode = new RRTNode(pos);
-  if( type == START_TREE_TYPE ) {
+  if( tree_type == START_TREE_TYPE ) {
     _st_nodes.push_back(pNode);
   }
-  else if( type == GOAL_TREE_TYPE ) {
+  else if( tree_type == GOAL_TREE_TYPE ) {
     _gt_nodes.push_back(pNode);
   }
   return pNode;
@@ -583,18 +591,20 @@ Path* HARRTstar::find_path( POS2D via_pos ) {
   return p_new_path;
 }
 
-void HARRTstar::_attach_new_node(RRTNode* p_node_new, RRTNode* p_nearest_node, std::list<RRTNode*> near_nodes) {
+void HARRTstar::_attach_new_node(RRTNode* p_node_new, RRTNode* p_nearest_node, std::list<RRTNode*> near_nodes, RRTree_type_t tree_type) {
   double min_new_node_cost = p_nearest_node->m_cost + _calculate_cost(p_nearest_node->m_pos, p_node_new->m_pos);
   RRTNode* p_min_node = p_nearest_node;
 
   for(std::list<RRTNode*>::iterator it=near_nodes.begin();it!=near_nodes.end();it++) {
     RRTNode* p_near_node = *it;
     if ( true == _is_obstacle_free( p_near_node->m_pos, p_node_new->m_pos ) ) {
-      double delta_cost = _calculate_cost( p_near_node->m_pos, p_node_new->m_pos );
-      double new_cost = p_near_node->m_cost + delta_cost;
-      if ( new_cost < min_new_node_cost ) {
-        p_min_node = p_near_node;
-        min_new_node_cost = new_cost;
+      if ( true == _is_homotopy_eligible( p_near_node, p_node_new->m_pos, tree_type ) ) {
+        double delta_cost = _calculate_cost( p_near_node->m_pos, p_node_new->m_pos );
+        double new_cost = p_near_node->m_cost + delta_cost;
+        if ( new_cost < min_new_node_cost ) {
+          p_min_node = p_near_node;
+          min_new_node_cost = new_cost;
+        }
       }
     }
   }
@@ -606,7 +616,7 @@ void HARRTstar::_attach_new_node(RRTNode* p_node_new, RRTNode* p_nearest_node, s
 
 }
 
-void HARRTstar::_rewire_near_nodes(RRTNode* p_node_new, std::list<RRTNode*> near_nodes) {
+void HARRTstar::_rewire_near_nodes(RRTNode* p_node_new, std::list<RRTNode*> near_nodes, RRTree_type_t tree_type) {
   for( std::list<RRTNode*>::iterator it=near_nodes.begin(); it!=near_nodes.end(); it++ ) {
     RRTNode * p_near_node = (*it);
 
@@ -615,21 +625,23 @@ void HARRTstar::_rewire_near_nodes(RRTNode* p_node_new, std::list<RRTNode*> near
     }
 
     if( true == _is_obstacle_free( p_node_new->m_pos, p_near_node->m_pos ) ) {
-      double temp_delta_cost = _calculate_cost( p_node_new->m_pos, p_near_node->m_pos );
-      double temp_cost_from_new_node = p_node_new->m_cost + temp_delta_cost;
-      if( temp_cost_from_new_node < p_near_node->m_cost ) {
-        double min_delta_cost = p_near_node->m_cost - temp_cost_from_new_node;
-        RRTNode * p_parent_node = p_near_node->mp_parent;
-        bool removed = _remove_edge(p_parent_node, p_near_node);
-        if(removed) {
-          bool added = _add_edge(p_node_new, p_near_node);
-          if( added ) {
-            p_near_node->m_cost = temp_cost_from_new_node;
-            _update_cost_to_children(p_near_node, min_delta_cost);
+      if( true == _is_homotopy_eligible(p_near_node, p_node_new->m_pos, tree_type) ) {
+        double temp_delta_cost = _calculate_cost( p_node_new->m_pos, p_near_node->m_pos );
+        double temp_cost_from_new_node = p_node_new->m_cost + temp_delta_cost;
+        if( temp_cost_from_new_node < p_near_node->m_cost ) {
+          double min_delta_cost = p_near_node->m_cost - temp_cost_from_new_node;
+          RRTNode * p_parent_node = p_near_node->mp_parent;
+          bool removed = _remove_edge(p_parent_node, p_near_node);
+          if(removed) {
+            bool added = _add_edge(p_node_new, p_near_node);
+            if( added ) {
+              p_near_node->m_cost = temp_cost_from_new_node;
+              _update_cost_to_children(p_near_node, min_delta_cost);
+            }
           }
-        }
-        else {
-          std::cout << " Failed in removing " << std::endl;
+          else {
+            std::cout << " Failed in removing " << std::endl;
+          }
         }
       }
     }
@@ -646,10 +658,10 @@ void HARRTstar::_update_cost_to_children( RRTNode* p_node, double delta_cost ) {
   }
 }
 
-bool HARRTstar::_get_closest_node ( POS2D pos, RRTNode*& p_node_closet_to_goal, double& delta_cost, RRTree_type_t type ) {
+bool HARRTstar::_get_closest_node ( POS2D pos, RRTNode*& p_node_closet_to_goal, double& delta_cost, RRTree_type_t tree_type ) {
   bool found = false;
 
-  std::list<KDNode2D> near_nodes = _find_near( pos, type );
+  std::list<KDNode2D> near_nodes = _find_near( pos, tree_type );
   double min_total_cost = std::numeric_limits<double>::max();
 
   for(std::list<KDNode2D>::iterator it=near_nodes.begin();
@@ -699,14 +711,14 @@ Path* HARRTstar::_concatenate_paths( Path* p_from_path, Path* p_to_path ) {
   return p_new_path;
 }
 
-Path* HARRTstar::_get_subpath( RRTNode* p_end_node, RRTree_type_t type ) {
+Path* HARRTstar::_get_subpath( RRTNode* p_end_node, RRTree_type_t tree_type ) {
   Path* p_subpath = NULL; 
   std::list<RRTNode*> node_list;
   get_parent_node_list( p_end_node , node_list );
-  if( type == START_TREE_TYPE ) {
+  if( tree_type == START_TREE_TYPE ) {
     p_subpath = new Path( _p_st_root->m_pos, p_end_node->m_pos );
   }
-  else if ( type == GOAL_TREE_TYPE ) {
+  else if ( tree_type == GOAL_TREE_TYPE ) {
     p_subpath = new Path( _p_gt_root->m_pos, p_end_node->m_pos );
   }
   p_subpath->m_cost = p_end_node->m_cost;
@@ -733,12 +745,12 @@ void HARRTstar::set_reference_frames( ReferenceFrameSet* p_reference_frames ) {
 }
 
 
-bool HARRTstar::_is_homotopy_eligible( RRTNode* p_node_parent, POS2D pos, RRTree_type_t type ) {
+bool HARRTstar::_is_homotopy_eligible( RRTNode* p_node_parent, POS2D pos, RRTree_type_t tree_type ) {
   Point2D start( p_node_parent->m_pos[0], p_node_parent->m_pos[1] );
   Point2D end( pos[0], pos[1] );
   std::vector< std::string > ids = _reference_frames->get_string( start, end, _grammar_type );
   std::vector< std::string > temp_ids;
-  if( type == START_TREE_TYPE ) {
+  if( tree_type == START_TREE_TYPE ) {
     for( std::vector< std::string >::iterator it = p_node_parent->m_substring.begin(); 
          it != p_node_parent->m_substring.end(); it ++ ) {
       std::string id = (*it);
@@ -750,7 +762,7 @@ bool HARRTstar::_is_homotopy_eligible( RRTNode* p_node_parent, POS2D pos, RRTree
       temp_ids.push_back( id );  
     }
   }
-  else if( type == GOAL_TREE_TYPE ) {
+  else if( tree_type == GOAL_TREE_TYPE ) {
     for( std::vector< std::string >::reverse_iterator itr = p_node_parent->m_substring.rbegin(); 
          itr != p_node_parent->m_substring.rend(); itr ++ ) {
       std::string id = (*itr);
@@ -763,12 +775,12 @@ bool HARRTstar::_is_homotopy_eligible( RRTNode* p_node_parent, POS2D pos, RRTree
     }
   }
 
-  if( type == START_TREE_TYPE ) {
- 
+  if( tree_type == START_TREE_TYPE ) {
+    return _reference_frames->is_constained_substring(temp_ids, false);
   } 
-  else if( type == GOAL_TREE_TYPE ) {
-
+  else if( tree_type == GOAL_TREE_TYPE ) {
+    return _reference_frames->is_constained_substring(temp_ids, true);
   } 
  
-  return true;
+  return false;
 }

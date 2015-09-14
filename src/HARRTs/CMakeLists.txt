@@ -10,8 +10,6 @@ add_library(${LIB} SHARED
             kdtree++/region.hpp
             HARRTstar.h
             HARRTstar.cc
-            HASiRRTstar.h
-            HASiRRTstar.cc
             string_class_mgr.h
             string_class_mgr.cc
            )

@@ -50,7 +50,7 @@ public:
     bool is_valid_string( std::vector< std::string > str );
     bool is_valid_substring( std::vector< std::string > substr );
 
-    bool is_equivalent( std::vector< std::string > str_a , std::vector< std::string > str_b );
+    virtual bool is_equivalent( std::vector< std::string > str_a , std::vector< std::string > str_b );
 protected:
     std::vector<Transition*> _transitions;
     std::vector<State*>      _states;

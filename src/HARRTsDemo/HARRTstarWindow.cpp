@@ -231,12 +231,11 @@ void HARRTstarWindow::planPath() {
 
     mpHARRTstar = new HARRTstar(mpMap->width(), mpMap->height(), mpViz->m_PPInfo.m_segment_length);
     mpHARRTstar->set_reference_frames( mpReferenceFrameSet );
-    mpHARRTstar->set_grammar_type( mpViz->m_PPInfo.m_grammar_type );
     mpHARRTstar->set_run_type( mpViz->m_PPInfo.m_run_type );
     POS2D start(mpViz->m_PPInfo.m_start.x(), mpViz->m_PPInfo.m_start.y());
     POS2D goal(mpViz->m_PPInfo.m_goal.x(), mpViz->m_PPInfo.m_goal.y());
     
-    mpHARRTstar->init(start, goal, mpViz->m_PPInfo.mp_func, mpViz->m_PPInfo.mCostDistribution);
+    mpHARRTstar->init(start, goal, mpViz->m_PPInfo.mp_func, mpViz->m_PPInfo.mCostDistribution, mpViz->m_PPInfo.m_grammar_type);
     mpViz->m_PPInfo.get_obstacle_info(mpHARRTstar->get_map_info());
     mpViz->setTree(mpHARRTstar);
     mpViz->set_finished_planning( false );
@@ -334,7 +333,7 @@ void HARRTstarWindow::keyPressEvent(QKeyEvent *event) {
    else if ( event->key() == Qt::Key_I ) {
        if(mpViz) {
            if( mpViz->get_drawed_points().size() > 1 ) {
-              mpViz->import_string_constraint( mpViz->get_drawed_points(), mpHARRTstar->get_grammar_type() ); 
+              mpViz->import_string_constraint( mpViz->get_drawed_points(), mpViz->m_PPInfo.m_grammar_type );
            }
        }
        updateStatus();

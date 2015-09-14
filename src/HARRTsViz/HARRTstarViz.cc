@@ -324,7 +324,7 @@ void HARRTstarViz::import_string_constraint( std::vector< QPoint > points, gramm
 }
 
 void HARRTstarViz::mousePressEvent( QMouseEvent * event ) {
-    std::cout << "mousePressEvent" << std::endl;
+    // std::cout << "mousePressEvent" << std::endl;
     if ( event->button() == Qt::LeftButton ) {
         mDragging = true;
         mPoints.clear();    
@@ -332,7 +332,7 @@ void HARRTstarViz::mousePressEvent( QMouseEvent * event ) {
 }
 
 void HARRTstarViz::mouseMoveEvent( QMouseEvent * event ) {
-    std::cout << "mouseMoveEvent " << mPoints.size() << std::endl;
+    // std::cout << "mouseMoveEvent " << mPoints.size() << std::endl;
     if ( mDragging == true ) {
         //std::cout << event->x() << " " << event->y() << std::endl;
         QPoint new_point( event->x(), event->y() );
@@ -351,7 +351,7 @@ void HARRTstarViz::mouseMoveEvent( QMouseEvent * event ) {
 }
 
 void HARRTstarViz::mouseReleaseEvent( QMouseEvent * event ){
-    std::cout << "mouseReleaseEvent" << std::endl;
+    // std::cout << "mouseReleaseEvent" << std::endl;
     if ( event->button() == Qt::LeftButton ) {
         mDragging = false;
     }

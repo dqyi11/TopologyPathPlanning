@@ -56,7 +56,7 @@ public:
   HARRTstar(int width, int height, int segment_length);
   virtual ~HARRTstar();
 
-  bool init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp_cost_distrinution );
+  bool init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp_cost_distrinution, grammar_type_t grammar_type );
   void load_map( int** pp_map );
 
   int get_sampling_width() { return _sampling_width; }
@@ -78,45 +78,46 @@ public:
   ReferenceFrameSet* get_reference_frames() { return _reference_frames; }
   StringClassMgr* get_string_class_mgr() { return _p_string_class_mgr; }
 
-  void set_run_type( RRTree_run_type_t type ) { _run_type = type; }
+  void set_run_type( RRTree_run_type_t tree_type ) { _run_type = tree_type; }
   RRTree_run_type_t get_run_type() { return _run_type; } 
-  void set_grammar_type( grammar_type_t type ) { _grammar_type = type; }
   grammar_type_t get_grammar_type() { return _grammar_type; }
   void dump_distribution(std::string filename);
 
 protected:
   POS2D _sampling();
   POS2D _steer( POS2D pos_a, POS2D pos_b );
-  RRTNode* _extend(RRTree_type_t type);
+  RRTNode* _extend(RRTree_type_t tree_type);
 
   Path* _concatenate_paths( Path* p_from_path, Path* p_to_path );
-  Path* _get_subpath( RRTNode* p_end_node, RRTree_type_t type );
+  Path* _get_subpath( RRTNode* p_end_node, RRTree_type_t tree_type );
 
-  KDNode2D _find_nearest( POS2D pos, RRTree_type_t type );
-  std::list<KDNode2D> _find_near( POS2D pos, RRTree_type_t type );
+  KDNode2D _find_nearest( POS2D pos, RRTree_type_t tree_type );
+  std::list<KDNode2D> _find_near( POS2D pos, RRTree_type_t tree_type );
 
-  bool _is_homotopy_eligible( RRTNode* p_node_parent, POS2D pos, RRTree_type_t type );
+  bool _is_homotopy_eligible( RRTNode* p_node_parent, POS2D pos, RRTree_type_t tree_type );
   bool _is_obstacle_free( POS2D pos_a, POS2D pos_b );
   bool _is_in_obstacle( POS2D pos );
   bool _contains( POS2D pos );
 
   double _calculate_cost( POS2D& pos_a, POS2D& pos_b );
 
-  RRTNode* _create_new_node( POS2D pos, RRTree_type_t type );
+  RRTNode* _create_new_node( POS2D pos, RRTree_type_t tree_type );
   bool _remove_edge( RRTNode* p_node_parent, RRTNode* p_node_child );
   bool _has_edge( RRTNode* p_node_parent, RRTNode* p_node_child );
   bool _add_edge( RRTNode* p_node_parent, RRTNode* p_node_child );
 
   std::list<RRTNode*> _find_all_children( RRTNode* node );
 
-  void _attach_new_node( RRTNode* p_node_new, RRTNode* p_nearest_node, std::list<RRTNode*> near_nodes );
-  void _rewire_near_nodes( RRTNode* p_node_new, std::list<RRTNode*> near_nodes );
+  void _attach_new_node( RRTNode* p_node_new, RRTNode* p_nearest_node, std::list<RRTNode*> near_nodes, RRTree_type_t type );
+  void _rewire_near_nodes( RRTNode* p_node_new, std::list<RRTNode*> near_nodes, RRTree_type_t tree_type );
   void _update_cost_to_children( RRTNode* p_node, double delta_cost );
-  bool _get_closest_node( POS2D pos, RRTNode*& p_node_closest, double& delta_cost, RRTree_type_t type );
+  bool _get_closest_node( POS2D pos, RRTNode*& p_node_closest, double& delta_cost, RRTree_type_t tree_type );
 
   RRTNode* _find_ancestor( RRTNode* p_node );
+  void set_grammar_type( grammar_type_t grammar_type ) { _grammar_type = grammar_type; }
 
   ReferenceFrameSet* _reference_frames;
+  StringGrammar*     _string_grammar;
  
   POS2D    _start;
   POS2D    _goal;
