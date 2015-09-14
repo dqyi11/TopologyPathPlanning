@@ -170,6 +170,17 @@ void HARRTstarViz::paintEvent( QPaintEvent * e ) {
             } 
         }
     }
+
+    QPainter draw_line_painter(this);
+    QPen draw_line_pen( DRAWING_LINE_COLOR );
+    draw_line_pen.setWidth( LINE_WIDTH );
+    draw_line_painter.setPen(draw_line_pen);
+    if( mPoints.size() > 1 ) {
+        for( unsigned int pi = 0; pi < mPoints.size()-1 ; pi ++ ) {
+            draw_line_painter.drawLine( mPoints[pi], mPoints[pi+1] );    
+        }
+    }
+    draw_line_painter.end();
 }
 
 void HARRTstarViz::set_show_reference_frames(bool show) {
@@ -232,16 +243,6 @@ void HARRTstarViz::drawPathOnMap(QPixmap& map) {
     endPainter.drawPoint( QPoint(p->m_way_points[lastIdx][0], p->m_way_points[lastIdx][1]) );
     endPainter.end();
         
-    QPainter draw_line_painter(this);
-    QPen draw_line_pen( DRAWING_LINE_COLOR );
-    draw_line_pen.setWidth( LINE_WIDTH );
-    draw_line_painter.setPen(draw_line_pen);
-    if( mPoints.size() > 1 ) {
-        for( unsigned int pi = 0; pi < mPoints.size()-1 ; pi ++ ) {
-            draw_line_painter.drawLine( mPoints[pi], mPoints[pi+1] );    
-        }
-    }
-    draw_line_painter.end();
 }
 
 void HARRTstarViz::switch_tree_show_type() {
@@ -323,7 +324,7 @@ void HARRTstarViz::import_string_constraint( std::vector< QPoint > points, gramm
 }
 
 void HARRTstarViz::mousePressEvent( QMouseEvent * event ) {
-    //std::cout << "mousePressEvent" << std::endl;
+    std::cout << "mousePressEvent" << std::endl;
     if ( event->button() == Qt::LeftButton ) {
         mDragging = true;
         mPoints.clear();    
@@ -331,7 +332,7 @@ void HARRTstarViz::mousePressEvent( QMouseEvent * event ) {
 }
 
 void HARRTstarViz::mouseMoveEvent( QMouseEvent * event ) {
-    //std::cout << "mouseMoveEvent" << mPoints.size() << std::endl;
+    std::cout << "mouseMoveEvent " << mPoints.size() << std::endl;
     if ( mDragging == true ) {
         //std::cout << event->x() << " " << event->y() << std::endl;
         QPoint new_point( event->x(), event->y() );
@@ -350,7 +351,7 @@ void HARRTstarViz::mouseMoveEvent( QMouseEvent * event ) {
 }
 
 void HARRTstarViz::mouseReleaseEvent( QMouseEvent * event ){
-    //std::cout << "mouseReleaseEvent" << std::endl;
+    std::cout << "mouseReleaseEvent" << std::endl;
     if ( event->button() == Qt::LeftButton ) {
         mDragging = false;
     }

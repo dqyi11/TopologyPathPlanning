@@ -231,6 +231,8 @@ void HARRTstarWindow::planPath() {
 
     mpHARRTstar = new HARRTstar(mpMap->width(), mpMap->height(), mpViz->m_PPInfo.m_segment_length);
     mpHARRTstar->set_reference_frames( mpReferenceFrameSet );
+    mpHARRTstar->set_grammar_type( mpViz->m_PPInfo.m_grammar_type );
+    mpHARRTstar->set_run_type( mpViz->m_PPInfo.m_run_type );
     POS2D start(mpViz->m_PPInfo.m_start.x(), mpViz->m_PPInfo.m_start.y());
     POS2D goal(mpViz->m_PPInfo.m_goal.x(), mpViz->m_PPInfo.m_goal.y());
     
@@ -238,6 +240,7 @@ void HARRTstarWindow::planPath() {
     mpViz->m_PPInfo.get_obstacle_info(mpHARRTstar->get_map_info());
     mpViz->setTree(mpHARRTstar);
     mpViz->set_finished_planning( false );
+    
 
     //mpHARRTstar->dump_distribution("dist.txt");
     while(mpHARRTstar->get_current_iteration() <= mpViz->m_PPInfo.m_max_iteration_num) {
