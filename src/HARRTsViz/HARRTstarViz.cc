@@ -21,6 +21,7 @@ HARRTstarViz::HARRTstarViz( QWidget *parent ) :
     m_found_path_index = -1;
     mp_reference_frames = NULL;
     m_tree_show_type = BOTH_TREES_SHOW;
+    m_show_points = false;
     m_colors.clear();
 }
 
@@ -38,11 +39,16 @@ void HARRTstarViz::setReferenceFrameSet(ReferenceFrameSet* p_rf) {
 void HARRTstarViz::paintEvent( QPaintEvent * e ) {
     QLabel::paintEvent(e);
 
+    paint(this);
+}
+
+
+void HARRTstarViz::paint(QPaintDevice * device) {
     if(m_show_regions) {
         for( unsigned int i = 0; i < mp_reference_frames->get_world_map()->get_subregion_set().size(); i++) {
             SubRegionSet* p_subregion_set = mp_reference_frames->get_world_map()->get_subregion_set()[i];
             if(p_subregion_set) {
-                QPainter rg_painter(this);
+                QPainter rg_painter(device);
                 rg_painter.setRenderHint(QPainter::Antialiasing);
                 QBrush rg_brush( m_colors[i] );
                 rg_painter.setPen(Qt::NoPen);
@@ -60,13 +66,14 @@ void HARRTstarViz::paintEvent( QPaintEvent * e ) {
                         rg_painter.fillPath(tmpPath, rg_brush);
                     }
                 }
+                rg_painter.end();
             }
         }
     }
 
     if(mp_tree) {
         if(m_tree_show_type == START_TREE_SHOW || m_tree_show_type == BOTH_TREES_SHOW ) {
-            QPainter st_tree_painter(this);
+            QPainter st_tree_painter(device);
             QPen st_tree_paintpen(START_TREE_COLOR);
             st_tree_paintpen.setWidth(1);
             st_tree_painter.setPen(st_tree_paintpen);
@@ -78,9 +85,10 @@ void HARRTstarViz::paintEvent( QPaintEvent * e ) {
                     }
                 }
             }
+            st_tree_painter.end();
         }
         if(m_tree_show_type == GOAL_TREE_SHOW || m_tree_show_type == BOTH_TREES_SHOW) {
-            QPainter gt_tree_painter(this);
+            QPainter gt_tree_painter(device);
             QPen gt_tree_paintpen(GOAL_TREE_COLOR);
             gt_tree_paintpen.setWidth(1);
             gt_tree_painter.setPen(gt_tree_paintpen);
@@ -92,42 +100,46 @@ void HARRTstarViz::paintEvent( QPaintEvent * e ) {
                     }
                 }
             }
+            gt_tree_painter.end();
         }
     } 
     if(m_PPInfo.mp_found_paths.size() > 0 && m_found_path_index >= 0  ) {
         Path* p = m_PPInfo.mp_found_paths[m_found_path_index];
-        QPainter painter(this);
-        QPen paintpen(QColor(255,140,0));
-        paintpen.setWidth(2);
-        painter.setPen(paintpen);
+        QPainter fpt_painter(device);
+        QPen fpt_paintpen(QColor(255,140,0));
+        fpt_paintpen.setWidth(2);
+        fpt_painter.setPen(fpt_paintpen);
 
         int point_num = p->m_way_points.size();
         if(point_num > 0) {
             for(int i=0;i<point_num-1;i++) {
-                painter.drawLine(QPoint(p->m_way_points[i][0], p->m_way_points[i][1]), QPoint(p->m_way_points[i+1][0], p->m_way_points[i+1][1]));
+                fpt_painter.drawLine(QPoint(p->m_way_points[i][0], p->m_way_points[i][1]), QPoint(p->m_way_points[i+1][0], p->m_way_points[i+1][1]));
             }
         }
+        fpt_painter.end();
     }
     
     if(m_PPInfo.m_start.x() >= 0 && m_PPInfo.m_start.y() >= 0) {
-        QPainter st_painter(this);
+        QPainter st_painter(device);
         QPen st_paintpen( START_COLOR );
         st_paintpen.setWidth(8);
         st_painter.setPen(st_paintpen);
         st_painter.drawPoint(m_PPInfo.m_start);
+        st_painter.end();
     }
 
     if(m_PPInfo.m_goal.x() >= 0 && m_PPInfo.m_goal.y() >= 0) {
-        QPainter gt_painter(this);
+        QPainter gt_painter(device);
         QPen gt_paintpen( GOAL_COLOR );
         gt_paintpen.setWidth(8);
         gt_painter.setPen(gt_paintpen);
         gt_painter.drawPoint(m_PPInfo.m_goal);
+        gt_painter.end();
     }
 
     if( m_show_reference_frames ) {
         if( mp_reference_frames ) {
-            QPainter rf_painter(this);
+            QPainter rf_painter(device);
             QPen rf_paintpen( REFERENCE_FRAME_COLOR );
             rf_paintpen.setWidth(2);
             rf_painter.setPen(rf_paintpen);
@@ -144,13 +156,14 @@ void HARRTstarViz::paintEvent( QPaintEvent * e ) {
                 rf_painter.drawLine( QPoint( CGAL::to_double(rf->m_segment.source().x()), CGAL::to_double(rf->m_segment.source().y()) ),
                                      QPoint( CGAL::to_double(rf->m_segment.target().x()), CGAL::to_double(rf->m_segment.target().y()) ) );
             }
+            rf_painter.end();
         }
     }
 
     if( mp_tree!=NULL && m_finished_planning==false ) {
         if( mp_tree->get_string_class_mgr() ) {
             std::vector< StringClass* > classes = mp_tree->get_string_class_mgr()->get_string_classes();
-            QPainter path_painter(this);
+            QPainter path_painter(device);
             QPen path_paintpen( PATH_COLOR );
             path_paintpen.setWidth(2);
             path_paintpen.setStyle( Qt::DashDotLine );
@@ -167,20 +180,23 @@ void HARRTstarViz::paintEvent( QPaintEvent * e ) {
                         }
                     }
                 } 
-            } 
+            }
+            path_painter.end();
         }
     }
 
-    QPainter draw_line_painter(this);
-    QPen draw_line_pen( DRAWING_LINE_COLOR );
-    draw_line_pen.setWidth( LINE_WIDTH );
-    draw_line_painter.setPen(draw_line_pen);
-    if( mPoints.size() > 1 ) {
-        for( unsigned int pi = 0; pi < mPoints.size()-1 ; pi ++ ) {
-            draw_line_painter.drawLine( mPoints[pi], mPoints[pi+1] );    
+    if( m_show_points ) {
+      QPainter draw_line_painter(device);
+      QPen draw_line_pen( DRAWING_LINE_COLOR );
+      draw_line_pen.setWidth( LINE_WIDTH );
+      draw_line_painter.setPen(draw_line_pen);
+      if( m_drawed_points.size() > 1 ) {
+        for( unsigned int pi = 0; pi < m_drawed_points.size()-1 ; pi ++ ) {
+          draw_line_painter.drawLine( m_drawed_points[pi], m_drawed_points[pi+1] );
         }
+      }
+      draw_line_painter.end();
     }
-    draw_line_painter.end();
 }
 
 void HARRTstarViz::set_show_reference_frames(bool show) {
@@ -203,6 +219,17 @@ bool HARRTstarViz::drawPath(QString filename) {
         if(m_PPInfo.mp_found_paths[ m_found_path_index ]) {
             drawPathOnMap(pix);
         }
+        pix.save(&file, "PNG");
+        return true;
+    }
+    return false;
+}
+
+bool HARRTstarViz::saveCurrentViz(QString filename) {
+    QPixmap pix(m_PPInfo.m_map_fullpath);
+    QFile file(filename);
+    if(file.open(QIODevice::WriteOnly)) {
+        paint( dynamic_cast<QPaintDevice*>(&pix) );
         pix.save(&file, "PNG");
         return true;
     }
@@ -326,25 +353,26 @@ void HARRTstarViz::import_string_constraint( std::vector< QPoint > points, gramm
 void HARRTstarViz::mousePressEvent( QMouseEvent * event ) {
     // std::cout << "mousePressEvent" << std::endl;
     if ( event->button() == Qt::LeftButton ) {
-        mDragging = true;
-        mPoints.clear();    
+        m_dragging = true;
+        m_show_points = true;
+        m_drawed_points.clear();
     }
 }
 
 void HARRTstarViz::mouseMoveEvent( QMouseEvent * event ) {
     // std::cout << "mouseMoveEvent " << mPoints.size() << std::endl;
-    if ( mDragging == true ) {
+    if ( m_dragging == true ) {
         //std::cout << event->x() << " " << event->y() << std::endl;
         QPoint new_point( event->x(), event->y() );
-        if( mPoints.size() > 0 ) {
-            QPoint last_point = mPoints.back();
+        if( m_drawed_points.size() > 0 ) {
+            QPoint last_point = m_drawed_points.back();
             if( std::abs( new_point.x() - last_point.x() ) > 1 &&
                 std::abs( new_point.y() - last_point.y() ) > 1 ) {
-                mPoints.push_back( new_point );
+                m_drawed_points.push_back( new_point );
             }
         }
         else {
-            mPoints.push_back( new_point );
+            m_drawed_points.push_back( new_point );
         }
         repaint();
     }
@@ -353,7 +381,7 @@ void HARRTstarViz::mouseMoveEvent( QMouseEvent * event ) {
 void HARRTstarViz::mouseReleaseEvent( QMouseEvent * event ){
     // std::cout << "mouseReleaseEvent" << std::endl;
     if ( event->button() == Qt::LeftButton ) {
-        mDragging = false;
+        m_dragging = false;
     }
 }
 

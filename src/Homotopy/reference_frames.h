@@ -41,6 +41,7 @@ public:
    
     void import_string_constraint( std::vector<Point2D> points, grammar_type_t type );
     bool is_constained_substring( std::vector< std::string > sub_str, bool reverse );
+    std::vector< std::vector< std::string > >& get_string_constraint() { return _string_constraint; }
 
 protected:
     StringGrammar* get_string_grammar( SubRegion* p_init, SubRegion* p_goal );

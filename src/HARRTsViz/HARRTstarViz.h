@@ -22,6 +22,7 @@ public:
     void setTree(HARRTstar* p_tree);
     void setReferenceFrameSet(ReferenceFrameSet* p_rf);
     bool drawPath(QString filename);
+    bool saveCurrentViz(QString filename);
 
     void set_show_reference_frames( bool show );
     void set_show_regions( bool show );
@@ -45,7 +46,9 @@ public:
 
     PathPlanningInfo m_PPInfo;
     
-    std::vector<QPoint>& get_drawed_points() { return mPoints; }
+    std::vector<QPoint>& get_drawed_points() { return m_drawed_points; }
+    void set_show_drawed_points( bool show ) { m_show_points = show; }
+    bool get_show_drawed_points() { return m_show_points; }
 signals:
     
 public slots:
@@ -55,11 +58,15 @@ protected:
     void mouseMoveEvent( QMouseEvent * event );
     void mouseReleaseEvent( QMouseEvent * event );
     
-    std::vector<QPoint>  mPoints;
-    bool                 mDragging;
+    std::vector<QPoint>  m_drawed_points;
+    bool                 m_dragging;
+    bool                 m_show_points;
 
 private:
     void drawPathOnMap(QPixmap& map);
+    void drawCurrentViz(QPixmap& map);
+
+    void paint(QPaintDevice * device);
     HARRTstar*          mp_tree;
     ReferenceFrameSet*  mp_reference_frames;
     bool                m_show_reference_frames;

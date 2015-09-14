@@ -46,6 +46,9 @@ private:
     QAction* mpLoadObjAction;
     QAction* mpRunAction;
 
+    QMenu*   mpToolMenu;
+    QAction* mpSaveScreenAction;
+
     QMenu*   mpContextMenu;
     QAction* mpAddStartAction;
     QAction* mpAddGoalAction;
@@ -70,6 +73,7 @@ private slots:
     void onRun();
     void onAddStart();
     void onAddGoal();
+    void onSaveScreen();
 };
 
 #endif // HARRT_MAINWINDOW_H

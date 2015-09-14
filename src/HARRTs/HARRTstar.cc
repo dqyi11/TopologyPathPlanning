@@ -746,6 +746,9 @@ void HARRTstar::set_reference_frames( ReferenceFrameSet* p_reference_frames ) {
 
 
 bool HARRTstar::_is_homotopy_eligible( RRTNode* p_node_parent, POS2D pos, RRTree_type_t tree_type ) {
+  if( _reference_frames && _reference_frames->get_string_constraint().size()==0 ) {
+      return true;
+  }
   Point2D start( p_node_parent->m_pos[0], p_node_parent->m_pos[1] );
   Point2D end( pos[0], pos[1] );
   std::vector< std::string > ids = _reference_frames->get_string( start, end, _grammar_type );

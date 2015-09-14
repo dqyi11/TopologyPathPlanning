@@ -62,6 +62,9 @@ void HARRTstarWindow::createMenuBar() {
     mpEditMenu->addAction(mpLoadObjAction);
     mpEditMenu->addAction(mpRunAction);
 
+    mpToolMenu = menuBar()->addMenu("&Tool");
+    mpToolMenu->addAction(mpSaveScreenAction);
+
     mpContextMenu = new QMenu();
     setContextMenuPolicy(Qt::CustomContextMenu);
 
@@ -90,6 +93,9 @@ void HARRTstarWindow::createActions() {
 
     connect(mpAddStartAction, SIGNAL(triggered()), this, SLOT(onAddStart()));
     connect(mpAddGoalAction, SIGNAL(triggered()), this, SLOT(onAddGoal()));
+
+    mpSaveScreenAction = new QAction("Save Screen", this);
+    connect(mpSaveScreenAction, SIGNAL(triggered()), this, SLOT(onSaveScreen()));
 
     connect(this, SIGNAL(customContextMenuRequested(const QPoint)),this, SLOT(contextMenuRequested(QPoint)));
 }
@@ -271,6 +277,11 @@ void HARRTstarWindow::onAddGoal() {
     repaint();
 }
 
+void HARRTstarWindow::onSaveScreen() {
+    QString tempFilename = QFileDialog::getSaveFileName(this, tr("Save PNG File"), "./", tr("PNG Files (*.png)"));
+    mpViz->saveCurrentViz( tempFilename );
+}
+
 void HARRTstarWindow::contextMenuRequested(QPoint point) {
     mCursorPoint = point;
     mpContextMenu->popup(mapToGlobal(point));
@@ -334,6 +345,7 @@ void HARRTstarWindow::keyPressEvent(QKeyEvent *event) {
        if(mpViz) {
            if( mpViz->get_drawed_points().size() > 1 ) {
               mpViz->import_string_constraint( mpViz->get_drawed_points(), mpViz->m_PPInfo.m_grammar_type );
+              mpViz->set_show_drawed_points(false);
            }
        }
        updateStatus();
