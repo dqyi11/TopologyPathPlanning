@@ -3,9 +3,9 @@
 #include "HARRTstarViz.h"
 
 #define START_TREE_COLOR        QColor(160,160,0)
-#define START_TREE_COLOR_ALPHA  QColor(160,160,0,50)
+#define START_TREE_COLOR_ALPHA  QColor(160,160,0,100)
 #define GOAL_TREE_COLOR         QColor(0,160,160)
-#define GOAL_TREE_COLOR_ALPHA   QColor(0,160,160,50)
+#define GOAL_TREE_COLOR_ALPHA   QColor(0,160,160,100)
 #define START_COLOR             QColor(255,0,0)
 #define GOAL_COLOR              QColor(0,0,255)
 #define REFERENCE_FRAME_COLOR   QColor(0,255,0)
@@ -84,6 +84,9 @@ void HARRTstarViz::paint(QPaintDevice * device) {
                 st_tree_paintpen.setColor(START_TREE_COLOR);
             }
             st_tree_paintpen.setWidth(1);
+            if(m_finished_planning) {
+                st_tree_painter.setOpacity(0.4);
+            }
             st_tree_painter.setPen(st_tree_paintpen);
             for( std::list<RRTNode*>::iterator it= mp_tree->get_st_nodes().begin(); it!=mp_tree->get_st_nodes().end();it++ ) {
                 RRTNode* p_node = (*it);
@@ -105,6 +108,9 @@ void HARRTstarViz::paint(QPaintDevice * device) {
                 gt_tree_paintpen.setColor(GOAL_TREE_COLOR);
             }
             gt_tree_paintpen.setWidth(1);
+            if(m_finished_planning) {
+                gt_tree_painter.setOpacity(0.4);
+            }
             gt_tree_painter.setPen(gt_tree_paintpen);
             for( std::list<RRTNode*>::iterator it= mp_tree->get_gt_nodes().begin(); it!=mp_tree->get_gt_nodes().end();it++ ) {
                 RRTNode* p_node = (*it);
@@ -121,7 +127,7 @@ void HARRTstarViz::paint(QPaintDevice * device) {
         Path* p = m_PPInfo.mp_found_paths[m_found_path_index];
         QPainter fpt_painter(device);
         QPen fpt_paintpen(QColor(255,140,0));
-        fpt_paintpen.setWidth(2);
+        fpt_paintpen.setWidth(4);
         fpt_painter.setPen(fpt_paintpen);
 
         int point_num = p->m_way_points.size();
@@ -179,7 +185,7 @@ void HARRTstarViz::paint(QPaintDevice * device) {
             std::vector< StringClass* > classes = mp_tree->get_string_class_mgr()->get_string_classes();
             QPainter path_painter(device);
             QPen path_paintpen( PATH_COLOR );
-            path_paintpen.setWidth(2);
+            path_paintpen.setWidth(3);
             path_paintpen.setStyle( Qt::DashDotLine );
             path_painter.setPen(path_paintpen);
             for( unsigned int i = 0; i < classes.size(); i ++ ) {

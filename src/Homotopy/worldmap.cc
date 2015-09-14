@@ -238,7 +238,7 @@ bool WorldMap::_init_regions() {
 
     for( unsigned int i=0; i < _region_sets.size(); i++ ) {
         SubRegionSet* p_subregions_set = _region_sets[i];
-        p_subregions_set->m_subregions = _get_subregions(p_subregions_set);
+        p_subregions_set->m_subregions = _get_subregions( p_subregions_set );
         std::cout << "GENERATE FOR REGION " << i << " NUM_OF_SUB (" << p_subregions_set->m_subregions.size() << ")" << std::endl;
         for( unsigned int j=0; j < p_subregions_set->m_subregions.size(); j++ ) {
             SubRegion* p_subreg = p_subregions_set->m_subregions[j];
