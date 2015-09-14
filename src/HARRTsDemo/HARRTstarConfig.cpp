@@ -5,6 +5,12 @@
 #include "HARRTstarWindow.h"
 #include "HARRTstarConfig.h"
 
+#define STRING_GRAMMAR_STR    "String grammar"
+#define HOMOTOPIC_GRAMMAR_STR "Homotopic grammar"
+#define START_TREE_RUN_STR    "Run start tree"
+#define GOAL_TREE_RUN_STR     "Run goal tree"
+#define BOTH_TREES_RUN_STR    "Run both trees"
+
 HARRTstarConfig::HARRTstarConfig(HARRTstarWindow * parent) {
     mpParentWindow = parent;
 
@@ -46,6 +52,23 @@ HARRTstarConfig::HARRTstarConfig(HARRTstarWindow * parent) {
     costMapLayout->addWidget(mpLabelCost);
     costMapLayout->addWidget(mpLineEditCost);
     costMapLayout->addWidget(mpBtnAdd);
+    
+    QHBoxLayout * typeLayout = new QHBoxLayout();
+    mpLabelGrammarType = new QLabel("Grammar type:");
+    mpComboGrammarType = new QComboBox();
+    mpComboGrammarType->addItem(STRING_GRAMMAR_STR);
+    mpComboGrammarType->addItem(HOMOTOPIC_GRAMMAR_STR);
+    mpComboGrammarType->setCurrentIndex(static_cast<int>( mpParentWindow->mpViz->m_PPInfo.m_grammar_type));
+    mpLabelRunType = new QLabel("Run type:");
+    mpComboRunType = new QComboBox();
+    mpComboRunType->addItem(START_TREE_RUN_STR);
+    mpComboRunType->addItem(GOAL_TREE_RUN_STR);
+    mpComboRunType->addItem(BOTH_TREES_RUN_STR);
+    mpComboRunType->setCurrentIndex(static_cast<int>( mpParentWindow->mpViz->m_PPInfo.m_run_type));
+    typeLayout->addWidget(mpLabelGrammarType);
+    typeLayout->addWidget(mpComboGrammarType);
+    typeLayout->addWidget(mpLabelRunType);
+    typeLayout->addWidget(mpComboRunType); 
 
     mpBtnOK = new QPushButton(tr("OK"));
     mpBtnCancel = new QPushButton(tr("Cancel"));
@@ -60,6 +83,7 @@ HARRTstarConfig::HARRTstarConfig(HARRTstarWindow * parent) {
     mainLayout->addLayout(minDistLayout);
     mainLayout->addLayout(costMapLayout);
     mainLayout->addLayout(buttonsLayout);
+    mainLayout->addLayout(typeLayout);
 
     setWindowTitle("Config Objectives");
 
@@ -106,6 +130,9 @@ void HARRTstarConfig::updateDisplay() {
             mpLineEditSegmentLength->setText(QString::number(mpParentWindow->mpViz->m_PPInfo.m_segment_length));
             mpLineEditIterationNum->setText(QString::number(mpParentWindow->mpViz->m_PPInfo.m_max_iteration_num));
             mpLineEditCost->setText(mpParentWindow->mpViz->m_PPInfo.m_objective_file);
+
+            mpComboGrammarType->setCurrentIndex((int)mpParentWindow->mpViz->m_PPInfo.m_grammar_type);
+            mpComboRunType->setCurrentIndex((int)mpParentWindow->mpViz->m_PPInfo.m_run_type);
         }
     }
 
@@ -124,6 +151,12 @@ void HARRTstarConfig::updateConfiguration() {
     mpParentWindow->mpViz->m_PPInfo.m_objective_file = mpLineEditCost->text();
     mpParentWindow->mpViz->m_PPInfo.m_max_iteration_num = mpLineEditIterationNum->text().toInt();
     mpParentWindow->mpViz->m_PPInfo.m_segment_length = mpLineEditSegmentLength->text().toDouble();
+    
+    int grammar_type_idx = mpComboGrammarType->currentIndex();
+    mpParentWindow->mpViz->m_PPInfo.m_grammar_type = static_cast< grammar_type_t >( grammar_type_idx);
+    int run_type_idx = mpComboRunType->currentIndex();
+    mpParentWindow->mpViz->m_PPInfo.m_run_type = static_cast< RRTree_run_type_t >( run_type_idx);
+
 }
 
 bool HARRTstarConfig::isCompatible(QString fitnessFile) {

@@ -14,6 +14,12 @@ typedef enum{
   GOAL_TREE_TYPE
 } RRTree_type_t;
 
+typedef enum{
+  RUN_START_TREE_TYPE,
+  RUN_GOAL_TREE_TYPE,
+  RUN_BOTH_TREES_TYPE
+} RRTree_run_type_t;
+
 class RRTNode {
 
 public:
@@ -48,7 +54,7 @@ class HARRTstar {
 
 public:
   HARRTstar(int width, int height, int segment_length);
-  ~HARRTstar();
+  virtual ~HARRTstar();
 
   bool init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp_cost_distrinution );
   void load_map( int** pp_map );
@@ -72,6 +78,10 @@ public:
   ReferenceFrameSet* get_reference_frames() { return _reference_frames; }
   StringClassMgr* get_string_class_mgr() { return _p_string_class_mgr; }
 
+  void set_run_type( RRTree_run_type_t type ) { _run_type = type; }
+  RRTree_run_type_t get_run_type() { return _run_type; } 
+  void set_grammar_type( grammar_type_t type ) { _grammar_type = type; }
+  grammar_type_t get_grammar_type() { return _grammar_type; }
   void dump_distribution(std::string filename);
 
 protected:
@@ -85,6 +95,7 @@ protected:
   KDNode2D _find_nearest( POS2D pos, RRTree_type_t type );
   std::list<KDNode2D> _find_near( POS2D pos, RRTree_type_t type );
 
+  bool _is_homotopy_eligible( RRTNode* p_node_parent, POS2D pos, RRTree_type_t type );
   bool _is_obstacle_free( POS2D pos_a, POS2D pos_b );
   bool _is_in_obstacle( POS2D pos );
   bool _contains( POS2D pos );
@@ -105,13 +116,14 @@ protected:
 
   RRTNode* _find_ancestor( RRTNode* p_node );
 
-private:
   ReferenceFrameSet* _reference_frames;
  
   POS2D    _start;
   POS2D    _goal;
   RRTNode* _p_st_root;
   RRTNode* _p_gt_root;
+
+  grammar_type_t _grammar_type;
 
   RRTNode* _p_st_new_node;
   RRTNode* _p_gt_new_node;
@@ -131,6 +143,7 @@ private:
   std::list<RRTNode*> _st_nodes;
   std::list<RRTNode*> _gt_nodes;
 
+  RRTree_run_type_t _run_type;
   double _range;
   double _st_ball_radius;
   double _gt_ball_radius;

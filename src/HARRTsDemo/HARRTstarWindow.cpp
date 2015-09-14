@@ -326,6 +326,15 @@ void HARRTstarWindow::keyPressEvent(QKeyEvent *event) {
        updateStatus();
        repaint();
    }
+   else if ( event->key() == Qt::Key_I ) {
+       if(mpViz) {
+           if( mpViz->get_drawed_points().size() > 1 ) {
+              mpViz->import_string_constraint( mpViz->get_drawed_points(), mpHARRTstar->get_grammar_type() ); 
+           }
+       }
+       updateStatus();
+       repaint();
+   }
    else if ( event->key() == Qt::Key_Up ) {
        if(mpViz) {
            mpViz->prev_reference_frame();

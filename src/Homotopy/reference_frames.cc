@@ -23,6 +23,7 @@ ReferenceFrameSet::~ReferenceFrameSet() {
     p_rf = NULL;
   }
   _reference_frames.clear();
+  _string_constraint.clear();
 }
 
 void ReferenceFrameSet::init(int width, int height, std::vector< std::vector<Point2D> >& obstacles) {
@@ -165,4 +166,47 @@ std::vector< std::string > ReferenceFrameSet::get_string ( std::vector<Point2D> 
     }
   }
   return ids;
+}
+
+void ReferenceFrameSet::import_string_constraint( std::vector<Point2D> points, grammar_type_t type ) {
+  std::vector< std::string > constraint = get_string( points, type );
+  _string_constraint.push_back( constraint );
+}
+
+bool ReferenceFrameSet::is_constained_substring( std::vector< std::string > sub_str, bool reverse ) {
+  for( unsigned int i = 0; i < _string_constraint.size(); i ++ ) {
+    std::vector< std::string > constraint = _string_constraint[i];
+    if( true == is_eligible_substring( sub_str, constraint, reverse ) ) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool ReferenceFrameSet::is_eligible_substring( std::vector< std::string > sub_str, std::vector< std::string > ref_str, bool reverse ) {
+  if ( ref_str.size() < sub_str.size() ) {
+    return false;
+  }
+  if( reverse == false ) {
+    for( std::vector< std::string >::iterator it = sub_str.begin(),
+                                              itr  = ref_str.begin(); 
+                                              it != sub_str.end();
+                                              it++, itr++ ) {
+      if( (*it) != (*itr) ) {
+        return false;
+      }
+    }
+  }
+  else {
+    for( std::vector< std::string >::reverse_iterator it = sub_str.rbegin(),
+                                                      itr  = ref_str.rbegin(); 
+                                                      it != sub_str.rend();
+                                                      it++, itr++ ) {
+      if( (*it) != (*itr) ) {
+        return false;
+      }
+    }
+  }
+  
+  return true;
 }

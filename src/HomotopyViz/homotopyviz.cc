@@ -30,7 +30,6 @@ HomotopyViz::HomotopyViz(QWidget *parent) :
     mRegionIdx = -1;
     mSubRegionIdx = 0;
     mDragging = false;
-    
 }
 
 bool HomotopyViz::loadMap( QString filename ) {
@@ -99,6 +98,11 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                     region_painter.fillPath(tmpPath, region_brush);
                 }
                 else {                    
+                    QPainter line_hl_painter(this);
+                    QPen line_hl_pen( LINE_HIGHLIGHTED_COLOR );
+                    line_hl_pen.setWidth( LINE_WIDTH_HIGHLIGHTED );
+                    line_hl_painter.setPen( line_hl_pen );
+ 
                     SubRegion* p_subreg = p_subregion_set->m_subregions[mSubRegionIdx];
                     if( p_subreg ) {
                         QPolygon poly;
@@ -115,11 +119,6 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                              itLSS != p_subreg->m_neighbors.end(); itLSS++ ) {
                             LineSubSegment* p_line_subsegment = (*itLSS);
 
-                            QPainter line_hl_painter(this);
-                            QPen line_hl_pen( LINE_HIGHLIGHTED_COLOR );
-                            line_hl_pen.setWidth( LINE_WIDTH_HIGHLIGHTED );
-                            line_hl_painter.setPen( line_hl_pen );
-
                             Point2D line_hl_src = p_line_subsegment->m_subseg.source();
                             Point2D line_hl_end = p_line_subsegment->m_subseg.target();
                             double line_hl_src_x = CGAL::to_double( line_hl_src.x() );
@@ -131,8 +130,11 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                                                       QPoint( line_hl_end_x, line_hl_end_y ) );
                         }
                     }
+                    
+                    line_hl_painter.end();
                 }
             }
+            region_painter.end();
         }
 
         std::vector<Obstacle*> obstacles =  mpWorld->get_obstacles();
@@ -156,6 +158,7 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                 obstacle_painter.drawPolygon(poly);
             }
         }
+        obstacle_painter.end();
 
         if ( mShowSubsegment == false ) {
 
@@ -177,6 +180,7 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                     alpha_painter.drawLine( QPoint( a_src_x, a_src_y ), QPoint( a_end_x, a_end_y ) );
                 }
             }
+            alpha_painter.end();
 
             QPainter beta_painter(this);
             QPen beta_pen( BETA_COLOR );
@@ -196,6 +200,7 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                     beta_painter.drawLine( QPoint( b_src_x, b_src_y ), QPoint( b_end_x, b_end_y ) );
                 }
             }
+            beta_painter.end();
         }
         else {
             QPainter a_subseg_painter(this);
@@ -220,6 +225,7 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                     }
                 }
             }
+            a_subseg_painter.end();
 
             QPainter b_subseg_painter(this);
             QPen b_subseg_pen( BETA_COLOR );
@@ -243,6 +249,7 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                     }
                 }
             }
+            b_subseg_painter.end();
         }
 
         QPainter cp_painter(this);
@@ -252,6 +259,7 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
         double cp_x = CGAL::to_double( mpWorld->get_central_point().x() );
         double cp_y = CGAL::to_double( mpWorld->get_central_point().y() );
         cp_painter.drawPoint( QPoint( cp_x , cp_y ) );
+        cp_painter.end();
 
         QPainter bk_painter(this);
         QPen bk_pen( BK_COLOR );
@@ -266,6 +274,7 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                 bk_painter.drawPoint( QPoint( bk_x , bk_y ) );
             }
         }
+        bk_painter.end();
 
         QPainter intsec_painter(this);
         QPen intsec_pen( INTERSECTION_COLOR );
@@ -291,6 +300,7 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                 }
             }
         }
+        intsec_painter.end();
 
         QPainter text_painter(this);
         QPen text_pen( TEXT_COLOR );
@@ -304,6 +314,7 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                 text_painter.drawText( c_x, c_y, QString::number(p_obstacle->get_index()) );
             }
         }
+        text_painter.end();
 
         QPainter draw_line_painter(this);
         QPen draw_line_pen( DRAWING_LINE_COLOR );
@@ -314,6 +325,7 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
                 draw_line_painter.drawLine( mPoints[pi], mPoints[pi+1] );    
             }
         }
+        draw_line_painter.end();
     }
 }
 

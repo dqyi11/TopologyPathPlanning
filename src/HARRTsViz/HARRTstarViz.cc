@@ -8,6 +8,8 @@
 #define GOAL_COLOR            QColor(0,0,255)
 #define REFERENCE_FRAME_COLOR QColor(0,255,0)
 #define PATH_COLOR            QColor(255,153,21)
+#define DRAWING_LINE_COLOR    QColor(153,76,0)
+#define LINE_WIDTH            1
 
 HARRTstarViz::HARRTstarViz( QWidget *parent ) :
     QLabel(parent) {
@@ -229,6 +231,17 @@ void HARRTstarViz::drawPathOnMap(QPixmap& map) {
     endPainter.setPen(paintpen2);
     endPainter.drawPoint( QPoint(p->m_way_points[lastIdx][0], p->m_way_points[lastIdx][1]) );
     endPainter.end();
+        
+    QPainter draw_line_painter(this);
+    QPen draw_line_pen( DRAWING_LINE_COLOR );
+    draw_line_pen.setWidth( LINE_WIDTH );
+    draw_line_painter.setPen(draw_line_pen);
+    if( mPoints.size() > 1 ) {
+        for( unsigned int pi = 0; pi < mPoints.size()-1 ; pi ++ ) {
+            draw_line_painter.drawLine( mPoints[pi], mPoints[pi+1] );    
+        }
+    }
+    draw_line_painter.end();
 }
 
 void HARRTstarViz::switch_tree_show_type() {
@@ -298,3 +311,48 @@ void HARRTstarViz::next_found_path() {
         m_found_path_index ++;
     }
 }
+
+void HARRTstarViz::import_string_constraint( std::vector< QPoint > points, grammar_type_t type ) {
+  std::vector< Point2D > ref_points;
+  for( unsigned int i = 0; i < points.size(); i ++ ) {
+    ref_points.push_back( Point2D( points[i].x(), points[i].y() ) );
+  }
+  if( mp_reference_frames ) {
+    mp_reference_frames->import_string_constraint( ref_points, type );
+  }
+}
+
+void HARRTstarViz::mousePressEvent( QMouseEvent * event ) {
+    //std::cout << "mousePressEvent" << std::endl;
+    if ( event->button() == Qt::LeftButton ) {
+        mDragging = true;
+        mPoints.clear();    
+    }
+}
+
+void HARRTstarViz::mouseMoveEvent( QMouseEvent * event ) {
+    //std::cout << "mouseMoveEvent" << mPoints.size() << std::endl;
+    if ( mDragging == true ) {
+        //std::cout << event->x() << " " << event->y() << std::endl;
+        QPoint new_point( event->x(), event->y() );
+        if( mPoints.size() > 0 ) {
+            QPoint last_point = mPoints.back();
+            if( std::abs( new_point.x() - last_point.x() ) > 1 &&
+                std::abs( new_point.y() - last_point.y() ) > 1 ) {
+                mPoints.push_back( new_point );
+            }
+        }
+        else {
+            mPoints.push_back( new_point );
+        }
+        repaint();
+    }
+}
+
+void HARRTstarViz::mouseReleaseEvent( QMouseEvent * event ){
+    //std::cout << "mouseReleaseEvent" << std::endl;
+    if ( event->button() == Qt::LeftButton ) {
+        mDragging = false;
+    }
+}
+

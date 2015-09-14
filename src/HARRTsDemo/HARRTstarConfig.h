@@ -35,6 +35,12 @@ private:
     QLineEdit * mpLineEditIterationNum;
     QLabel    * mpLabelSegmentLength;
     QLineEdit * mpLineEditSegmentLength;
+    
+    QLabel    * mpLabelGrammarType;
+    QComboBox * mpComboGrammarType;
+
+    QLabel    * mpLabelRunType;
+    QComboBox * mpComboRunType;
 
     HARRTstarWindow * mpParentWindow;
 

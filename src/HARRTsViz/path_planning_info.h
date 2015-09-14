@@ -120,7 +120,10 @@ public:
     QString m_objective_file;
 
     COST_FUNC_PTR mp_func;
-    double** mCostDistribution;
+    double** mCostDistribution; 
+
+    grammar_type_t m_grammar_type;
+    RRTree_run_type_t m_run_type;
 
     int m_max_iteration_num;
     double m_segment_length;

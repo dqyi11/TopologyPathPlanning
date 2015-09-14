@@ -18,7 +18,10 @@ PathPlanningInfo::PathPlanningInfo() {
 
     m_paths_output = "";
     mp_found_paths.clear();
-
+      
+    m_grammar_type = STRING_GRAMMAR_TYPE;
+    m_run_type = RUN_BOTH_TREES_TYPE;
+   
     m_min_dist_enabled = true;
 
     m_max_iteration_num = 1000;
@@ -152,6 +155,16 @@ void PathPlanningInfo::read( xmlNodePtr root ) {
             goal_y_int = strtol( goal_y.c_str(), NULL, 10 );
         }
         m_goal = QPoint( goal_x_int, goal_y_int );
+        tmp = xmlGetProp( root, ( const xmlChar* )( "grammar_type" ) );
+        if ( tmp != NULL ) {
+            std::string grammar_type_str = ( char * )( tmp );
+            m_grammar_type = static_cast<grammar_type_t>( strtol( grammar_type_str.c_str(), NULL, 10 ) );
+        }
+        tmp = xmlGetProp( root, ( const xmlChar* )( "run_type" ) );
+        if ( tmp != NULL ) {
+            std::string run_type_str = ( char * )( tmp );
+            m_run_type = static_cast<RRTree_run_type_t>( strtol( run_type_str.c_str(), NULL, 10 ) );
+        }
         tmp = xmlGetProp( root, ( const xmlChar* )( "min_dist_enabled" ) );
         if ( tmp != NULL ) {
             std::string min_dist_enabled = ( char * )( tmp );
@@ -209,7 +222,13 @@ void PathPlanningInfo::write( xmlDocPtr doc, xmlNodePtr root ) const {
     std::stringstream goal_y_str;
     goal_y_str << m_goal.y();
     xmlNewProp( node, ( const xmlChar* )( "goal_y" ), ( const xmlChar* )( goal_y_str.str().c_str() ) );
-    
+    std::stringstream grammar_t_str;
+    grammar_t_str << static_cast<unsigned int>( m_grammar_type );
+    xmlNewProp( node, ( const xmlChar* )( "grammar_type"), ( const xmlChar* )( grammar_t_str.str().c_str() ) );    
+    std::stringstream run_t_str;
+    run_t_str << static_cast<unsigned int>( m_run_type );
+    xmlNewProp( node, ( const xmlChar* )( "run_type"), ( const xmlChar* )( run_t_str.str().c_str() ) );    
+ 
     std::string min_dist_enabled;
     if ( m_min_dist_enabled ) {
         min_dist_enabled = "1";

@@ -84,7 +84,9 @@ HARRTstar::HARRTstar( int width, int height, int segment_length ) {
   _p_st_root = NULL;
   _p_gt_root = NULL;
   _reference_frames = NULL;
+  _run_type = RUN_BOTH_TREES_TYPE;
 
+  _grammar_type = STRING_GRAMMAR_TYPE;
   _p_st_kd_tree = new KDTree2D( std::ptr_fun(tac) );
   _p_gt_kd_tree = new KDTree2D( std::ptr_fun(tac) );
 
@@ -293,16 +295,33 @@ bool HARRTstar::_is_obstacle_free( POS2D pos_a, POS2D pos_b ) {
 }
 
 void HARRTstar::extend() {
-  RRTNode* p_st_new_node = _extend(START_TREE_TYPE);
-  RRTNode* p_gt_new_node = _extend(GOAL_TREE_TYPE);
-  Path* p_st_new_path = find_path( p_st_new_node->m_pos );
-  Path* p_gt_new_path = find_path( p_gt_new_node->m_pos ); 
-
-  if( p_st_new_path ) {
-    _p_string_class_mgr->import_path( p_st_new_path );
+  RRTNode* p_st_new_node = NULL;
+  RRTNode* p_gt_new_node = NULL;
+  Path* p_st_new_path = NULL;
+  Path* p_gt_new_path = NULL;
+  if( _run_type != RUN_START_TREE_TYPE ) {
+    p_st_new_node = _extend(START_TREE_TYPE);
   }
-  if( p_gt_new_path ) {
-    _p_string_class_mgr->import_path( p_gt_new_path );
+  if( _run_type != RUN_GOAL_TREE_TYPE ) {
+    p_gt_new_node = _extend(GOAL_TREE_TYPE);
+  }
+  
+  if( _run_type != RUN_START_TREE_TYPE ) {
+    p_st_new_path = find_path( p_st_new_node->m_pos );
+  } 
+  if( _run_type != RUN_GOAL_TREE_TYPE ) {
+    p_gt_new_path = find_path( p_gt_new_node->m_pos ); 
+  }
+
+  if( _run_type != RUN_START_TREE_TYPE ) {
+    if( p_st_new_path ) {
+      _p_string_class_mgr->import_path( p_st_new_path );
+    }
+  }
+  if( _run_type != RUN_GOAL_TREE_TYPE ) {
+    if( p_gt_new_path ) {
+      _p_string_class_mgr->import_path( p_gt_new_path );
+    }
   }
   _current_iteration++;
 }
@@ -472,7 +491,7 @@ bool HARRTstar::_add_edge( RRTNode* p_node_parent, RRTNode* p_node_child ) {
   Point2D start( p_node_parent->m_pos[0], p_node_parent->m_pos[1] );
   Point2D goal( p_node_child->m_pos[0], p_node_child->m_pos[1] );
   //std::cout << "START " << start << " END " << goal << std::endl;
-  std::vector< std::string > ids = _reference_frames->get_string( start, goal, STRING_GRAMMAR_TYPE );
+  std::vector< std::string > ids = _reference_frames->get_string( start, goal, _grammar_type );
   p_node_child->clear_string();
   p_node_child->append_to_string( p_node_parent->m_substring );
   p_node_child->append_to_string( ids );
@@ -667,7 +686,7 @@ Path* HARRTstar::_concatenate_paths( Path* p_from_path, Path* p_to_path ) {
   Path* p_new_path = new Path( p_from_path->m_start, p_to_path->m_start );
   Point2D from_path_end( p_from_path->m_goal[0], p_from_path->m_goal[1] );
   Point2D to_path_end( p_to_path->m_goal[0], p_to_path->m_goal[1] );
-  std::vector< std::string > between_ids = _reference_frames->get_string( from_path_end, to_path_end , STRING_GRAMMAR_TYPE );
+  std::vector< std::string > between_ids = _reference_frames->get_string( from_path_end, to_path_end , _grammar_type );
   double delta_cost = _calculate_cost( p_from_path->m_goal, p_to_path->m_goal );
 
   p_new_path->append_waypoints( p_from_path->m_way_points );
@@ -711,4 +730,45 @@ std::vector<Path*> HARRTstar::get_paths() {
 
 void HARRTstar::set_reference_frames( ReferenceFrameSet* p_reference_frames ) {
   _reference_frames = p_reference_frames;
+}
+
+
+bool HARRTstar::_is_homotopy_eligible( RRTNode* p_node_parent, POS2D pos, RRTree_type_t type ) {
+  Point2D start( p_node_parent->m_pos[0], p_node_parent->m_pos[1] );
+  Point2D end( pos[0], pos[1] );
+  std::vector< std::string > ids = _reference_frames->get_string( start, end, _grammar_type );
+  std::vector< std::string > temp_ids;
+  if( type == START_TREE_TYPE ) {
+    for( std::vector< std::string >::iterator it = p_node_parent->m_substring.begin(); 
+         it != p_node_parent->m_substring.end(); it ++ ) {
+      std::string id = (*it);
+      temp_ids.push_back( id );
+    }
+    for( std::vector< std::string >::iterator it = ids.begin(); 
+         it != ids.end(); it++) {
+      std::string id = (*it);
+      temp_ids.push_back( id );  
+    }
+  }
+  else if( type == GOAL_TREE_TYPE ) {
+    for( std::vector< std::string >::reverse_iterator itr = p_node_parent->m_substring.rbegin(); 
+         itr != p_node_parent->m_substring.rend(); itr ++ ) {
+      std::string id = (*itr);
+      temp_ids.push_back( id );
+    }
+    for( std::vector< std::string >::reverse_iterator itr = ids.rbegin(); 
+         itr != ids.rend(); itr++) {
+      std::string id = (*itr);
+      temp_ids.push_back( id );  
+    }
+  }
+
+  if( type == START_TREE_TYPE ) {
+ 
+  } 
+  else if( type == GOAL_TREE_TYPE ) {
+
+  } 
+ 
+  return true;
 }

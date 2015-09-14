@@ -41,12 +41,22 @@ public:
 
     tree_show_type_t get_tree_show_type() { return m_tree_show_type; }
     void switch_tree_show_type();
+    void import_string_constraint( std::vector< QPoint > points, grammar_type_t type );
 
     PathPlanningInfo m_PPInfo;
-
+    
+    std::vector<QPoint>& get_drawed_points() { return mPoints; }
 signals:
     
 public slots:
+
+protected:
+    void mousePressEvent( QMouseEvent * event );
+    void mouseMoveEvent( QMouseEvent * event );
+    void mouseReleaseEvent( QMouseEvent * event );
+    
+    std::vector<QPoint>  mPoints;
+    bool                 mDragging;
 
 private:
     void drawPathOnMap(QPixmap& map);

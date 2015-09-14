@@ -36,14 +36,19 @@ public:
     std::vector<ReferenceFrame*>& get_reference_frames() { return _reference_frames; }
 
     WorldMap* get_world_map() { return _p_world_map; }
+   
+    void import_string_constraint( std::vector<Point2D> points, grammar_type_t type );
+    bool is_constained_substring( std::vector< std::string > sub_str, bool reverse );
 
 protected:
     StringGrammar* get_string_grammar( SubRegion* p_init, SubRegion* p_goal );
     HomotopicGrammar* get_homotopic_grammar( SubRegion* p_init, SubRegion* p_goal );
-
-private:
+  bool is_eligible_substring( std::vector< std::string > substring, std::vector< std::string > ref_str, bool reverse );
+  
     WorldMap*                    _p_world_map;
     std::vector<ReferenceFrame*> _reference_frames;
+
+    std::vector< std::vector< std::string > > _string_constraint; 
 };
 
 #endif // REFERENCE_FRAMES_H
