@@ -249,7 +249,9 @@ void HARRTstarWindow::planPath() {
         updateStatus();
         repaint();
     }
-
+    qDebug() << "START MERGE ";
+    mpHARRTstar->get_string_class_mgr()->merge();
+    qDebug() << "END MERGE ";
     //Path* path = mpHARRTstar->find_path();
     std::vector<Path*> p_paths = mpHARRTstar->get_paths();
     mpViz->m_PPInfo.load_paths(p_paths);

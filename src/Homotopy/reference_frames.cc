@@ -148,6 +148,19 @@ std::vector< std::string > ReferenceFrameSet::get_string( Point2D start, Point2D
     }
   }
   else if (type == HOMOTOPIC_GRAMMAR_TYPE) {
+    for( std::vector<ReferenceFrame*>::iterator it = _reference_frames.begin();
+         it != _reference_frames.end(); it ++ ) {
+      ReferenceFrame* p_rf = (*it);
+      // std::cout << "REF " << p_rf->m_segment << std::endl;
+      if ( CGAL::do_intersect( p_rf->m_segment, line ) ) {
+        if( p_rf->m_connect_to_cp ) {
+          id_string.push_back( CENTER_POINT_ID_CHARACTER );
+        }
+        else {
+          id_string.push_back( p_rf->m_name );
+        }
+      }
+    }
 
   }
   return id_string;
