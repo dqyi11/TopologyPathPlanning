@@ -264,8 +264,7 @@ bool WorldMap::_init_regions() {
                          itSR != p_subregion_set->m_subregions.end(); itSR++ ) {
                         SubRegion* p_sr = (*itSR);
                         if (p_sr) {
-                            if( _is_intersected( p_sr->m_polygon , p_line_subseg->m_subseg ) ) {
-                            //if( p_sr->m_polygon.bounded_side( mid_point ) != CGAL::ON_UNBOUNDED_SIDE ) {
+                            if( _is_intersected( p_sr->m_polygon , p_line_subseg->m_subseg, 1.0 ) ) {
                                 p_line_subseg->m_neighbors.push_back( p_sr );
                                 p_sr->m_neighbors.push_back( p_line_subseg );
                             }
@@ -279,7 +278,7 @@ bool WorldMap::_init_regions() {
     return true;
 }
 
-bool WorldMap::_is_intersected( Polygon2D poly, Segment2D seg ) {
+bool WorldMap::_is_intersected( Polygon2D poly, Segment2D seg, double delta ) {
 
     double mid_x = ( CGAL::to_double( seg.source().x() ) + CGAL::to_double( seg.target().x() ) ) / 2;
     double mid_y = ( CGAL::to_double( seg.source().y() ) + CGAL::to_double( seg.target().y() ) ) / 2;
@@ -288,25 +287,27 @@ bool WorldMap::_is_intersected( Polygon2D poly, Segment2D seg ) {
         return true;
     }
     Line2D perp_line = seg.supporting_line().perpendicular( Point2D( mid_x, mid_y ) );
-    if( perp_line.direction().dx() > perp_line.direction().dy() ) {
-        double l_mid_x = mid_x - 1;
+    double dx = CGAL::to_double ( perp_line.direction().dx() );
+    double dy = CGAL::to_double ( perp_line.direction().dy() );
+    if( std::abs(dx) < std::abs(dy) ) {
+        double l_mid_x = mid_x - delta;
         double l_mid_y = CGAL::to_double( perp_line.y_at_x( l_mid_x ) );
         if ( poly.bounded_side( Point2D( l_mid_x, l_mid_y ) ) != CGAL::ON_UNBOUNDED_SIDE  ) {
             return true;
         }
-        double r_mid_x = mid_x + 1;
+        double r_mid_x = mid_x + delta;
         double r_mid_y = CGAL::to_double( perp_line.y_at_x( r_mid_x ) );
         if ( poly.bounded_side( Point2D( r_mid_x, r_mid_y ) ) != CGAL::ON_UNBOUNDED_SIDE  ) {
             return true;
         }
     }
     else {
-        double l_mid_y = mid_y - 1;
+        double l_mid_y = mid_y - delta;
         double l_mid_x = CGAL::to_double( perp_line.x_at_y( l_mid_y ) );
         if ( poly.bounded_side( Point2D( l_mid_x, l_mid_y ) ) != CGAL::ON_UNBOUNDED_SIDE  ) {
             return true;
         }
-        double r_mid_y = mid_y + 1;
+        double r_mid_y = mid_y + delta;
         double r_mid_x = CGAL::to_double( perp_line.x_at_y( r_mid_y ) );
         if ( poly.bounded_side( Point2D( r_mid_x, r_mid_y ) ) != CGAL::ON_UNBOUNDED_SIDE  ) {
             return true;

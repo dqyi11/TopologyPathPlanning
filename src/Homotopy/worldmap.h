@@ -48,7 +48,7 @@ protected:
 
     std::list<Point2D>       _intersect_with_boundaries( LineSubSegmentSet* p_segment1, LineSubSegmentSet* p_segment2 );
     std::vector<SubRegion*>  _get_subregions( SubRegionSet* p_region );
-    bool                     _is_intersected( Polygon2D poly, Segment2D seg );
+    bool                     _is_intersected( Polygon2D poly, Segment2D seg, double delta );
 
 private:
     int _map_width;

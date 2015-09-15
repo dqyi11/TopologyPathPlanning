@@ -753,29 +753,16 @@ bool HARRTstar::_is_homotopy_eligible( RRTNode* p_node_parent, POS2D pos, RRTree
   Point2D end( pos[0], pos[1] );
   std::vector< std::string > ids = _reference_frames->get_string( start, end, _grammar_type );
   std::vector< std::string > temp_ids;
-  if( tree_type == START_TREE_TYPE ) {
-    for( std::vector< std::string >::iterator it = p_node_parent->m_substring.begin(); 
-         it != p_node_parent->m_substring.end(); it ++ ) {
-      std::string id = (*it);
-      temp_ids.push_back( id );
-    }
-    for( std::vector< std::string >::iterator it = ids.begin(); 
-         it != ids.end(); it++) {
-      std::string id = (*it);
-      temp_ids.push_back( id );  
-    }
+
+  for( std::vector< std::string >::iterator it = p_node_parent->m_substring.begin();
+       it != p_node_parent->m_substring.end(); it ++ ) {
+    std::string id = (*it);
+    temp_ids.push_back( id );
   }
-  else if( tree_type == GOAL_TREE_TYPE ) {
-    for( std::vector< std::string >::reverse_iterator itr = p_node_parent->m_substring.rbegin(); 
-         itr != p_node_parent->m_substring.rend(); itr ++ ) {
-      std::string id = (*itr);
-      temp_ids.push_back( id );
-    }
-    for( std::vector< std::string >::reverse_iterator itr = ids.rbegin(); 
-         itr != ids.rend(); itr++) {
-      std::string id = (*itr);
-      temp_ids.push_back( id );  
-    }
+  for( std::vector< std::string >::iterator it = ids.begin();
+       it != ids.end(); it++) {
+    std::string id = (*it);
+    temp_ids.push_back( id );
   }
 
   if( tree_type == START_TREE_TYPE ) {

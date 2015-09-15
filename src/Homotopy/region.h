@@ -16,14 +16,14 @@ public:
     
     std::string get_name();
 
-    std::vector<Point2D> m_points;
-    Polygon2D            m_polygon;
-    Point2D              m_centroid;
-    double               m_dist_to_cp;
-    unsigned int         m_index;
-    SubRegionSet*        mp_parent;
-
+    std::vector<Point2D>         m_points;
+    Polygon2D                    m_polygon;
+    Point2D                      m_centroid;
+    double                       m_dist_to_cp;
+    unsigned int                 m_index;
     std::vector<LineSubSegment*> m_neighbors;
+protected:
+    SubRegionSet*                mp_parent;
 };
 
 
