@@ -1,4 +1,4 @@
-#include <CGAL/centroid.h>
+#include "cgal_util.h"
 #include "region.h"
 
 SubRegion::SubRegion( Polygon2D poly , SubRegionSet* p_parent ) {
@@ -16,8 +16,7 @@ SubRegion::SubRegion( Polygon2D poly , SubRegionSet* p_parent ) {
   if (m_polygon.orientation() == CGAL::CLOCKWISE) {
     m_polygon.reverse_orientation();
   }
-  m_centroid = Point2D( (CGAL::to_double(m_polygon.bbox().xmax())+CGAL::to_double(m_polygon.bbox().xmin()))/2 ,
-                        (CGAL::to_double(m_polygon.bbox().ymax())+CGAL::to_double(m_polygon.bbox().ymin()))/2 );
+  m_centroid = get_centroid( m_polygon );
   m_dist_to_cp = 0.0;
   m_index = 0;
 }
@@ -60,6 +59,8 @@ SubRegionSet::SubRegionSet(std::list<Point2D> points, unsigned int idx) {
   if(m_polygon.orientation() == CGAL::CLOCKWISE) {
     m_polygon.reverse_orientation();
   }
+  m_centroid = get_centroid( m_polygon );
+
 }
 
 SubRegionSet::~SubRegionSet() {

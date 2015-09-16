@@ -17,6 +17,7 @@ typedef Kernel::Line_2                                       Line2D;
 typedef CGAL::Polygon_2<Kernel>                              Polygon2D;
 typedef CGAL::Polygon_with_holes_2<Kernel>                   PolygonWithHoles2D;
 typedef Kernel::Direction_2                                  Direction2D;
+typedef Polygon2D::Vertex_circulator                         Vertex_circulator;
 //typedef CGAL::Polygon_set_2< Kernel, std::vector<Point2D> >  Polygon2D_set;
 
 #endif // WORLD_DATATYPE_H

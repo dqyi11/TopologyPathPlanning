@@ -222,6 +222,7 @@ bool WorldMap::_init_regions() {
             p_subregion_set->mp_line_segments_b =  _line_segments[0];
             _line_segments[i]->m_neighbors.push_back( p_subregion_set );
             _line_segments[0]->m_neighbors.push_back( p_subregion_set );
+
             _region_sets.push_back( p_subregion_set );
         }
         else {
@@ -251,6 +252,7 @@ bool WorldMap::_init_regions() {
         }
     }
 
+    /*
     // associate line segments with subregions
     for( unsigned int i=0; i < _line_segments.size(); i++ ) {
         LineSubSegmentSet* p_line_subsegment_set = _line_segments[i];
@@ -273,7 +275,9 @@ bool WorldMap::_init_regions() {
                 }
             }
         }
-    }
+    }*/
+
+
 
     return true;
 }

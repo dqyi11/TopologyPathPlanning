@@ -16,6 +16,7 @@ add_library(${LIB} SHARED
             reference_frames.cc
             worldmap.h
             worldmap.cc
+            cgal_util.h
             world_datatype.h)
 
 target_link_libraries(${LIB}
