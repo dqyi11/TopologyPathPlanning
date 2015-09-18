@@ -243,7 +243,7 @@ bool WorldMap::_init_regions() {
     std::cout << "GENERATE FOR REGION " << i << " NUM_OF_SUB (" << p_subregions_set->m_subregions.size() << ")" << std::endl;
     for( unsigned int j=0; j < p_subregions_set->m_subregions.size(); j++ ) {
       SubRegion* p_subreg = p_subregions_set->m_subregions[j];
-      p_subreg->m_dist_to_cp = get_distance_to_central_point( p_subreg->m_centroid );
+      //p_subreg->m_dist_to_cp = get_distance_to_central_point( p_subreg->m_centroid );
       _subregions.push_back( p_subreg );
     }
     std::sort( p_subregions_set->m_subregions.begin(), p_subregions_set->m_subregions.end(), SubregionSort );
@@ -490,8 +490,8 @@ std::vector<SubRegion*>  WorldMap::_get_subregions( SubRegionSet* p_region ) {
       if( do_intersect( subpoly , p_obs->m_pgn ) ) {
         std::vector<PolygonWithHoles2D> res;
         CGAL::difference( subpoly, p_obs->m_pgn, std::back_inserter(res) );
-        std::cout << "REG " << p_region->m_index << " INTERSECT " << p_obs->get_index();
-        std::cout << " DIFF SIZE " << res.size() << std::endl;
+        //std::cout << "REG " << p_region->m_index << " INTERSECT " << p_obs->get_index();
+        //std::cout << " DIFF SIZE " << res.size() << std::endl;
         for( std::vector< PolygonWithHoles2D >::iterator itP = res.begin();
              itP != res.end(); itP ++ ) {
           PolygonWithHoles2D poly = (*itP);
@@ -514,6 +514,7 @@ std::vector<SubRegion*>  WorldMap::_get_subregions( SubRegionSet* p_region ) {
   for( std::vector<Polygon2D>::iterator itP = candidates.begin(); itP != candidates.end(); itP++ ) {
     Polygon2D poly = (*itP);
     SubRegion* p_subregion = new SubRegion( poly , p_region );
+    p_subregion->m_dist_to_cp = get_distance_to_central_point( p_subregion->m_centroid );
     sr_set.push_back( p_subregion );
   }
   return sr_set;
