@@ -265,7 +265,7 @@ bool WorldMap::_init_regions() {
       for( std::vector<LineSubSegment*>::iterator itl = p_obstacle_a->mp_alpha_seg->m_subsegs.begin();
            itl != p_obstacle_a->mp_alpha_seg->m_subsegs.end(); itl++ ) {
         LineSubSegment* p_line_subseg = (*itl);
-        if ( _is_intersected( p_subregion->m_polygon , p_line_subseg->m_subseg , 3.0 ) ) {
+        if ( _is_intersected( p_subregion->m_polygon , p_line_subseg->m_subseg , DELTA_TRIAL ) ) {
           p_line_subseg->m_neighbors.push_back( p_subregion );
           p_subregion->m_neighbors.push_back( p_line_subseg );
         }
@@ -273,7 +273,7 @@ bool WorldMap::_init_regions() {
       for( std::vector<LineSubSegment*>::iterator itl = p_obstacle_a->mp_beta_seg->m_subsegs.begin();
            itl != p_obstacle_a->mp_beta_seg->m_subsegs.end(); itl++ ) {
         LineSubSegment* p_line_subseg = (*itl);
-        if ( _is_intersected( p_subregion->m_polygon , p_line_subseg->m_subseg , 3.0 ) ) {
+        if ( _is_intersected( p_subregion->m_polygon , p_line_subseg->m_subseg , DELTA_TRIAL ) ) {
           p_line_subseg->m_neighbors.push_back( p_subregion );
           p_subregion->m_neighbors.push_back( p_line_subseg );
         }
