@@ -37,7 +37,7 @@ public:
     unsigned int m_index;    
     std::vector<Point2D>    m_boundary_points;
     std::vector<SubRegion*> m_subregions;
-    Point2D      m_centroid;
+    Point2D                 m_centroid;
 
     LineSubSegmentSet* mp_line_segments_a;
     LineSubSegmentSet* mp_line_segments_b;
