@@ -6,6 +6,8 @@
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include "worldmap.h"
 
+#define DELTA_TRIAL 2.0
+
 bool Segment2DSort(const Segment2D& lhs, const Segment2D& rhs) {
   return lhs.direction() < rhs.direction();
 }
@@ -221,7 +223,6 @@ bool WorldMap::_init_regions() {
       p_subregion_set->mp_line_segments_b =  _line_segments[0];
       _line_segments[i]->m_neighbors.push_back( p_subregion_set );
       _line_segments[0]->m_neighbors.push_back( p_subregion_set );
-
       _region_sets.push_back( p_subregion_set );
     }
     else {
@@ -255,68 +256,50 @@ bool WorldMap::_init_regions() {
   for( std::vector<SubRegionSet*>::iterator it = _region_sets.begin();
        it != _region_sets.end(); it++ ) {
     SubRegionSet* p_subregion_set = (*it);
-    if (p_subregion_set) {
-      if( p_subregion_set->mp_line_segments_a ) {
-        Obstacle* p_obstacle = p_subregion_set->mp_line_segments_a->get_obstacle();
-        //if ( p_obstacle ) {
-        for( std::vector<SubRegion*>::iterator itr = p_subregion_set->m_subregions.begin();
-             itr != p_subregion_set->m_subregions.end(); itr ++ ) {
-          SubRegion* p_subregion = (*itr);
-          if ( p_subregion ) {
-            for( std::vector<LineSubSegment*>::iterator itl = p_obstacle->mp_alpha_seg->m_subsegs.begin();
-                 itl != p_obstacle->mp_alpha_seg->m_subsegs.end(); itl++ ) {
-              LineSubSegment* p_line_subseg = (*itl);
-              if ( p_line_subseg ) {
-                if ( _is_intersected( p_subregion->m_polygon , p_line_subseg->m_subseg , 3.0 ) ) {
-                  p_line_subseg->m_neighbors.push_back( p_subregion );
-                  p_subregion->m_neighbors.push_back( p_line_subseg );
-                }
-              }
-            }
-            for( std::vector<LineSubSegment*>::iterator itl = p_obstacle->mp_beta_seg->m_subsegs.begin();
-                 itl != p_obstacle->mp_beta_seg->m_subsegs.end(); itl++ ) {
-              LineSubSegment* p_line_subseg = (*itl);
-              if ( p_line_subseg ) {
-                if ( _is_intersected( p_subregion->m_polygon , p_line_subseg->m_subseg , 3.0 ) ) {
-                  p_line_subseg->m_neighbors.push_back( p_subregion );
-                  p_subregion->m_neighbors.push_back( p_line_subseg );
-                }
-              }
-            }
-          }
+
+    Obstacle* p_obstacle_a = p_subregion_set->mp_line_segments_a->get_obstacle();
+    for( std::vector<SubRegion*>::iterator itr = p_subregion_set->m_subregions.begin();
+         itr != p_subregion_set->m_subregions.end(); itr ++ ) {
+      SubRegion* p_subregion = (*itr);
+
+      for( std::vector<LineSubSegment*>::iterator itl = p_obstacle_a->mp_alpha_seg->m_subsegs.begin();
+           itl != p_obstacle_a->mp_alpha_seg->m_subsegs.end(); itl++ ) {
+        LineSubSegment* p_line_subseg = (*itl);
+        if ( _is_intersected( p_subregion->m_polygon , p_line_subseg->m_subseg , 3.0 ) ) {
+          p_line_subseg->m_neighbors.push_back( p_subregion );
+          p_subregion->m_neighbors.push_back( p_line_subseg );
         }
-        //}
       }
-      if ( p_subregion_set->mp_line_segments_b ) {
-        Obstacle* p_obstacle = p_subregion_set->mp_line_segments_b->get_obstacle();
-        //if ( p_obstacle ) {
-        for( std::vector<SubRegion*>::iterator itr = p_subregion_set->m_subregions.begin();
-             itr != p_subregion_set->m_subregions.end(); itr ++ ) {
-          SubRegion* p_subregion = (*itr);
-          if ( p_subregion ) {
-            for( std::vector<LineSubSegment*>::iterator itl = p_obstacle->mp_alpha_seg->m_subsegs.begin();
-                 itl != p_obstacle->mp_alpha_seg->m_subsegs.end(); itl++ ) {
-              LineSubSegment* p_line_subseg = (*itl);
-              if ( p_line_subseg ) {
-                if ( _is_intersected( p_subregion->m_polygon , p_line_subseg->m_subseg , 0.5 ) ) {
-                  p_line_subseg->m_neighbors.push_back( p_subregion );
-                  p_subregion->m_neighbors.push_back( p_line_subseg );
-                }
-              }
-            }
-            for( std::vector<LineSubSegment*>::iterator itl = p_obstacle->mp_beta_seg->m_subsegs.begin();
-                 itl != p_obstacle->mp_beta_seg->m_subsegs.end(); itl++ ) {
-              LineSubSegment* p_line_subseg = (*itl);
-              if ( p_line_subseg ) {
-                if ( _is_intersected( p_subregion->m_polygon , p_line_subseg->m_subseg , 0.5 ) ) {
-                  p_line_subseg->m_neighbors.push_back( p_subregion );
-                  p_subregion->m_neighbors.push_back( p_line_subseg );
-                }
-              }
-            }
-          }
+      for( std::vector<LineSubSegment*>::iterator itl = p_obstacle_a->mp_beta_seg->m_subsegs.begin();
+           itl != p_obstacle_a->mp_beta_seg->m_subsegs.end(); itl++ ) {
+        LineSubSegment* p_line_subseg = (*itl);
+        if ( _is_intersected( p_subregion->m_polygon , p_line_subseg->m_subseg , 3.0 ) ) {
+          p_line_subseg->m_neighbors.push_back( p_subregion );
+          p_subregion->m_neighbors.push_back( p_line_subseg );
         }
-        //}
+      }
+    }
+
+    Obstacle* p_obstacle_b = p_subregion_set->mp_line_segments_b->get_obstacle();
+    for( std::vector<SubRegion*>::iterator itr = p_subregion_set->m_subregions.begin();
+         itr != p_subregion_set->m_subregions.end(); itr ++ ) {
+      SubRegion* p_subregion = (*itr);
+
+      for( std::vector<LineSubSegment*>::iterator itl = p_obstacle_b->mp_alpha_seg->m_subsegs.begin();
+           itl != p_obstacle_b->mp_alpha_seg->m_subsegs.end(); itl++ ) {
+        LineSubSegment* p_line_subseg = (*itl);
+        if ( _is_intersected( p_subregion->m_polygon , p_line_subseg->m_subseg , DELTA_TRIAL ) ) {
+          p_line_subseg->m_neighbors.push_back( p_subregion );
+          p_subregion->m_neighbors.push_back( p_line_subseg );
+        }
+      }
+      for( std::vector<LineSubSegment*>::iterator itl = p_obstacle_b->mp_beta_seg->m_subsegs.begin();
+           itl != p_obstacle_b->mp_beta_seg->m_subsegs.end(); itl++ ) {
+        LineSubSegment* p_line_subseg = (*itl);
+        if ( _is_intersected( p_subregion->m_polygon , p_line_subseg->m_subseg , DELTA_TRIAL ) ) {
+          p_line_subseg->m_neighbors.push_back( p_subregion );
+          p_subregion->m_neighbors.push_back( p_line_subseg );
+        }
       }
     }
   }
@@ -324,15 +307,11 @@ bool WorldMap::_init_regions() {
   // check neighbor num of line subsegment
   for( std::vector<LineSubSegmentSet*>::iterator it = _line_segments.begin(); it != _line_segments.end(); it ++ ) {
     LineSubSegmentSet* p_line_subseg_set = (*it);
-    if ( p_line_subseg_set ) {
-      for( std::vector<LineSubSegment*>::iterator its = p_line_subseg_set->m_subsegs.begin();
-           its != p_line_subseg_set->m_subsegs.end(); its ++ ) {
-        LineSubSegment* p_line_subseg = (*its);
-        if ( p_line_subseg ) {
-          if( p_line_subseg->m_neighbors.size() != 2 ) {
-            std::cout << "ERROR: " << p_line_subseg->get_name() << std::endl;
-          }
-        }
+    for( std::vector<LineSubSegment*>::iterator its = p_line_subseg_set->m_subsegs.begin();
+         its != p_line_subseg_set->m_subsegs.end(); its ++ ) {
+      LineSubSegment* p_line_subseg = (*its);
+      if( p_line_subseg->m_neighbors.size() != 2 ) {
+        std::cout << "ERROR: " << p_line_subseg->get_name() << std::endl;
       }
     }
   }
@@ -431,7 +410,7 @@ double WorldMap::get_distance_to_central_point( Point2D point ) {
   double cp_y = CGAL::to_double( _central_point.y() );
   double p_x = CGAL::to_double( point.x() );
   double p_y = CGAL::to_double( point.y() );
-  dist = pow(cp_x - p_x, 2) + pow(cp_y - p_y, 2);
+  dist = pow( cp_x - p_x, 2 ) + pow( cp_y - p_y, 2 );
   dist = sqrt( dist );
   return dist;
 }
