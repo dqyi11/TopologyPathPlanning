@@ -92,7 +92,7 @@ void StringClassMgr::merge() {
       bool found_equivalence = false;
       for( unsigned int j = 0; j < merged_classes.size(); j++) {
         StringClass* str_class_in_mer = merged_classes[j];
-        std::cout << "COMPARE [" << str_class->get_name() << "] and [" << str_class_in_mer->get_name() << "]" << std::endl;
+        //std::cout << "COMPARE [" << str_class->get_name() << "] and [" << str_class_in_mer->get_name() << "]" << std::endl;
         if( _p_grammar->is_equivalent( str_class_in_mer->m_string, str_class->m_string ) ) {
           if( str_class_in_mer->m_string.size() < str_class->m_string.size() ) {
             str_class_in_mer->m_string = str_class->m_string;
