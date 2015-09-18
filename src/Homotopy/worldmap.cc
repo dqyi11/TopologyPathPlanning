@@ -385,7 +385,6 @@ std::list<Point2D> WorldMap::_intersect_with_boundaries( LineSubSegmentSet* p_se
   Direction2D d2 = Ray2D( _central_point, p_segment2->m_seg.target() ).direction();
 
   if( d1 < d2 ) {
-
     for( unsigned int j=0; j < _center_corner_lines.size(); j++ ) {
       Direction2D corner_d = _center_corner_lines[j].direction();
       if( true == corner_d.counterclockwise_in_between( d1, d2 ) ) {
@@ -438,19 +437,19 @@ double WorldMap::get_distance_to_central_point( Point2D point ) {
 }
 
 Point2D* WorldMap::_find_intersection_with_boundary(Ray2D* p_ray) {
-    for(std::vector<Segment2D>::iterator it=_boundary_lines.begin(); it!=_boundary_lines.end(); it++) {
-        Segment2D seg = (*it);
-        CGAL::Object result = intersection(seg, (*p_ray));
-        Point2D* p = new Point2D();
-        if ( CGAL::assign(*p, result) ) {
-            return p;
-        }
-        if(p) {
-            delete p;
-            p = NULL;
-        }
+  for(std::vector<Segment2D>::iterator it=_boundary_lines.begin(); it!=_boundary_lines.end(); it++) {
+    Segment2D seg = (*it);
+    CGAL::Object result = intersection(seg, (*p_ray));
+    Point2D* p = new Point2D();
+    if ( CGAL::assign(*p, result) ) {
+      return p;
     }
-    return NULL;
+    if(p) {
+      delete p;
+      p = NULL;
+    }
+  }
+  return NULL;
 }
 
 bool WorldMap::_is_in_obstacle( Point2D point ) {
@@ -687,4 +686,3 @@ std::ostream& operator<<( std::ostream& out, const WorldMap& other ) {
   }
   return out;
 }
-
