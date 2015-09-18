@@ -111,9 +111,11 @@ StringGrammar* ReferenceFrameSet::get_string_grammar( SubRegion* p_init, SubRegi
         for( unsigned int j = 0; j < p_linesubsegment_set->m_subsegs.size(); j++) {
           LineSubSegment* p_linesubsegment = p_linesubsegment_set->m_subsegs[j];
           if (p_linesubsegment) {
-            std::string trans_name = p_linesubsegment->get_name();
-            std::string region_a_name = p_linesubsegment->m_neighbors[0]->get_name();
-            std::string region_b_name = p_linesubsegment->m_neighbors[1]->get_name();
+            std::string trans_name = p_linesubsegment->get_name();             
+            SubRegion* p_region_a = p_linesubsegment->m_neighbors[0];
+            SubRegion* p_region_b = p_linesubsegment->m_neighbors[1];
+            std::string region_a_name = p_region_a->get_name();
+            std::string region_b_name = p_region_b->get_name();
             p_grammar->add_transition( region_a_name, region_b_name, trans_name);
             p_grammar->set_init( p_init->get_name() );
             p_grammar->set_goal( p_goal->get_name() );
