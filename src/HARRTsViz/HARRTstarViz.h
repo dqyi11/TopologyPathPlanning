@@ -27,6 +27,7 @@ public:
     void set_show_reference_frames( bool show );
     void set_show_regions( bool show );
     void set_finished_planning( bool finished ) { m_finished_planning = finished; }
+    bool get_finished_planning() { return m_finished_planning; }
 
     bool show_reference_frames() { return m_show_reference_frames; }
     bool show_regions() { return m_show_regions; }
@@ -49,6 +50,8 @@ public:
     std::vector<QPoint>& get_drawed_points() { return m_drawed_points; }
     void set_show_drawed_points( bool show ) { m_show_points = show; }
     bool get_show_drawed_points() { return m_show_points; }
+
+    int get_found_path_index() { return m_found_path_index; }
 signals:
     
 public slots:
