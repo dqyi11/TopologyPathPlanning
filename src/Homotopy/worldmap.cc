@@ -320,38 +320,75 @@ bool WorldMap::_init_regions() {
 
 bool WorldMap::_is_intersected( Polygon2D poly, Segment2D seg, double delta ) {
 
-  double mid_x = ( CGAL::to_double( seg.source().x() ) + CGAL::to_double( seg.target().x() ) ) / 2;
-  double mid_y = ( CGAL::to_double( seg.source().y() ) + CGAL::to_double( seg.target().y() ) ) / 2;
+  double mid_x = ( CGAL::to_double( seg.source().x() ) + CGAL::to_double( seg.target().x() ) ) / 2.0;
+  double mid_y = ( CGAL::to_double( seg.source().y() ) + CGAL::to_double( seg.target().y() ) ) / 2.0;
 
   if ( poly.bounded_side( Point2D( mid_x, mid_y ) ) != CGAL::ON_UNBOUNDED_SIDE  ) {
     return true;
   }
   Line2D perp_line = seg.supporting_line().perpendicular( Point2D( mid_x, mid_y ) );
 
+  if( perp_line.is_vertical() ) {
+      std::cout << "VERTICAL " << std::endl;
+  }
+  if( perp_line.is_horizontal() ) {
+      std::cout << "HORIZONTAL " << std::endl;
+  }
+
   double dx = CGAL::to_double ( perp_line.direction().dx() );
   double dy = CGAL::to_double ( perp_line.direction().dy() );
   if( std::abs(dx) < std::abs(dy) ) {
     double l_mid_x = mid_x - delta;
     double l_mid_y = CGAL::to_double( perp_line.y_at_x( l_mid_x ) );
-    if ( poly.bounded_side( Point2D( l_mid_x, l_mid_y ) ) != CGAL::ON_UNBOUNDED_SIDE  ) {
+    /*if ( poly.bounded_side( Point2D( l_mid_x, l_mid_y ) ) != CGAL::ON_UNBOUNDED_SIDE  ) {
       return true;
+    }*/
+    Polygon2D_set ps;
+    ps.insert( poly );
+    Polygon2D l_pep_line;
+    l_pep_line.push_back( Point2D( mid_x, mid_y ) );
+    l_pep_line.push_back( Point2D( l_mid_x, l_mid_y ) );
+    if( ps.do_intersect( l_pep_line ) ) {
+        return true;
     }
+
     double r_mid_x = mid_x + delta;
     double r_mid_y = CGAL::to_double( perp_line.y_at_x( r_mid_x ) );
-    if ( poly.bounded_side( Point2D( r_mid_x, r_mid_y ) ) != CGAL::ON_UNBOUNDED_SIDE  ) {
+    /*if ( poly.bounded_side( Point2D( r_mid_x, r_mid_y ) ) != CGAL::ON_UNBOUNDED_SIDE  ) {
       return true;
+    }*/
+    Polygon2D r_pep_line;
+    r_pep_line.push_back( Point2D( mid_x, mid_y ) );
+    r_pep_line.push_back( Point2D( r_mid_x, r_mid_y ) );
+    if( ps.do_intersect( r_pep_line ) ) {
+        return true;
     }
   }
   else {
     double l_mid_y = mid_y - delta;
     double l_mid_x = CGAL::to_double( perp_line.x_at_y( l_mid_y ) );
-    if ( poly.bounded_side( Point2D( l_mid_x, l_mid_y ) ) != CGAL::ON_UNBOUNDED_SIDE  ) {
+    /*if ( poly.bounded_side( Point2D( l_mid_x, l_mid_y ) ) != CGAL::ON_UNBOUNDED_SIDE  ) {
       return true;
+    }*/
+    Polygon2D_set ps;
+    ps.insert( poly );
+    Polygon2D l_pep_line;
+    l_pep_line.push_back( Point2D( mid_x, mid_y ) );
+    l_pep_line.push_back( Point2D( l_mid_x, l_mid_y ) );
+    if( ps.do_intersect( l_pep_line ) ) {
+        return true;
     }
+
     double r_mid_y = mid_y + delta;
     double r_mid_x = CGAL::to_double( perp_line.x_at_y( r_mid_y ) );
-    if ( poly.bounded_side( Point2D( r_mid_x, r_mid_y ) ) != CGAL::ON_UNBOUNDED_SIDE  ) {
+    /*if ( poly.bounded_side( Point2D( r_mid_x, r_mid_y ) ) != CGAL::ON_UNBOUNDED_SIDE  ) {
       return true;
+    }*/
+    Polygon2D r_pep_line;
+    r_pep_line.push_back( Point2D( mid_x, mid_y ) );
+    r_pep_line.push_back( Point2D( r_mid_x, r_mid_y ) );
+    if( ps.do_intersect( r_pep_line ) ) {
+        return true;
     }
   }
   return false;
