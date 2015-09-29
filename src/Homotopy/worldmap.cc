@@ -243,13 +243,13 @@ bool WorldMap::_init_regions() {
     std::cout << "GENERATE FOR REGION " << i << " NUM_OF_SUB (" << p_subregions_set->m_subregions.size() << ")" << std::endl;
     for( unsigned int j=0; j < p_subregions_set->m_subregions.size(); j++ ) {
       SubRegion* p_subreg = p_subregions_set->m_subregions[j];
-      //p_subreg->m_dist_to_cp = get_distance_to_central_point( p_subreg->m_centroid );
       _subregions.push_back( p_subreg );
     }
     std::sort( p_subregions_set->m_subregions.begin(), p_subregions_set->m_subregions.end(), SubregionSort );
     for ( unsigned int sub_idx = 0; sub_idx < p_subregions_set->m_subregions.size(); sub_idx ++ ) {
       p_subregions_set->m_subregions[sub_idx]->m_index = sub_idx;
     }
+    p_subregions_set->m_subregions[0]->m_is_connected_to_central_point = true;
   }
 
   // associate line segments with subregions

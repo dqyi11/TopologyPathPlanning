@@ -34,8 +34,12 @@ StringClassMgr::~StringClassMgr() {
   _classes.clear();
 }
 
-void StringClassMgr::import_path( Path* p_path ) {
-  StringClass* p_string_class = find_string_class( p_path->m_string );
+void StringClassMgr::import_path( Path* p_path ) { 
+  std::vector< std::string > non_repeating_id_string = _p_grammar->get_non_repeating_form( p_path->m_string );
+  if ( _p_grammar->is_valid_string( non_repeating_id_string ) == false ) {
+    std::cout << "INVALID STRING " << std::endl;
+  }
+  StringClass* p_string_class = find_string_class( non_repeating_id_string );
   if( p_string_class ) {
     if( p_string_class->m_cost > p_path->m_cost ) {
       p_string_class->m_cost = p_path->m_cost;
@@ -43,7 +47,7 @@ void StringClassMgr::import_path( Path* p_path ) {
     }
   }
   else {
-    p_string_class = new StringClass( p_path->m_string ); 
+    p_string_class = new StringClass( non_repeating_id_string ); 
     p_string_class->m_cost = p_path->m_cost;
     p_string_class->mp_path = p_path;
     _classes.push_back(p_string_class);
@@ -81,14 +85,14 @@ StringClass* StringClassMgr::find_string_class( std::vector< std::string > str )
 
 void StringClassMgr::merge() {
   std::vector< StringClass* > merged_classes;
-  std::cout << "NUM OF CLASSES " << _classes.size() << std::endl;
+  //std::cout << "NUM OF CLASSES " << _classes.size() << std::endl;
   for( unsigned int i = 0; i < _classes.size(); i ++ ) {
     StringClass* str_class = _classes[i];
     if( merged_classes.size() == 0 ) {
       merged_classes.push_back( str_class );
     }
     else {
-      std::cout << "MERGE CLASS SIZE " << merged_classes.size() << std::endl;
+      //std::cout << "MERGE CLASS SIZE " << merged_classes.size() << std::endl;
       bool found_equivalence = false;
       for( unsigned int j = 0; j < merged_classes.size(); j++) {
         StringClass* str_class_in_mer = merged_classes[j];

@@ -172,24 +172,10 @@ bool StringGrammar::is_valid_string( std::vector< std::string > str ) {
 bool StringGrammar::is_equivalent( std::vector< std::string > str_a , std::vector< std::string > str_b ) {
   std::vector< std::string > str_a_stack;
   std::vector< std::string > str_b_stack;
-  for( unsigned int i = 0; i < str_a.size(); i++) {
-    std::string id = str_a[i];
-    if( str_a_stack.size() > 0 && str_a_stack.back() == id ) {
-      str_a_stack.pop_back();  
-    } 
-    else { 
-      str_a_stack.push_back( id );
-    }
-  }
-  for( unsigned int i = 0; i < str_b.size(); i++) {
-    std::string id = str_b[i];
-    if( str_b_stack.size() > 0 && str_b_stack.back() == id ) {
-      str_b_stack.pop_back();  
-    } 
-    else { 
-      str_b_stack.push_back( id );
-    }
-  }
+  
+  str_a_stack = get_non_repeating_form( str_a );
+  str_b_stack = get_non_repeating_form( str_b );
+  
   if( str_a_stack.size() != str_b_stack.size() ) {
     return false;
   }
@@ -200,3 +186,18 @@ bool StringGrammar::is_equivalent( std::vector< std::string > str_a , std::vecto
   }
   return true;
 }
+
+std::vector< std::string > StringGrammar::get_non_repeating_form( std::vector< std::string > id_str ) {
+  std::vector< std::string > str_non_repeat;
+  for( unsigned int i = 0; i < id_str.size(); i ++ ) {
+    std::string id = id_str[i];
+    if ( str_non_repeat.size() > 0 && str_non_repeat.back() == id ) {
+      str_non_repeat.pop_back();
+    }
+    else {
+      str_non_repeat.push_back( id );
+    }
+  }
+  return str_non_repeat;
+}
+

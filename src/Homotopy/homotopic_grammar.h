@@ -9,7 +9,8 @@ public:
   HomotopicGrammar();
   virtual ~HomotopicGrammar();
 
-  virtual bool is_equivalent( std::vector< std::string > str_a , std::vector< std::string > str_b );
+  //virtual bool is_equivalent( std::vector< std::string > str_a , std::vector< std::string > str_b );
+  
 };
 
 

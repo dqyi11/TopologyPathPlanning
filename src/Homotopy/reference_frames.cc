@@ -1,6 +1,8 @@
 #include <CGAL/intersections.h>
 #include "reference_frames.h"
 
+#define MERGED_CENTER_SUBREGION "SC"
+
 ReferenceFrame::ReferenceFrame() {
   m_name = "";
   m_connect_to_cp = false;
@@ -132,6 +134,34 @@ HomotopicGrammar* ReferenceFrameSet::get_homotopic_grammar( SubRegion* p_init, S
   if( _p_world_map && p_init && p_goal ) {
     p_grammar = new HomotopicGrammar();
      
+    for( unsigned int i = 0; i < _p_world_map->get_sublinesegment_set().size(); i++ ) {
+      LineSubSegmentSet* p_linesubsegment_set = _p_world_map->get_sublinesegment_set()[i];
+      if(p_linesubsegment_set) {
+        for( unsigned int j = 0; j < p_linesubsegment_set->m_subsegs.size(); j++) {
+          LineSubSegment* p_linesubsegment = p_linesubsegment_set->m_subsegs[j];
+          if (p_linesubsegment && p_linesubsegment->m_is_connected_to_central_point ) {
+            std::string trans_name = p_linesubsegment->get_name();             
+            SubRegion* p_region_a = p_linesubsegment->m_neighbors[0];
+            SubRegion* p_region_b = p_linesubsegment->m_neighbors[1];
+            std::string region_a_name = "";
+            std::string region_b_name = "";
+            if ( p_region_a->m_is_connected_to_central_point ) {
+              region_a_name = MERGED_CENTER_SUBREGION;
+            } else {
+              region_a_name = p_region_a->get_name();
+            }
+            if ( p_region_b->m_is_connected_to_central_point ) {
+              region_b_name = MERGED_CENTER_SUBREGION;
+            } else {
+              region_b_name = p_region_b->get_name();
+            }
+            p_grammar->add_transition( region_a_name, region_b_name, trans_name);
+            p_grammar->set_init( p_init->get_name() );
+            p_grammar->set_goal( p_goal->get_name() );
+          }
+        }
+      }
+    }
   }
   return p_grammar;
 }

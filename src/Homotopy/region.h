@@ -22,6 +22,7 @@ public:
     double                       m_dist_to_cp;
     unsigned int                 m_index;
     std::vector<LineSubSegment*> m_neighbors;
+    bool                         m_is_connected_to_central_point;
 protected:
     SubRegionSet*                mp_parent;
 };
