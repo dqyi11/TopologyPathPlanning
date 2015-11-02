@@ -335,7 +335,7 @@ std::string HARRTstarViz::get_reference_frame_name() {
     if ( m_reference_frame_index < mp_reference_frames->get_reference_frames().size() ) {
         return mp_reference_frames->get_reference_frames()[m_reference_frame_index]->m_name;
     }
-    return "";
+    return "NOTHING";
 }
 
 void HARRTstarViz::prev_found_path() {
@@ -405,3 +405,13 @@ void HARRTstarViz::mouseReleaseEvent( QMouseEvent * event ){
     }
 }
 
+ReferenceFrame* HARRTstarViz::get_selected_reference_frame() {
+
+    if ( m_reference_frame_index >= mp_reference_frames->get_reference_frames().size() ) {
+        return NULL;
+    }
+    if ( m_reference_frame_index < 0 ) {
+        return NULL;
+    }
+    return mp_reference_frames->get_reference_frames()[ m_reference_frame_index ];
+}

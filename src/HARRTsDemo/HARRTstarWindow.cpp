@@ -24,11 +24,11 @@ HARRTstarWindow::HARRTstarWindow(QWidget *parent)
     setCentralWidget(mpViz);
 
     mpStatusLabel = new QLabel();
-    mpStatusLabel->setFixedWidth(40);
+    mpStatusLabel->setFixedWidth(80);
     mpStatusProgressBar = new QProgressBar();
-
-    statusBar()->addWidget(mpStatusProgressBar);
+    
     statusBar()->addWidget(mpStatusLabel);
+    statusBar()->addWidget(mpStatusProgressBar);
     updateTitle();
 }
 
@@ -307,13 +307,15 @@ void HARRTstarWindow::updateTitle() {
 }
 
 void HARRTstarWindow::updateStatus() {
-    if(mpViz==NULL || mpHARRTstar==NULL) {
+    if(mpViz==NULL) {
         return;
     }
     if(mpStatusProgressBar) {
-        mpStatusProgressBar->setMinimum(0);
-        mpStatusProgressBar->setMaximum(mpViz->m_PPInfo.m_max_iteration_num);
-        mpStatusProgressBar->setValue(mpHARRTstar->get_current_iteration());
+        if(mpHARRTstar) {
+            mpStatusProgressBar->setMinimum(0);
+            mpStatusProgressBar->setMaximum(mpViz->m_PPInfo.m_max_iteration_num);
+            mpStatusProgressBar->setValue(mpHARRTstar->get_current_iteration());
+        }
     }
     if(mpStatusLabel) {
         QString status = "";

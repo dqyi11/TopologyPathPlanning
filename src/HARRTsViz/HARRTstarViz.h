@@ -32,6 +32,8 @@ public:
     bool show_reference_frames() { return m_show_reference_frames; }
     bool show_regions() { return m_show_regions; }
     bool is_finished_planning() { return m_finished_planning; }
+ 
+    ReferenceFrame* get_selected_reference_frame();
 
     void prev_reference_frame();
     void next_reference_frame();
