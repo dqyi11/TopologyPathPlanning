@@ -13,7 +13,11 @@ if( NOT LIBXML2_FOUND )
 endif()
 include_directories(${LIBXML2_INCLUDE_DIR})
 
-find_package(Boost COMPONENTS)
+find_package(Boost COMPONENTS graph REQUIRED)
+if( NOT Boost_FOUND )
+  message( FATAL_ERROR "Boost not found\n" )
+  return()
+endif()
 include_directories(${Boost_INCLUDE_DIR})
 
 # search for CGAL, exit if not found
@@ -40,10 +44,18 @@ endif()
 include(${QT_USE_FILE})
 include_directories(${QT_INCLUDE_DIR})
 
+# search for the Graphviz package, exit if not found
+#find_package(Graphviz REQUIRED)
+#if( NOT Graphviz_FOUND )
+#  message( FATAL_ERROR "Graphviz not found\n" )
+#  return()
+#endif()
+#include_directories(${Graphviz_INCLUDE_DIR}) 
+
 # search for Open CV, exit if not found
 find_package( OpenCV REQUIRED )
 if( NOT OpenCV_FOUND ) 
-  message( FATA_ERROR "OpenCV not found\n")
+  message( FATAL_ERROR "OpenCV not found\n")
   return()
 endif()
 #message( "OpenCV FOUND ")

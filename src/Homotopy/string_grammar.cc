@@ -1,4 +1,13 @@
+#include <fstream>
+#include <list>
+#include <boost/graph/graphviz.hpp>
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/iteration_macros.hpp>
 #include "string_grammar.h"
+
+typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, boost::property< boost::vertex_color_t, boost::default_color_type >, boost::property< boost::edge_weight_t, double > > Graph;
+typedef std::pair<std::string, std::string> Edge;
+
 
 State::State( std::string name ) {
   m_name = name;
@@ -201,3 +210,23 @@ std::vector< std::string > StringGrammar::get_non_repeating_form( std::vector< s
   return str_non_repeat;
 }
 
+void StringGrammar::output( std::string filename ) {
+  
+  Edge edges[_transitions.size()];
+  for( unsigned int i=0; i < _transitions.size(); i ++) {
+    Transition* p_trans = _transitions[i];
+    if( p_trans ) {
+      edges[i] = Edge(p_trans->mp_from_state->m_name, p_trans->mp_to_state->m_name);
+    }
+  }
+  const int edge_num = _transitions.size();
+  double weights[edge_num];
+  std::fill(weights, weights + edge_num, 1.0);
+  Graph g_write(edges, edges + edge_num, weights, 16);
+ 
+  boost::dynamic_properties dp;
+  dp.property("weight", get(boost::edge_weight, g_write));
+  dp.property("node_id", get(boost::vertex_index, g_write));
+  std::ofstream ofs( filename.c_str() );
+  write_graphviz( ofs, g_write, dp ); 
+} 
