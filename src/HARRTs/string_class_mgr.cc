@@ -117,3 +117,9 @@ void StringClassMgr::merge() {
 
   _classes = merged_classes;
 }
+  
+void StringClassMgr::export_grammar( std::string filename ) {
+  if( _p_grammar ) {
+    _p_grammar->output( filename );
+  }
+}

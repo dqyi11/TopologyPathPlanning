@@ -27,6 +27,7 @@ public:
   void merge();
   StringClass* find_string_class( std::vector< std::string > str );
   std::vector< StringClass* >& get_string_classes() { return _classes; }  
+  void export_grammar( std::string filename );
 protected:
   StringGrammar* _p_grammar;
   std::vector< StringClass* > _classes;

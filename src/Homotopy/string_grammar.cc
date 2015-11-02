@@ -1,12 +1,19 @@
 #include <fstream>
 #include <list>
+#include <vector>
 #include <boost/graph/graphviz.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/iteration_macros.hpp>
 #include "string_grammar.h"
 
-typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS, boost::property< boost::vertex_color_t, boost::default_color_type >, boost::property< boost::edge_weight_t, double > > Graph;
-typedef std::pair<std::string, std::string> Edge;
+using namespace boost;
+
+struct Vertex{ std::string name; };
+struct Edge{ double weight; };
+
+typedef adjacency_list<vecS, vecS, undirectedS, Vertex, Edge> Graph;
+typedef graph_traits<Graph>::vertex_descriptor vertex_t;
+typedef graph_traits<Graph>::edge_descriptor   edge_t;
 
 
 State::State( std::string name ) {
@@ -70,6 +77,15 @@ State* StringGrammar::find_state( std::string name ) {
   }
   return NULL;
 }
+    
+int StringGrammar::get_state_index( std::string name ) {
+  for( unsigned int i = 0; i < _states.size(); i ++ ) {
+    if( _states[i]->m_name == name ) {
+      return i;
+    }
+  }
+  return -1;
+}
 
 Transition* StringGrammar::find_transition( std::string name ) {
   for( std::vector<Transition*>::iterator it = _transitions.begin();
@@ -113,15 +129,18 @@ bool StringGrammar::add_transition( std::string from_name, std::string to_name, 
   State* p_from_state = find_state( from_name );
   if ( p_from_state == NULL ) {
     p_from_state = new State( from_name );
+    _states.push_back(p_from_state);
   }
   State* p_to_state = find_state( to_name );
-  if ( p_to_state ) {
+  if ( p_to_state == NULL ) {
     p_to_state = new State( to_name );
+    _states.push_back(p_to_state);
   }
 
   p_transition = new Transition( p_from_state, p_to_state, name );
   _transitions.push_back( p_transition );
   p_from_state->m_transitions.push_back( p_transition );
+  p_to_state->m_transitions.push_back( p_transition );
   return true;
 }
 
@@ -211,22 +230,35 @@ std::vector< std::string > StringGrammar::get_non_repeating_form( std::vector< s
 }
 
 void StringGrammar::output( std::string filename ) {
+    
+  const unsigned int edge_num = _transitions.size();
+  const unsigned int vertex_num = _states.size();
+
+  std::cout << "STRING_GRAMMR::EDGE_NUM::" << edge_num << std::endl;
+  std::cout << "STRING_GRAMMR::VERTEX_NUM::" << vertex_num << std::endl;
   
-  Edge edges[_transitions.size()];
-  for( unsigned int i=0; i < _transitions.size(); i ++) {
-    Transition* p_trans = _transitions[i];
-    if( p_trans ) {
-      edges[i] = Edge(p_trans->mp_from_state->m_name, p_trans->mp_to_state->m_name);
-    }
+  Graph g; 
+  std::vector<vertex_t> vs;
+  for( unsigned int i=0; i < vertex_num; i++) {
+    vertex_t vt =  add_vertex( g );
+    g[vt].name = _states[i]->m_name;
+    vs.push_back(vt);
   }
-  const int edge_num = _transitions.size();
-  double weights[edge_num];
-  std::fill(weights, weights + edge_num, 1.0);
-  Graph g_write(edges, edges + edge_num, weights, 16);
- 
-  boost::dynamic_properties dp;
-  dp.property("weight", get(boost::edge_weight, g_write));
-  dp.property("node_id", get(boost::vertex_index, g_write));
-  std::ofstream ofs( filename.c_str() );
-  write_graphviz( ofs, g_write, dp ); 
+  std::cout << "Finish VERTEX INIT " << vs.size() << std::endl;
+  std::vector<edge_t> es;
+  for( unsigned int i=0; i < edge_num; i ++) {
+    bool b = false;
+    edge_t et;
+    Transition* p_trans = _transitions[i];
+    int s_i = get_state_index( p_trans->mp_from_state->m_name );
+    int g_i = get_state_index( p_trans->mp_to_state->m_name );
+    std::cout << "From " << s_i << " to "  << g_i << std::endl;
+    tie(et, b) = add_edge( vs[s_i], vs[g_i], g );
+    g[et].weight = 1.0;
+    es.push_back(et);
+  }
+  std::cout << "Finish EDGE INIT " << es.size() << std::endl;
+  std::ofstream dot( filename.c_str() );
+  write_graphviz( dot, g , make_label_writer( get( &Vertex::name, g) ) );
+  std::cout << "WRITING " << filename << std::endl;
 } 

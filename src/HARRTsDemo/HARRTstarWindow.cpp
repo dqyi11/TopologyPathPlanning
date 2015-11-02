@@ -64,6 +64,7 @@ void HARRTstarWindow::createMenuBar() {
 
     mpToolMenu = menuBar()->addMenu("&Tool");
     mpToolMenu->addAction(mpSaveScreenAction);
+    mpToolMenu->addAction(mpExportGrammarGraphAction);
 
     mpContextMenu = new QMenu();
     setContextMenuPolicy(Qt::CustomContextMenu);
@@ -96,6 +97,8 @@ void HARRTstarWindow::createActions() {
 
     mpSaveScreenAction = new QAction("Save Screen", this);
     connect(mpSaveScreenAction, SIGNAL(triggered()), this, SLOT(onSaveScreen()));
+    mpExportGrammarGraphAction = new QAction("Export Grammar", this);
+    connect(mpExportGrammarGraphAction, SIGNAL(triggered()), this, SLOT(onExportGrammar()));
 
     connect(this, SIGNAL(customContextMenuRequested(const QPoint)),this, SLOT(contextMenuRequested(QPoint)));
 }
@@ -212,6 +215,17 @@ void HARRTstarWindow::onRun() {
 
     planPath();
     repaint();
+}
+
+void HARRTstarWindow::onExportGrammar() {
+
+    QString grammarFilename = QFileDialog::getSaveFileName(this, tr("Save File"), "./", tr("DOT Files (*.dot)"));
+    if( mpReferenceFrameSet ) {
+        StringGrammar* p_grammar = mpReferenceFrameSet->get_string_grammar( mpViz->m_PPInfo.m_start.x(), mpViz->m_PPInfo.m_start.y(), mpViz->m_PPInfo.m_goal.x(), mpViz->m_PPInfo.m_goal.y() );
+        if( p_grammar ) {
+            p_grammar->output( grammarFilename.toStdString() );
+        }
+    }
 }
 
 void HARRTstarWindow::planPath() {

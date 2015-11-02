@@ -38,6 +38,7 @@ public:
 
     State* find_state( std::string name );
     Transition* find_transition( std::string name );
+    int get_state_index( std::string name );
 
     bool has_transition( Transition* p_transition );
     bool has_state( State* p_state );

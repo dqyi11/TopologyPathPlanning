@@ -71,6 +71,18 @@ void ReferenceFrameSet::init(int width, int height, std::vector< std::vector<Poi
   }
 }
 
+StringGrammar* ReferenceFrameSet::get_string_grammar( int init_x, int init_y, int goal_x, int goal_y ) {
+  Point2D init_point( init_x, init_y );
+  Point2D goal_point( goal_x, goal_y );
+  return get_string_grammar( init_point, goal_point );
+}
+
+HomotopicGrammar* ReferenceFrameSet::get_homotopic_grammar( int init_x, int init_y, int goal_x, int goal_y ) {
+  Point2D init_point( init_x, init_y );
+  Point2D goal_point( goal_x, goal_y );
+  return get_homotopic_grammar( init_point, goal_point );
+}
+
 StringGrammar* ReferenceFrameSet::get_string_grammar( Point2D init, Point2D goal ) {
   SubRegion* p_init_subregion = NULL;
   SubRegion* p_goal_subregion = NULL;
