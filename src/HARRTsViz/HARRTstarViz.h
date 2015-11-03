@@ -34,6 +34,13 @@ public:
     bool is_finished_planning() { return m_finished_planning; }
  
     ReferenceFrame* get_selected_reference_frame();
+    SubRegionSet*   get_selected_subregion_set();
+    SubRegion*      get_selected_subregion();
+
+    void prev_region();
+    void next_region();
+    void prev_subregion();
+    void next_subregion();
 
     void prev_reference_frame();
     void next_reference_frame();
@@ -41,6 +48,7 @@ public:
     void next_found_path();
     int  get_reference_frame_index() { return m_reference_frame_index; }
     std::string get_reference_frame_name();
+    std::string get_region_name();
     QString generate_string();
 
     tree_show_type_t get_tree_show_type() { return m_tree_show_type; }
@@ -79,6 +87,8 @@ private:
     bool                m_finished_planning;
     int                 m_reference_frame_index;
     int                 m_found_path_index;
+    int                 m_region_index;
+    int                 m_subregion_index;
     std::vector<QColor> m_colors;
     tree_show_type_t    m_tree_show_type;
 

@@ -21,6 +21,8 @@ HARRTstarViz::HARRTstarViz( QWidget *parent ) :
     m_finished_planning = false;
     m_reference_frame_index = -1;
     m_found_path_index = -1;
+    m_region_index = -1;
+    m_subregion_index = -1;
     mp_reference_frames = NULL;
     m_tree_show_type = BOTH_TREES_SHOW;
     m_show_points = false;
@@ -47,15 +49,59 @@ void HARRTstarViz::paintEvent( QPaintEvent * e ) {
 
 void HARRTstarViz::paint(QPaintDevice * device) {
     if(m_show_regions) {
-        for( unsigned int i = 0; i < mp_reference_frames->get_world_map()->get_subregion_set().size(); i++) {
-            SubRegionSet* p_subregion_set = mp_reference_frames->get_world_map()->get_subregion_set()[i];
+
+        if( m_region_index < 0 ) {
+            for( unsigned int i = 0; i < mp_reference_frames->get_world_map()->get_subregion_set().size(); i++) {
+                SubRegionSet* p_subregion_set = mp_reference_frames->get_world_map()->get_subregion_set()[i];
+                if(p_subregion_set) {
+                    QPainter rg_painter(device);
+                    rg_painter.setRenderHint(QPainter::Antialiasing);
+                    QBrush rg_brush( m_colors[i] );
+                    rg_painter.setPen(Qt::NoPen);
+                    for( unsigned int j = 0; j < p_subregion_set->m_subregions.size(); j ++ ) {
+                        SubRegion* p_subreg = p_subregion_set->m_subregions[j];
+                        if(p_subreg) {
+                            QPolygon poly;
+                            for( unsigned int k = 0; k < p_subreg->m_points.size(); k++) {
+                                double x = CGAL::to_double( p_subreg->m_points[k].x() );
+                                double y = CGAL::to_double( p_subreg->m_points[k].y() );
+                                poly << QPoint(x , y);
+                            }
+                            QPainterPath tmpPath;
+                            tmpPath.addPolygon(poly);
+                            rg_painter.fillPath(tmpPath, rg_brush);
+                        }
+                    }
+                    rg_painter.end();
+                }
+            }
+        }
+        else {
+            SubRegionSet* p_subregion_set = mp_reference_frames->get_world_map()->get_subregion_set()[ m_region_index ];
             if(p_subregion_set) {
                 QPainter rg_painter(device);
                 rg_painter.setRenderHint(QPainter::Antialiasing);
-                QBrush rg_brush( m_colors[i] );
+                QBrush rg_brush( m_colors[m_region_index] );
                 rg_painter.setPen(Qt::NoPen);
-                for( unsigned int j = 0; j < p_subregion_set->m_subregions.size(); j ++ ) {
-                    SubRegion* p_subreg = p_subregion_set->m_subregions[j];
+
+                if( m_subregion_index < 0 ) {
+                    for( unsigned int j = 0; j < p_subregion_set->m_subregions.size(); j ++ ) {
+                        SubRegion* p_subreg = p_subregion_set->m_subregions[j];
+                        if(p_subreg) {
+                            QPolygon poly;
+                            for( unsigned int k = 0; k < p_subreg->m_points.size(); k++) {
+                                double x = CGAL::to_double( p_subreg->m_points[k].x() );
+                                double y = CGAL::to_double( p_subreg->m_points[k].y() );
+                                poly << QPoint(x , y);
+                            }
+                            QPainterPath tmpPath;
+                            tmpPath.addPolygon(poly);
+                            rg_painter.fillPath(tmpPath, rg_brush);
+                        }
+                    }
+                }
+                else {
+                    SubRegion* p_subreg = p_subregion_set->m_subregions[m_subregion_index];
                     if(p_subreg) {
                         QPolygon poly;
                         for( unsigned int k = 0; k < p_subreg->m_points.size(); k++) {
@@ -69,7 +115,7 @@ void HARRTstarViz::paint(QPaintDevice * device) {
                     }
                 }
                 rg_painter.end();
-            }
+            } 
         }
     }
 
@@ -335,7 +381,19 @@ std::string HARRTstarViz::get_reference_frame_name() {
     if ( m_reference_frame_index < mp_reference_frames->get_reference_frames().size() ) {
         return mp_reference_frames->get_reference_frames()[m_reference_frame_index]->m_name;
     }
-    return "NOTHING";
+    return "NO REF FRAME";
+}
+
+std::string HARRTstarViz::get_region_name() {
+    SubRegion* p_subregion = get_selected_subregion();
+    if( p_subregion ) {
+        return p_subregion->get_name();
+    }
+    SubRegionSet* p_subregion_set = get_selected_subregion_set();
+    if( p_subregion_set ) {
+        return p_subregion_set->get_name();
+    }
+    return "NO REGION";
 }
 
 void HARRTstarViz::prev_found_path() {
@@ -414,4 +472,80 @@ ReferenceFrame* HARRTstarViz::get_selected_reference_frame() {
         return NULL;
     }
     return mp_reference_frames->get_reference_frames()[ m_reference_frame_index ];
+}
+    
+SubRegionSet* HARRTstarViz::get_selected_subregion_set() {
+
+    if ( m_region_index >= mp_reference_frames->get_world_map()->get_subregion_set().size() ) {
+        return NULL;
+    }
+    if ( m_region_index < 0 ) {
+        return NULL;
+    }
+    return mp_reference_frames->get_world_map()->get_subregion_set()[ m_region_index ];
+}
+
+SubRegion* HARRTstarViz::get_selected_subregion() {
+    SubRegionSet* p_subregion_set = get_selected_subregion_set();
+    if (p_subregion_set) {
+        if( m_subregion_index >= 0 && m_subregion_index < p_subregion_set->m_subregions.size() ) {
+            return p_subregion_set->m_subregions[ m_subregion_index ];
+        } 
+        return NULL;
+    } 
+    return NULL;
+}
+
+void HARRTstarViz::prev_region() {
+    if (m_show_regions) {
+        if ( m_region_index < 0) {
+            m_region_index = mp_reference_frames->get_world_map()->get_subregion_set().size() - 1;
+            m_subregion_index = -1;
+        }else{
+            m_region_index -- ;
+            m_subregion_index = -1;
+        }
+    }
+
+}
+
+void HARRTstarViz::next_region() {
+    if (m_show_regions) {
+        if ( m_region_index >= mp_reference_frames->get_world_map()->get_subregion_set().size()-1 ) {
+            m_region_index = -1; 
+            m_subregion_index = -1;
+        }else{
+            m_region_index ++; 
+            m_subregion_index = -1;
+        }
+    }
+
+}
+ 
+void HARRTstarViz::prev_subregion() {
+    if (m_show_regions) {
+        if( m_region_index >= 0 && m_region_index < mp_reference_frames->get_world_map()->get_subregion_set().size()-1 ) {
+            SubRegionSet* p_subregions = mp_reference_frames->get_world_map()->get_subregion_set()[ m_region_index ];
+            if( m_subregion_index > 0 ) {
+                m_subregion_index --;
+            }
+            else {
+                m_subregion_index = p_subregions->m_subregions.size()-1;
+            }
+        } 
+    }
+}
+
+void HARRTstarViz::next_subregion() {
+    if (m_show_regions) {
+        if( m_region_index >= 0 && m_region_index < mp_reference_frames->get_world_map()->get_subregion_set().size()-1 ) {
+            SubRegionSet* p_subregions = mp_reference_frames->get_world_map()->get_subregion_set()[ m_region_index ];
+            if( m_subregion_index < p_subregions->m_subregions.size()-1 ) {
+                m_subregion_index ++;
+            }
+            else {
+                m_subregion_index = 0;
+            }
+        } 
+    }
 }

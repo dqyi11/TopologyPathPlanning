@@ -24,7 +24,7 @@ HARRTstarWindow::HARRTstarWindow(QWidget *parent)
     setCentralWidget(mpViz);
 
     mpStatusLabel = new QLabel();
-    mpStatusLabel->setFixedWidth(80);
+    mpStatusLabel->setFixedWidth(120);
     mpStatusProgressBar = new QProgressBar();
     
     statusBar()->addWidget(mpStatusLabel);
@@ -320,6 +320,8 @@ void HARRTstarWindow::updateStatus() {
     if(mpStatusLabel) {
         QString status = "";
         if (mpViz->get_finished_planning() == false) {
+            status += QString::fromStdString(mpViz->get_region_name());
+            status += " || ";
             status += QString::fromStdString(mpViz->get_reference_frame_name());
         }
         else {
@@ -400,6 +402,34 @@ void HARRTstarWindow::keyPressEvent(QKeyEvent *event) {
    else if ( event->key() == Qt::Key_Right ) {
        if(mpViz) {
            mpViz->next_found_path();
+           updateStatus();
+           repaint();
+       }
+   }
+   else if ( event->key() == Qt::Key_PageUp ) {
+       if(mpViz) {
+           mpViz->prev_region();
+           updateStatus();
+           repaint();
+       }
+   }
+   else if ( event->key() == Qt::Key_PageDown ) {
+       if(mpViz) {
+           mpViz->next_region();
+           updateStatus();
+           repaint();
+       }
+   }
+   else if ( event->key() == Qt::Key_Z ) {
+       if(mpViz) {
+           mpViz->prev_subregion();
+           updateStatus();
+           repaint();
+       }
+   }
+   else if ( event->key() == Qt::Key_X ) {
+       if(mpViz) {
+           mpViz->next_subregion();
            updateStatus();
            repaint();
        }
