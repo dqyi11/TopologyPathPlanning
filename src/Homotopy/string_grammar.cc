@@ -9,7 +9,7 @@
 using namespace boost;
 
 struct Vertex{ std::string name; };
-struct Edge{ double weight; };
+struct Edge{ std::string name; double weight; };
 
 typedef adjacency_list<vecS, vecS, undirectedS, Vertex, Edge> Graph;
 typedef graph_traits<Graph>::vertex_descriptor vertex_t;
@@ -252,13 +252,14 @@ void StringGrammar::output( std::string filename ) {
     Transition* p_trans = _transitions[i];
     int s_i = get_state_index( p_trans->mp_from_state->m_name );
     int g_i = get_state_index( p_trans->mp_to_state->m_name );
-    std::cout << "From " << s_i << " to "  << g_i << std::endl;
+    std::cout << p_trans->m_name <<  " From " << s_i << " to "  << g_i << std::endl;
     tie(et, b) = add_edge( vs[s_i], vs[g_i], g );
     g[et].weight = 1.0;
+    g[et].name = p_trans->m_name;
     es.push_back(et);
   }
   std::cout << "Finish EDGE INIT " << es.size() << std::endl;
   std::ofstream dot( filename.c_str() );
-  write_graphviz( dot, g , make_label_writer( get( &Vertex::name, g) ) );
+  write_graphviz( dot, g , make_label_writer( get( &Vertex::name, g) ), make_label_writer( get( &Edge::name, g) ) );
   std::cout << "WRITING " << filename << std::endl;
 } 
