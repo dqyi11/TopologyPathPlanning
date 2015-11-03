@@ -49,6 +49,7 @@ private:
     QMenu*   mpToolMenu;
     QAction* mpSaveScreenAction;
     QAction* mpExportGrammarGraphAction;
+    QAction* mpExportAllSimpleStringsAction;
 
     QMenu*   mpContextMenu;
     QAction* mpAddStartAction;
@@ -76,6 +77,7 @@ private slots:
     void onAddGoal();
     void onSaveScreen();
     void onExportGrammar();
+    void onExportAllSimpleStrings();
 };
 
 #endif // HARRT_MAINWINDOW_H

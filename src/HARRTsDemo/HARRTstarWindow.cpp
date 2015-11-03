@@ -1,3 +1,5 @@
+#include <QFile>
+#include <QTextStream>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QtDebug>
@@ -65,6 +67,7 @@ void HARRTstarWindow::createMenuBar() {
     mpToolMenu = menuBar()->addMenu("&Tool");
     mpToolMenu->addAction(mpSaveScreenAction);
     mpToolMenu->addAction(mpExportGrammarGraphAction);
+    mpToolMenu->addAction(mpExportAllSimpleStringsAction);
 
     mpContextMenu = new QMenu();
     setContextMenuPolicy(Qt::CustomContextMenu);
@@ -96,9 +99,11 @@ void HARRTstarWindow::createActions() {
     connect(mpAddGoalAction, SIGNAL(triggered()), this, SLOT(onAddGoal()));
 
     mpSaveScreenAction = new QAction("Save Screen", this);
-    connect(mpSaveScreenAction, SIGNAL(triggered()), this, SLOT(onSaveScreen()));
     mpExportGrammarGraphAction = new QAction("Export Grammar", this);
+    mpExportAllSimpleStringsAction = new QAction("Export All Simple Strings", this);
+    connect(mpSaveScreenAction, SIGNAL(triggered()), this, SLOT(onSaveScreen()));
     connect(mpExportGrammarGraphAction, SIGNAL(triggered()), this, SLOT(onExportGrammar()));
+    connect(mpExportAllSimpleStringsAction, SIGNAL(triggered()), this, SLOT(onExportAllSimpleStrings()));
 
     connect(this, SIGNAL(customContextMenuRequested(const QPoint)),this, SLOT(contextMenuRequested(QPoint)));
 }
@@ -434,4 +439,29 @@ void HARRTstarWindow::keyPressEvent(QKeyEvent *event) {
            repaint();
        }
    }
+}
+
+void HARRTstarWindow::onExportAllSimpleStrings() {
+
+    QString stringFilename = QFileDialog::getSaveFileName(this, tr("Save File"), "./", tr("TXT Files (*.txt)"));
+    if( mpReferenceFrameSet ) {
+        std::vector< std::vector< std::string > > simple_strings;
+        StringGrammar* p_grammar = mpReferenceFrameSet->get_string_grammar( mpViz->m_PPInfo.m_start.x(), mpViz->m_PPInfo.m_start.y(), mpViz->m_PPInfo.m_goal.x(), mpViz->m_PPInfo.m_goal.y() );
+        if( p_grammar ) {
+            simple_strings = p_grammar->get_all_simple_strings();
+            QFile file(stringFilename);
+            if( !file.open(QIODevice::WriteOnly | QIODevice::Text) ) {
+                return;
+            }
+            QTextStream out(&file);
+            for( std::vector< std::vector< std::string > >::iterator it = simple_strings.begin(); it != simple_strings.end(); it++ ) {
+                std::vector< std::string > ids = (*it);
+                for( int i=0; i < ids.size(); i ++) {
+                   out << ids[i].c_str() << " ";
+                }
+                out << "\n";
+            }
+        }
+    }
+
 }

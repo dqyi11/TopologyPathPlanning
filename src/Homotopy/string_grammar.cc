@@ -1,6 +1,7 @@
 #include <fstream>
 #include <list>
 #include <vector>
+#include <queue>
 #include <boost/graph/graphviz.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/iteration_macros.hpp>
@@ -140,7 +141,9 @@ bool StringGrammar::add_transition( std::string from_name, std::string to_name, 
   p_transition = new Transition( p_from_state, p_to_state, name );
   _transitions.push_back( p_transition );
   p_from_state->m_transitions.push_back( p_transition );
+  p_from_state->m_adjacencies.push_back( p_to_state );
   p_to_state->m_transitions.push_back( p_transition );
+  p_to_state->m_adjacencies.push_back( p_from_state );
   return true;
 }
 
@@ -234,8 +237,8 @@ void StringGrammar::output( std::string filename ) {
   const unsigned int edge_num = _transitions.size();
   const unsigned int vertex_num = _states.size();
 
-  std::cout << "STRING_GRAMMR::EDGE_NUM::" << edge_num << std::endl;
-  std::cout << "STRING_GRAMMR::VERTEX_NUM::" << vertex_num << std::endl;
+  //std::cout << "STRING_GRAMMR::EDGE_NUM::" << edge_num << std::endl;
+  //std::cout << "STRING_GRAMMR::VERTEX_NUM::" << vertex_num << std::endl;
   
   Graph g; 
   std::vector<vertex_t> vs;
@@ -244,7 +247,7 @@ void StringGrammar::output( std::string filename ) {
     g[vt].name = _states[i]->m_name;
     vs.push_back(vt);
   }
-  std::cout << "Finish VERTEX INIT " << vs.size() << std::endl;
+  //std::cout << "Finish VERTEX INIT " << vs.size() << std::endl;
   std::vector<edge_t> es;
   for( unsigned int i=0; i < edge_num; i ++) {
     bool b = false;
@@ -258,8 +261,63 @@ void StringGrammar::output( std::string filename ) {
     g[et].name = p_trans->m_name;
     es.push_back(et);
   }
-  std::cout << "Finish EDGE INIT " << es.size() << std::endl;
+  //std::cout << "Finish EDGE INIT " << es.size() << std::endl;
   std::ofstream dot( filename.c_str() );
   write_graphviz( dot, g , make_label_writer( get( &Vertex::name, g) ), make_label_writer( get( &Edge::name, g) ) );
-  std::cout << "WRITING " << filename << std::endl;
-} 
+  //std::cout << "WRITING " << filename << std::endl;
+}
+
+std::vector< std::vector< std::string > > StringGrammar::get_all_simple_strings() {
+  std::vector< std::vector< std::string > > simple_strings;
+
+
+  return simple_strings;
+}
+
+
+bool is_adjacency_node_not_in_current_path(std::string node, std::vector< std::string > path ) {
+  for(unsigned int i=0;i<path.size();i++) {
+    if(path[i]==node) { 
+      return false;
+    }
+  }
+  return true;
+}
+
+void print_path( std::vector<std::string> path ) {
+  for(unsigned int i=0;i<path.size();i++) {
+    std::cout << path[i].c_str() << " ";
+  }
+  std::cout << std::endl;
+}
+
+
+int StringGrammar::find_simple_paths(std::string source, std::string target, int total_node_num, int total_edge_num) {
+  std::vector<std::string> path;
+  path.push_back(source);
+
+  std::queue< std::vector<std::string> > q;
+  q.push(path);
+
+  while(!q.empty()) {
+    path  = q.front();
+    q.pop();
+
+    std::string last_node_of_path = path[path.size()-1];
+    if( last_node_of_path == target ) {
+      print_path(path);
+    }
+    State* p_state = find_state( last_node_of_path );
+    if( p_state ) {
+       for(unsigned int i=0; i<p_state->m_adjacencies.size(); i++) {
+         State* p_adj_state = p_state->m_adjacencies[i];
+         if(is_adjacency_node_not_in_current_path(p_adj_state->m_name, path)) {
+           std::vector<std::string> new_path( path.begin(), path.end() );
+           new_path.push_back( p_adj_state->m_name );
+           q.push(new_path);
+         }         
+       }
+    }
+  }
+  return 1;
+}

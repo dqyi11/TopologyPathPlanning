@@ -17,6 +17,7 @@ public:
 
     std::string              m_name;
     std::vector<Transition*> m_transitions;
+    std::vector<State*>      m_adjacencies;
 };
 
 class Transition {
@@ -50,11 +51,14 @@ public:
 
     bool is_valid_string( std::vector< std::string > str );
     bool is_valid_substring( std::vector< std::string > substr );
-   
+
+    std::vector< std::vector< std::string > > get_all_simple_strings();   
     void output( std::string filename ); 
     std::vector< std::string > get_non_repeating_form( std::vector< std::string > str );
     virtual bool is_equivalent( std::vector< std::string > str_a , std::vector< std::string > str_b );
 protected:
+    int find_simple_paths(std::string source, std::string target, int total_node_num, int total_edge_num);
+
     std::vector<Transition*> _transitions;
     std::vector<State*>      _states;
 
