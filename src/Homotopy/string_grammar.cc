@@ -267,10 +267,11 @@ void StringGrammar::output( std::string filename ) {
   //std::cout << "WRITING " << filename << std::endl;
 }
 
-std::vector< std::vector< std::string > > StringGrammar::get_all_simple_strings() {
+std::vector< std::vector< std::string > > StringGrammar::get_all_simple_strings( ) {
   std::vector< std::vector< std::string > > simple_strings;
-
-
+  if( _init_state && _goal_state ) { 
+    simple_strings = find_simple_paths( _init_state->m_name, _goal_state->m_name, _states.size(), _transitions.size() );
+  }
   return simple_strings;
 }
 
@@ -285,6 +286,7 @@ bool is_adjacency_node_not_in_current_path(std::string node, std::vector< std::s
 }
 
 void print_path( std::vector<std::string> path ) {
+  std::cout << "PATH:";
   for(unsigned int i=0;i<path.size();i++) {
     std::cout << path[i].c_str() << " ";
   }
@@ -292,7 +294,9 @@ void print_path( std::vector<std::string> path ) {
 }
 
 
-int StringGrammar::find_simple_paths(std::string source, std::string target, int total_node_num, int total_edge_num) {
+std::vector< std::vector< std::string > > StringGrammar::find_simple_paths(std::string source, std::string target, int total_node_num, int total_edge_num) {
+  
+  std::vector< std::vector< std::string > > paths;
   std::vector<std::string> path;
   path.push_back(source);
 
@@ -306,6 +310,7 @@ int StringGrammar::find_simple_paths(std::string source, std::string target, int
     std::string last_node_of_path = path[path.size()-1];
     if( last_node_of_path == target ) {
       print_path(path);
+      paths.push_back(path);
     }
     State* p_state = find_state( last_node_of_path );
     if( p_state ) {
@@ -319,5 +324,5 @@ int StringGrammar::find_simple_paths(std::string source, std::string target, int
        }
     }
   }
-  return 1;
+  return paths;
 }
