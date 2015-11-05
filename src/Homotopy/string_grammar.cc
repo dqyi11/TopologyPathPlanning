@@ -32,6 +32,7 @@ bool State::operator==(const State& other) const {
   return false;
 }
 
+/*
 Transition* State::find_transition( std::string trans_name ) {
   for( std::vector<Transition*>::iterator it = m_transitions.begin();
        it != m_transitions.end(); it++ ) {
@@ -41,6 +42,24 @@ Transition* State::find_transition( std::string trans_name ) {
     }
   }
   return NULL;
+}*/
+
+Adjacency State::find_adjacency( std::string trans_name ) {
+  Adjacency find_adj;
+  find_adj.mp_state = NULL;
+  find_adj.mp_transition = NULL;
+
+  for( std::vector<Adjacency>::iterator it = m_adjacencies.begin();
+       it != m_adjacencies.end(); it++ ) {
+    Adjacency ref_adjacency = (*it);
+    if ( ref_adjacency.mp_transition == NULL ) {
+      continue;
+    }
+    if ( ref_adjacency.mp_transition->m_name == trans_name ) {
+      return ref_adjacency;
+    }
+  }
+  return find_adj;  
 }
 
 Transition::Transition( State* p_from , State* p_to , std::string name ) {
@@ -140,12 +159,12 @@ bool StringGrammar::add_transition( std::string from_name, std::string to_name, 
 
   p_transition = new Transition( p_from_state, p_to_state, name );
   _transitions.push_back( p_transition );
-  p_from_state->m_transitions.push_back( p_transition );
+  //p_from_state->m_transitions.push_back( p_transition );
   Adjacency from_adjacency;
   from_adjacency.mp_transition = p_transition;
   from_adjacency.mp_state = p_to_state; 
   p_from_state->m_adjacencies.push_back( from_adjacency );
-  p_to_state->m_transitions.push_back( p_transition );
+  //p_to_state->m_transitions.push_back( p_transition );
   Adjacency to_adjacency;
   to_adjacency.mp_transition = p_transition;
   to_adjacency.mp_state = p_from_state; 
@@ -176,11 +195,11 @@ bool StringGrammar::is_valid_substring( std::vector< std::string > substr ) {
   for ( std::vector< std::string >::iterator it = substr.begin();
         it != substr.end(); it++ ) {
     std::string name = (*it);
-    Transition* p_trans = p_current_state->find_transition( name );
-    if ( p_trans == NULL ) {
+    Adjacency adj = p_current_state->find_adjacency( name );
+    if ( adj.mp_transition == NULL ) {
       return false;
     }
-    p_current_state = p_trans->mp_to_state;
+    p_current_state = adj.mp_state;
   }
   return true;
 }
@@ -190,15 +209,15 @@ bool StringGrammar::is_valid_string( std::vector< std::string > str ) {
   State* p_current_state = _init_state;
   for ( unsigned int i=0; i < str_num; i++ ) {
     std::string name = str[i];
-    Transition* p_trans = p_current_state->find_transition( name );
-    if ( p_trans == NULL ) {
+    Adjacency adj = p_current_state->find_adjacency( name );
+    if ( adj.mp_transition == NULL ) {
       return false;
     }
     if( i < str_num-1 ) {
-      p_current_state = p_trans->mp_to_state;
+      p_current_state = adj.mp_state;
     }
     else {
-      if ( p_trans->mp_to_state == _goal_state ) {
+      if ( adj.mp_state == _goal_state ) {
         return true;
       }
     }

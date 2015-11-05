@@ -19,10 +19,11 @@ public:
 
     bool operator==(const State& other) const;
 
-    Transition* find_transition( std::string trans_name );
+    //Transition* find_transition( std::string trans_name );
+    Adjacency find_adjacency( std::string trans_name );
 
     std::string              m_name;
-    std::vector<Transition*> m_transitions;
+    // std::vector<Transition*> m_transitions;
     std::vector<Adjacency>   m_adjacencies;
 };
 
