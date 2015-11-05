@@ -5,6 +5,12 @@
 #include <string>
 
 class Transition;
+class State;
+
+struct Adjacency{
+  Transition* mp_transition;
+  State*      mp_state; 
+};
 
 class State {
 public:
@@ -17,7 +23,7 @@ public:
 
     std::string              m_name;
     std::vector<Transition*> m_transitions;
-    std::vector<State*>      m_adjacencies;
+    std::vector<Adjacency>   m_adjacencies;
 };
 
 class Transition {

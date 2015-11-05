@@ -131,12 +131,13 @@ StringGrammar* ReferenceFrameSet::get_string_grammar( SubRegion* p_init, SubRegi
             std::string region_a_name = p_region_a->get_name();
             std::string region_b_name = p_region_b->get_name();
             p_grammar->add_transition( region_a_name, region_b_name, trans_name);
-            p_grammar->set_init( p_init->get_name() );
-            p_grammar->set_goal( p_goal->get_name() );
           }
         }
       }
     }
+    
+    p_grammar->set_init( p_init->get_name() );
+    p_grammar->set_goal( p_goal->get_name() );
   }
   return p_grammar;
 }
@@ -168,12 +169,12 @@ HomotopicGrammar* ReferenceFrameSet::get_homotopic_grammar( SubRegion* p_init, S
               region_b_name = p_region_b->get_name();
             }
             p_grammar->add_transition( region_a_name, region_b_name, trans_name);
-            p_grammar->set_init( p_init->get_name() );
-            p_grammar->set_goal( p_goal->get_name() );
           }
         }
       }
     }
+    p_grammar->set_init( p_init->get_name() );
+    p_grammar->set_goal( p_goal->get_name() );
   }
   return p_grammar;
 }

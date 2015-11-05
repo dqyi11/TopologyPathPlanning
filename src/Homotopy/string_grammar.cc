@@ -141,9 +141,15 @@ bool StringGrammar::add_transition( std::string from_name, std::string to_name, 
   p_transition = new Transition( p_from_state, p_to_state, name );
   _transitions.push_back( p_transition );
   p_from_state->m_transitions.push_back( p_transition );
-  p_from_state->m_adjacencies.push_back( p_to_state );
+  Adjacency from_adjacency;
+  from_adjacency.mp_transition = p_transition;
+  from_adjacency.mp_state = p_to_state; 
+  p_from_state->m_adjacencies.push_back( from_adjacency );
   p_to_state->m_transitions.push_back( p_transition );
-  p_to_state->m_adjacencies.push_back( p_from_state );
+  Adjacency to_adjacency;
+  to_adjacency.mp_transition = p_transition;
+  to_adjacency.mp_state = p_from_state; 
+  p_to_state->m_adjacencies.push_back( to_adjacency );
   return true;
 }
 
@@ -276,19 +282,26 @@ std::vector< std::vector< std::string > > StringGrammar::get_all_simple_strings(
 }
 
 
-bool is_adjacency_node_not_in_current_path(std::string node, std::vector< std::string > path ) {
+bool is_adjacency_node_not_in_current_path(Adjacency node, std::vector< Adjacency > path ) {
   for(unsigned int i=0;i<path.size();i++) {
-    if(path[i]==node) { 
+    /*
+    if( path[i].mp_transition == NULL) {
+      continue;
+    }
+    if(path[i].mp_transition->m_name == node.mp_transition->m_name) { 
+      return false;
+    }*/
+    if(path[i].mp_state->m_name == node.mp_state->m_name) { 
       return false;
     }
   }
   return true;
 }
 
-void print_path( std::vector<std::string> path ) {
+void print_path( std::vector< Adjacency > path ) {
   std::cout << "PATH:";
   for(unsigned int i=0;i<path.size();i++) {
-    std::cout << path[i].c_str() << " ";
+    std::cout << path[i].mp_state->m_name.c_str() << " ";
   }
   std::cout << std::endl;
 }
@@ -296,33 +309,48 @@ void print_path( std::vector<std::string> path ) {
 
 std::vector< std::vector< std::string > > StringGrammar::find_simple_paths(std::string source, std::string target, int total_node_num, int total_edge_num) {
   
-  std::vector< std::vector< std::string > > paths;
-  std::vector<std::string> path;
-  path.push_back(source);
+  std::vector< std::vector< std::string > > ids_list;
+  std::vector< std::vector< Adjacency > > path_list;
+  std::vector< Adjacency > path;
+  Adjacency init_adj;
+  init_adj.mp_state = find_state( source );
+  init_adj.mp_transition = NULL;  
+  path.push_back(init_adj);
 
-  std::queue< std::vector<std::string> > q;
+  std::queue< std::vector< Adjacency > > q;
   q.push(path);
 
   while(!q.empty()) {
-    path  = q.front();
+    path = q.front();
     q.pop();
 
-    std::string last_node_of_path = path[path.size()-1];
-    if( last_node_of_path == target ) {
+    Adjacency last_node_of_path = path[path.size()-1];
+    if( last_node_of_path.mp_state->m_name == target ) {
       print_path(path);
-      paths.push_back(path);
+      path_list.push_back(path);
     }
-    State* p_state = find_state( last_node_of_path );
+    State* p_state = last_node_of_path.mp_state;
     if( p_state ) {
        for(unsigned int i=0; i<p_state->m_adjacencies.size(); i++) {
-         State* p_adj_state = p_state->m_adjacencies[i];
-         if(is_adjacency_node_not_in_current_path(p_adj_state->m_name, path)) {
-           std::vector<std::string> new_path( path.begin(), path.end() );
-           new_path.push_back( p_adj_state->m_name );
+         Adjacency adj = p_state->m_adjacencies[i];
+         if(is_adjacency_node_not_in_current_path(adj, path)) {
+           std::vector<Adjacency> new_path( path.begin(), path.end() );
+           new_path.push_back( adj );
            q.push(new_path);
          }         
        }
     }
   }
-  return paths;
+  for( unsigned int i=0;i<path_list.size(); i++) {
+    std::vector< std::string > ids;
+    std::vector< Adjacency > p = path_list[i];
+    for( unsigned int j=0;j<p.size();j++) {
+      Transition* p_transition = p[j].mp_transition;
+      if( p_transition ) {
+        ids.push_back( p_transition->m_name );
+      }
+    }
+    ids_list.push_back( ids );
+  }
+  return ids_list;
 }

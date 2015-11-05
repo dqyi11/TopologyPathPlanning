@@ -459,6 +459,12 @@ void HARRTstarWindow::onExportAllSimpleStrings() {
                 for( int i=0; i < ids.size(); i ++) {
                    out << ids[i].c_str() << " ";
                 }
+                if( p_grammar->is_valid_string( ids )) {
+                  out << "VALID";
+                }
+                else{
+                  out << "INVALID";
+                }
                 out << "\n";
             }
         }
