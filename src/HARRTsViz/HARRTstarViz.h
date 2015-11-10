@@ -7,20 +7,22 @@
 #include "path_planning_info.h"
 #include "reference_frames.h"
 
-typedef enum{
+namespace harrts {
+
+  typedef enum{
     NONE_TREE_SHOW,
     START_TREE_SHOW,
     GOAL_TREE_SHOW,
     BOTH_TREES_SHOW
-} tree_show_type_t;
+  } tree_show_type_t;
 
-class HARRTstarViz : public QLabel
-{
+  class HARRTstarViz : public QLabel
+  {
     Q_OBJECT
-public:
+  public:
     explicit HARRTstarViz(QWidget *parent = 0);
     void setTree(HARRTstar* p_tree);
-    void setReferenceFrameSet(ReferenceFrameSet* p_rf);
+    void setReferenceFrameSet(homotopy::ReferenceFrameSet* p_rf);
     bool drawPath(QString filename);
     bool saveCurrentViz(QString filename);
 
@@ -33,9 +35,9 @@ public:
     bool show_regions() { return m_show_regions; }
     bool is_finished_planning() { return m_finished_planning; }
  
-    ReferenceFrame* get_selected_reference_frame();
-    SubRegionSet*   get_selected_subregion_set();
-    SubRegion*      get_selected_subregion();
+    homotopy::ReferenceFrame* get_selected_reference_frame();
+    homotopy::SubRegionSet*   get_selected_subregion_set();
+    homotopy::SubRegion*      get_selected_subregion();
 
     void prev_region();
     void next_region();
@@ -53,7 +55,7 @@ public:
 
     tree_show_type_t get_tree_show_type() { return m_tree_show_type; }
     void switch_tree_show_type();
-    void import_string_constraint( std::vector< QPoint > points, grammar_type_t type );
+    void import_string_constraint( std::vector< QPoint > points, homotopy::grammar_type_t type );
 
     PathPlanningInfo m_PPInfo;
     
@@ -62,11 +64,11 @@ public:
     bool get_show_drawed_points() { return m_show_points; }
 
     int get_found_path_index() { return m_found_path_index; }
-signals:
+  signals:
     
-public slots:
+  public slots:
 
-protected:
+  protected:
     void mousePressEvent( QMouseEvent * event );
     void mouseMoveEvent( QMouseEvent * event );
     void mouseReleaseEvent( QMouseEvent * event );
@@ -75,13 +77,13 @@ protected:
     bool                 m_dragging;
     bool                 m_show_points;
 
-private:
+  private:
     void drawPathOnMap(QPixmap& map);
     void drawCurrentViz(QPixmap& map);
 
     void paint(QPaintDevice * device);
     HARRTstar*          mp_tree;
-    ReferenceFrameSet*  mp_reference_frames;
+    homotopy::ReferenceFrameSet*  mp_reference_frames;
     bool                m_show_reference_frames;
     bool                m_show_regions;
     bool                m_finished_planning;
@@ -92,8 +94,10 @@ private:
     std::vector<QColor> m_colors;
     tree_show_type_t    m_tree_show_type;
 
-private slots:
+  private slots:
     void paintEvent(QPaintEvent * e);
-};
+  };
+
+}
 
 #endif // HARRTSTAR_VIZ_H_

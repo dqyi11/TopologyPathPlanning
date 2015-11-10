@@ -2,6 +2,8 @@
 #include <QApplication>
 #include "HARRTstarWindow.h"
 
+using namespace harrts;
+
 int main(int argc, char *argv[]) {
     bool no_gui = false;
     QString filename;

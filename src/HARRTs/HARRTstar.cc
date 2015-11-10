@@ -6,6 +6,9 @@
 
 #define OBSTACLE_THRESHOLD 200
 
+using namespace harrts;
+using namespace homotopy;
+
 RRTNode::RRTNode(POS2D pos) {
   m_pos = pos;
   m_cost = 0.0;

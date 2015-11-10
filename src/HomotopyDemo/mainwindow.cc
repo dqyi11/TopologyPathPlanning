@@ -5,6 +5,8 @@
 #include <QKeyEvent>
 #include <QStatusBar>
 
+using namespace homotopy;
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent) {
     mpViz = new HomotopyViz();

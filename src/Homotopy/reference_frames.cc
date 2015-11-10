@@ -3,6 +3,8 @@
 
 #define MERGED_CENTER_SUBREGION "SC"
 
+using namespace homotopy;
+
 ReferenceFrame::ReferenceFrame() {
   m_name = "";
   m_connect_to_cp = false;

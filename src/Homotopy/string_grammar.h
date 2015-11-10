@@ -4,16 +4,18 @@
 #include <vector>
 #include <string>
 
-class Transition;
-class State;
+namespace homotopy {
 
-struct Adjacency{
-  Transition* mp_transition;
-  State*      mp_state; 
-};
+  class Transition;
+  class State;
 
-class State {
-public:
+  struct Adjacency{
+    Transition* mp_transition;
+    State*      mp_state; 
+  };
+
+  class State {
+  public:
     State( std::string name );
     virtual ~State();
 
@@ -25,10 +27,10 @@ public:
     std::string              m_name;
     // std::vector<Transition*> m_transitions;
     std::vector<Adjacency>   m_adjacencies;
-};
+  };
 
-class Transition {
-public:
+  class Transition {
+  public:
     Transition( State* p_from , State* p_to , std::string name );
     virtual ~Transition();
 
@@ -37,10 +39,10 @@ public:
     std::string m_name;
     State*      mp_from_state;
     State*      mp_to_state;
-};
+  };
 
-class StringGrammar {
-public:    
+  class StringGrammar {
+  public:    
     StringGrammar();
     virtual ~StringGrammar();
 
@@ -71,6 +73,7 @@ protected:
 
     State*                   _init_state;
     State*                   _goal_state;
-};
+  };
+}
 
 #endif // STRING_GRAMMAR_H

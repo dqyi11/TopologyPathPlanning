@@ -9,18 +9,19 @@
 #include <QLineEdit>
 #include <QComboBox>
 
-class HARRTstarWindow;
+namespace harrts {
 
-class HARRTstarConfig : public QDialog {
+  class HARRTstarWindow;
+
+  class HARRTstarConfig : public QDialog {
     Q_OBJECT
-public:
+  public:
     HARRTstarConfig(HARRTstarWindow * parent);
 
     void updateConfiguration();
     void updateDisplay();
 
-private:
-
+  private:
     QPushButton * mpBtnOK;
     QPushButton * mpBtnCancel;
 
@@ -46,12 +47,13 @@ private:
 
     bool isCompatible(QString fitnessFile);
 
-public slots:
+  public slots:
     void checkBoxStateChanged(int state);
     void onBtnOKClicked();
     void onBtnCancelClicked();
     void onBtnAddClicked();
+  };
 
-};
+}
 
 #endif // HARRTCONFIG_H

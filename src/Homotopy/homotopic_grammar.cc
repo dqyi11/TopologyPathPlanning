@@ -1,5 +1,7 @@
 #include "homotopic_grammar.h"
 
+using namespace homotopy;
+
 HomotopicGrammar::HomotopicGrammar() : StringGrammar() {
 
 }

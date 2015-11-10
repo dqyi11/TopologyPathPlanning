@@ -13,6 +13,9 @@
 #define DRAWING_LINE_COLOR      QColor(153,76,0)
 #define LINE_WIDTH              2
 
+using namespace homotopy;
+using namespace harrts;
+
 HARRTstarViz::HARRTstarViz( QWidget *parent ) :
     QLabel(parent) {
     mp_tree = NULL;

@@ -1,6 +1,9 @@
 #include "string_class_mgr.h"
 #include "HARRTstar.h"
 
+using namespace homotopy;
+using namespace harrts;
+
 StringClass::StringClass( std::vector< std::string > string ) {
   m_string = string;
   m_cost = 0.0;

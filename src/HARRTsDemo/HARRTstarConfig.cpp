@@ -11,6 +11,9 @@
 #define GOAL_TREE_RUN_STR     "Run goal tree"
 #define BOTH_TREES_RUN_STR    "Run both trees"
 
+using namespace homotopy;
+using namespace harrts;
+
 HARRTstarConfig::HARRTstarConfig(HARRTstarWindow * parent) {
     mpParentWindow = parent;
 

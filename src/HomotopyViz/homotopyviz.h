@@ -6,9 +6,11 @@
 #include "worldmap.h"
 #include "reference_frames.h"
 
-class HomotopyViz : public QLabel {
+namespace homotopy {
+
+  class HomotopyViz : public QLabel {
     Q_OBJECT
-public:
+  public:
     explicit HomotopyViz( QWidget *parent = 0 );
     bool loadMap( QString filename );
 
@@ -30,7 +32,8 @@ public:
     bool load( QString filename );
     
     QString generate_string();
-protected:
+
+  protected:
     void mousePressEvent( QMouseEvent * event );
     void mouseMoveEvent( QMouseEvent * event );
     void mouseReleaseEvent( QMouseEvent * event );
@@ -46,12 +49,13 @@ protected:
 
     int                  mRegionIdx;
     int                  mSubRegionIdx;
-signals:
+  signals:
 
-public slots:
+  public slots:
 
-private slots:
+  private slots:
     void paintEvent(QPaintEvent * e);
-};
+  };
 
+}
 #endif // HOMOTOPYVIZ_H

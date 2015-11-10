@@ -10,23 +10,24 @@
 #include <QMessageBox>
 #include "homotopyviz.h"
 
+namespace homotopy {
 
-class MainWindow : public QMainWindow {
+  class MainWindow : public QMainWindow {
     Q_OBJECT
     
-public:
+  public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
     HomotopyViz * mpViz;
 
-protected:
+  protected:
     void createMenuBar();
     void createActions();
     void updateStatusBar();
 
     void keyPressEvent(QKeyEvent * e);
-private:
+  private:
     QMessageBox*  mpMsgBox;
     QMenu*        mpFileMenu;
     QAction*      mpOpenAction;
@@ -34,10 +35,12 @@ private:
     QAction*      mpLoadAction;
     QLabel*       mpStatusLabel;
 
-private slots:
+  private slots:
     void onOpen();
     void onSave();
     void onLoad();
-};
+  };
+
+}
 
 #endif // MAINWINDOW_H

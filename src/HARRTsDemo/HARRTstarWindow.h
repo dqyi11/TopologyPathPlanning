@@ -10,12 +10,14 @@
 #include "HARRTstarViz.h"
 #include "reference_frames.h"
 
-class HARRTstarConfig;
+namespace harrts {
 
-class HARRTstarWindow : public QMainWindow {
+  class HARRTstarConfig;
+
+  class HARRTstarWindow : public QMainWindow {
     Q_OBJECT
     
-public:
+  public:
     HARRTstarWindow(QWidget *parent = 0);
     ~HARRTstarWindow();
 
@@ -26,13 +28,13 @@ public:
 
     void keyPressEvent(QKeyEvent * e);
 
-protected:
+  protected:
     void createMenuBar();
     void createActions();
     bool openMap(QString filename);
     void updateStatus();
 
-private:
+  private:
     void updateTitle();
 
 
@@ -63,9 +65,9 @@ private:
 
     HARRTstarConfig*   mpHARRTstarConfig;
     HARRTstar*         mpHARRTstar;
-    ReferenceFrameSet* mpReferenceFrameSet;
+    homotopy::ReferenceFrameSet* mpReferenceFrameSet;
 
-private slots:
+  private slots:
     void contextMenuRequested(QPoint point);
     void onOpen();
     void onSave();
@@ -78,6 +80,8 @@ private slots:
     void onSaveScreen();
     void onExportGrammar();
     void onExportAllSimpleStrings();
-};
+  };
+
+}
 
 #endif // HARRT_MAINWINDOW_H

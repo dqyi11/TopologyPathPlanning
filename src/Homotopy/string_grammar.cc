@@ -8,6 +8,7 @@
 #include "string_grammar.h"
 
 using namespace boost;
+using namespace homotopy;
 
 struct Vertex{ std::string name; };
 struct Edge{ std::string name; double weight; };

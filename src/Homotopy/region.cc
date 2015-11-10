@@ -1,6 +1,8 @@
 #include "cgal_util.h"
 #include "region.h"
 
+using namespace homotopy;
+
 SubRegion::SubRegion( Polygon2D poly , SubRegionSet* p_parent ) {
 
   m_points.clear();

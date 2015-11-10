@@ -4,10 +4,15 @@
 #include "obstacle.h"
 #include "worldmap.h"
 
-std::ostream& operator<<( std::ostream& out, const IntersectionPoint& other ) {
-  out << "P[" << other.m_point.x() << "," << other.m_point.y() << "]";
-  out << "  (" << other.m_dist_to_bk << ")" << std::endl;
-  return out;
+using namespace homotopy;
+
+namespace homotopy {
+
+  std::ostream& operator<<( std::ostream& out, const IntersectionPoint& other ) {
+    out << "P[" << other.m_point.x() << "," << other.m_point.y() << "]";
+    out << "  (" << other.m_dist_to_bk << ")" << std::endl;
+    return out;
+  }
 }
 
 LineSubSegment::LineSubSegment( Point2D pos_a, Point2D pos_b, LineSubSegmentSet* p_subseg_set, unsigned int index, bool is_connected_to_central_point ) {
@@ -69,10 +74,12 @@ void LineSubSegment::from_xml( xmlNodePtr root ) {
 
 }
 
-std::ostream& operator<<( std::ostream& out, const LineSubSegment& other ) {
-  out << "LineSubSegment [" << other.m_subseg.source().x() << "," << other.m_subseg.source().y() <<"] ==> ";
-  out << "[" << other.m_subseg.target().x() <<"," << other.m_subseg.target().y() << "]" << std::endl;
-  return out;
+namespace homotopy {
+  std::ostream& operator<<( std::ostream& out, const LineSubSegment& other ) {
+    out << "LineSubSegment [" << other.m_subseg.source().x() << "," << other.m_subseg.source().y() <<"] ==> ";
+    out << "[" << other.m_subseg.target().x() <<"," << other.m_subseg.target().y() << "]" << std::endl;
+    return out;
+  }
 }
 
 LineSubSegmentSet::LineSubSegmentSet( Point2D pos_a, Point2D pos_b, unsigned int type, Obstacle* p_obstacle ) {
@@ -267,10 +274,14 @@ void LineSubSegmentSet::from_xml( xmlNodePtr root ) {
 
 }
 
-std::ostream& operator<<( std::ostream& out, const LineSubSegmentSet& other ) {
-  for( unsigned int i =0; i < other.m_subsegs.size(); i++ ) {
-    LineSubSegment* seg = other.m_subsegs[i];
-    out << (*seg) << std::endl;
+namespace homotopy {
+
+  std::ostream& operator<<( std::ostream& out, const LineSubSegmentSet& other ) {
+    for( unsigned int i =0; i < other.m_subsegs.size(); i++ ) {
+      LineSubSegment* seg = other.m_subsegs[i];
+      out << (*seg) << std::endl;
+    }
+    return out;
   }
-  return out;
+
 }

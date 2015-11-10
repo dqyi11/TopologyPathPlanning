@@ -1,13 +1,14 @@
 #ifndef WORLDMAP_H
 #define WORLDMAP_H
 
-
 #include <libxml/tree.h>
 #include "obstacle.h"
 #include "region.h"
 
-class WorldMap {
-public:
+namespace homotopy {
+
+  class WorldMap {
+  public:
     WorldMap();
     WorldMap( int width, int height );
     virtual ~WorldMap();
@@ -40,7 +41,7 @@ public:
     double get_distance_to_central_point( Point2D point );
 
     SubRegion * in_subregion( Point2D point );
-protected:
+  protected:
     bool _init_points();
     bool _init_rays();
     bool _init_segments();
@@ -50,7 +51,7 @@ protected:
     std::vector<SubRegion*>  _get_subregions( SubRegionSet* p_region );
     bool                     _is_intersected( Polygon2D poly, Segment2D seg, double delta );
 
-private:
+  private:
     int _map_width;
     int _map_height;
 
@@ -71,8 +72,10 @@ private:
     Segment2D              _x_max_line;
     Segment2D              _y_min_line;
     Segment2D              _y_max_line;
-};
+  };
 
-std::ostream& operator<<( std::ostream& out, const WorldMap& other );
+  std::ostream& operator<<( std::ostream& out, const WorldMap& other );
+
+}
 
 #endif // WORLDMAP_H

@@ -5,26 +5,28 @@
 #include <libxml/tree.h>
 #include "world_datatype.h"
 
-class Obstacle;
-class LineSubSegmentSet;
-class SubRegionSet;
-class SubRegion;
+namespace homotopy {
 
-class IntersectionPoint {
-public:
+  class Obstacle;
+  class LineSubSegmentSet;
+  class SubRegionSet;
+  class SubRegion;
+
+  class IntersectionPoint {
+  public:
     Point2D m_point;
     double  m_dist_to_bk;
 
     bool operator<(const  IntersectionPoint& other) const {
         return ( m_dist_to_bk < other.m_dist_to_bk );
     }
-};
+  };
 
-std::ostream& operator<<( std::ostream& out, const IntersectionPoint& other );
+  std::ostream& operator<<( std::ostream& out, const IntersectionPoint& other );
 
-class LineSubSegment {
+  class LineSubSegment {
 
-public:
+  public:
     LineSubSegment( Point2D pos_a, Point2D pos_b, LineSubSegmentSet* p_subseg_set, unsigned int index, bool is_connected_to_central_point = false );
     virtual ~LineSubSegment();
 
@@ -40,23 +42,23 @@ public:
     LineSubSegmentSet* _p_subseg_set;
     bool m_is_connected_to_central_point;
     std::vector< SubRegion* > m_neighbors;
-protected:
+  protected:
     unsigned int _index;
 
-};
+  };
 
-std::ostream& operator<<( std::ostream& out, const LineSubSegment& other );
+  std::ostream& operator<<( std::ostream& out, const LineSubSegment& other );
 
-typedef enum {
+  typedef enum {
     LINE_TYPE_UNKNOWN,
     LINE_TYPE_ALPHA,
     LINE_TYPE_BETA,
     NUM_LINE_TYPE
-} line_subsegment_set_type_t;
+  } line_subsegment_set_type_t;
 
-class LineSubSegmentSet {
+  class LineSubSegmentSet {
 
-public:
+  public:
     LineSubSegmentSet( Point2D pos_a, Point2D pos_b, unsigned int type, Obstacle* p_obstacle );
     virtual ~LineSubSegmentSet();
 
@@ -84,10 +86,12 @@ public:
     unsigned int m_type;
     std::vector< LineSubSegment* > m_subsegs;
     std::vector< SubRegionSet* >   m_neighbors;
-protected:
+  protected:
     Obstacle*    _p_obstacle;
-};
+  };
 
-std::ostream& operator<<( std::ostream& out, const LineSubSegmentSet& other );
+  std::ostream& operator<<( std::ostream& out, const LineSubSegmentSet& other );
+
+}
 
 #endif // LINE_SUBSEGMENT_H

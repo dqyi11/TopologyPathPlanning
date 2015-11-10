@@ -8,6 +8,8 @@
 
 #define DELTA_TRIAL 2.0
 
+using namespace homotopy;
+
 bool Segment2DSort(const Segment2D& lhs, const Segment2D& rhs) {
   return lhs.direction() < rhs.direction();
 }

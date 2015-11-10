@@ -5,10 +5,12 @@
 #include "world_datatype.h"
 #include "line_subsegment.h"
 
-class SubRegionSet;
+namespace homotopy {
 
-class SubRegion {
-public:
+  class SubRegionSet;
+
+  class SubRegion {
+  public:
     SubRegion( Polygon2D poly , SubRegionSet* p_parent );
     virtual ~SubRegion();
     
@@ -23,12 +25,12 @@ public:
     unsigned int                 m_index;
     std::vector<LineSubSegment*> m_neighbors;
     bool                         m_is_connected_to_central_point;
-protected:
+  protected:
     SubRegionSet*                mp_parent;
-};
+  };
 
-class SubRegionSet {
-public:
+  class SubRegionSet {
+  public:
     SubRegionSet(std::list<Point2D> points, unsigned int idx);
     virtual ~SubRegionSet();
 
@@ -42,6 +44,8 @@ public:
 
     LineSubSegmentSet* mp_line_segments_a;
     LineSubSegmentSet* mp_line_segments_b;
-};
+  };
+
+}
 
 #endif // REGION_H

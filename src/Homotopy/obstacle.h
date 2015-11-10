@@ -6,12 +6,13 @@
 #include "world_datatype.h"
 #include "line_subsegment.h"
 
-class WorldMap;
+namespace homotopy {
 
-class Obstacle {
+  class WorldMap;
 
-public:
+  class Obstacle {
 
+  public:
     Obstacle(std::vector<Point2D> points, int index, WorldMap* world);
     virtual ~Obstacle();
 
@@ -39,8 +40,8 @@ public:
 
     double m_dist_bk2cp;
     int get_index () { return _index; }
-protected:
 
+  protected:
     int _index;
     int _min_x;
     int _min_y;
@@ -49,8 +50,10 @@ protected:
     Point2D _centroid;
     WorldMap* _p_world;
 
-};
+  };
 
-std::ostream& operator<<( std::ostream& out, const Obstacle& other );
+  std::ostream& operator<<( std::ostream& out, const Obstacle& other );
+
+}
 
 #endif // OBSTACLE_H

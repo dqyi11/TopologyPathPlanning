@@ -9,6 +9,9 @@
 #include "HARRTstarWindow.h"
 #include "img_load_util.h"
 
+using namespace homotopy;
+using namespace harrts;
+
 HARRTstarWindow::HARRTstarWindow(QWidget *parent)
     : QMainWindow(parent) {
     mpViz = new HARRTstarViz();

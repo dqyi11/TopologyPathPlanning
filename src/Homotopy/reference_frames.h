@@ -6,26 +6,28 @@
 #include "string_grammar.h"
 #include "homotopic_grammar.h"
 
-static std::string CENTER_POINT_ID_CHARACTER = "C";
+namespace homotopy {
 
-typedef enum {
+  static std::string CENTER_POINT_ID_CHARACTER = "C";
+
+  typedef enum {
     STRING_GRAMMAR_TYPE,
     HOMOTOPIC_GRAMMAR_TYPE
-} grammar_type_t;
+  } grammar_type_t;
 
-class ReferenceFrame {
-public:
-  ReferenceFrame();
-  virtual ~ReferenceFrame();
+  class ReferenceFrame {
+  public:
+    ReferenceFrame();
+    virtual ~ReferenceFrame();
  
-  std::string m_name; 
-  Segment2D   m_segment;
-  bool        m_connect_to_cp;
-};
+    std::string m_name; 
+    Segment2D   m_segment;
+    bool        m_connect_to_cp;
+  };
 
-class ReferenceFrameSet {
+  class ReferenceFrameSet {
 
-public:
+  public:
     ReferenceFrameSet();
     virtual ~ReferenceFrameSet();
 
@@ -46,7 +48,7 @@ public:
     bool is_constained_substring( std::vector< std::string > sub_str, bool reverse );
     std::vector< std::vector< std::string > >& get_string_constraint() { return _string_constraint; }
 
-protected:
+  protected:
     StringGrammar* get_string_grammar( SubRegion* p_init, SubRegion* p_goal );
     HomotopicGrammar* get_homotopic_grammar( SubRegion* p_init, SubRegion* p_goal );
   bool is_eligible_substring( std::vector< std::string > substring, std::vector< std::string > ref_str, bool reverse );
@@ -54,6 +56,8 @@ protected:
     WorldMap*                                 _p_world_map;
     std::vector<ReferenceFrame*>              _reference_frames;
     std::vector< std::vector< std::string > > _string_constraint; 
-};
+  };
+
+}
 
 #endif // REFERENCE_FRAMES_H

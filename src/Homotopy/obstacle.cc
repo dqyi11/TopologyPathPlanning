@@ -4,6 +4,8 @@
 #include "obstacle.h"
 #include "worldmap.h"
 
+using namespace homotopy;
+
 Obstacle::Obstacle(std::vector<Point2D> points, int index, WorldMap* world ){
     _index = index;
     _p_world = world;
@@ -123,8 +125,12 @@ void Obstacle::from_xml( xmlNodePtr root ) {
 
 }
 
-std::ostream& operator<<( std::ostream& out, const Obstacle& other ) {
+namespace homotopy {
+
+  std::ostream& operator<<( std::ostream& out, const Obstacle& other ) {
     out << "bk[" << other.m_bk.x() << "," << other.m_bk.y() << "]";
     out << "    (" << other.m_dist_bk2cp << ")";
     return out;
+  }
+
 }

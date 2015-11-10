@@ -17,6 +17,7 @@
 #define LINE_HIGHLIGHTED_COLOR QColor(204,204,0)
 #define DRAWING_LINE_COLOR     QColor(153,76,0)
 
+using namespace homotopy;
 
 HomotopyViz::HomotopyViz(QWidget *parent) :
     QLabel(parent) {

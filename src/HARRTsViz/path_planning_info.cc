@@ -6,6 +6,9 @@
 
 #include "path_planning_info.h"
 
+using namespace homotopy;
+using namespace harrts;
+
 PathPlanningInfo::PathPlanningInfo() {
     m_info_filename = "";
     m_map_filename = "";
