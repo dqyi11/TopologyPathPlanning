@@ -4,6 +4,9 @@ set(LIB harrtstar)
 set(HDR HARRTstar.h
         string_class_mgr.h
         KDTree2D.h
+        )
+
+set(KD_HDR 
         kdtree++/allocator.hpp
         kdtree++/function.hpp
         kdtree++/iterator.hpp
@@ -23,6 +26,7 @@ target_link_libraries(${LIB}
                       ${BOOST_LIBRARIES}
                      ) 
 install(FILES ${HDR} DESTINATION include/)
+install(FILES ${KD_HDR} DESTINATION include/kdtree++/)
 
 install(TARGETS ${LIB}
         LIBRARY
