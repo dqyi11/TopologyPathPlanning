@@ -7,7 +7,10 @@ set(HDR obstacle.h
          string_grammar.h
          homotopic_grammar.h
          reference_frames.h
-         worldmap.h)
+         worldmap.h
+         cgal_util.h
+         world_datatype.h
+         )
 
 add_library(${LIB} SHARED
             obstacle.cc
@@ -17,8 +20,7 @@ add_library(${LIB} SHARED
             homotopic_grammar.cc
             reference_frames.cc
             worldmap.cc
-            cgal_util.h
-            world_datatype.h)
+           )
 
 target_link_libraries(${LIB}
                       ${CGAL_LIBRARIES}
