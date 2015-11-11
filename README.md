@@ -1,1 +1,1 @@
-# HARRT stands for Homotopy-aware RRT*
+# HARRT stands for Homotopy-Aware RRT*
