@@ -9,7 +9,7 @@
 using namespace harrts;
 using namespace homotopy;
 
-RRTNode::RRTNode(POS2D pos) {
+BIRRTNode::BIRRTNode(POS2D pos) {
   m_pos = pos;
   m_cost = 0.0;
   mp_parent = NULL;
@@ -17,15 +17,15 @@ RRTNode::RRTNode(POS2D pos) {
   m_substring.clear();
 }
 
-bool RRTNode::operator==(const RRTNode &other) {
+bool BIRRTNode::operator==(const BIRRTNode &other) {
   return m_pos==other.m_pos;
 }
 
-void RRTNode::clear_string() {
+void BIRRTNode::clear_string() {
   m_substring.clear();
 }
 
-void RRTNode::append_to_string( std::vector< std::string > ids ) {
+void BIRRTNode::append_to_string( std::vector< std::string > ids ) {
   for( unsigned int i = 0; i < ids.size(); i ++ ) {
     std::string id = ids[i];
     m_substring.push_back( id );
@@ -180,16 +180,16 @@ bool BIRRTstar::init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp
 
   std::cout << "Init st_tree.." << std::endl;
   KDNode2D st_root( start );
-  _p_st_root = new RRTNode( start );
+  _p_st_root = new BIRRTNode( start );
   _st_nodes.push_back(_p_st_root);
-  st_root.setRRTNode(_p_st_root);
+  st_root.setBIRRTNode(_p_st_root);
   _p_st_kd_tree->insert( st_root );
   
   std::cout << "Init gt_tree.." << std::endl;
   KDNode2D gt_root( goal );
-  _p_gt_root = new RRTNode( goal );
+  _p_gt_root = new BIRRTNode( goal );
   _gt_nodes.push_back(_p_gt_root);
-  gt_root.setRRTNode(_p_gt_root);
+  gt_root.setBIRRTNode(_p_gt_root);
   _p_gt_kd_tree->insert( gt_root );
 
   _current_iteration = 0;
@@ -304,8 +304,8 @@ bool BIRRTstar::_is_obstacle_free( POS2D pos_a, POS2D pos_b ) {
 }
 
 void BIRRTstar::extend() {
-  RRTNode* p_st_new_node = NULL;
-  RRTNode* p_gt_new_node = NULL;
+  BIRRTNode* p_st_new_node = NULL;
+  BIRRTNode* p_gt_new_node = NULL;
   Path* p_st_new_path = NULL;
   Path* p_gt_new_path = NULL;
   if( _run_type != RUN_GOAL_TREE_TYPE ) {
@@ -335,7 +335,7 @@ void BIRRTstar::extend() {
   _current_iteration++;
 }
 
-RRTNode* BIRRTstar::_extend( RRTree_type_t tree_type ) {
+BIRRTNode* BIRRTstar::_extend( RRTree_type_t tree_type ) {
   bool node_inserted = false;
   while( false==node_inserted ) {
     POS2D rnd_pos = _sampling();
@@ -354,13 +354,13 @@ RRTNode* BIRRTstar::_extend( RRTree_type_t tree_type ) {
     }
 
     if( true == _is_obstacle_free( nearest_node, new_pos ) ) {
-      if( true == _is_homotopy_eligible( nearest_node.getRRTNode(), new_pos, tree_type) ) {
+      if( true == _is_homotopy_eligible( nearest_node.getBIRRTNode(), new_pos, tree_type) ) {
         std::list<KDNode2D> near_list = _find_near( new_pos, tree_type );
         KDNode2D new_node( new_pos );
 
         // create new node
-        RRTNode * p_new_rnode = _create_new_node( new_pos, tree_type );
-        new_node.setRRTNode( p_new_rnode );
+        BIRRTNode * p_new_rnode = _create_new_node( new_pos, tree_type );
+        new_node.setBIRRTNode( p_new_rnode );
         if (tree_type == START_TREE_TYPE) {
           _p_st_kd_tree->insert( new_node );
         }
@@ -369,13 +369,13 @@ RRTNode* BIRRTstar::_extend( RRTree_type_t tree_type ) {
         }
         node_inserted = true;
 
-        RRTNode* p_nearest_rnode = nearest_node.getRRTNode();
-        std::list<RRTNode*> near_rnodes;
+        BIRRTNode* p_nearest_rnode = nearest_node.getBIRRTNode();
+        std::list<BIRRTNode*> near_rnodes;
         near_rnodes.clear();
         for( std::list<KDNode2D>::iterator itr = near_list.begin();
              itr != near_list.end(); itr++ ) {
           KDNode2D kd_node = (*itr);
-          RRTNode* p_near_rnode = kd_node.getRRTNode();
+          BIRRTNode* p_near_rnode = kd_node.getBIRRTNode();
           near_rnodes.push_back( p_near_rnode );
         }
         // attach new node to reference trees
@@ -444,8 +444,8 @@ double BIRRTstar::_calculate_cost( POS2D& pos_a, POS2D& pos_b ) {
   return _p_cost_func(pos_a, pos_b, _pp_cost_distribution, this);
 }
 
-RRTNode* BIRRTstar::_create_new_node(POS2D pos, RRTree_type_t tree_type) {
-  RRTNode * pNode = new RRTNode(pos);
+BIRRTNode* BIRRTstar::_create_new_node(POS2D pos, RRTree_type_t tree_type) {
+  BIRRTNode * pNode = new BIRRTNode(pos);
   if( tree_type == START_TREE_TYPE ) {
     _st_nodes.push_back(pNode);
   }
@@ -455,15 +455,15 @@ RRTNode* BIRRTstar::_create_new_node(POS2D pos, RRTree_type_t tree_type) {
   return pNode;
 }
 
-bool BIRRTstar::_remove_edge( RRTNode* p_node_parent, RRTNode*  p_node_child ) {
+bool BIRRTstar::_remove_edge( BIRRTNode* p_node_parent, BIRRTNode*  p_node_child ) {
   if( p_node_parent==NULL ) {
     return false;
   }
 
   p_node_child->mp_parent = NULL;
   bool removed = false;
-  for( std::list<RRTNode*>::iterator it=p_node_parent->m_child_nodes.begin();it!=p_node_parent->m_child_nodes.end();it++ ) {
-    RRTNode* p_current = (RRTNode*)(*it);
+  for( std::list<BIRRTNode*>::iterator it=p_node_parent->m_child_nodes.begin();it!=p_node_parent->m_child_nodes.end();it++ ) {
+    BIRRTNode* p_current = (BIRRTNode*)(*it);
     if ( p_current == p_node_child || p_current->m_pos==p_node_child->m_pos ) {
       p_current->mp_parent = NULL;
       p_current->clear_string();
@@ -474,12 +474,12 @@ bool BIRRTstar::_remove_edge( RRTNode* p_node_parent, RRTNode*  p_node_child ) {
   return removed;
 }
 
-bool BIRRTstar::_has_edge(RRTNode* p_node_parent, RRTNode* p_node_child) {
+bool BIRRTstar::_has_edge(BIRRTNode* p_node_parent, BIRRTNode* p_node_child) {
   if ( p_node_parent == NULL || p_node_child == NULL ) {
     return false;
   }
-  for( std::list<RRTNode*>::iterator it=p_node_parent->m_child_nodes.begin();it!=p_node_parent->m_child_nodes.end();it++ ) {
-    RRTNode* p_curr_node = (*it);
+  for( std::list<BIRRTNode*>::iterator it=p_node_parent->m_child_nodes.begin();it!=p_node_parent->m_child_nodes.end();it++ ) {
+    BIRRTNode* p_curr_node = (*it);
     if( p_curr_node == p_node_child ) {
       return true;
     }
@@ -491,7 +491,7 @@ bool BIRRTstar::_has_edge(RRTNode* p_node_parent, RRTNode* p_node_child) {
   return false;
 }
 
-bool BIRRTstar::_add_edge( RRTNode* p_node_parent, RRTNode* p_node_child ) {
+bool BIRRTstar::_add_edge( BIRRTNode* p_node_parent, BIRRTNode* p_node_child ) {
   if( p_node_parent == NULL || p_node_child == NULL || p_node_parent == p_node_child ) {
     return false;
   }
@@ -519,21 +519,21 @@ bool BIRRTstar::_add_edge( RRTNode* p_node_parent, RRTNode* p_node_child ) {
   return true;
 }
 
-std::list<RRTNode*> BIRRTstar::_find_all_children( RRTNode* p_node ) {
+std::list<BIRRTNode*> BIRRTstar::_find_all_children( BIRRTNode* p_node ) {
   int level = 0;
   bool finished = false;
-  std::list<RRTNode*> child_list;
+  std::list<BIRRTNode*> child_list;
 
-  std::list<RRTNode*> current_level_nodes;
+  std::list<BIRRTNode*> current_level_nodes;
   current_level_nodes.push_back( p_node );
   while( false==finished ) {
-    std::list<RRTNode*> current_level_children;
+    std::list<BIRRTNode*> current_level_children;
     int child_list_num = child_list.size();
 
-    for( std::list<RRTNode*>::iterator it=current_level_nodes.begin(); it!=current_level_nodes.end(); it++ ) {
-      RRTNode* pCurrentNode = (*it);
-      for( std::list<RRTNode*>::iterator itc=pCurrentNode->m_child_nodes.begin(); itc!=pCurrentNode->m_child_nodes.end();itc++ ) {
-        RRTNode *p_child_node= (*itc);
+    for( std::list<BIRRTNode*>::iterator it=current_level_nodes.begin(); it!=current_level_nodes.end(); it++ ) {
+      BIRRTNode* pCurrentNode = (*it);
+      for( std::list<BIRRTNode*>::iterator itc=pCurrentNode->m_child_nodes.begin(); itc!=pCurrentNode->m_child_nodes.end();itc++ ) {
+        BIRRTNode *p_child_node= (*itc);
         if(p_child_node) {
           current_level_children.push_back(p_child_node);
           child_list.push_back(p_child_node);
@@ -552,8 +552,8 @@ std::list<RRTNode*> BIRRTstar::_find_all_children( RRTNode* p_node ) {
     }
     else {
       current_level_nodes.clear();
-      for( std::list<RRTNode*>::iterator itt=current_level_children.begin();itt!=current_level_children.end();itt++ ) {
-        RRTNode * pTempNode = (*itt);
+      for( std::list<BIRRTNode*>::iterator itt=current_level_children.begin();itt!=current_level_children.end();itt++ ) {
+        BIRRTNode * pTempNode = (*itt);
         if( pTempNode ) {
           current_level_nodes.push_back( pTempNode );
         }
@@ -570,15 +570,15 @@ std::list<RRTNode*> BIRRTstar::_find_all_children( RRTNode* p_node ) {
 }
 
 
-RRTNode* BIRRTstar::_find_ancestor(RRTNode* p_node) {
+BIRRTNode* BIRRTstar::_find_ancestor(BIRRTNode* p_node) {
   return get_ancestor( p_node );
 }
 
 Path* BIRRTstar::find_path( POS2D via_pos ) {
   Path* p_new_path = NULL; 
 
-  RRTNode * p_st_first_node = _find_nearest( via_pos, START_TREE_TYPE ).getRRTNode();
-  RRTNode * p_gt_first_node = _find_nearest( via_pos, GOAL_TREE_TYPE ).getRRTNode();
+  BIRRTNode * p_st_first_node = _find_nearest( via_pos, START_TREE_TYPE ).getBIRRTNode();
+  BIRRTNode * p_gt_first_node = _find_nearest( via_pos, GOAL_TREE_TYPE ).getBIRRTNode();
    
   if ( false == _is_obstacle_free( p_st_first_node->m_pos, p_gt_first_node->m_pos ) ) {
     return p_new_path;
@@ -594,12 +594,12 @@ Path* BIRRTstar::find_path( POS2D via_pos ) {
   return p_new_path;
 }
 
-void BIRRTstar::_attach_new_node(RRTNode* p_node_new, RRTNode* p_nearest_node, std::list<RRTNode*> near_nodes, RRTree_type_t tree_type) {
+void BIRRTstar::_attach_new_node(BIRRTNode* p_node_new, BIRRTNode* p_nearest_node, std::list<BIRRTNode*> near_nodes, RRTree_type_t tree_type) {
   double min_new_node_cost = p_nearest_node->m_cost + _calculate_cost(p_nearest_node->m_pos, p_node_new->m_pos);
-  RRTNode* p_min_node = p_nearest_node;
+  BIRRTNode* p_min_node = p_nearest_node;
 
-  for(std::list<RRTNode*>::iterator it=near_nodes.begin();it!=near_nodes.end();it++) {
-    RRTNode* p_near_node = *it;
+  for(std::list<BIRRTNode*>::iterator it=near_nodes.begin();it!=near_nodes.end();it++) {
+    BIRRTNode* p_near_node = *it;
     if ( true == _is_obstacle_free( p_near_node->m_pos, p_node_new->m_pos ) ) {
       if ( true == _is_homotopy_eligible( p_near_node, p_node_new->m_pos, tree_type ) ) {
         double delta_cost = _calculate_cost( p_near_node->m_pos, p_node_new->m_pos );
@@ -619,9 +619,9 @@ void BIRRTstar::_attach_new_node(RRTNode* p_node_new, RRTNode* p_nearest_node, s
 
 }
 
-void BIRRTstar::_rewire_near_nodes(RRTNode* p_node_new, std::list<RRTNode*> near_nodes, RRTree_type_t tree_type) {
-  for( std::list<RRTNode*>::iterator it=near_nodes.begin(); it!=near_nodes.end(); it++ ) {
-    RRTNode * p_near_node = (*it);
+void BIRRTstar::_rewire_near_nodes(BIRRTNode* p_node_new, std::list<BIRRTNode*> near_nodes, RRTree_type_t tree_type) {
+  for( std::list<BIRRTNode*>::iterator it=near_nodes.begin(); it!=near_nodes.end(); it++ ) {
+    BIRRTNode * p_near_node = (*it);
 
     if(p_near_node->m_pos ==p_node_new->m_pos ||  p_near_node->m_pos==_p_st_root->m_pos || p_node_new->mp_parent->m_pos==p_near_node->m_pos) {
       continue;
@@ -633,7 +633,7 @@ void BIRRTstar::_rewire_near_nodes(RRTNode* p_node_new, std::list<RRTNode*> near
         double temp_cost_from_new_node = p_node_new->m_cost + temp_delta_cost;
         if( temp_cost_from_new_node < p_near_node->m_cost ) {
           double min_delta_cost = p_near_node->m_cost - temp_cost_from_new_node;
-          RRTNode * p_parent_node = p_near_node->mp_parent;
+          BIRRTNode * p_parent_node = p_near_node->mp_parent;
           bool removed = _remove_edge(p_parent_node, p_near_node);
           if(removed) {
             bool added = _add_edge(p_node_new, p_near_node);
@@ -651,17 +651,17 @@ void BIRRTstar::_rewire_near_nodes(RRTNode* p_node_new, std::list<RRTNode*> near
   }
 }
 
-void BIRRTstar::_update_cost_to_children( RRTNode* p_node, double delta_cost ) {
-  std::list<RRTNode*> child_list = _find_all_children( p_node );
-  for( std::list<RRTNode*>::iterator it = child_list.begin(); it != child_list.end();it++ ) {
-    RRTNode* p_child_node = (*it);
+void BIRRTstar::_update_cost_to_children( BIRRTNode* p_node, double delta_cost ) {
+  std::list<BIRRTNode*> child_list = _find_all_children( p_node );
+  for( std::list<BIRRTNode*>::iterator it = child_list.begin(); it != child_list.end();it++ ) {
+    BIRRTNode* p_child_node = (*it);
     if( p_child_node ) {
       p_child_node->m_cost -= delta_cost;
     }
   }
 }
 
-bool BIRRTstar::_get_closest_node ( POS2D pos, RRTNode*& p_node_closet_to_goal, double& delta_cost, RRTree_type_t tree_type ) {
+bool BIRRTstar::_get_closest_node ( POS2D pos, BIRRTNode*& p_node_closet_to_goal, double& delta_cost, RRTree_type_t tree_type ) {
   bool found = false;
 
   std::list<KDNode2D> near_nodes = _find_near( pos, tree_type );
@@ -670,7 +670,7 @@ bool BIRRTstar::_get_closest_node ( POS2D pos, RRTNode*& p_node_closet_to_goal, 
   for(std::list<KDNode2D>::iterator it=near_nodes.begin();
       it!=near_nodes.end();it++) {
     KDNode2D kd_node = (*it);
-    RRTNode* p_node = kd_node.getRRTNode();
+    BIRRTNode* p_node = kd_node.getBIRRTNode();
     double new_delta_cost = _calculate_cost(p_node->m_pos, pos);
     double new_total_cost= p_node->m_cost + new_delta_cost;
     if (new_total_cost < min_total_cost) {
@@ -714,9 +714,9 @@ Path* BIRRTstar::_concatenate_paths( Path* p_from_path, Path* p_to_path ) {
   return p_new_path;
 }
 
-Path* BIRRTstar::_get_subpath( RRTNode* p_end_node, RRTree_type_t tree_type ) {
+Path* BIRRTstar::_get_subpath( BIRRTNode* p_end_node, RRTree_type_t tree_type ) {
   Path* p_subpath = NULL; 
-  std::list<RRTNode*> node_list;
+  std::list<BIRRTNode*> node_list;
   get_parent_node_list( p_end_node , node_list );
   if( tree_type == START_TREE_TYPE ) {
     p_subpath = new Path( _p_st_root->m_pos, p_end_node->m_pos );
@@ -727,9 +727,9 @@ Path* BIRRTstar::_get_subpath( RRTNode* p_end_node, RRTree_type_t tree_type ) {
   p_subpath->m_cost = p_end_node->m_cost;
   p_subpath->append_substring( p_end_node->m_substring ); 
   p_subpath->m_way_points.clear();
-  for( std::list<RRTNode*>::reverse_iterator itr = node_list.rbegin();
+  for( std::list<BIRRTNode*>::reverse_iterator itr = node_list.rbegin();
        itr != node_list.rend(); itr ++ ) {
-    RRTNode* p_rrt_node = (*itr);
+    BIRRTNode* p_rrt_node = (*itr);
     p_subpath->m_way_points.push_back( p_rrt_node->m_pos ); 
   }
   return p_subpath;
@@ -748,7 +748,7 @@ void BIRRTstar::set_reference_frames( ReferenceFrameSet* p_reference_frames ) {
 }
 
 
-bool BIRRTstar::_is_homotopy_eligible( RRTNode* p_node_parent, POS2D pos, RRTree_type_t tree_type ) {
+bool BIRRTstar::_is_homotopy_eligible( BIRRTNode* p_node_parent, POS2D pos, RRTree_type_t tree_type ) {
   if( _reference_frames && _reference_frames->get_string_constraint().size()==0 ) {
       return true;
   }

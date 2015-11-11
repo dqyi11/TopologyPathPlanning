@@ -23,18 +23,18 @@ namespace harrts {
     RUN_BOTH_TREES_TYPE
   } RRTree_run_type_t;
 
-  class RRTNode {
+  class BIRRTNode {
 
   public:
-    RRTNode( POS2D pos );
-    bool operator==( const RRTNode &other );
+    BIRRTNode( POS2D pos );
+    bool operator==( const BIRRTNode &other );
     void clear_string();
     void append_to_string( std::vector< std::string > ids );
 
     double   m_cost;
-    RRTNode* mp_parent;
+    BIRRTNode* mp_parent;
     POS2D    m_pos;
-    std::list<RRTNode*> m_child_nodes;
+    std::list<BIRRTNode*> m_child_nodes;
     std::vector< std::string > m_substring;
   };
 
@@ -66,8 +66,8 @@ namespace harrts {
     int get_sampling_height() { return _sampling_height; }
     int get_current_iteration() { return _current_iteration; }
 
-    std::list<RRTNode*>& get_st_nodes() { return _st_nodes; }
-    std::list<RRTNode*>& get_gt_nodes() { return _gt_nodes; }
+    std::list<BIRRTNode*>& get_st_nodes() { return _st_nodes; }
+    std::list<BIRRTNode*>& get_gt_nodes() { return _gt_nodes; }
 
     int**& get_map_info() { return _pp_map_info; }
     double get_st_ball_radius() { return _st_ball_radius; }
@@ -89,34 +89,34 @@ namespace harrts {
   protected:
     POS2D _sampling();
     POS2D _steer( POS2D pos_a, POS2D pos_b );
-    RRTNode* _extend(RRTree_type_t tree_type);
+    BIRRTNode* _extend(RRTree_type_t tree_type);
 
     Path* _concatenate_paths( Path* p_from_path, Path* p_to_path );
-    Path* _get_subpath( RRTNode* p_end_node, RRTree_type_t tree_type );
+    Path* _get_subpath( BIRRTNode* p_end_node, RRTree_type_t tree_type );
 
     KDNode2D _find_nearest( POS2D pos, RRTree_type_t tree_type );
     std::list<KDNode2D> _find_near( POS2D pos, RRTree_type_t tree_type );
 
-    bool _is_homotopy_eligible( RRTNode* p_node_parent, POS2D pos, RRTree_type_t tree_type );
+    bool _is_homotopy_eligible( BIRRTNode* p_node_parent, POS2D pos, RRTree_type_t tree_type );
     bool _is_obstacle_free( POS2D pos_a, POS2D pos_b );
     bool _is_in_obstacle( POS2D pos );
     bool _contains( POS2D pos );
 
     double _calculate_cost( POS2D& pos_a, POS2D& pos_b );
 
-    RRTNode* _create_new_node( POS2D pos, RRTree_type_t tree_type );
-    bool _remove_edge( RRTNode* p_node_parent, RRTNode* p_node_child );
-    bool _has_edge( RRTNode* p_node_parent, RRTNode* p_node_child );
-    bool _add_edge( RRTNode* p_node_parent, RRTNode* p_node_child );
+    BIRRTNode* _create_new_node( POS2D pos, RRTree_type_t tree_type );
+    bool _remove_edge( BIRRTNode* p_node_parent, BIRRTNode* p_node_child );
+    bool _has_edge( BIRRTNode* p_node_parent, BIRRTNode* p_node_child );
+    bool _add_edge( BIRRTNode* p_node_parent, BIRRTNode* p_node_child );
 
-    std::list<RRTNode*> _find_all_children( RRTNode* node );
+    std::list<BIRRTNode*> _find_all_children( BIRRTNode* node );
 
-    void _attach_new_node( RRTNode* p_node_new, RRTNode* p_nearest_node, std::list<RRTNode*> near_nodes, RRTree_type_t type );
-    void _rewire_near_nodes( RRTNode* p_node_new, std::list<RRTNode*> near_nodes, RRTree_type_t tree_type );
-    void _update_cost_to_children( RRTNode* p_node, double delta_cost );
-    bool _get_closest_node( POS2D pos, RRTNode*& p_node_closest, double& delta_cost, RRTree_type_t tree_type );
+    void _attach_new_node( BIRRTNode* p_node_new, BIRRTNode* p_nearest_node, std::list<BIRRTNode*> near_nodes, RRTree_type_t type );
+    void _rewire_near_nodes( BIRRTNode* p_node_new, std::list<BIRRTNode*> near_nodes, RRTree_type_t tree_type );
+    void _update_cost_to_children( BIRRTNode* p_node, double delta_cost );
+    bool _get_closest_node( POS2D pos, BIRRTNode*& p_node_closest, double& delta_cost, RRTree_type_t tree_type );
 
-    RRTNode* _find_ancestor( RRTNode* p_node );
+    BIRRTNode* _find_ancestor( BIRRTNode* p_node );
     void set_grammar_type( homotopy::grammar_type_t grammar_type ) { _grammar_type = grammar_type; }
 
     homotopy::ReferenceFrameSet* _reference_frames;
@@ -124,15 +124,15 @@ namespace harrts {
  
     POS2D    _start;
     POS2D    _goal;
-    RRTNode* _p_st_root;
-    RRTNode* _p_gt_root;
+    BIRRTNode* _p_st_root;
+    BIRRTNode* _p_gt_root;
 
     homotopy::grammar_type_t _grammar_type;
 
-    RRTNode* _p_st_new_node;
-    RRTNode* _p_gt_new_node;
-    RRTNode* _p_st_connected_node;
-    RRTNode* _p_gt_connected_node;
+    BIRRTNode* _p_st_new_node;
+    BIRRTNode* _p_gt_new_node;
+    BIRRTNode* _p_st_connected_node;
+    BIRRTNode* _p_gt_connected_node;
 
     int _sampling_width;
     int _sampling_height;
@@ -144,8 +144,8 @@ namespace harrts {
     COST_FUNC_PTR   _p_cost_func;
     double**        _pp_cost_distribution;
 
-    std::list<RRTNode*> _st_nodes;
-    std::list<RRTNode*> _gt_nodes;
+    std::list<BIRRTNode*> _st_nodes;
+    std::list<BIRRTNode*> _gt_nodes;
 
     RRTree_run_type_t _run_type;
     double _range;
@@ -158,7 +158,7 @@ namespace harrts {
     int    _current_iteration;
   };
 
-  inline RRTNode* get_ancestor( RRTNode * node ) {
+  inline BIRRTNode* get_ancestor( BIRRTNode * node ) {
     if( NULL == node ) {
       return NULL;
     }
@@ -170,7 +170,7 @@ namespace harrts {
     }
   }
 
-  inline void get_parent_node_list( RRTNode * node, std::list<RRTNode*>& path ) {
+  inline void get_parent_node_list( BIRRTNode * node, std::list<BIRRTNode*>& path ) {
     if( node==NULL ) {
       return;
     }

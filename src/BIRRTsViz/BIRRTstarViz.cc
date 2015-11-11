@@ -137,8 +137,8 @@ void BIRRTstarViz::paint(QPaintDevice * device) {
                 st_tree_painter.setOpacity(0.4);
             }
             st_tree_painter.setPen(st_tree_paintpen);
-            for( std::list<RRTNode*>::iterator it= mp_tree->get_st_nodes().begin(); it!=mp_tree->get_st_nodes().end();it++ ) {
-                RRTNode* p_node = (*it);
+            for( std::list<BIRRTNode*>::iterator it= mp_tree->get_st_nodes().begin(); it!=mp_tree->get_st_nodes().end();it++ ) {
+                BIRRTNode* p_node = (*it);
                 if(p_node) {
                     if(p_node->mp_parent) {
                         st_tree_painter.drawLine(QPoint(p_node->m_pos[0], p_node->m_pos[1]), QPoint(p_node->mp_parent->m_pos[0], p_node->mp_parent->m_pos[1]));
@@ -161,8 +161,8 @@ void BIRRTstarViz::paint(QPaintDevice * device) {
                 gt_tree_painter.setOpacity(0.4);
             }
             gt_tree_painter.setPen(gt_tree_paintpen);
-            for( std::list<RRTNode*>::iterator it= mp_tree->get_gt_nodes().begin(); it!=mp_tree->get_gt_nodes().end();it++ ) {
-                RRTNode* p_node = (*it);
+            for( std::list<BIRRTNode*>::iterator it= mp_tree->get_gt_nodes().begin(); it!=mp_tree->get_gt_nodes().end();it++ ) {
+                BIRRTNode* p_node = (*it);
                 if(p_node) {
                     if(p_node->mp_parent) {
                         gt_tree_painter.drawLine(QPoint(p_node->m_pos[0], p_node->m_pos[1]), QPoint(p_node->mp_parent->m_pos[0], p_node->mp_parent->m_pos[1]));

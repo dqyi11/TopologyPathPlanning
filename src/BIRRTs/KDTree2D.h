@@ -10,7 +10,7 @@
 
 namespace harrts {
 
-  class RRTNode;
+  class BIRRTNode;
 
   class POS2D {
   public:
@@ -54,12 +54,12 @@ namespace harrts {
 
   class KDNode2D : public POS2D {
   public:
-    KDNode2D(value_type x, value_type y) : POS2D(x, y) { mpRRTNode = NULL; }
-    KDNode2D(POS2D & pos) : POS2D(pos) { mpRRTNode = NULL; }
-    void setRRTNode(RRTNode* pNode) { mpRRTNode = pNode; }
-    RRTNode* getRRTNode() { return mpRRTNode; }
+    KDNode2D(value_type x, value_type y) : POS2D(x, y) { mpBIRRTNode = NULL; }
+    KDNode2D(POS2D & pos) : POS2D(pos) { mpBIRRTNode = NULL; }
+    void setBIRRTNode(BIRRTNode* pNode) { mpBIRRTNode = pNode; }
+    BIRRTNode* getBIRRTNode() { return mpBIRRTNode; }
   protected:
-    RRTNode* mpRRTNode;
+    BIRRTNode* mpBIRRTNode;
   };
 
 
