@@ -1,6 +1,9 @@
 
 set(LIB harrtstar)
 
+set(HDR HARRTstar.h
+        string_class_mgr.h)
+
 add_library(${LIB} SHARED
             kdtree++/allocator.hpp
             kdtree++/function.hpp
@@ -8,9 +11,7 @@ add_library(${LIB} SHARED
             kdtree++/kdtree.hpp
             kdtree++/node.hpp
             kdtree++/region.hpp
-            HARRTstar.h
             HARRTstar.cc
-            string_class_mgr.h
             string_class_mgr.cc
            )
 
@@ -19,6 +20,7 @@ target_link_libraries(${LIB}
                       ${CGAL_LIBRARIES}
                       ${BOOST_LIBRARIES}
                      ) 
+install(FILES ${HDR} DESTINATION include/)
 
 install(TARGETS ${LIB}
         LIBRARY

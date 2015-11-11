@@ -1,20 +1,21 @@
 
 set(LIB homotopy)
 
+set(HDRS obstacle.h
+         line_subsegment.h
+         region.h
+         string_grammar.h
+         homotopic_grammar.h
+         reference_frames.h
+         worldmap.h)
+
 add_library(${LIB} SHARED
-            obstacle.h
             obstacle.cc
-            line_subsegment.h
             line_subsegment.cc
-            region.h
             region.cc
-            string_grammar.h
             string_grammar.cc
-            homotopic_grammar.h
             homotopic_grammar.cc
-            reference_frames.h
             reference_frames.cc
-            worldmap.h
             worldmap.cc
             cgal_util.h
             world_datatype.h)
@@ -30,3 +31,6 @@ install(TARGETS ${LIB}
         DESTINATION lib
         ARCHIVE
         DESTINATION lib)
+
+install(FILES ${HDR}
+        DESTINATION include/)
