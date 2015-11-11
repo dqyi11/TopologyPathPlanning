@@ -75,12 +75,6 @@ include_directories(${PROJECT_SOURCE_DIR}/src/Homotopy
 
 add_definitions(-Wall -g -O3)
 
-configure_file(${PROJECT_SOURCE_DIR}/Find${PROJECT_NAME}.cmake.in ${CMAKE_BINRARY_DIR}/Find${PROJECT_NAME}.cmake @ONLY)
-install(FILES
-        ${CMAKE_BINARY_DIR}/Find${PROJECT_NAME}.cmake
-        DESTINATION
-        ${CMAKE_INSTALL_PREFIX}/share/cmake-${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}/Modules/)
-
 add_subdirectory(Homotopy)
 add_subdirectory(HomotopyViz)
 add_subdirectory(HomotopyDemo)
