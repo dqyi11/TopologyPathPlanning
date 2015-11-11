@@ -16,4 +16,9 @@ target_link_libraries(${LIB}
                       ${QT_LIBRARIES} 
                       ${OpenCV_LIBRARIES}
                      )
+install(TARGETS ${LIB}
+        LIBRARY
+        DESTINATION lib
+        ARCHIVE
+        DESTINATION lib)
 

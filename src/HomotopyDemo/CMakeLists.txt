@@ -13,3 +13,5 @@ target_link_libraries(homotopy-demo
                       homotopy-viz
                       ${QT_LIBRARIES}
                      ) 
+
+install(TARGETS homotopy-demo DESTINATION bin)

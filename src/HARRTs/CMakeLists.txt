@@ -19,3 +19,9 @@ target_link_libraries(${LIB}
                       ${CGAL_LIBRARIES}
                       ${BOOST_LIBRARIES}
                      ) 
+
+install(TARGETS ${LIB}
+        LIBRARY
+        DESTINATION lib
+        ARCHIVE
+        DESTINATION lib)

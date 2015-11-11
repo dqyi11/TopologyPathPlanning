@@ -25,3 +25,8 @@ target_link_libraries(${LIB}
                       ${LIBXML2_LIBRARIES}
                      )
 
+install(TARGETS ${LIB}
+        LIBRARY
+        DESTINATION lib
+        ARCHIVE
+        DESTINATION lib)

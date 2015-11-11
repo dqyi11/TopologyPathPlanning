@@ -19,3 +19,4 @@ target_link_libraries(harrtstar-demo
                       harrtstar-viz
                       ${QT_LIBRARIES}
                      )
+install(TARGETS harrtstar-demo DESTINATION bin)
