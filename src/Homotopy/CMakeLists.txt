@@ -1,7 +1,7 @@
 
 set(LIB homotopy)
 
-set(HDRS obstacle.h
+set(HDR obstacle.h
          line_subsegment.h
          region.h
          string_grammar.h
