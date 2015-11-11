@@ -2,15 +2,17 @@
 set(LIB harrtstar)
 
 set(HDR HARRTstar.h
-        string_class_mgr.h)
+        string_class_mgr.h
+        KDTree2D.h
+        kdtree++/allocator.hpp
+        kdtree++/function.hpp
+        kdtree++/iterator.hpp
+        kdtree++/kdtree.hpp
+        kdtree++/node.hpp
+        kdtree++/region.hpp
+        )
 
 add_library(${LIB} SHARED
-            kdtree++/allocator.hpp
-            kdtree++/function.hpp
-            kdtree++/iterator.hpp
-            kdtree++/kdtree.hpp
-            kdtree++/node.hpp
-            kdtree++/region.hpp
             HARRTstar.cc
             string_class_mgr.cc
            )
