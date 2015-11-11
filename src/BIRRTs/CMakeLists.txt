@@ -1,27 +1,26 @@
 
-set(LIB harrtstar)
+set(LIB harrts-birrts)
 
-set(HDR HARRTstar.h
+set(HDR BIRRTstar.h
         string_class_mgr.h
         KDTree2D.h
         )
 
-set(KD_HDR 
-        kdtree++/allocator.hpp
-        kdtree++/function.hpp
-        kdtree++/iterator.hpp
-        kdtree++/kdtree.hpp
-        kdtree++/node.hpp
-        kdtree++/region.hpp
+set(KD_HDR kdtree++/allocator.hpp
+           kdtree++/function.hpp
+           kdtree++/iterator.hpp
+           kdtree++/kdtree.hpp
+           kdtree++/node.hpp
+           kdtree++/region.hpp
         )
 
 add_library(${LIB} SHARED
-            HARRTstar.cc
+            BIRRTstar.cc
             string_class_mgr.cc
            )
 
 target_link_libraries(${LIB}
-                      homotopy
+                      harrts-homotopy
                       ${CGAL_LIBRARIES}
                       ${BOOST_LIBRARIES}
                      ) 

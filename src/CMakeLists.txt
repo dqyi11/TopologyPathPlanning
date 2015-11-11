@@ -69,9 +69,9 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(${PROJECT_SOURCE_DIR}/src/Homotopy
                     ${PROJECT_SOURCE_DIR}/src/HomotopyViz 
                     ${PROJECT_SOURCE_DIR}/src/HomotopyDemo
-                    ${PROJECT_SOURCE_DIR}/src/HARRTs
-                    ${PROJECT_SOURCE_DIR}/src/HARRTsViz
-                    ${PROJECT_SOURCE_DIR}/src/HARRTsDemo)
+                    ${PROJECT_SOURCE_DIR}/src/BIRRTs
+                    ${PROJECT_SOURCE_DIR}/src/BIRRTsViz
+                    ${PROJECT_SOURCE_DIR}/src/BIRRTsDemo)
 
 add_definitions(-Wall -g -O3)
 
@@ -84,6 +84,6 @@ install(FILES
 add_subdirectory(Homotopy)
 add_subdirectory(HomotopyViz)
 add_subdirectory(HomotopyDemo)
-add_subdirectory(HARRTs)
-add_subdirectory(HARRTsViz)
-add_subdirectory(HARRTsDemo)
+add_subdirectory(BIRRTs)
+add_subdirectory(BIRRTsViz)
+add_subdirectory(BIRRTsDemo)

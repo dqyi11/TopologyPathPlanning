@@ -1,7 +1,7 @@
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-add_executable(homotopy-demo
+add_executable(harrts-homotopy-demo
                mainwindow.h
                mainwindow.cc
                homotopyVizDemo.cc) 
@@ -9,9 +9,9 @@ add_executable(homotopy-demo
 include_directories(
                    )
 
-target_link_libraries(homotopy-demo 
-                      homotopy-viz
+target_link_libraries(harrts-homotopy-demo 
+                      harrts-homotopy-viz
                       ${QT_LIBRARIES}
                      ) 
 
-install(TARGETS homotopy-demo DESTINATION bin)
+install(TARGETS harrts-homotopy-demo DESTINATION bin)

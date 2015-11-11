@@ -1,5 +1,5 @@
-#ifndef HARRTCONFIG_H
-#define HARRTCONFIG_H
+#ifndef BIRRTCONFIG_H
+#define BIRRTCONFIG_H
 
 #include <QDialog>
 #include <QListWidget>
@@ -11,12 +11,12 @@
 
 namespace harrts {
 
-  class HARRTstarWindow;
+  class BIRRTstarWindow;
 
-  class HARRTstarConfig : public QDialog {
+  class BIRRTstarConfig : public QDialog {
     Q_OBJECT
   public:
-    HARRTstarConfig(HARRTstarWindow * parent);
+    BIRRTstarConfig(BIRRTstarWindow * parent);
 
     void updateConfiguration();
     void updateDisplay();
@@ -43,7 +43,7 @@ namespace harrts {
     QLabel    * mpLabelRunType;
     QComboBox * mpComboRunType;
 
-    HARRTstarWindow * mpParentWindow;
+    BIRRTstarWindow * mpParentWindow;
 
     bool isCompatible(QString fitnessFile);
 
@@ -56,4 +56,4 @@ namespace harrts {
 
 }
 
-#endif // HARRTCONFIG_H
+#endif // BIRRTCONFIG_H

@@ -1,6 +1,6 @@
 //#include <QtGui/QApplication>
 #include <QApplication>
-#include "HARRTstarWindow.h"
+#include "BIRRTstarWindow.h"
 
 using namespace harrts;
 
@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
         filename = QString(argv[1]);
     }
     QApplication a(argc, argv);
-    HARRTstarWindow w;
+    BIRRTstarWindow w;
     if(no_gui) {
         //std::cout << "NO GUI" << std::endl;
         if(w.setupPlanning(filename)) {

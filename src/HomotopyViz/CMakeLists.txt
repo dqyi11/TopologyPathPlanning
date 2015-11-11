@@ -1,5 +1,5 @@
 
-set(LIB homotopy-viz)
+set(LIB harrts-homotopy-viz)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -12,7 +12,7 @@ include_directories(
                    )
 
 target_link_libraries(${LIB} 
-                      homotopy
+                      harrts-homotopy
                       ${QT_LIBRARIES} 
                       ${OpenCV_LIBRARIES}
                      )

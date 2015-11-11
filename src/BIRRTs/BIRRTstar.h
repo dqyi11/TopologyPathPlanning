@@ -53,11 +53,11 @@ namespace harrts {
     std::vector< std::string > m_string;
   };
 
-  class HARRTstar {
+  class BIRRTstar {
 
   public:
-    HARRTstar(int width, int height, int segment_length);
-    virtual ~HARRTstar();
+    BIRRTstar(int width, int height, int segment_length);
+    virtual ~BIRRTstar();
 
     bool init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp_cost_distrinution, homotopy::grammar_type_t grammar_type );
     void load_map( int** pp_map );

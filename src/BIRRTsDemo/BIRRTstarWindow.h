@@ -1,5 +1,5 @@
-#ifndef HARRT_MAINWINDOW_H
-#define HARRT_MAINWINDOW_H
+#ifndef BIRRT_MAINWINDOW_H
+#define BIRRT_MAINWINDOW_H
 
 #include <QMainWindow>
 #include <QMenu>
@@ -7,24 +7,24 @@
 #include <QAction>
 #include <QPixmap>
 #include <QProgressBar>
-#include "HARRTstarViz.h"
+#include "BIRRTstarViz.h"
 #include "reference_frames.h"
 
 namespace harrts {
 
-  class HARRTstarConfig;
+  class BIRRTstarConfig;
 
-  class HARRTstarWindow : public QMainWindow {
+  class BIRRTstarWindow : public QMainWindow {
     Q_OBJECT
     
   public:
-    HARRTstarWindow(QWidget *parent = 0);
-    ~HARRTstarWindow();
+    BIRRTstarWindow(QWidget *parent = 0);
+    ~BIRRTstarWindow();
 
     bool exportPaths();
     void planPath();
     bool setupPlanning(QString filename);
-    HARRTstarViz * mpViz;
+    BIRRTstarViz * mpViz;
 
     void keyPressEvent(QKeyEvent * e);
 
@@ -63,8 +63,8 @@ namespace harrts {
     QPixmap* mpMap;
     QPoint   mCursorPoint;
 
-    HARRTstarConfig*   mpHARRTstarConfig;
-    HARRTstar*         mpHARRTstar;
+    BIRRTstarConfig*   mpBIRRTstarConfig;
+    BIRRTstar*         mpBIRRTstar;
     homotopy::ReferenceFrameSet* mpReferenceFrameSet;
 
   private slots:
@@ -84,4 +84,4 @@ namespace harrts {
 
 }
 
-#endif // HARRT_MAINWINDOW_H
+#endif // BIRRT_MAINWINDOW_H

@@ -2,8 +2,8 @@
 #include <QHBoxLayout>
 #include <QMessageBox>
 #include <QFileDialog>
-#include "HARRTstarWindow.h"
-#include "HARRTstarConfig.h"
+#include "BIRRTstarWindow.h"
+#include "BIRRTstarConfig.h"
 
 #define STRING_GRAMMAR_STR    "String grammar"
 #define HOMOTOPIC_GRAMMAR_STR "Homotopic grammar"
@@ -14,7 +14,7 @@
 using namespace homotopy;
 using namespace harrts;
 
-HARRTstarConfig::HARRTstarConfig(HARRTstarWindow * parent) {
+BIRRTstarConfig::BIRRTstarConfig(BIRRTstarWindow * parent) {
     mpParentWindow = parent;
 
     mpCheckMinDist = new QCheckBox();
@@ -93,16 +93,16 @@ HARRTstarConfig::HARRTstarConfig(HARRTstarWindow * parent) {
     setLayout(mainLayout);
 }
 
-void HARRTstarConfig::onBtnOKClicked() {
+void BIRRTstarConfig::onBtnOKClicked() {
     updateConfiguration();
     close();
 }
 
-void HARRTstarConfig::onBtnCancelClicked() {
+void BIRRTstarConfig::onBtnCancelClicked() {
     close();
 }
 
-void HARRTstarConfig::onBtnAddClicked() {
+void BIRRTstarConfig::onBtnAddClicked() {
    QString objFilename = QFileDialog::getOpenFileName(this,
                  tr("Open Objective File"), "./", tr("Objective Files (*.*)"));
    if (objFilename!="") {
@@ -121,7 +121,7 @@ void HARRTstarConfig::onBtnAddClicked() {
 }
 
 
-void HARRTstarConfig::updateDisplay() {
+void BIRRTstarConfig::updateDisplay() {
     if(mpParentWindow) {
         if(mpParentWindow->mpViz) {
             if( mpParentWindow->mpViz->m_PPInfo.m_min_dist_enabled==true ) {
@@ -141,7 +141,7 @@ void HARRTstarConfig::updateDisplay() {
 
 }
 
-void HARRTstarConfig::updateConfiguration() {
+void BIRRTstarConfig::updateConfiguration() {
     int numObj = 0;
     if (mpCheckMinDist->isChecked()==true) {
         numObj += 1;
@@ -162,7 +162,7 @@ void HARRTstarConfig::updateConfiguration() {
 
 }
 
-bool HARRTstarConfig::isCompatible(QString fitnessFile) {
+bool BIRRTstarConfig::isCompatible(QString fitnessFile) {
     QPixmap pixmap(fitnessFile);
     if (pixmap.width()==mpParentWindow->mpViz->m_PPInfo.m_map_width
             && pixmap.height()==mpParentWindow->mpViz->m_PPInfo.m_map_height) {
@@ -171,7 +171,7 @@ bool HARRTstarConfig::isCompatible(QString fitnessFile) {
     return false;
 }
 
-void HARRTstarConfig::checkBoxStateChanged(int state) {
+void BIRRTstarConfig::checkBoxStateChanged(int state) {
     if(mpCheckMinDist->checkState()==Qt::Checked) {
         mpLineEditCost->setEnabled(false);
         mpBtnAdd->setEnabled(false);

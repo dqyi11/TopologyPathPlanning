@@ -9,7 +9,7 @@
 #include <QDebug>
 #include <math.h>
 
-#include "HARRTstar.h"
+#include "BIRRTstar.h"
 
 namespace harrts {
 
@@ -52,7 +52,7 @@ namespace harrts {
 
     static double calc_cost( POS2D pos_a, POS2D pos_b, double** pp_distribution, void* tree ) {
       double cost = 0.0;
-      HARRTstar* rrts = (HARRTstar*)tree;
+      BIRRTstar* rrts = (BIRRTstar*)tree;
       if ( pos_a == pos_b ) {
         return cost;
       }

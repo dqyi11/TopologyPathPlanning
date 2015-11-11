@@ -1,9 +1,9 @@
-#ifndef HARRTSTAR_VIZ_H_
-#define HARRTSTAR_VIZ_H_
+#ifndef BIRRTSTAR_VIZ_H_
+#define BIRRTSTAR_VIZ_H_
 
 #include <QLabel>
 
-#include "HARRTstar.h"
+#include "BIRRTstar.h"
 #include "path_planning_info.h"
 #include "reference_frames.h"
 
@@ -16,12 +16,12 @@ namespace harrts {
     BOTH_TREES_SHOW
   } tree_show_type_t;
 
-  class HARRTstarViz : public QLabel
+  class BIRRTstarViz : public QLabel
   {
     Q_OBJECT
   public:
-    explicit HARRTstarViz(QWidget *parent = 0);
-    void setTree(HARRTstar* p_tree);
+    explicit BIRRTstarViz(QWidget *parent = 0);
+    void setTree(BIRRTstar* p_tree);
     void setReferenceFrameSet(homotopy::ReferenceFrameSet* p_rf);
     bool drawPath(QString filename);
     bool saveCurrentViz(QString filename);
@@ -82,7 +82,7 @@ namespace harrts {
     void drawCurrentViz(QPixmap& map);
 
     void paint(QPaintDevice * device);
-    HARRTstar*          mp_tree;
+    BIRRTstar*          mp_tree;
     homotopy::ReferenceFrameSet*  mp_reference_frames;
     bool                m_show_reference_frames;
     bool                m_show_regions;
@@ -100,4 +100,4 @@ namespace harrts {
 
 }
 
-#endif // HARRTSTAR_VIZ_H_
+#endif // BIRRTSTAR_VIZ_H_

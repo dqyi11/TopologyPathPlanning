@@ -1,6 +1,6 @@
 #include <QtGui>
 
-#include "HARRTstarViz.h"
+#include "BIRRTstarViz.h"
 
 #define START_TREE_COLOR        QColor(160,160,0)
 #define START_TREE_COLOR_ALPHA  QColor(160,160,0,100)
@@ -16,7 +16,7 @@
 using namespace homotopy;
 using namespace harrts;
 
-HARRTstarViz::HARRTstarViz( QWidget *parent ) :
+BIRRTstarViz::BIRRTstarViz( QWidget *parent ) :
     QLabel(parent) {
     mp_tree = NULL;
     m_show_reference_frames = false;
@@ -32,25 +32,25 @@ HARRTstarViz::HARRTstarViz( QWidget *parent ) :
     m_colors.clear();
 }
 
-void HARRTstarViz::setTree( HARRTstar* p_tree ) {
+void BIRRTstarViz::setTree( BIRRTstar* p_tree ) {
     mp_tree = p_tree;
 }
 
-void HARRTstarViz::setReferenceFrameSet(ReferenceFrameSet* p_rf) {
+void BIRRTstarViz::setReferenceFrameSet(ReferenceFrameSet* p_rf) {
     mp_reference_frames = p_rf;
     for( unsigned int i = 0; i < mp_reference_frames->get_world_map()->get_subregion_set().size(); i++) {
         m_colors.push_back( QColor( rand()%255, rand()%255, rand()%255 ) );
     }
 }
 
-void HARRTstarViz::paintEvent( QPaintEvent * e ) {
+void BIRRTstarViz::paintEvent( QPaintEvent * e ) {
     QLabel::paintEvent(e);
 
     paint(this);
 }
 
 
-void HARRTstarViz::paint(QPaintDevice * device) {
+void BIRRTstarViz::paint(QPaintDevice * device) {
     if(m_show_regions) {
 
         if( m_region_index < 0 ) {
@@ -268,16 +268,16 @@ void HARRTstarViz::paint(QPaintDevice * device) {
     }
 }
 
-void HARRTstarViz::set_show_reference_frames(bool show) {
+void BIRRTstarViz::set_show_reference_frames(bool show) {
     m_show_reference_frames = show;
     m_reference_frame_index = 0;
 }
 
-void HARRTstarViz::set_show_regions(bool show) {
+void BIRRTstarViz::set_show_regions(bool show) {
     m_show_regions = show;
 }
 
-bool HARRTstarViz::drawPath(QString filename) {
+bool BIRRTstarViz::drawPath(QString filename) {
 
     QPixmap pix(m_PPInfo.m_objective_file);
 
@@ -294,7 +294,7 @@ bool HARRTstarViz::drawPath(QString filename) {
     return false;
 }
 
-bool HARRTstarViz::saveCurrentViz(QString filename) {
+bool BIRRTstarViz::saveCurrentViz(QString filename) {
     QPixmap pix(m_PPInfo.m_map_fullpath);
     QFile file(filename);
     if(file.open(QIODevice::WriteOnly)) {
@@ -305,7 +305,7 @@ bool HARRTstarViz::saveCurrentViz(QString filename) {
     return false;
 }
 
-void HARRTstarViz::drawPathOnMap(QPixmap& map) {
+void BIRRTstarViz::drawPathOnMap(QPixmap& map) {
 
 
     Path * p = m_PPInfo.mp_found_paths[ m_found_path_index ];
@@ -341,7 +341,7 @@ void HARRTstarViz::drawPathOnMap(QPixmap& map) {
         
 }
 
-void HARRTstarViz::switch_tree_show_type() {
+void BIRRTstarViz::switch_tree_show_type() {
 
     switch(m_tree_show_type) {
     case NONE_TREE_SHOW:
@@ -359,7 +359,7 @@ void HARRTstarViz::switch_tree_show_type() {
     }
 }
 
-void HARRTstarViz::prev_reference_frame() {
+void BIRRTstarViz::prev_reference_frame() {
     if (m_show_reference_frames) {
         if ( m_reference_frame_index <= 0) {
             m_reference_frame_index = mp_reference_frames->get_reference_frames().size();
@@ -369,7 +369,7 @@ void HARRTstarViz::prev_reference_frame() {
     }
 }
 
-void HARRTstarViz::next_reference_frame() {
+void BIRRTstarViz::next_reference_frame() {
     if (m_show_reference_frames) {
         if ( m_reference_frame_index >= mp_reference_frames->get_reference_frames().size() ) {
             m_reference_frame_index = 0;
@@ -379,7 +379,7 @@ void HARRTstarViz::next_reference_frame() {
     }
 }
 
-std::string HARRTstarViz::get_reference_frame_name() {
+std::string BIRRTstarViz::get_reference_frame_name() {
 
     if ( m_reference_frame_index < mp_reference_frames->get_reference_frames().size() ) {
         return mp_reference_frames->get_reference_frames()[m_reference_frame_index]->m_name;
@@ -387,7 +387,7 @@ std::string HARRTstarViz::get_reference_frame_name() {
     return "NO REF FRAME";
 }
 
-std::string HARRTstarViz::get_region_name() {
+std::string BIRRTstarViz::get_region_name() {
     SubRegion* p_subregion = get_selected_subregion();
     if( p_subregion ) {
         return p_subregion->get_name();
@@ -399,7 +399,7 @@ std::string HARRTstarViz::get_region_name() {
     return "NO REGION";
 }
 
-void HARRTstarViz::prev_found_path() {
+void BIRRTstarViz::prev_found_path() {
     if ( m_PPInfo.mp_found_paths.size() == 0 ) {
         return;
     }
@@ -410,7 +410,7 @@ void HARRTstarViz::prev_found_path() {
     }
 }
 
-void HARRTstarViz::next_found_path() {
+void BIRRTstarViz::next_found_path() {
     if ( m_PPInfo.mp_found_paths.size() == 0 ) {
         return;
     }
@@ -421,7 +421,7 @@ void HARRTstarViz::next_found_path() {
     }
 }
 
-void HARRTstarViz::import_string_constraint( std::vector< QPoint > points, grammar_type_t type ) {
+void BIRRTstarViz::import_string_constraint( std::vector< QPoint > points, grammar_type_t type ) {
   std::vector< Point2D > ref_points;
   for( unsigned int i = 0; i < points.size(); i ++ ) {
     ref_points.push_back( Point2D( points[i].x(), points[i].y() ) );
@@ -431,7 +431,7 @@ void HARRTstarViz::import_string_constraint( std::vector< QPoint > points, gramm
   }
 }
 
-void HARRTstarViz::mousePressEvent( QMouseEvent * event ) {
+void BIRRTstarViz::mousePressEvent( QMouseEvent * event ) {
     // std::cout << "mousePressEvent" << std::endl;
     if ( event->button() == Qt::LeftButton ) {
         m_dragging = true;
@@ -440,7 +440,7 @@ void HARRTstarViz::mousePressEvent( QMouseEvent * event ) {
     }
 }
 
-void HARRTstarViz::mouseMoveEvent( QMouseEvent * event ) {
+void BIRRTstarViz::mouseMoveEvent( QMouseEvent * event ) {
     // std::cout << "mouseMoveEvent " << mPoints.size() << std::endl;
     if ( m_dragging == true ) {
         //std::cout << event->x() << " " << event->y() << std::endl;
@@ -459,14 +459,14 @@ void HARRTstarViz::mouseMoveEvent( QMouseEvent * event ) {
     }
 }
 
-void HARRTstarViz::mouseReleaseEvent( QMouseEvent * event ){
+void BIRRTstarViz::mouseReleaseEvent( QMouseEvent * event ){
     // std::cout << "mouseReleaseEvent" << std::endl;
     if ( event->button() == Qt::LeftButton ) {
         m_dragging = false;
     }
 }
 
-ReferenceFrame* HARRTstarViz::get_selected_reference_frame() {
+ReferenceFrame* BIRRTstarViz::get_selected_reference_frame() {
 
     if ( m_reference_frame_index >= mp_reference_frames->get_reference_frames().size() ) {
         return NULL;
@@ -477,7 +477,7 @@ ReferenceFrame* HARRTstarViz::get_selected_reference_frame() {
     return mp_reference_frames->get_reference_frames()[ m_reference_frame_index ];
 }
     
-SubRegionSet* HARRTstarViz::get_selected_subregion_set() {
+SubRegionSet* BIRRTstarViz::get_selected_subregion_set() {
 
     if ( m_region_index >= mp_reference_frames->get_world_map()->get_subregion_set().size() ) {
         return NULL;
@@ -488,7 +488,7 @@ SubRegionSet* HARRTstarViz::get_selected_subregion_set() {
     return mp_reference_frames->get_world_map()->get_subregion_set()[ m_region_index ];
 }
 
-SubRegion* HARRTstarViz::get_selected_subregion() {
+SubRegion* BIRRTstarViz::get_selected_subregion() {
     SubRegionSet* p_subregion_set = get_selected_subregion_set();
     if (p_subregion_set) {
         if( m_subregion_index >= 0 && m_subregion_index < p_subregion_set->m_subregions.size() ) {
@@ -499,7 +499,7 @@ SubRegion* HARRTstarViz::get_selected_subregion() {
     return NULL;
 }
 
-void HARRTstarViz::prev_region() {
+void BIRRTstarViz::prev_region() {
     if (m_show_regions) {
         if ( m_region_index < 0) {
             m_region_index = mp_reference_frames->get_world_map()->get_subregion_set().size() - 1;
@@ -512,7 +512,7 @@ void HARRTstarViz::prev_region() {
 
 }
 
-void HARRTstarViz::next_region() {
+void BIRRTstarViz::next_region() {
     if (m_show_regions) {
         if ( m_region_index >= mp_reference_frames->get_world_map()->get_subregion_set().size()-1 ) {
             m_region_index = -1; 
@@ -525,7 +525,7 @@ void HARRTstarViz::next_region() {
 
 }
  
-void HARRTstarViz::prev_subregion() {
+void BIRRTstarViz::prev_subregion() {
     if (m_show_regions) {
         if( m_region_index >= 0 && m_region_index < mp_reference_frames->get_world_map()->get_subregion_set().size()-1 ) {
             SubRegionSet* p_subregions = mp_reference_frames->get_world_map()->get_subregion_set()[ m_region_index ];
@@ -539,7 +539,7 @@ void HARRTstarViz::prev_subregion() {
     }
 }
 
-void HARRTstarViz::next_subregion() {
+void BIRRTstarViz::next_subregion() {
     if (m_show_regions) {
         if( m_region_index >= 0 && m_region_index < mp_reference_frames->get_world_map()->get_subregion_set().size()-1 ) {
             SubRegionSet* p_subregions = mp_reference_frames->get_world_map()->get_subregion_set()[ m_region_index ];

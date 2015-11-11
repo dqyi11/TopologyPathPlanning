@@ -5,26 +5,26 @@
 #include <QtDebug>
 #include <QKeyEvent>
 #include <QStatusBar>
-#include "HARRTstarConfig.h"
-#include "HARRTstarWindow.h"
+#include "BIRRTstarConfig.h"
+#include "BIRRTstarWindow.h"
 #include "img_load_util.h"
 
 using namespace homotopy;
 using namespace harrts;
 
-HARRTstarWindow::HARRTstarWindow(QWidget *parent)
+BIRRTstarWindow::BIRRTstarWindow(QWidget *parent)
     : QMainWindow(parent) {
-    mpViz = new HARRTstarViz();
+    mpViz = new BIRRTstarViz();
 
     createActions();
     createMenuBar();
 
     mpMap = NULL;
-    mpHARRTstar = NULL;
+    mpBIRRTstar = NULL;
     mpReferenceFrameSet = NULL;
 
-    mpHARRTstarConfig = new HARRTstarConfig(this);
-    mpHARRTstarConfig->hide();
+    mpBIRRTstarConfig = new BIRRTstarConfig(this);
+    mpBIRRTstarConfig->hide();
 
     setCentralWidget(mpViz);
 
@@ -37,14 +37,14 @@ HARRTstarWindow::HARRTstarWindow(QWidget *parent)
     updateTitle();
 }
 
-HARRTstarWindow::~HARRTstarWindow() {
-    if(mpHARRTstarConfig) {
-        delete mpHARRTstarConfig;
-        mpHARRTstarConfig = NULL;
+BIRRTstarWindow::~BIRRTstarWindow() {
+    if(mpBIRRTstarConfig) {
+        delete mpBIRRTstarConfig;
+        mpBIRRTstarConfig = NULL;
     }
-    if(mpHARRTstar) {
-        delete mpHARRTstar;
-        mpHARRTstar = NULL;
+    if(mpBIRRTstar) {
+        delete mpBIRRTstar;
+        mpBIRRTstar = NULL;
     }
     if(mpReferenceFrameSet) {
         delete mpReferenceFrameSet;
@@ -56,7 +56,7 @@ HARRTstarWindow::~HARRTstarWindow() {
     }
 }
 
-void HARRTstarWindow::createMenuBar() {
+void BIRRTstarWindow::createMenuBar() {
     mpFileMenu = menuBar()->addMenu("&File");
     mpFileMenu->addAction(mpOpenAction);
     mpFileMenu->addAction(mpSaveAction);
@@ -80,7 +80,7 @@ void HARRTstarWindow::createMenuBar() {
 
 }
 
-void HARRTstarWindow::createActions() {
+void BIRRTstarWindow::createActions() {
     mpOpenAction = new QAction("Open", this);
     mpSaveAction = new QAction("Save", this);
     mpExportAction = new QAction("Export", this);
@@ -111,7 +111,7 @@ void HARRTstarWindow::createActions() {
     connect(this, SIGNAL(customContextMenuRequested(const QPoint)),this, SLOT(contextMenuRequested(QPoint)));
 }
 
-void HARRTstarWindow::onOpen() {
+void BIRRTstarWindow::onOpen() {
     QString tempFilename = QFileDialog::getOpenFileName(this,
              tr("Open File"), "./", tr("XML Files (*.xml)"));
 
@@ -120,19 +120,19 @@ void HARRTstarWindow::onOpen() {
     }
 }
 
-bool HARRTstarWindow::setupPlanning(QString filename) {
+bool BIRRTstarWindow::setupPlanning(QString filename) {
     if(mpViz) {
         mpViz->m_PPInfo.load_from_file(filename);
         openMap(mpViz->m_PPInfo.m_map_fullpath);
-        if(mpHARRTstarConfig) {
-            mpHARRTstarConfig->updateDisplay();
+        if(mpBIRRTstarConfig) {
+            mpBIRRTstarConfig->updateDisplay();
         }
         return true;
     }
     return false;
 }
 
-void HARRTstarWindow::onSave() {
+void BIRRTstarWindow::onSave() {
     QString tempFilename = QFileDialog::getSaveFileName(this, tr("Save File"), "./", tr("XML Files (*.xml)"));
 
     if(mpViz) {
@@ -140,7 +140,7 @@ void HARRTstarWindow::onSave() {
     }
 }
 
-void HARRTstarWindow::onExport() {
+void BIRRTstarWindow::onExport() {
     QString pathFilename = QFileDialog::getSaveFileName(this, tr("Save File"), "./", tr("Txt Files (*.txt)"));
     if (pathFilename != "") {
         mpViz->m_PPInfo.m_paths_output = pathFilename;
@@ -148,7 +148,7 @@ void HARRTstarWindow::onExport() {
     }
 }
 
-bool HARRTstarWindow::exportPaths() {
+bool BIRRTstarWindow::exportPaths() {
     if(mpViz) {
         bool success = false;
         success = mpViz->m_PPInfo.export_paths(mpViz->m_PPInfo.m_paths_output);
@@ -158,7 +158,7 @@ bool HARRTstarWindow::exportPaths() {
     return false;
 }
 
-void HARRTstarWindow::onLoadMap() {
+void BIRRTstarWindow::onLoadMap() {
     QString tempFilename = QFileDialog::getOpenFileName(this,
              tr("Open Map File"), "./", tr("Map Files (*.*)"));
 
@@ -173,7 +173,7 @@ void HARRTstarWindow::onLoadMap() {
 }
 
 
-bool HARRTstarWindow::openMap(QString filename) {
+bool BIRRTstarWindow::openMap(QString filename) {
     if(mpMap) {
         delete mpMap;
         mpMap = NULL;
@@ -196,12 +196,12 @@ bool HARRTstarWindow::openMap(QString filename) {
     return false;
 }
 
-void HARRTstarWindow::onLoadObj() {
-    mpHARRTstarConfig->exec();
+void BIRRTstarWindow::onLoadObj() {
+    mpBIRRTstarConfig->exec();
     updateTitle();
 }
 
-void HARRTstarWindow::onRun() {
+void BIRRTstarWindow::onRun() {
     if (mpViz->m_PPInfo.m_map_width <= 0 || mpViz->m_PPInfo.m_map_height <= 0) {
         QMessageBox msgBox;
         msgBox.setText("Map is not initialized.");
@@ -225,7 +225,7 @@ void HARRTstarWindow::onRun() {
     repaint();
 }
 
-void HARRTstarWindow::onExportGrammar() {
+void BIRRTstarWindow::onExportGrammar() {
 
     QString grammarFilename = QFileDialog::getSaveFileName(this, tr("Save File"), "./", tr("DOT Files (*.dot)"));
     if( mpReferenceFrameSet ) {
@@ -236,10 +236,10 @@ void HARRTstarWindow::onExportGrammar() {
     }
 }
 
-void HARRTstarWindow::planPath() {
-    if(mpHARRTstar) {
-        delete mpHARRTstar;
-        mpHARRTstar = NULL;
+void BIRRTstarWindow::planPath() {
+    if(mpBIRRTstar) {
+        delete mpBIRRTstar;
+        mpBIRRTstar = NULL;
     }
     if (mpViz) {
         for( std::vector<Path*>::iterator it = mpViz->m_PPInfo.mp_found_paths.begin();
@@ -257,72 +257,72 @@ void HARRTstarWindow::planPath() {
     msg += "MaxIterationNum( " + QString::number(mpViz->m_PPInfo.m_max_iteration_num) + " ) \n";
     qDebug() << msg;
 
-    mpHARRTstar = new HARRTstar(mpMap->width(), mpMap->height(), mpViz->m_PPInfo.m_segment_length);
-    mpHARRTstar->set_reference_frames( mpReferenceFrameSet );
-    mpHARRTstar->set_run_type( mpViz->m_PPInfo.m_run_type );
+    mpBIRRTstar = new BIRRTstar(mpMap->width(), mpMap->height(), mpViz->m_PPInfo.m_segment_length);
+    mpBIRRTstar->set_reference_frames( mpReferenceFrameSet );
+    mpBIRRTstar->set_run_type( mpViz->m_PPInfo.m_run_type );
     POS2D start(mpViz->m_PPInfo.m_start.x(), mpViz->m_PPInfo.m_start.y());
     POS2D goal(mpViz->m_PPInfo.m_goal.x(), mpViz->m_PPInfo.m_goal.y());
     
-    mpHARRTstar->init(start, goal, mpViz->m_PPInfo.mp_func, mpViz->m_PPInfo.mCostDistribution, mpViz->m_PPInfo.m_grammar_type);
-    mpViz->m_PPInfo.get_obstacle_info(mpHARRTstar->get_map_info());
-    mpViz->setTree(mpHARRTstar);
+    mpBIRRTstar->init(start, goal, mpViz->m_PPInfo.mp_func, mpViz->m_PPInfo.mCostDistribution, mpViz->m_PPInfo.m_grammar_type);
+    mpViz->m_PPInfo.get_obstacle_info(mpBIRRTstar->get_map_info());
+    mpViz->setTree(mpBIRRTstar);
     mpViz->set_finished_planning( false );
     
 
-    //mpHARRTstar->dump_distribution("dist.txt");
-    while(mpHARRTstar->get_current_iteration() <= mpViz->m_PPInfo.m_max_iteration_num) {
-        QString msg = "CurrentIteration " + QString::number(mpHARRTstar->get_current_iteration()) + " ";
-        mpHARRTstar->extend();
-        msg += QString::number(mpHARRTstar->get_string_class_mgr()->get_string_classes().size()); 
+    //mpBIRRTstar->dump_distribution("dist.txt");
+    while(mpBIRRTstar->get_current_iteration() <= mpViz->m_PPInfo.m_max_iteration_num) {
+        QString msg = "CurrentIteration " + QString::number(mpBIRRTstar->get_current_iteration()) + " ";
+        mpBIRRTstar->extend();
+        msg += QString::number(mpBIRRTstar->get_string_class_mgr()->get_string_classes().size()); 
         qDebug() << msg;
 
         updateStatus();
         repaint();
     }
     qDebug() << "START MERGE ";
-    mpHARRTstar->get_string_class_mgr()->merge();
+    mpBIRRTstar->get_string_class_mgr()->merge();
     qDebug() << "END MERGE ";
-    //Path* path = mpHARRTstar->find_path();
-    std::vector<Path*> p_paths = mpHARRTstar->get_paths();
+    //Path* path = mpBIRRTstar->find_path();
+    std::vector<Path*> p_paths = mpBIRRTstar->get_paths();
     mpViz->m_PPInfo.load_paths(p_paths);
     mpViz->set_finished_planning( true );
     repaint();
 }
 
-void HARRTstarWindow::onAddStart() {
+void BIRRTstarWindow::onAddStart() {
     mpViz->m_PPInfo.m_start = mCursorPoint;
     repaint();
 }
 
-void HARRTstarWindow::onAddGoal() {
+void BIRRTstarWindow::onAddGoal() {
     mpViz->m_PPInfo.m_goal = mCursorPoint;
     repaint();
 }
 
-void HARRTstarWindow::onSaveScreen() {
+void BIRRTstarWindow::onSaveScreen() {
     QString tempFilename = QFileDialog::getSaveFileName(this, tr("Save PNG File"), "./", tr("PNG Files (*.png)"));
     mpViz->saveCurrentViz( tempFilename );
 }
 
-void HARRTstarWindow::contextMenuRequested(QPoint point) {
+void BIRRTstarWindow::contextMenuRequested(QPoint point) {
     mCursorPoint = point;
     mpContextMenu->popup(mapToGlobal(point));
 }
 
-void HARRTstarWindow::updateTitle() {
+void BIRRTstarWindow::updateTitle() {
     QString title = mpViz->m_PPInfo.m_map_filename;
     setWindowTitle(title);
 }
 
-void HARRTstarWindow::updateStatus() {
+void BIRRTstarWindow::updateStatus() {
     if(mpViz==NULL) {
         return;
     }
     if(mpStatusProgressBar) {
-        if(mpHARRTstar) {
+        if(mpBIRRTstar) {
             mpStatusProgressBar->setMinimum(0);
             mpStatusProgressBar->setMaximum(mpViz->m_PPInfo.m_max_iteration_num);
-            mpStatusProgressBar->setValue(mpHARRTstar->get_current_iteration());
+            mpStatusProgressBar->setValue(mpBIRRTstar->get_current_iteration());
         }
     }
     if(mpStatusLabel) {
@@ -342,7 +342,7 @@ void HARRTstarWindow::updateStatus() {
     repaint();
 }
 
-void HARRTstarWindow::keyPressEvent(QKeyEvent *event) {
+void BIRRTstarWindow::keyPressEvent(QKeyEvent *event) {
    if ( event->key() == Qt::Key_R  ) {
        if(mpViz) {
            if(mpViz->show_reference_frames() == true) {
@@ -444,7 +444,7 @@ void HARRTstarWindow::keyPressEvent(QKeyEvent *event) {
    }
 }
 
-void HARRTstarWindow::onExportAllSimpleStrings() {
+void BIRRTstarWindow::onExportAllSimpleStrings() {
 
     QString stringFilename = QFileDialog::getSaveFileName(this, tr("Save File"), "./", tr("TXT Files (*.txt)"));
     if( mpReferenceFrameSet ) {
