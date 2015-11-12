@@ -1,9 +1,9 @@
-#ifndef ML_HARRTSTAR_H
-#define ML_HARRTSTAR_H
+#ifndef MLRRTSTAR_H
+#define MLRRTSTAR_H
 
 #include <vector>
 #include <list>
-#include "KDTreeML2D.h"
+#include "kdtreeml2d.h"
 #include "string_class_mgr.h"
 #include "reference_frames.h"
 
@@ -58,4 +58,4 @@ namespace mlrrts {
 }
 
 
-#endif /* ML_HARRTSTAR_H */
+#endif /* MLRRTSTAR_H */
