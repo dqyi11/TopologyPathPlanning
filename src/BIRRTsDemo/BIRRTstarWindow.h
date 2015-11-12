@@ -10,7 +10,7 @@
 #include "BIRRTstarViz.h"
 #include "reference_frames.h"
 
-namespace harrts {
+namespace birrts {
 
   class BIRRTstarConfig;
 

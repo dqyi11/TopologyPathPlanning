@@ -9,7 +9,7 @@
 #include <QLineEdit>
 #include <QComboBox>
 
-namespace harrts {
+namespace birrts {
 
   class BIRRTstarWindow;
 

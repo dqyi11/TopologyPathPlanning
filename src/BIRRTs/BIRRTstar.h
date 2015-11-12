@@ -8,7 +8,7 @@
 #include "string_class_mgr.h"
 
 
-namespace harrts {
+namespace birrts {
 
   typedef double (*COST_FUNC_PTR)(POS2D, POS2D, double**, void*);
 

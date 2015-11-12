@@ -10,7 +10,7 @@
 #include "img_load_util.h"
 
 using namespace homotopy;
-using namespace harrts;
+using namespace birrts;
 
 BIRRTstarWindow::BIRRTstarWindow(QWidget *parent)
     : QMainWindow(parent) {

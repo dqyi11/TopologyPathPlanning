@@ -2,7 +2,7 @@
 #include "BIRRTstar.h"
 
 using namespace homotopy;
-using namespace harrts;
+using namespace birrts;
 
 StringClass::StringClass( std::vector< std::string > string ) {
   m_string = string;

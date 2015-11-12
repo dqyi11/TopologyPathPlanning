@@ -7,7 +7,7 @@
 #include "path_planning_info.h"
 
 using namespace homotopy;
-using namespace harrts;
+using namespace birrts;
 
 PathPlanningInfo::PathPlanningInfo() {
     m_info_filename = "";

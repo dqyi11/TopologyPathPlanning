@@ -1,16 +1,16 @@
-#ifndef KDTREE2D_H
-#define KDTREE2D_H
+#ifndef KDTREEML2D_H
+#define KDTREEML2D_H
 
 #define KDTREE_DEFINE_OSTREAM_OPERATORS
 
 #include <functional>
 #include <iostream>
-
+#include <vector>
 #include "kdtree++/kdtree.hpp"
 
-namespace birrts {
+namespace mlrrts {
 
-  class BIRRTNode;
+  class MLRRTNode;
 
   class POS2D {
   public:
@@ -54,12 +54,12 @@ namespace birrts {
 
   class KDNode2D : public POS2D {
   public:
-    KDNode2D(value_type x, value_type y) : POS2D(x, y) { mpBIRRTNode = NULL; }
-    KDNode2D(POS2D & pos) : POS2D(pos) { mpBIRRTNode = NULL; }
-    void setBIRRTNode(BIRRTNode* pNode) { mpBIRRTNode = pNode; }
-    BIRRTNode* getBIRRTNode() { return mpBIRRTNode; }
+    KDNode2D(value_type x, value_type y) : POS2D(x, y) { mpMLRRTNodes.clear(); }
+    KDNode2D(POS2D & pos) : POS2D(pos) { mpMLRRTNodes.clear(); }
+    void addMLRRTNode(MLRRTNode* pNode) { mpMLRRTNodes.push_back(pNode); }
+    std::vector<MLRRTNode*>& getMLRRTNodes() { return mpMLRRTNodes; }
   protected:
-    BIRRTNode* mpBIRRTNode;
+    std::vector<MLRRTNode*> mpMLRRTNodes;
   };
 
 

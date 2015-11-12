@@ -11,7 +11,7 @@
 
 #include "BIRRTstar.h"
 
-namespace harrts {
+namespace birrts {
 
   class PathPlanningInfo {
   public:

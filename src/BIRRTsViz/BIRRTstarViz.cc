@@ -14,7 +14,7 @@
 #define LINE_WIDTH              2
 
 using namespace homotopy;
-using namespace harrts;
+using namespace birrts;
 
 BIRRTstarViz::BIRRTstarViz( QWidget *parent ) :
     QLabel(parent) {

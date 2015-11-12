@@ -2,7 +2,7 @@
 #include <QApplication>
 #include "BIRRTstarWindow.h"
 
-using namespace harrts;
+using namespace birrts;
 
 int main(int argc, char *argv[]) {
     bool no_gui = false;

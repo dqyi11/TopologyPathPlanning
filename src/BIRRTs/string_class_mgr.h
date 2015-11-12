@@ -4,7 +4,7 @@
 #include <vector>
 #include "string_grammar.h"
 
-namespace harrts {
+namespace birrts {
 
   class Path;
 

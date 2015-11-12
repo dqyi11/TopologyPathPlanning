@@ -7,7 +7,7 @@
 #include "path_planning_info.h"
 #include "reference_frames.h"
 
-namespace harrts {
+namespace birrts {
 
   typedef enum{
     NONE_TREE_SHOW,

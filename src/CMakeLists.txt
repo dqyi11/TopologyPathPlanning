@@ -71,7 +71,11 @@ include_directories(${PROJECT_SOURCE_DIR}/src/Homotopy
                     ${PROJECT_SOURCE_DIR}/src/HomotopyDemo
                     ${PROJECT_SOURCE_DIR}/src/BIRRTs
                     ${PROJECT_SOURCE_DIR}/src/BIRRTsViz
-                    ${PROJECT_SOURCE_DIR}/src/BIRRTsDemo)
+                    ${PROJECT_SOURCE_DIR}/src/BIRRTsDemo
+                    ${PROJECT_SOURCE_DIR}/src/MLRRTs
+                    ${PROJECT_SOURCE_DIR}/src/MLRRTsViz
+                    ${PROJECT_SOURCE_DIR}/src/MLRRTsDemo
+                   )
 
 add_definitions(-Wall -g -O3)
 
@@ -81,3 +85,7 @@ add_subdirectory(HomotopyDemo)
 add_subdirectory(BIRRTs)
 add_subdirectory(BIRRTsViz)
 add_subdirectory(BIRRTsDemo)
+add_subdirectory(MLRRTs)
+add_subdirectory(MLRRTsViz)
+add_subdirectory(MLRRTsDemo)
+

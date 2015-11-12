@@ -6,7 +6,7 @@
 
 #define OBSTACLE_THRESHOLD 200
 
-using namespace harrts;
+using namespace birrts;
 using namespace homotopy;
 
 BIRRTNode::BIRRTNode(POS2D pos) {
