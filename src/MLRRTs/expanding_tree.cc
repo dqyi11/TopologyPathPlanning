@@ -33,4 +33,3 @@ bool ExpandingTree::init( homotopy::StringGrammar * p_grammar ) {
   return true;
 }
 
-
