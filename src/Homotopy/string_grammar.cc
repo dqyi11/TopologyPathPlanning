@@ -178,7 +178,7 @@ bool StringGrammar::set_init( std::string name ) {
   if ( p_state == NULL ) {
     return false;
   }
-  _init_state = p_state;
+  _p_init_state = p_state;
   return true;
 }
 
@@ -187,12 +187,12 @@ bool StringGrammar::set_goal( std::string name ) {
   if ( p_state == NULL ) {
     return false;
   }
-  _goal_state = p_state;
+  _p_goal_state = p_state;
   return true;
 }
 
 bool StringGrammar::is_valid_substring( std::vector< std::string > substr ) {
-  State* p_current_state = _init_state;
+  State* p_current_state = _p_init_state;
   for ( std::vector< std::string >::iterator it = substr.begin();
         it != substr.end(); it++ ) {
     std::string name = (*it);
@@ -207,7 +207,7 @@ bool StringGrammar::is_valid_substring( std::vector< std::string > substr ) {
 
 bool StringGrammar::is_valid_string( std::vector< std::string > str ) {
   unsigned int str_num = str.size();
-  State* p_current_state = _init_state;
+  State* p_current_state = _p_init_state;
   for ( unsigned int i=0; i < str_num; i++ ) {
     std::string name = str[i];
     Adjacency adj = p_current_state->find_adjacency( name );
@@ -218,7 +218,7 @@ bool StringGrammar::is_valid_string( std::vector< std::string > str ) {
       p_current_state = adj.mp_state;
     }
     else {
-      if ( adj.mp_state == _goal_state ) {
+      if ( adj.mp_state == _p_goal_state ) {
         return true;
       }
     }
@@ -295,8 +295,8 @@ void StringGrammar::output( std::string filename ) {
 
 std::vector< std::vector< std::string > > StringGrammar::get_all_simple_strings( ) {
   std::vector< std::vector< std::string > > simple_strings;
-  if( _init_state && _goal_state ) { 
-    simple_strings = find_simple_paths( _init_state->m_name, _goal_state->m_name, _states.size(), _transitions.size() );
+  if( _p_init_state && _p_goal_state ) { 
+    simple_strings = find_simple_strings();
   }
   return simple_strings;
 }
@@ -326,14 +326,30 @@ void print_path( std::vector< Adjacency > path ) {
   std::cout << std::endl;
 }
 
+std::vector< std::vector< std::string > > StringGrammar::find_simple_strings() {
 
-std::vector< std::vector< std::string > > StringGrammar::find_simple_paths(std::string source, std::string target, int total_node_num, int total_edge_num) {
-  
+  std::vector< std::vector< Adjacency > > path_list = find_simple_paths();
   std::vector< std::vector< std::string > > ids_list;
+  for( unsigned int i=0;i<path_list.size(); i++) {
+    std::vector< std::string > ids;
+    std::vector< Adjacency > p = path_list[i];
+    for( unsigned int j=0;j<p.size();j++) {
+      Transition* p_transition = p[j].mp_transition;
+      if( p_transition ) {
+        ids.push_back( p_transition->m_name );
+      }
+    }
+    ids_list.push_back( ids );
+  }
+  return ids_list;
+}
+
+std::vector< std::vector< Adjacency > > StringGrammar::find_simple_paths() {
+
   std::vector< std::vector< Adjacency > > path_list;
   std::vector< Adjacency > path;
   Adjacency init_adj;
-  init_adj.mp_state = find_state( source );
+  init_adj.mp_state = _p_init_state;
   init_adj.mp_transition = NULL;  
   path.push_back(init_adj);
 
@@ -345,7 +361,7 @@ std::vector< std::vector< std::string > > StringGrammar::find_simple_paths(std::
     q.pop();
 
     Adjacency last_node_of_path = path[path.size()-1];
-    if( last_node_of_path.mp_state->m_name == target ) {
+    if( last_node_of_path.mp_state->m_name == _p_goal_state->m_name ) {
       print_path(path);
       path_list.push_back(path);
     }
@@ -361,16 +377,6 @@ std::vector< std::vector< std::string > > StringGrammar::find_simple_paths(std::
        }
     }
   }
-  for( unsigned int i=0;i<path_list.size(); i++) {
-    std::vector< std::string > ids;
-    std::vector< Adjacency > p = path_list[i];
-    for( unsigned int j=0;j<p.size();j++) {
-      Transition* p_transition = p[j].mp_transition;
-      if( p_transition ) {
-        ids.push_back( p_transition->m_name );
-      }
-    }
-    ids_list.push_back( ids );
-  }
-  return ids_list;
+
+  return path_list;
 }

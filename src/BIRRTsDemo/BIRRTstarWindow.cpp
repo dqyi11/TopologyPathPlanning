@@ -459,7 +459,7 @@ void BIRRTstarWindow::onExportAllSimpleStrings() {
             QTextStream out(&file);
             for( std::vector< std::vector< std::string > >::iterator it = simple_strings.begin(); it != simple_strings.end(); it++ ) {
                 std::vector< std::string > ids = (*it);
-                for( int i=0; i < ids.size(); i ++) {
+                for( unsigned int i=0; i < ids.size(); i ++) {
                    out << ids[i].c_str() << " ";
                 }
                 if( p_grammar->is_valid_string( ids )) {

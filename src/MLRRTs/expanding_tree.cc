@@ -28,6 +28,8 @@ bool ExpandingTree::init( homotopy::StringGrammar * p_grammar ) {
     return false;
   }
 
+  std::vector< std::vector < homotopy::Adjacency > > paths = p_grammar->find_simple_paths();
+
   return true;
 }
 

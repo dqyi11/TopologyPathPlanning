@@ -65,14 +65,15 @@ namespace homotopy {
     void output( std::string filename ); 
     std::vector< std::string > get_non_repeating_form( std::vector< std::string > str );
     virtual bool is_equivalent( std::vector< std::string > str_a , std::vector< std::string > str_b );
+    std::vector< std::vector< Adjacency > > find_simple_paths();
 protected:
-    std::vector< std::vector< std::string > > find_simple_paths(std::string source, std::string target, int total_node_num, int total_edge_num);
+    std::vector< std::vector< std::string > > find_simple_strings();
 
     std::vector<Transition*> _transitions;
     std::vector<State*>      _states;
 
-    State*                   _init_state;
-    State*                   _goal_state;
+    State*                   _p_init_state;
+    State*                   _p_goal_state;
   };
 }
 
