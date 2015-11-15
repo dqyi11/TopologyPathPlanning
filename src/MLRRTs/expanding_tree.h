@@ -11,16 +11,22 @@ namespace mlrrts {
 
   class ExpandingNode {
   public:
-    ExpandingNode();
+    ExpandingNode( std::string name );
     virtual ~ExpandingNode();
 
+    ExpandingEdge* find_out_edge( std::string name );
+    bool has_out_edge( ExpandingEdge* p_edge );
+ 
     std::string m_name;
     std::vector<ExpandingEdge*> m_out_edges;
   };
   
   class ExpandingEdge {
   public:
+    ExpandingEdge( std::string name );
+    virtual ~ExpandingEdge();
 
+    std::string m_name;
     ExpandingNode* mp_from;
     ExpandingNode* mp_to;
   };
@@ -31,6 +37,10 @@ namespace mlrrts {
     virtual ~ExpandingTree();
 
     bool init( homotopy::StringGrammar * p_grammar );
+
+    void output( std::string filename );
+
+    int get_index( ExpandingNode* p_node );    
   
     ExpandingNode* _p_root; 
     std::vector<ExpandingNode*> m_nodes;
