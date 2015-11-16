@@ -2,8 +2,8 @@
 #include <QHBoxLayout>
 #include <QMessageBox>
 #include <QFileDialog>
-#include "BIRRTstarWindow.h"
-#include "BIRRTstarConfig.h"
+#include "birrtstarwindow.h"
+#include "birrtstarconfig.h"
 
 #define STRING_GRAMMAR_STR    "String grammar"
 #define HOMOTOPIC_GRAMMAR_STR "Homotopic grammar"

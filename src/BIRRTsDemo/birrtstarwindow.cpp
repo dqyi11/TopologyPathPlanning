@@ -5,8 +5,8 @@
 #include <QtDebug>
 #include <QKeyEvent>
 #include <QStatusBar>
-#include "BIRRTstarConfig.h"
-#include "BIRRTstarWindow.h"
+#include "birrtstarconfig.h"
+#include "birrtstarwindow.h"
 #include "img_load_util.h"
 #include "expanding_tree.h"
 

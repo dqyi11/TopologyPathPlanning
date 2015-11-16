@@ -1,6 +1,6 @@
 //#include <QtGui/QApplication>
 #include <QApplication>
-#include "BIRRTstarWindow.h"
+#include "birrtstarwindow.h"
 
 using namespace birrts;
 

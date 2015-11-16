@@ -1,6 +1,6 @@
 #include <QtGui>
 
-#include "BIRRTstarViz.h"
+#include "birrtstarviz.h"
 
 #define START_TREE_COLOR        QColor(160,160,0)
 #define START_TREE_COLOR_ALPHA  QColor(160,160,0,100)

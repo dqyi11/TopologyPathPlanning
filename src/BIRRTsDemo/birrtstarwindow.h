@@ -7,7 +7,7 @@
 #include <QAction>
 #include <QPixmap>
 #include <QProgressBar>
-#include "BIRRTstarViz.h"
+#include "birrtstarviz.h"
 #include "reference_frames.h"
 
 namespace birrts {

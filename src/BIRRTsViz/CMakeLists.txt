@@ -3,15 +3,15 @@ set(LIB harrts-birrts-viz)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+set(HDR  path_planning_info.h
+         birrtstarviz.h
+         )
+
 add_library(${LIB} SHARED
-            path_planning_info.h
             path_planning_info.cc
-            BIRRTstarViz.h
-            BIRRTstarViz.cc
+            birrtstarviz.cc
            )
 
-include_directories(
-                   )
 
 target_link_libraries(${LIB} 
                       harrts-birrts
@@ -25,3 +25,5 @@ install(TARGETS ${LIB}
         ARCHIVE
         DESTINATION lib)
 
+install(FILES ${HDR}
+        DESTINATION include/)

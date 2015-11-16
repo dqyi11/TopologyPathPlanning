@@ -2,10 +2,10 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 add_executable(harrts-birrts-demo
-               BIRRTstarConfig.h
-               BIRRTstarConfig.cpp
-               BIRRTstarWindow.h
-               BIRRTstarWindow.cpp
+               birrtstarconfig.h
+               birrtstarconfig.cpp
+               birrtstarwindow.h
+               birrtstarwindow.cpp
                birrtstar_demo.cpp
                )
 
