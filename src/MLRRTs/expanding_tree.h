@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include "string_grammar.h"
+#include "worldmap.h"
 
 namespace mlrrts {
 
@@ -20,9 +21,10 @@ namespace mlrrts {
     ExpandingNode* get_parent_node();
     std::vector<ExpandingNode*> get_child_nodes();
  
-    std::string m_name;
+    std::string                 m_name;
     ExpandingEdge*              mp_in_edge;
     std::vector<ExpandingEdge*> mp_out_edges;
+    homotopy::SubRegion*        mp_subregion;
   };
   
   class ExpandingEdge {
@@ -30,9 +32,10 @@ namespace mlrrts {
     ExpandingEdge( std::string name );
     virtual ~ExpandingEdge();
 
-    std::string m_name;
-    ExpandingNode* mp_from;
-    ExpandingNode* mp_to;
+    std::string                m_name;
+    ExpandingNode*             mp_from;
+    ExpandingNode*             mp_to;
+    homotopy::LineSubSegment*  mp_linesubsegment;
   };
 
   class ExpandingTree {
@@ -40,7 +43,7 @@ namespace mlrrts {
     ExpandingTree();
     virtual ~ExpandingTree();
 
-    bool init( homotopy::StringGrammar * p_grammar );
+    bool init( homotopy::StringGrammar * p_grammar, homotopy::WorldMap* p_worldmap = NULL );
 
     void output( std::string filename );
 

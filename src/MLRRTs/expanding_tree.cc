@@ -19,11 +19,13 @@ typedef graph_traits<Graph>::edge_descriptor edge_t;
 ExpandingNode::ExpandingNode( string name ) {
   m_name = name;
   mp_in_edge = NULL;
+  mp_subregion = NULL;
   mp_out_edges.clear();
 }
 
 ExpandingNode::~ExpandingNode() {
   mp_in_edge = NULL;
+  mp_subregion = NULL;
   mp_out_edges.clear();
 }
 
@@ -61,10 +63,13 @@ ExpandingEdge::ExpandingEdge( string name ) {
   m_name = name;
   mp_from = NULL;
   mp_to = NULL;
+  mp_linesubsegment = NULL;
 }
 
 ExpandingEdge::~ExpandingEdge() {
-
+  mp_from = NULL;
+  mp_to = NULL;
+  mp_linesubsegment = NULL;
 }
 
 bool ExpandingNode::has_out_edge( ExpandingEdge* p_edge ) {
@@ -90,7 +95,7 @@ ExpandingTree::~ExpandingTree() {
   m_nodes.clear();
 }
 
-bool ExpandingTree::init( homotopy::StringGrammar * p_grammar ) {
+bool ExpandingTree::init( homotopy::StringGrammar * p_grammar, homotopy::WorldMap* p_worldmap ) {
   if( p_grammar == NULL ) {
     return false;
   }
@@ -107,13 +112,17 @@ bool ExpandingTree::init( homotopy::StringGrammar * p_grammar ) {
         if( mp_root == NULL ) {
           /* root uninitialized */
           mp_root = new ExpandingNode( adj.mp_state->m_name );
+          if ( p_worldmap ) {
+            mp_root->mp_subregion = p_worldmap->find_subregion( adj.mp_state->m_name );
+          }
           m_nodes.push_back( mp_root );
+          p_current_node = mp_root;
         }
         else {
           /* root initialized */
           p_current_node = mp_root;
           if( p_current_node->m_name != adj.mp_state->m_name ) {
-            cout << "ERROR " << endl;
+            cout << "ERROR [ROOT MISMATCH] Root Name=\"" << p_current_node->m_name <<"\" Adj State Name =\"" << adj.mp_state->m_name << "\""  << endl;
           }
         }                
       } 
@@ -124,9 +133,15 @@ bool ExpandingTree::init( homotopy::StringGrammar * p_grammar ) {
           /* no edge found */ 
           p_edge = new ExpandingEdge( adj.mp_transition->m_name );
           p_edge->mp_from = p_current_node;
+          if( p_worldmap ) {
+            p_edge->mp_linesubsegment = p_worldmap->find_linesubsegment( adj.mp_transition->m_name );
+          }
           p_edge->mp_to = new ExpandingNode( adj.mp_state->m_name );
           p_edge->mp_to->mp_in_edge = p_edge;
-          p_edge->mp_from->mp_out_edges.push_back( p_edge );  
+          p_edge->mp_from->mp_out_edges.push_back( p_edge ); 
+          if( p_worldmap ) {
+            p_edge->mp_to->mp_subregion = p_worldmap->find_subregion( adj.mp_state->m_name );
+          }
           m_edges.push_back( p_edge );
           m_nodes.push_back( p_edge->mp_to );
  
@@ -160,6 +175,7 @@ int ExpandingTree::get_index( ExpandingNode* p_node ) {
 }
 
 void ExpandingTree::output( std::string filename ) {
+
   const unsigned int edge_num = m_edges.size();
   const unsigned int vertex_num = m_nodes.size();
  
@@ -183,5 +199,6 @@ void ExpandingTree::output( std::string filename ) {
   }
  
   ofstream dot( filename.c_str() );
-  write_graphviz( dot, g, make_label_writer( get( &Vertex::name, g) ), make_label_writer( get( &Edge::name, g ) ) );  
+  write_graphviz( dot, g, make_label_writer( get( &Vertex::name, g) ), make_label_writer( get( &Edge::name, g ) ) );
+ 
 }  

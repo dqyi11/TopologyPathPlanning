@@ -32,11 +32,14 @@ namespace homotopy {
     int get_width() const { return _map_width; }
     int get_height() const { return _map_height; }
 
+    SubRegion* find_subregion( std::string name );
+    LineSubSegment* find_linesubsegment( std::string name );
+
     Point2D get_central_point() const { return _central_point; }
     std::vector<Obstacle*> get_obstacles() const { return _obstacles; }
     std::vector<SubRegionSet*> get_subregion_set() const { return _region_sets; }
     std::vector<SubRegion*> get_subregions() const { return _subregions; } 
-    std::vector<LineSubSegmentSet*> get_sublinesegment_set() const { return _line_segments; }
+    std::vector<LineSubSegmentSet*> get_linesubsegment_set() const { return _line_segments; }
 
     double get_distance_to_central_point( Point2D point );
 

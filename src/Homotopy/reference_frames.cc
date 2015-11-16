@@ -117,10 +117,10 @@ StringGrammar* ReferenceFrameSet::get_string_grammar( SubRegion* p_init, SubRegi
   StringGrammar* p_grammar = NULL;
   if( _p_world_map && p_init && p_goal ) {
     p_grammar = new StringGrammar();  
-    //std::cout << "sublinesegment set " << _p_world_map->get_sublinesegment_set().size() << std::endl;
+    //std::cout << "sublinesegment set " << _p_world_map->get_linesubsegment_set().size() << std::endl;
 
-    for( unsigned int i = 0; i < _p_world_map->get_sublinesegment_set().size(); i++ ) {
-      LineSubSegmentSet* p_linesubsegment_set = _p_world_map->get_sublinesegment_set()[i];
+    for( unsigned int i = 0; i < _p_world_map->get_linesubsegment_set().size(); i++ ) {
+      LineSubSegmentSet* p_linesubsegment_set = _p_world_map->get_linesubsegment_set()[i];
       if(p_linesubsegment_set) {
         //std::cout << p_linesubsegment_set->m_subsegs.size() << std::endl;
         //std::cout << "LR " << p_linesubsegment_set->get_name() << std::endl;
@@ -149,8 +149,8 @@ HomotopicGrammar* ReferenceFrameSet::get_homotopic_grammar( SubRegion* p_init, S
   if( _p_world_map && p_init && p_goal ) {
     p_grammar = new HomotopicGrammar();
      
-    for( unsigned int i = 0; i < _p_world_map->get_sublinesegment_set().size(); i++ ) {
-      LineSubSegmentSet* p_linesubsegment_set = _p_world_map->get_sublinesegment_set()[i];
+    for( unsigned int i = 0; i < _p_world_map->get_linesubsegment_set().size(); i++ ) {
+      LineSubSegmentSet* p_linesubsegment_set = _p_world_map->get_linesubsegment_set()[i];
       if(p_linesubsegment_set) {
         for( unsigned int j = 0; j < p_linesubsegment_set->m_subsegs.size(); j++) {
           LineSubSegment* p_linesubsegment = p_linesubsegment_set->m_subsegs[j];
