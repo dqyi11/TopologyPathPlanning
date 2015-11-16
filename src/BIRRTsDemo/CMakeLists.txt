@@ -17,6 +17,7 @@ target_link_libraries(harrts-birrts-demo
                       harrts-homotopy-viz
                       harrts-birrts
                       harrts-birrts-viz
+                      harrts-mlrrts
                       ${QT_LIBRARIES}
                      )
 install(TARGETS harrts-birrts-demo DESTINATION bin)

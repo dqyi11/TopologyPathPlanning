@@ -8,6 +8,7 @@
 #include "BIRRTstarConfig.h"
 #include "BIRRTstarWindow.h"
 #include "img_load_util.h"
+#include "expanding_tree.h"
 
 using namespace homotopy;
 using namespace birrts;
@@ -232,6 +233,10 @@ void BIRRTstarWindow::onExportGrammar() {
         StringGrammar* p_grammar = mpReferenceFrameSet->get_string_grammar( mpViz->m_PPInfo.m_start.x(), mpViz->m_PPInfo.m_start.y(), mpViz->m_PPInfo.m_goal.x(), mpViz->m_PPInfo.m_goal.y() );
         if( p_grammar ) {
             p_grammar->output( grammarFilename.toStdString() );
+            mlrrts::ExpandingTree tree;
+            tree.init( p_grammar );
+            QString expandingTreeFilename = grammarFilename.replace(".dot","") + "-exp.dot";
+            tree.output( expandingTreeFilename.toStdString() );
         }
     }
 }
