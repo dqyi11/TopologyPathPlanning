@@ -315,162 +315,160 @@ void BIRRTstarWindow::updateTitle() {
 }
 
 void BIRRTstarWindow::updateStatus() {
-    if(mpViz==NULL) {
-        return;
+  if(mpViz==NULL) {
+    return;
+  }
+  if(mpStatusProgressBar) {
+    if(mpBIRRTstar) {
+      mpStatusProgressBar->setMinimum(0);
+      mpStatusProgressBar->setMaximum(mpViz->m_PPInfo.m_max_iteration_num);
+      mpStatusProgressBar->setValue(mpBIRRTstar->get_current_iteration());
     }
-    if(mpStatusProgressBar) {
-        if(mpBIRRTstar) {
-            mpStatusProgressBar->setMinimum(0);
-            mpStatusProgressBar->setMaximum(mpViz->m_PPInfo.m_max_iteration_num);
-            mpStatusProgressBar->setValue(mpBIRRTstar->get_current_iteration());
-        }
+  }
+  if(mpStatusLabel) {
+    QString status = "";
+    if (mpViz->get_finished_planning() == false) {
+      status += QString::fromStdString(mpViz->get_region_name());
+      status += " || ";
+      status += QString::fromStdString(mpViz->get_reference_frame_name());
     }
-    if(mpStatusLabel) {
-        QString status = "";
-        if (mpViz->get_finished_planning() == false) {
-            status += QString::fromStdString(mpViz->get_region_name());
-            status += " || ";
-            status += QString::fromStdString(mpViz->get_reference_frame_name());
-        }
-        else {
-            status += QString::number( mpViz->get_found_path_index() );
-            status += " / ";
-            status += QString::number( mpViz->m_PPInfo.mp_found_paths.size() );
-        }
-        mpStatusLabel->setText(status);
+    else {
+      status += QString::number( mpViz->get_found_path_index() );
+      status += " / ";
+      status += QString::number( mpViz->m_PPInfo.mp_found_paths.size() );
     }
-    repaint();
+    mpStatusLabel->setText(status);
+  }
+  repaint();
 }
 
 void BIRRTstarWindow::keyPressEvent(QKeyEvent *event) {
    if ( event->key() == Qt::Key_R  ) {
-       if(mpViz) {
-           if(mpViz->show_reference_frames() == true) {
-               mpViz->set_show_reference_frames( false );
-           }
-           else {
-               mpViz->set_show_reference_frames( true );
-           }
-           updateStatus();
-           repaint();
+     if(mpViz) {
+       if(mpViz->show_reference_frames() == true) {
+         mpViz->set_show_reference_frames( false );
        }
+       else {
+         mpViz->set_show_reference_frames( true );
+       }
+       updateStatus();
+       repaint();
+     }
    }
    else if ( event->key() == Qt::Key_S ) {
-       if(mpViz) {
-           if(mpViz->show_regions() == true) {
-               mpViz->set_show_regions( false );
-           }
-           else {
-               mpViz->set_show_regions( true );
-           }
-           updateStatus();
-           repaint();
+     if(mpViz) {
+       if(mpViz->show_regions() == true) {
+         mpViz->set_show_regions( false );
        }
+       else {
+         mpViz->set_show_regions( true );
+       }
+       updateStatus();
+       repaint();
+     }
    }
    else if ( event->key() == Qt::Key_T ) {
-       if(mpViz) {
-           mpViz->switch_tree_show_type();
-           std::cout << "TREE DISP " <<mpViz->get_tree_show_type();
-       }
-       updateStatus();
-       repaint();
+     if(mpViz) {
+       mpViz->switch_tree_show_type();
+       std::cout << "TREE DISP " <<mpViz->get_tree_show_type();
+     }
+     updateStatus();
+     repaint();
    }
    else if ( event->key() == Qt::Key_I ) {
-       if(mpViz) {
-           if( mpViz->get_drawed_points().size() > 1 ) {
-              mpViz->import_string_constraint( mpViz->get_drawed_points(), mpViz->m_PPInfo.m_grammar_type );
-              mpViz->set_show_drawed_points(false);
-           }
+     if(mpViz) {
+       if( mpViz->get_drawed_points().size() > 1 ) {
+         mpViz->import_string_constraint( mpViz->get_drawed_points(), mpViz->m_PPInfo.m_grammar_type );
+         mpViz->set_show_drawed_points(false);
        }
-       updateStatus();
-       repaint();
+     }
+     updateStatus();
+     repaint();
    }
    else if ( event->key() == Qt::Key_Up ) {
-       if(mpViz) {
-           mpViz->prev_reference_frame();
-           updateStatus();
-           repaint();
-       }
-
+     if(mpViz) {
+       mpViz->prev_reference_frame();
+       updateStatus();
+       repaint();
+     }
    }
    else if ( event->key() == Qt::Key_Down ) {
-       if(mpViz) {
-           mpViz->next_reference_frame();
-           updateStatus();
-           repaint();
-       }
+     if(mpViz) {
+       mpViz->next_reference_frame();
+       updateStatus();
+       repaint();
+     }
    }
    else if ( event->key() == Qt::Key_Left ) {
-       if(mpViz) {
-           mpViz->prev_found_path();
-           updateStatus();
-           repaint();
-       }
+     if(mpViz) {
+       mpViz->prev_found_path();
+       updateStatus();
+       repaint();
+     }
    }
    else if ( event->key() == Qt::Key_Right ) {
-       if(mpViz) {
-           mpViz->next_found_path();
-           updateStatus();
-           repaint();
-       }
+     if(mpViz) {
+       mpViz->next_found_path();
+       updateStatus();
+       repaint();
+     }
    }
    else if ( event->key() == Qt::Key_PageUp ) {
-       if(mpViz) {
-           mpViz->prev_region();
-           updateStatus();
-           repaint();
-       }
+     if(mpViz) {
+       mpViz->prev_region();
+       updateStatus();
+       repaint();
+     }
    }
    else if ( event->key() == Qt::Key_PageDown ) {
-       if(mpViz) {
-           mpViz->next_region();
-           updateStatus();
-           repaint();
-       }
+     if(mpViz) {
+       mpViz->next_region();
+       updateStatus();
+       repaint();
+     }
    }
    else if ( event->key() == Qt::Key_Z ) {
-       if(mpViz) {
-           mpViz->prev_subregion();
-           updateStatus();
-           repaint();
-       }
+     if(mpViz) {
+       mpViz->prev_subregion();
+       updateStatus();
+       repaint();
+     }
    }
    else if ( event->key() == Qt::Key_X ) {
-       if(mpViz) {
-           mpViz->next_subregion();
-           updateStatus();
-           repaint();
-       }
+     if(mpViz) {
+       mpViz->next_subregion();
+       updateStatus();
+       repaint();
+     }
    }
 }
 
 void BIRRTstarWindow::onExportAllSimpleStrings() {
 
-    QString stringFilename = QFileDialog::getSaveFileName(this, tr("Save File"), "./", tr("TXT Files (*.txt)"));
-    if( mpReferenceFrameSet ) {
-        std::vector< std::vector< std::string > > simple_strings;
-        StringGrammar* p_grammar = mpReferenceFrameSet->get_string_grammar( mpViz->m_PPInfo.m_start.x(), mpViz->m_PPInfo.m_start.y(), mpViz->m_PPInfo.m_goal.x(), mpViz->m_PPInfo.m_goal.y() );
-        if( p_grammar ) {
-            simple_strings = p_grammar->get_all_simple_strings();
-            QFile file(stringFilename);
-            if( !file.open(QIODevice::WriteOnly | QIODevice::Text) ) {
-                return;
-            }
-            QTextStream out(&file);
-            for( std::vector< std::vector< std::string > >::iterator it = simple_strings.begin(); it != simple_strings.end(); it++ ) {
-                std::vector< std::string > ids = (*it);
-                for( unsigned int i=0; i < ids.size(); i ++) {
-                   out << ids[i].c_str() << " ";
-                }
-                if( p_grammar->is_valid_string( ids )) {
-                  out << "VALID";
-                }
-                else{
-                  out << "INVALID";
-                }
-                out << "\n";
-            }
+  QString stringFilename = QFileDialog::getSaveFileName(this, tr("Save File"), "./", tr("TXT Files (*.txt)"));
+  if( mpReferenceFrameSet ) {
+    std::vector< std::vector< std::string > > simple_strings;
+    StringGrammar* p_grammar = mpReferenceFrameSet->get_string_grammar( mpViz->m_PPInfo.m_start.x(), mpViz->m_PPInfo.m_start.y(), mpViz->m_PPInfo.m_goal.x(), mpViz->m_PPInfo.m_goal.y() );
+    if( p_grammar ) {
+      simple_strings = p_grammar->get_all_simple_strings();
+      QFile file(stringFilename);
+      if( !file.open(QIODevice::WriteOnly | QIODevice::Text) ) {
+        return;
+      }
+      QTextStream out(&file);
+      for( std::vector< std::vector< std::string > >::iterator it = simple_strings.begin(); it != simple_strings.end(); it++ ) {
+        std::vector< std::string > ids = (*it);
+        for( unsigned int i=0; i < ids.size(); i ++) {
+          out << ids[i].c_str() << " ";
         }
+        if( p_grammar->is_valid_string( ids )) {
+          out << "VALID";
+        }
+        else{
+          out << "INVALID";
+        }
+        out << "\n";
+      }
     }
-
+  }
 }
