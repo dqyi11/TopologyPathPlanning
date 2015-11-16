@@ -16,9 +16,13 @@ namespace mlrrts {
 
     ExpandingEdge* find_out_edge( std::string name );
     bool has_out_edge( ExpandingEdge* p_edge );
+
+    ExpandingNode* get_parent_node();
+    std::vector<ExpandingNode*> get_child_nodes();
  
     std::string m_name;
-    std::vector<ExpandingEdge*> m_out_edges;
+    ExpandingEdge*              mp_in_edge;
+    std::vector<ExpandingEdge*> mp_out_edges;
   };
   
   class ExpandingEdge {
@@ -42,8 +46,9 @@ namespace mlrrts {
 
     int get_index( ExpandingNode* p_node );    
   
-    ExpandingNode* _p_root; 
+    ExpandingNode* mp_root; 
     std::vector<ExpandingNode*> m_nodes;
+    std::vector<ExpandingEdge*> m_edges;
   };
 }
 
