@@ -4,12 +4,12 @@
 #include <QPixmap>
 #include <QFile>
 
-#include "path_planning_info.h"
+#include "birrtstar_path_planning_info.h"
 
 using namespace homotopy;
 using namespace birrts;
 
-PathPlanningInfo::PathPlanningInfo() {
+BIRRTstarPathPlanningInfo::BIRRTstarPathPlanningInfo() {
     m_info_filename = "";
     m_map_filename = "";
     m_map_fullpath = "";
@@ -35,18 +35,18 @@ PathPlanningInfo::PathPlanningInfo() {
     m_map_height = 0;
 }
 
-bool PathPlanningInfo::get_obstacle_info( int** pp_obstacle_info ) {
+bool BIRRTstarPathPlanningInfo::get_obstacle_info( int** pp_obstacle_info ) {
     if( pp_obstacle_info==NULL ) {
         return false;
     }
     return get_pix_info( m_map_fullpath, pp_obstacle_info );
 }
 
-bool PathPlanningInfo::get_cost_distribution( double** pp_cost_distribution ) {
+bool BIRRTstarPathPlanningInfo::get_cost_distribution( double** pp_cost_distribution ) {
     return get_pix_info( m_objective_file, pp_cost_distribution );
 }
 
-bool PathPlanningInfo::get_pix_info( QString filename, double** pp_pix_info ) {
+bool BIRRTstarPathPlanningInfo::get_pix_info( QString filename, double** pp_pix_info ) {
     if( pp_pix_info==NULL ) {
         return false;
     }
@@ -68,7 +68,7 @@ bool PathPlanningInfo::get_pix_info( QString filename, double** pp_pix_info ) {
     return true;
 }
 
-bool PathPlanningInfo::get_pix_info(QString filename, int ** pp_pix_info) {
+bool BIRRTstarPathPlanningInfo::get_pix_info(QString filename, int ** pp_pix_info) {
     if( pp_pix_info==NULL ) {
         return false;
     }
@@ -91,13 +91,13 @@ bool PathPlanningInfo::get_pix_info(QString filename, int ** pp_pix_info) {
 }
 
 
-void PathPlanningInfo::init_func_param() {
+void BIRRTstarPathPlanningInfo::init_func_param() {
     if( m_min_dist_enabled == true ) {
-        mp_func = PathPlanningInfo::calc_dist;
+        mp_func = BIRRTstarPathPlanningInfo::calc_dist;
         mCostDistribution = NULL;
     }
     else {
-        mp_func = PathPlanningInfo::calc_cost;
+        mp_func = BIRRTstarPathPlanningInfo::calc_cost;
         if(mCostDistribution) {
             delete[] mCostDistribution;
             mCostDistribution = NULL;
@@ -110,7 +110,7 @@ void PathPlanningInfo::init_func_param() {
     }
 }
 
-void PathPlanningInfo::read( xmlNodePtr root ) {
+void BIRRTstarPathPlanningInfo::read( xmlNodePtr root ) {
     if( root->type == XML_ELEMENT_NODE ){
         xmlChar* tmp = xmlGetProp( root, ( const xmlChar* )( "map_filename" ) );
         if ( tmp != NULL ) {
@@ -202,7 +202,7 @@ void PathPlanningInfo::read( xmlNodePtr root ) {
 
 }
 
-void PathPlanningInfo::write( xmlDocPtr doc, xmlNodePtr root ) const {
+void BIRRTstarPathPlanningInfo::write( xmlDocPtr doc, xmlNodePtr root ) const {
     
     xmlNodePtr node = xmlNewDocNode( doc, NULL, ( const xmlChar* )( "world" ), NULL );
     xmlNewProp( node, ( const xmlChar* )( "map_filename" ), ( const xmlChar* )( m_map_filename.toStdString().c_str() ) );
@@ -252,7 +252,7 @@ void PathPlanningInfo::write( xmlDocPtr doc, xmlNodePtr root ) const {
     xmlAddChild( root, node );
 }
 
-bool PathPlanningInfo::save_to_file(QString filename) {
+bool BIRRTstarPathPlanningInfo::save_to_file(QString filename) {
     
     xmlDocPtr doc = xmlNewDoc( ( xmlChar* )( "1.0" ) );
     xmlNodePtr root = xmlNewDocNode( doc, NULL, ( xmlChar* )( "root" ), NULL );    xmlDocSetRootElement( doc, root );
@@ -262,7 +262,7 @@ bool PathPlanningInfo::save_to_file(QString filename) {
     return true;
 }
 
-bool PathPlanningInfo::load_from_file(QString filename) {
+bool BIRRTstarPathPlanningInfo::load_from_file(QString filename) {
     xmlDoc * doc = NULL;
     xmlNodePtr root = NULL;
     doc = xmlReadFile( filename.toStdString().c_str(), NULL, 0 );
@@ -282,11 +282,11 @@ bool PathPlanningInfo::load_from_file(QString filename) {
     return true;
 }
 
-void PathPlanningInfo::load_paths( std::vector<Path*> paths) {
+void BIRRTstarPathPlanningInfo::load_paths( std::vector<Path*> paths) {
     mp_found_paths = paths;
 }
 
-bool PathPlanningInfo::export_paths(QString filename) {
+bool BIRRTstarPathPlanningInfo::export_paths(QString filename) {
     QFile file(filename);
     if( file.open(QIODevice::ReadWrite) ) {
         QTextStream stream( & file );
@@ -307,7 +307,7 @@ bool PathPlanningInfo::export_paths(QString filename) {
     return false;
 }
 
-void PathPlanningInfo::dump_cost_distribution( QString filename ) {
+void BIRRTstarPathPlanningInfo::dump_cost_distribution( QString filename ) {
     QFile file(filename);
     if( file.open(QIODevice::ReadWrite) ) {
         QTextStream stream( & file );

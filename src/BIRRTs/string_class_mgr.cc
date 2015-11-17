@@ -1,5 +1,5 @@
 #include "string_class_mgr.h"
-#include "BIRRTstar.h"
+#include "birrtstar.h"
 
 using namespace homotopy;
 using namespace birrts;

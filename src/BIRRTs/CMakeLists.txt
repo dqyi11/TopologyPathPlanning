@@ -1,7 +1,7 @@
 
 set(LIB harrts-birrts)
 
-set(HDR BIRRTstar.h
+set(HDR birrtstar.h
         string_class_mgr.h
         KDTree2D.h
         )
@@ -15,7 +15,7 @@ set(KD_HDR kdtree++/allocator.hpp
         )
 
 add_library(${LIB} SHARED
-            BIRRTstar.cc
+            birrtstar.cc
             string_class_mgr.cc
            )
 

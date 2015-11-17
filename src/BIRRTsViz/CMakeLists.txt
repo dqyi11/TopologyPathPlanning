@@ -3,13 +3,13 @@ set(LIB harrts-birrts-viz)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set(HDR  path_planning_info.h
-         birrtstarviz.h
+set(HDR  birrtstar_path_planning_info.h
+         birrtstar_viz.h
          )
 
 add_library(${LIB} SHARED
-            path_planning_info.cc
-            birrtstarviz.cc
+            birrtstar_path_planning_info.cc
+            birrtstar_viz.cc
            )
 
 

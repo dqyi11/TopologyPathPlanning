@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "BIRRTstar.h"
+#include "birrtstar.h"
 
 #define OBSTACLE_THRESHOLD 200
 

@@ -1,5 +1,5 @@
-#ifndef PATHPLANNINGINFO_H_
-#define PATHPLANNINGINFO_H_
+#ifndef BIRRTSTAR_PATH_PLANNING_INFO_H_
+#define BIRRTSTAR_PATH_PLANNING_INFO_H_
 
 #include <libxml/tree.h>
 #include <QString>
@@ -9,13 +9,13 @@
 #include <QDebug>
 #include <math.h>
 
-#include "BIRRTstar.h"
+#include "birrtstar.h"
 
 namespace birrts {
 
-  class PathPlanningInfo {
+  class BIRRTstarPathPlanningInfo {
   public:
-    PathPlanningInfo();
+    BIRRTstarPathPlanningInfo();
 
     bool get_obstacle_info( int** pp_obstacle_info );
     bool get_cost_distribution( double** pp_cost_distribution );
@@ -134,4 +134,4 @@ namespace birrts {
 
 }
 
-#endif //  PATHPLANNINGINFO_H_
+#endif //  BIRRTSTAR_PATH_PLANNING_INFO_H_

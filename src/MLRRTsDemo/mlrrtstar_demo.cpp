@@ -1,8 +1,7 @@
-//#include <QtGui/QApplication>
 #include <QApplication>
-#include "birrtstar_window.h"
+#include "mlrrtstar_window.h"
 
-using namespace birrts;
+using namespace mlrrts;
 
 int main(int argc, char *argv[]) {
     bool no_gui = false;
@@ -12,7 +11,7 @@ int main(int argc, char *argv[]) {
         filename = QString(argv[1]);
     }
     QApplication a(argc, argv);
-    BIRRTstarWindow w;
+    MLRRTstarWindow w;
     if(no_gui) {
         //std::cout << "NO GUI" << std::endl;
         if(w.setupPlanning(filename)) {

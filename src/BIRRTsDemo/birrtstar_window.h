@@ -1,5 +1,5 @@
-#ifndef BIRRT_MAINWINDOW_H
-#define BIRRT_MAINWINDOW_H
+#ifndef BIRRTSTARMAINWINDOW_H
+#define BIRRTSTARMAINWINDOW_H
 
 #include <QMainWindow>
 #include <QMenu>
@@ -7,7 +7,7 @@
 #include <QAction>
 #include <QPixmap>
 #include <QProgressBar>
-#include "birrtstarviz.h"
+#include "birrtstar_viz.h"
 #include "reference_frames.h"
 
 namespace birrts {
@@ -36,7 +36,6 @@ namespace birrts {
 
   private:
     void updateTitle();
-
 
     QMenu*   mpFileMenu;
     QAction* mpOpenAction;
@@ -84,4 +83,4 @@ namespace birrts {
 
 }
 
-#endif // BIRRT_MAINWINDOW_H
+#endif // BIRRTSTARMAINWINDOW_H

@@ -1,5 +1,5 @@
-#ifndef BIRRTCONFIG_H
-#define BIRRTCONFIG_H
+#ifndef MLRRTSTARCONFIG_H
+#define MLRRTSTARCONFIG_H
 
 #include <QDialog>
 #include <QListWidget>
@@ -7,23 +7,22 @@
 #include <QCheckBox>
 #include <QLabel>
 #include <QLineEdit>
-#include <QComboBox>
 
-namespace birrts {
+namespace mlrrts {
+  
+  class MLRRTstarWindow;
 
-  class BIRRTstarWindow;
-
-  class BIRRTstarConfig : public QDialog {
+  class MLRRTstarConfig : public QDialog {
     Q_OBJECT
   public:
-    BIRRTstarConfig(BIRRTstarWindow * parent);
-
+    MLRRTstarConfig(MLRRTstarWindow* parent);
+    
     void updateConfiguration();
     void updateDisplay();
 
   private:
-    QPushButton * mpBtnOK;
-    QPushButton * mpBtnCancel;
+    QPushButton* mpBtnOK;
+    QPushButton* mpBtnCancel;
 
     QCheckBox * mpCheckMinDist;
     QLabel    * mpLabelMinDist;
@@ -36,17 +35,10 @@ namespace birrts {
     QLineEdit * mpLineEditIterationNum;
     QLabel    * mpLabelSegmentLength;
     QLineEdit * mpLineEditSegmentLength;
-    
-    QLabel    * mpLabelGrammarType;
-    QComboBox * mpComboGrammarType;
 
-    QLabel    * mpLabelRunType;
-    QComboBox * mpComboRunType;
-
-    BIRRTstarWindow * mpParentWindow;
+    MLRRTstarWindow* mpParentWindow;
 
     bool isCompatible(QString fitnessFile);
-
   public slots:
     void checkBoxStateChanged(int state);
     void onBtnOKClicked();
@@ -56,4 +48,4 @@ namespace birrts {
 
 }
 
-#endif // BIRRTCONFIG_H
+#endif /* MLRRTSTARCONFIG_H */

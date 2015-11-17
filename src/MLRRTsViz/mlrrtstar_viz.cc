@@ -1,6 +1,6 @@
 #include <QtGui>
 
-#include "mlrrtstarviz.h"
+#include "mlrrtstar_viz.h"
 
 
 using namespace mlrrts;
@@ -15,4 +15,11 @@ void MLRRTstarViz::set_tree( MLRRTstar* p_tree ) {
 }
 
 
+void MLRRTstarViz::paint( QPaintDevice* device ) {
 
+}
+
+void MLRRTstarViz::paintEvent( QPaintEvent* e ) {
+  QLabel::paintEvent(e);
+  paint( this );
+}

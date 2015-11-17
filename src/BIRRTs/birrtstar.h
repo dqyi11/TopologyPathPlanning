@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <list>
-#include "KDTree2D.h"
+#include "kdtree2d.h"
 #include "reference_frames.h"
 #include "string_class_mgr.h"
 

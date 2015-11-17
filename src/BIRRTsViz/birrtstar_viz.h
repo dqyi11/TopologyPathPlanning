@@ -3,8 +3,8 @@
 
 #include <QLabel>
 
-#include "BIRRTstar.h"
-#include "path_planning_info.h"
+#include "birrtstar.h"
+#include "birrtstar_path_planning_info.h"
 #include "reference_frames.h"
 
 namespace birrts {
@@ -21,10 +21,10 @@ namespace birrts {
     Q_OBJECT
   public:
     explicit BIRRTstarViz(QWidget *parent = 0);
-    void setTree(BIRRTstar* p_tree);
-    void setReferenceFrameSet(homotopy::ReferenceFrameSet* p_rf);
-    bool drawPath(QString filename);
-    bool saveCurrentViz(QString filename);
+    void set_tree(BIRRTstar* p_tree);
+    void set_reference_frame_set(homotopy::ReferenceFrameSet* p_rf);
+    bool draw_path(QString filename);
+    bool save_current_viz(QString filename);
 
     void set_show_reference_frames( bool show );
     void set_show_regions( bool show );
@@ -57,7 +57,7 @@ namespace birrts {
     void switch_tree_show_type();
     void import_string_constraint( std::vector< QPoint > points, homotopy::grammar_type_t type );
 
-    PathPlanningInfo m_PPInfo;
+    BIRRTstarPathPlanningInfo m_PPInfo;
     
     std::vector<QPoint>& get_drawed_points() { return m_drawed_points; }
     void set_show_drawed_points( bool show ) { m_show_points = show; }
@@ -78,8 +78,8 @@ namespace birrts {
     bool                 m_show_points;
 
   private:
-    void drawPathOnMap(QPixmap& map);
-    void drawCurrentViz(QPixmap& map);
+    void draw_path_on_map(QPixmap& map);
+    void draw_current_viz(QPixmap& map);
 
     void paint(QPaintDevice * device);
     BIRRTstar*          mp_tree;
