@@ -16,10 +16,14 @@ namespace mlrrts {
   public:
     MLRRTNode( POS2D pos );
     bool operator==( const MLRRTNode &other );
-    
+    void clear_string();
+    void append_to_string( std::vector< std::string > ids );
+
+    double   m_cost;
+    MLRRTNode* mp_parent;
     POS2D m_pos;
     std::vector<MLRRTNode*> m_child_nodes;
-    MLRRTNode*              mp_parent; 
+    std::vector< std::string > m_substring;
   };
 
   class Path {

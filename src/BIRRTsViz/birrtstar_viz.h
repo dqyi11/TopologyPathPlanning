@@ -51,12 +51,13 @@ namespace birrts {
     int  get_reference_frame_index() { return m_reference_frame_index; }
     std::string get_reference_frame_name();
     std::string get_region_name();
+
+    void import_string_constraint( std::vector< QPoint > points, homotopy::grammar_type_t type );
     QString generate_string();
 
     tree_show_type_t get_tree_show_type() { return m_tree_show_type; }
     void switch_tree_show_type();
-    void import_string_constraint( std::vector< QPoint > points, homotopy::grammar_type_t type );
-
+    
     BIRRTstarPathPlanningInfo m_PPInfo;
     
     std::vector<QPoint>& get_drawed_points() { return m_drawed_points; }

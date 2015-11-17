@@ -5,6 +5,7 @@
 
 #include "mlrrtstar.h"
 #include "mlrrtstar_path_planning_info.h"
+#include "reference_frames.h"
 
 namespace mlrrts{
 
@@ -43,9 +44,15 @@ namespace mlrrts{
     int  get_reference_frame_index() { return m_reference_frame_index; }
     std::string get_reference_frame_name();
     std::string get_region_name();
+
     QString generate_string();
+    void import_string_constraint( std::vector< QPoint > points, homotopy::grammar_type_t type );
 
     MLRRTstarPathPlanningInfo m_PPInfo;
+
+    std::vector<QPoint>& get_drawed_points() { return m_drawed_points; }
+    void set_show_drawed_points( bool show ) { m_show_points = show; }
+    bool get_show_drawed_points() { return m_show_points; }
     
     int get_found_path_index() { return m_found_path_index; }
   signals:
@@ -53,6 +60,13 @@ namespace mlrrts{
   public slots:
 
   protected:
+    void mousePressEvent( QMouseEvent * event );
+    void mouseMoveEvent( QMouseEvent * event );
+    void mouseReleaseEvent( QMouseEvent * event );
+
+    std::vector<QPoint>  m_drawed_points;
+    bool                 m_dragging;
+    bool                 m_show_points;
 
   private:
     void draw_path_on_map(QPixmap& map);

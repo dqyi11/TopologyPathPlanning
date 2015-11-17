@@ -7,11 +7,13 @@
 #include <QStatusBar>
 #include "mlrrtstar_config.h"
 #include "mlrrtstar_window.h"
+#include "img_load_util.h"
+#include "expanding_tree.h"
 
 using namespace homotopy;
 using namespace mlrrts;
 
-MLRRTstarWindow::MLRRTstarWindow(QWidget* parent=0) 
+MLRRTstarWindow::MLRRTstarWindow(QWidget* parent) 
     : QMainWindow(parent) {
 
   mpViz = new MLRRTstarViz();
@@ -54,7 +56,7 @@ MLRRTstarWindow::~MLRRTstarWindow() {
   }
 }
 
-bool MLRRTstarWindow::createMenuBar() {
+void MLRRTstarWindow::createMenuBar() {
   mpFileMenu = menuBar()->addMenu("&File");
   mpFileMenu->addAction(mpOpenAction);
   mpFileMenu->addAction(mpSaveAction);

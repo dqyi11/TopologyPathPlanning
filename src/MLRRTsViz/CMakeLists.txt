@@ -15,6 +15,9 @@ add_library(${LIB} SHARED
 target_link_libraries(${LIB}
                       harrts-mlrrts
                       ${QT_LIBRARIES}
+                      ${CGAL_LIBRARIES}
+                      ${BOOST_LIBRARIES}
+                      ${OpenCV_LIBRARIES}
                      )
 
 install(TARGETS ${LIB}
