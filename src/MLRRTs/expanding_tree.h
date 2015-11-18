@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include "kdtreeml2d.h"
 #include "string_grammar.h"
 #include "worldmap.h"
 
@@ -22,6 +23,9 @@ namespace mlrrts {
     std::vector<ExpandingNode*> get_child_nodes();
     void import_ancestor_seq ( std::vector<ExpandingNode*> ancestor_seq );
     std::vector<std::string> get_substring();
+
+    POS2D sample_random_pos();
+    std::vector<POS2D> find_feasible_path( ExpandingEdge* p_in_edge, ExpandingEdge* p_out_edge );
  
     std::string                 m_name;
     ExpandingEdge*              mp_in_edge;
@@ -39,11 +43,14 @@ namespace mlrrts {
     void import_ancestor_seq ( std::vector<ExpandingEdge*> ancestor_seq );
     std::vector<std::string> get_substring();
 
+    POS2D sample_random_pos();
+
     std::string                 m_name;
     ExpandingNode*              mp_from;
     ExpandingNode*              mp_to;
     homotopy::LineSubSegment*   mp_linesubsegment;
 
+    POS2D                       m_rand_pos;
     std::vector<ExpandingEdge*> mp_ancestor_seq;
   };
 

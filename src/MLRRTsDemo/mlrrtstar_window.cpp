@@ -274,14 +274,14 @@ void MLRRTstarWindow::planPath() {
   while(mpMLRRTstar->get_current_iteration() <= mpViz->m_PPInfo.m_max_iteration_num) {
     QString msg = "CurrentIteration " + QString::number(mpMLRRTstar->get_current_iteration()) + " ";
     mpMLRRTstar->extend();
-    msg += QString::number(mpMLRRTstar->get_string_class_mgr()->get_string_classes().size()); 
+    msg += QString::number(mpMLRRTstar->get_expanding_tree_mgr()->get_string_classes().size()); 
     qDebug() << msg;
 
     updateStatus();
     repaint();
   }
   qDebug() << "START MERGE ";
-  mpMLRRTstar->get_string_class_mgr()->merge();
+  //mpMLRRTstar->get_string_class_mgr()->merge();
   qDebug() << "END MERGE ";
   //Path* path = mpMLRRTstar->find_path();
   std::vector<Path*> p_paths = mpMLRRTstar->get_paths();

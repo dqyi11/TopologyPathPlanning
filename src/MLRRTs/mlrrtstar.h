@@ -4,7 +4,7 @@
 #include <vector>
 #include <list>
 #include "kdtreeml2d.h"
-#include "string_class_mgr.h"
+#include "expanding_tree_mgr.h"
 #include "reference_frames.h"
 
 namespace mlrrts {
@@ -53,6 +53,8 @@ namespace mlrrts {
     int get_sampling_width() { return _sampling_width; }
     int get_sampling_height() { return _sampling_height; }
     int get_current_iteration() { return _current_iteration; }
+
+    void init_feasible_paths();
  
     void extend();
     Path* find_path( POS2D via_pos );
@@ -62,7 +64,7 @@ namespace mlrrts {
 
     void set_reference_frames( homotopy::ReferenceFrameSet* p_reference_frames );
     homotopy::ReferenceFrameSet* get_reference_frames() { return _reference_frames; }
-    birrts::StringClassMgr* get_string_class_mgr() { return _p_string_class_mgr; }
+    ExpandingTreeMgr* get_expanding_tree_mgr() { return _p_expanding_tree_mgr; }
 
 
   protected:
@@ -75,14 +77,14 @@ namespace mlrrts {
     int _sampling_width;
     int _sampling_height;
 
-    int**                    _pp_map_info;
+    int**                        _pp_map_info;
     homotopy::ReferenceFrameSet* _reference_frames;
-    birrts::StringClassMgr*  _p_string_class_mgr;
-    KDTree2D*                _kd_tree;
-    COST_FUNC_PTR            _p_cost_func;
-    double**                 _pp_cost_distribution;  
+    ExpandingTreeMgr*            _p_expanding_tree_mgr;
+    KDTree2D*                    _kd_tree;
+    COST_FUNC_PTR                _p_cost_func;
+    double**                     _pp_cost_distribution;  
  
-    std::list<MLRRTNode*> _nodes;
+    std::list<MLRRTNode*>        _nodes;
  
     double _segment_length;
     int    _obs_check_resolution;

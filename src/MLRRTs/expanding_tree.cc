@@ -47,6 +47,19 @@ std::vector<ExpandingNode*> ExpandingNode::get_child_nodes() {
   return nodes;
 }
 
+POS2D ExpandingNode::sample_random_pos() {
+  POS2D pos( 0, 0 );
+  return pos;
+}
+
+std::vector<POS2D> ExpandingNode::find_feasible_path( ExpandingEdge* p_in_edge, ExpandingEdge* p_out_edge ) {
+  std::vector<POS2D> paths;
+  if( p_in_edge && p_out_edge ) {
+
+  }  
+  return paths;
+}
+
 ExpandingEdge* ExpandingNode::find_out_edge( std::string name ) {
 
   ExpandingEdge* p_edge = NULL;
@@ -113,6 +126,11 @@ std::vector<std::string> ExpandingEdge::get_substring() {
     substring.push_back( mp_ancestor_seq[i]->m_name );
   }
   return substring;
+}
+
+POS2D ExpandingEdge::sample_random_pos() {
+  POS2D pos( 0, 0 );
+  return pos;
 }
 
 ExpandingTree::ExpandingTree() {

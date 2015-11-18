@@ -1,5 +1,6 @@
 #include "mlrrtstar.h"
 
+using namespace std;
 using namespace homotopy;
 using namespace mlrrts;
 
@@ -102,4 +103,30 @@ Path* MLRRTstar::find_path( POS2D via_pos ) {
 std::vector<Path*> MLRRTstar::get_paths() {
   std::vector<Path*> paths;
   return paths;
+}
+
+void MLRRTstar::init_feasible_paths() {
+  if( _p_expanding_tree_mgr ) {
+    ExpandingTree * p_expanding_tree = _p_expanding_tree_mgr->mp_expanding_tree;
+    if( p_expanding_tree ) {
+      for( std::vector<ExpandingEdge*>::iterator it = p_expanding_tree->m_edges.begin();
+           it != p_expanding_tree->m_edges.end(); it++ ) {
+        ExpandingEdge* p_edge = (*it);
+        p_edge->m_rand_pos = p_edge->sample_random_pos();
+      } 
+
+      for( std::vector<ExpandingNode*>::iterator it = p_expanding_tree->m_nodes.begin();
+           it != p_expanding_tree->m_nodes.end(); it++ ) {
+        ExpandingNode* p_node = (*it);
+        for( std::vector<ExpandingEdge*>::iterator ito = p_node->mp_out_edges.begin();
+             ito != p_node->mp_out_edges.end(); ito ++ ) {
+          ExpandingEdge* p_out_edge = (*ito);
+          vector<POS2D> feasible_path = p_node->find_feasible_path( p_node->mp_in_edge, p_out_edge );
+          /* add the set of POS2D as new nodes */
+          /* TODO */
+        }
+      } 
+    }
+  }
+
 }

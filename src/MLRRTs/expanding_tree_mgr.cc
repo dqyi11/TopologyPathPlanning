@@ -91,7 +91,7 @@ ExpandingTreeMgr::~ExpandingTreeMgr() {
   
   mp_expanding_tree = NULL;
   mp_string_grammar = NULL;
-  m_string_classes.clear();
+  mp_string_classes.clear();
   for(std::vector<SubRegionMgr*>::iterator it = mp_subregion_mgrs.begin(); 
       it != mp_subregion_mgrs.end(); it++) {
     SubRegionMgr* p_mgr = (*it);
