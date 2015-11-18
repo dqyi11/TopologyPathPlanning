@@ -92,40 +92,40 @@ ExpandingTreeMgr::~ExpandingTreeMgr() {
   mp_expanding_tree = NULL;
   mp_string_grammar = NULL;
   m_string_classes.clear();
-  for(std::vector<SubRegionMgr*>::iterator it = m_subregion_mgrs.begin(); 
-      it != m_subregion_mgrs.end(); it++) {
+  for(std::vector<SubRegionMgr*>::iterator it = mp_subregion_mgrs.begin(); 
+      it != mp_subregion_mgrs.end(); it++) {
     SubRegionMgr* p_mgr = (*it);
-    delete p_gmr;
-    p_gmr = NULL;
+    delete p_mgr;
+    p_mgr = NULL;
   }
-  for(std::vector<LineSubSegmentMgr*>::iterator it = m_line_subsegment_mgrs.begin();
-      it != m_line_subsegment_mgrs.end(); it++) { 
+  for(std::vector<LineSubSegmentMgr*>::iterator it = mp_line_subsegment_mgrs.begin();
+      it != mp_line_subsegment_mgrs.end(); it++) { 
     LineSubSegmentMgr* p_mgr = (*it);
     delete p_mgr;
     p_mgr = NULL;
   }
-  m_subregion_mgrs.clear();
-  m_line_subsegment_mgrs.clear();
+  mp_subregion_mgrs.clear();
+  mp_line_subsegment_mgrs.clear();
 }
 
-SubRegionMgr* ExpandingTreeMgr::find_subregion_mgr( std::string name ) {
+SubRegionMgr* ExpandingTreeMgr::find_subregion_mgr( SubRegion* p_subregion ) {
 
-  for(std::vector<SubRegionMgr*>::iterator it = m_subregion_mgrs.begin(); 
-      it != m_subregion_mgrs.end(); it++) {
+  for(std::vector<SubRegionMgr*>::iterator it = mp_subregion_mgrs.begin(); 
+      it != mp_subregion_mgrs.end(); it++) {
     SubRegionMgr* p_mgr = (*it);
-    if( p_mgr->m_subregion->m_name == name ) {
-      return p_gmr;
+    if( p_mgr->mp_subregion == p_subregion ) {
+      return p_mgr;
     } 
   }
   return NULL;
 }
 
-LineSubSegmentMgr* ExpandingTreeMgr::find_line_subsegment_mgr( std::string name ) {
+LineSubSegmentMgr* ExpandingTreeMgr::find_line_subsegment_mgr( LineSubSegment* p_line_subsegment ) {
 
-  for(std::vector<LineSubSegmentMgr*>::iterator it = m_line_subsegment_mgrs.begin();
-      it != m_line_subsegment_mgrs.end(); it++) { 
+  for(std::vector<LineSubSegmentMgr*>::iterator it = mp_line_subsegment_mgrs.begin();
+      it != mp_line_subsegment_mgrs.end(); it++) { 
     LineSubSegmentMgr* p_mgr = (*it);
-    if( p_mgr->m_line_subsegment->get_name() == name ) {
+    if( p_mgr->mp_line_subsegment == p_line_subsegment ) {
       return p_mgr;
     }
   }
@@ -144,7 +144,21 @@ void ExpandingTreeMgr::init( StringGrammar* p_grammar, WorldMap* p_worldmap ) {
   for( std::vector<ExpandingNode*>::iterator it = mp_expanding_tree->m_nodes.begin();
        it != mp_expanding_tree->m_nodes.end(); it ++ ) {
     ExpandingNode* p_node = (*it);
-        
+    SubRegionMgr* p_mgr = find_subregion_mgr( p_node->mp_subregion );
+    if( p_mgr == NULL ) {
+      p_mgr = new SubRegionMgr( p_node->mp_subregion );
+      mp_subregion_mgrs.push_back( p_mgr );
+    }
+    p_mgr->add_node( p_node );   
   } 
-
+  for( std::vector<ExpandingEdge*>::iterator it = mp_expanding_tree->m_edges.begin(); 
+       it != mp_expanding_tree->m_edges.end(); it ++ ) {
+    ExpandingEdge* p_edge = (*it);
+    LineSubSegmentMgr* p_mgr = find_line_subsegment_mgr( p_edge->mp_linesubsegment );
+    if( p_mgr == NULL ) {
+      p_mgr = new LineSubSegmentMgr( p_edge->mp_linesubsegment );
+      mp_line_subsegment_mgrs.push_back( p_mgr );
+    }
+    p_mgr->add_edge( p_edge );
+  }
 }
