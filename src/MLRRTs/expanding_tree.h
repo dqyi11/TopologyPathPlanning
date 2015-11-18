@@ -48,7 +48,7 @@ namespace mlrrts {
     std::string                 m_name;
     ExpandingNode*              mp_from;
     ExpandingNode*              mp_to;
-    homotopy::LineSubSegment*   mp_linesubsegment;
+    homotopy::LineSubSegment*   mp_line_subsegment;
 
     POS2D                       m_rand_pos;
     std::vector<ExpandingEdge*> mp_ancestor_seq;

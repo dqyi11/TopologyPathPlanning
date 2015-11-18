@@ -1,4 +1,5 @@
 #include <iostream>
+#include <CGAL/squared_distance_2.h>
 #include <boost/graph/graphviz.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/iteration_macros.hpp>
@@ -49,6 +50,12 @@ std::vector<ExpandingNode*> ExpandingNode::get_child_nodes() {
 
 POS2D ExpandingNode::sample_random_pos() {
   POS2D pos( 0, 0 );
+  if( mp_subregion ) {
+    Point2D point = mp_subregion->sample_position();
+    double x = CGAL::to_double( point.x() );
+    double y = CGAL::to_double( point.y() );
+    pos = POS2D( x, y );
+  }
   return pos;
 }
 
@@ -103,13 +110,13 @@ ExpandingEdge::ExpandingEdge( string name ) {
   m_name = name;
   mp_from = NULL;
   mp_to = NULL;
-  mp_linesubsegment = NULL;
+  mp_line_subsegment = NULL;
 }
 
 ExpandingEdge::~ExpandingEdge() {
   mp_from = NULL;
   mp_to = NULL;
-  mp_linesubsegment = NULL;
+  mp_line_subsegment = NULL;
 }
 
 void ExpandingEdge::import_ancestor_seq ( std::vector<ExpandingEdge*> ancestor_seq ) {
@@ -130,6 +137,12 @@ std::vector<std::string> ExpandingEdge::get_substring() {
 
 POS2D ExpandingEdge::sample_random_pos() {
   POS2D pos( 0, 0 );
+  if( mp_line_subsegment ) {
+    Point2D point = mp_line_subsegment->sample_position();
+    double x = CGAL::to_double( point.x() );
+    double y = CGAL::to_double( point.y() );
+    pos = POS2D( x, y );
+  }
   return pos;
 }
 
@@ -194,7 +207,7 @@ bool ExpandingTree::init( homotopy::StringGrammar * p_grammar, homotopy::WorldMa
           p_edge->import_ancestor_seq( edge_seq );
           edge_seq.push_back( p_edge );
           if( p_worldmap ) {
-            p_edge->mp_linesubsegment = p_worldmap->find_linesubsegment( adj.mp_transition->m_name );
+            p_edge->mp_line_subsegment = p_worldmap->find_linesubsegment( adj.mp_transition->m_name );
           }
           p_edge->mp_to = new ExpandingNode( adj.mp_state->m_name );
           p_edge->mp_to->mp_in_edge = p_edge;

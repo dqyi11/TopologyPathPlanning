@@ -154,9 +154,9 @@ void ExpandingTreeMgr::init( StringGrammar* p_grammar, WorldMap* p_worldmap ) {
   for( std::vector<ExpandingEdge*>::iterator it = mp_expanding_tree->m_edges.begin(); 
        it != mp_expanding_tree->m_edges.end(); it ++ ) {
     ExpandingEdge* p_edge = (*it);
-    LineSubSegmentMgr* p_mgr = find_line_subsegment_mgr( p_edge->mp_linesubsegment );
+    LineSubSegmentMgr* p_mgr = find_line_subsegment_mgr( p_edge->mp_line_subsegment );
     if( p_mgr == NULL ) {
-      p_mgr = new LineSubSegmentMgr( p_edge->mp_linesubsegment );
+      p_mgr = new LineSubSegmentMgr( p_edge->mp_line_subsegment );
       mp_line_subsegment_mgrs.push_back( p_mgr );
     }
     p_mgr->add_edge( p_edge );
