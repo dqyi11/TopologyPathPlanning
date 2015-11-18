@@ -34,6 +34,20 @@ std::string LineSubSegment::get_name() {
   }
   return "NA";
 }
+    
+Point2D LineSubSegment::sample_position() {
+
+  float ratio = static_cast<float> (rand())/static_cast<float>(RAND_MAX);
+  
+  double s_x = CGAL::to_double( m_subseg.source().x() );
+  double s_y = CGAL::to_double( m_subseg.source().y() );
+  double t_x = CGAL::to_double( m_subseg.target().x() );
+  double t_y = CGAL::to_double( m_subseg.target().y() );
+  
+  double n_x = ( ratio * s_x + (1.0 - ratio) * t_x ) ;
+  double n_y = ( ratio * s_y + (1.0 - ratio) * t_y ) ;
+  return Point2D( n_x, n_y );
+}
 
 void LineSubSegment::to_xml( const std::string& filename )const {
   xmlDocPtr doc = xmlNewDoc( ( xmlChar* )( "1.0" ) );

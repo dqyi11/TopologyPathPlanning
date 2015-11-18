@@ -15,7 +15,9 @@ namespace homotopy {
     virtual ~SubRegion();
     
     bool contains( Point2D point );
-    
+    Point2D sample_position();  
+
+ 
     std::string get_name();
 
     std::vector<Point2D>         m_points;
@@ -27,6 +29,11 @@ namespace homotopy {
     bool                         m_is_connected_to_central_point;
   protected:
     SubRegionSet*                mp_parent;
+    int _min_x;
+    int _min_y;
+    int _max_x;
+    int _max_y;
+    
   };
 
   class SubRegionSet {

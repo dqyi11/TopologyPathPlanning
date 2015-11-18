@@ -19,6 +19,10 @@ SubRegion::SubRegion( Polygon2D poly , SubRegionSet* p_parent ) {
     m_polygon.reverse_orientation();
   }
   m_centroid = get_centroid( m_polygon );
+  _min_x = m_polygon.bbox().xmin();
+  _min_y = m_polygon.bbox().ymin();
+  _max_x = m_polygon.bbox().xmax();
+  _max_y = m_polygon.bbox().ymax();
   m_dist_to_cp = 0.0;
   m_index = 0;
 }
@@ -45,6 +49,22 @@ bool SubRegion::contains( Point2D point ) {
   return false;
 }
 
+Point2D SubRegion::sample_position() {
+  bool found = false;
+  while (found == false) {
+    float x_ratio = static_cast<float> (rand())/static_cast<float>(RAND_MAX);
+    float y_ratio = static_cast<float> (rand())/static_cast<float>(RAND_MAX);
+    int rnd_x = static_cast<int>(x_ratio*(_max_x - _min_x)) + _min_x;
+    int rnd_y = static_cast<int>(y_ratio*(_max_y - _min_y)) + _min_y;
+
+    Point2D rnd_point(rnd_x, rnd_y);
+    if ( CGAL::ON_BOUNDED_SIDE == m_polygon.bounded_side( rnd_point ) ) {
+      return rnd_point;
+    }
+  }
+  return m_centroid;
+}
+  
 SubRegionSet::SubRegionSet(std::list<Point2D> points, unsigned int idx) {
 
   m_boundary_points.clear();

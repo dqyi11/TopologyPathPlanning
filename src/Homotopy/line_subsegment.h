@@ -37,7 +37,7 @@ namespace homotopy {
     virtual void from_xml( xmlNodePtr root );
 
     std::string get_name();
-
+    Point2D sample_position();
     Segment2D m_subseg;
     LineSubSegmentSet* _p_subseg_set;
     bool m_is_connected_to_central_point;
