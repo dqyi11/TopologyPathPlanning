@@ -68,6 +68,14 @@ namespace mlrrts {
 
 
   protected:
+    POS2D _sampling();
+    POS2D _steer( POS2D pos_a, POS2D pos_b );
+    
+    bool _is_obstacle_free( POS2D pos_a, POS2D pos_b );
+    bool _is_in_obstacle( POS2D pos );
+    KDNode2D _find_nearest( POS2D pos );
+    bool _contains( POS2D pos );
+    
     POS2D _start;
     POS2D _goal;
     MLRRTNode* _p_root; 
@@ -80,7 +88,7 @@ namespace mlrrts {
     int**                        _pp_map_info;
     homotopy::ReferenceFrameSet* _reference_frames;
     ExpandingTreeMgr*            _p_expanding_tree_mgr;
-    KDTree2D*                    _kd_tree;
+    KDTree2D*                    _p_kd_tree;
     COST_FUNC_PTR                _p_cost_func;
     double**                     _pp_cost_distribution;  
  

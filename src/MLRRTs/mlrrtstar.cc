@@ -4,6 +4,8 @@ using namespace std;
 using namespace homotopy;
 using namespace mlrrts;
 
+#define OBSTACLE_THRESHOLD 200
+
 MLRRTNode::MLRRTNode(POS2D pos) {
   m_pos = pos;
   m_cost = 0.0;
@@ -88,7 +90,144 @@ bool MLRRTstar::init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp
 }
 
 void MLRRTstar::extend() {
+  bool node_inserted = false;
+  while( false == node_inserted ) {
+    POS2D rnd_pos = _sampling();
+    KDNode2D nearest_node = _find_nearest( rnd_pos );
+   
+    if (rnd_pos[0]==nearest_node[0] && rnd_pos[1]==nearest_node[1]) {
+      continue;
+    }
+ 
+    POS2D new_pos = _steer( rnd_pos, nearest_node ); 
+    if( true == _contains(new_pos) ) {
+      continue;
+    }
+    if( true == _is_in_obstacle( new_pos ) ) {
+      continue;
+    }
 
+    if( true == _is_obstacle_free( nearest_node, new_pos ) ) {
+
+    }
+  }
+}
+
+POS2D MLRRTstar::_sampling() {
+  double x = rand();
+  double y = rand();
+  int int_x = x * ((double)(_sampling_width)/RAND_MAX);
+  int int_y = y * ((double)(_sampling_height)/RAND_MAX);
+  POS2D m(int_x, int_y);
+  return m;
+}
+
+POS2D MLRRTstar::_steer( POS2D pos_a, POS2D pos_b ) {
+  POS2D new_pos( pos_a[0], pos_a[1] );
+  double delta[2];
+  delta[0] = pos_a[0] - pos_b[0];
+  delta[1] = pos_a[1] - pos_b[1];
+  double delta_len = sqrt(delta[0]*delta[0] + delta[1]*delta[1]);
+  if ( delta_len > _segment_length ) {
+    double scale = _segment_length / delta_len;
+    delta[0] = delta[0] * scale;
+    delta[1] = delta[1] * scale;
+   
+    new_pos.setX( pos_b[0]+delta[0] );
+    new_pos.setY( pos_b[1]+delta[1] );
+  }
+  return new_pos;
+}
+
+bool MLRRTstar::_is_in_obstacle( POS2D pos ) {
+  int x = (int)pos[0];
+  int y = (int)pos[1];
+  if( _pp_map_info[x][y] < 255 ) {
+    return true;
+  }
+  return false;
+}
+
+bool MLRRTstar::_is_obstacle_free( POS2D pos_a, POS2D pos_b ) {
+  if ( pos_a == pos_b ) {
+    return true;
+  }
+  int x_dist = pos_a[0] - pos_b[0];
+  int y_dist = pos_a[1] - pos_b[1];
+
+  if( x_dist == 0 && y_dist == 0) {
+    return true;
+  }
+
+  float x1 = pos_a[0];
+  float y1 = pos_a[1];
+  float x2 = pos_b[0];
+  float y2 = pos_b[1];
+
+  const bool steep = ( fabs(y2 - y1) > fabs(x2 - x1) );
+  if ( steep ) {
+    std::swap( x1, y1 );
+    std::swap( x2, y2 );
+  }
+
+  if ( x1 > x2 ) {
+    std::swap( x1, x2 );
+    std::swap( y1, y2 );
+  }
+
+  const float dx = x2 - x1;
+  const float dy = fabs( y2 - y1 );
+
+  float error = dx / 2.0f;
+  const int ystep = (y1 < y2) ? 1 : -1;
+  int y = (int)y1;
+
+  const int maxX = (int)x2;
+
+  for(int x=(int)x1; x<maxX; x++) {
+    if(steep) {
+      if ( y>=0 && y<_sampling_width && x>=0 && x<_sampling_height ) {
+        if ( _pp_map_info[y][x] < OBSTACLE_THRESHOLD ) {
+          return false;
+        }
+      }
+    }
+    else {
+      if ( x>=0 && x<_sampling_width && y>=0 && y<_sampling_height ) {
+        if ( _pp_map_info[x][y] < OBSTACLE_THRESHOLD ) {
+          return false;
+        }
+      }
+    }
+
+    error -= dy;
+    if(error < 0) {
+      y += ystep;
+      error += dx;
+    }
+  }
+  return true;
+}
+
+KDNode2D MLRRTstar::_find_nearest( POS2D pos ) {
+  KDNode2D node( pos );
+  std::pair<KDTree2D::const_iterator,double> found = _p_kd_tree->find_nearest( node );
+  KDNode2D near_node = *found.first;
+  return near_node;
+}
+
+bool MLRRTstar::_contains( POS2D pos ) {
+  if(_p_kd_tree) {
+    KDNode2D node( pos[0], pos[1] );
+    KDTree2D::const_iterator it = _p_kd_tree->find(node);
+    if( it!=_p_kd_tree->end() ) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+  return false;
 }
 
 void MLRRTstar::set_reference_frames( ReferenceFrameSet* p_reference_frames ) {
