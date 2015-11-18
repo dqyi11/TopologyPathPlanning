@@ -20,22 +20,31 @@ namespace mlrrts {
 
     ExpandingNode* get_parent_node();
     std::vector<ExpandingNode*> get_child_nodes();
+    void import_ancestor_seq ( std::vector<ExpandingNode*> ancestor_seq );
+    std::vector<std::string> get_substring();
  
     std::string                 m_name;
     ExpandingEdge*              mp_in_edge;
     std::vector<ExpandingEdge*> mp_out_edges;
     homotopy::SubRegion*        mp_subregion;
+
+    std::vector<ExpandingNode*> mp_ancestor_seq;
   };
   
   class ExpandingEdge {
   public:
     ExpandingEdge( std::string name );
     virtual ~ExpandingEdge();
+    
+    void import_ancestor_seq ( std::vector<ExpandingEdge*> ancestor_seq );
+    std::vector<std::string> get_substring();
 
-    std::string                m_name;
-    ExpandingNode*             mp_from;
-    ExpandingNode*             mp_to;
-    homotopy::LineSubSegment*  mp_linesubsegment;
+    std::string                 m_name;
+    ExpandingNode*              mp_from;
+    ExpandingNode*              mp_to;
+    homotopy::LineSubSegment*   mp_linesubsegment;
+
+    std::vector<ExpandingEdge*> mp_ancestor_seq;
   };
 
   class ExpandingTree {
@@ -43,11 +52,12 @@ namespace mlrrts {
     ExpandingTree();
     virtual ~ExpandingTree();
 
-    bool init( homotopy::StringGrammar * p_grammar, homotopy::WorldMap* p_worldmap = NULL );
+    bool init( homotopy::StringGrammar* p_grammar, homotopy::WorldMap* p_worldmap = NULL );
 
     void output( std::string filename );
 
-    int get_index( ExpandingNode* p_node );    
+    int get_index( ExpandingNode* p_node ); 
+    std::vector<ExpandingNode*> get_leaf_nodes();   
   
     ExpandingNode* mp_root; 
     std::vector<ExpandingNode*> m_nodes;

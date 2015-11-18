@@ -137,6 +137,24 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
     }
   }
 
+  if(m_PPInfo.m_start.x() >= 0 && m_PPInfo.m_start.y() >= 0) {
+    QPainter st_painter(device);
+    QPen st_paintpen( START_COLOR );
+    st_paintpen.setWidth(8);
+    st_painter.setPen(st_paintpen);
+    st_painter.drawPoint(m_PPInfo.m_start);
+    st_painter.end();
+  }
+
+  if(m_PPInfo.m_goal.x() >= 0 && m_PPInfo.m_goal.y() >= 0) {
+    QPainter gt_painter(device);
+    QPen gt_paintpen( GOAL_COLOR );
+    gt_paintpen.setWidth(8);
+    gt_painter.setPen(gt_paintpen);
+    gt_painter.drawPoint(m_PPInfo.m_goal);
+    gt_painter.end();
+  }
+
 }
 
 void MLRRTstarViz::paintEvent( QPaintEvent* e ) {

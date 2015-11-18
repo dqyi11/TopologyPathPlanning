@@ -58,6 +58,33 @@ ExpandingEdge* ExpandingNode::find_out_edge( std::string name ) {
   }
   return p_edge;
 }
+   
+void ExpandingNode::import_ancestor_seq ( std::vector<ExpandingNode*> ancestor_seq ) {
+  mp_ancestor_seq.clear();
+  for( unsigned int i = 0; i < ancestor_seq.size(); i++ ) {
+    ExpandingNode* p_node = ancestor_seq[i ];
+    mp_ancestor_seq.push_back( p_node );
+  }
+}
+
+bool ExpandingNode::has_out_edge( ExpandingEdge* p_edge ) {
+
+  for(vector<ExpandingEdge*>::iterator it = mp_out_edges.begin(); it != mp_out_edges.end(); it++ ) {
+    ExpandingEdge* p_current_edge = (*it);
+    if( p_current_edge == p_edge ) {
+      return true;
+    } 
+  }
+  return false;
+}
+
+std::vector<std::string> ExpandingNode::get_substring() {
+  std::vector<std::string> substring;
+  for( unsigned int i = 0; i < mp_ancestor_seq.size(); i++ ) {
+    substring.push_back( mp_ancestor_seq[i]->m_name );
+  }
+  return substring;
+}
 
 ExpandingEdge::ExpandingEdge( string name ) {
   m_name = name;
@@ -72,15 +99,20 @@ ExpandingEdge::~ExpandingEdge() {
   mp_linesubsegment = NULL;
 }
 
-bool ExpandingNode::has_out_edge( ExpandingEdge* p_edge ) {
-
-  for(vector<ExpandingEdge*>::iterator it = mp_out_edges.begin(); it != mp_out_edges.end(); it++ ) {
-    ExpandingEdge* p_current_edge = (*it);
-    if( p_current_edge == p_edge ) {
-      return true;
-    } 
+void ExpandingEdge::import_ancestor_seq ( std::vector<ExpandingEdge*> ancestor_seq ) {
+  mp_ancestor_seq.clear();
+  for( unsigned int i = 0; i < ancestor_seq.size(); i++ ) {
+    ExpandingEdge* p_edge = ancestor_seq[i ];
+    mp_ancestor_seq.push_back( p_edge );
   }
-  return false;
+}
+
+std::vector<std::string> ExpandingEdge::get_substring() {
+  std::vector<std::string> substring;
+  for( unsigned int i = 0; i < mp_ancestor_seq.size(); i++ ) {
+    substring.push_back( mp_ancestor_seq[i]->m_name );
+  }
+  return substring;
 }
 
 ExpandingTree::ExpandingTree() {
@@ -105,6 +137,9 @@ bool ExpandingTree::init( homotopy::StringGrammar * p_grammar, homotopy::WorldMa
   for( unsigned int i = 0; i < paths.size(); i ++ ) {
     std::vector< homotopy::Adjacency > path = paths[ i ];
     ExpandingNode* p_current_node = NULL;
+    std::vector<ExpandingNode*> node_seq;
+    std::vector<ExpandingEdge*> edge_seq;
+
     for( unsigned int j = 0; j < path.size(); j ++ ) {
       homotopy::Adjacency adj = path[ j ];
       if ( p_current_node == NULL ) {
@@ -112,6 +147,8 @@ bool ExpandingTree::init( homotopy::StringGrammar * p_grammar, homotopy::WorldMa
         if( mp_root == NULL ) {
           /* root uninitialized */
           mp_root = new ExpandingNode( adj.mp_state->m_name );
+          mp_root->import_ancestor_seq( node_seq );
+          node_seq.push_back( mp_root );
           if ( p_worldmap ) {
             mp_root->mp_subregion = p_worldmap->find_subregion( adj.mp_state->m_name );
           }
@@ -124,6 +161,9 @@ bool ExpandingTree::init( homotopy::StringGrammar * p_grammar, homotopy::WorldMa
           if( p_current_node->m_name != adj.mp_state->m_name ) {
             cout << "ERROR [ROOT MISMATCH] Root Name=\"" << p_current_node->m_name <<"\" Adj State Name =\"" << adj.mp_state->m_name << "\""  << endl;
           }
+          if( p_worldmap ) {
+            node_seq.push_back( mp_root );
+          }
         }                
       } 
       else {
@@ -133,12 +173,16 @@ bool ExpandingTree::init( homotopy::StringGrammar * p_grammar, homotopy::WorldMa
           /* no edge found */ 
           p_edge = new ExpandingEdge( adj.mp_transition->m_name );
           p_edge->mp_from = p_current_node;
+          p_edge->import_ancestor_seq( edge_seq );
+          edge_seq.push_back( p_edge );
           if( p_worldmap ) {
             p_edge->mp_linesubsegment = p_worldmap->find_linesubsegment( adj.mp_transition->m_name );
           }
           p_edge->mp_to = new ExpandingNode( adj.mp_state->m_name );
           p_edge->mp_to->mp_in_edge = p_edge;
-          p_edge->mp_from->mp_out_edges.push_back( p_edge ); 
+          p_edge->mp_from->mp_out_edges.push_back( p_edge );
+          p_edge->mp_to->import_ancestor_seq( node_seq );
+          node_seq.push_back( p_edge->mp_to );
           if( p_worldmap ) {
             p_edge->mp_to->mp_subregion = p_worldmap->find_subregion( adj.mp_state->m_name );
           }
@@ -151,6 +195,8 @@ bool ExpandingTree::init( homotopy::StringGrammar * p_grammar, homotopy::WorldMa
           /* edge found */
           if( p_edge->m_name == adj.mp_transition->m_name &&
               p_edge->mp_to->m_name == adj.mp_state->m_name ) {
+            edge_seq.push_back( p_edge );
+            node_seq.push_back( p_edge->mp_to );
             p_current_node = p_edge->mp_to;
           }     
           else {
@@ -202,3 +248,15 @@ void ExpandingTree::output( std::string filename ) {
   write_graphviz( dot, g, make_label_writer( get( &Vertex::name, g) ), make_label_writer( get( &Edge::name, g ) ) );
  
 }  
+
+std::vector<ExpandingNode*> ExpandingTree::get_leaf_nodes() {
+  std::vector<ExpandingNode*> leaf_nodes;
+  for( std::vector<ExpandingNode*>::iterator it = m_nodes.begin();
+       it != m_nodes.end(); it++ ) {
+    ExpandingNode* p_node = (*it);
+    if (p_node->mp_out_edges.size() == 0) {
+      leaf_nodes.push_back( p_node );
+    }
+  }
+  return leaf_nodes;
+} 
