@@ -51,12 +51,15 @@ namespace mlrrts {
 
     void init( homotopy::StringGrammar* p_grammar, homotopy::WorldMap* p_worldmap );
     
+    SubRegionMgr* find_subregion_mgr( std::string name );
+    LineSubSegmentMgr* find_line_subsegment_mgr( std::string name ); 
 
-    ExpandingTree*                 mp_expanding_tree;
-    homotopy::StringGrammar*       mp_string_grammar;
-    std::vector<StringClass>       m_string_classes;
-    std::vector<SubRegionMgr>      mp_subregion_mgrs;
-    std::vector<LineSubSegmentMgr> mp_line_subsegment_mgrs; 
+
+    ExpandingTree*                  mp_expanding_tree;
+    homotopy::StringGrammar*        mp_string_grammar;
+    std::vector<StringClass>        m_string_classes;
+    std::vector<SubRegionMgr*>      m_subregion_mgrs;
+    std::vector<LineSubSegmentMgr*> m_line_subsegment_mgrs; 
   };
 
 }
