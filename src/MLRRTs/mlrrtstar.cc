@@ -110,7 +110,7 @@ void MLRRTstar::extend() {
     if( true == _is_obstacle_free( nearest_node, new_pos ) ) {
        SubRegion* p_subregion = _reference_frames->get_world_map()->in_subregion( toPoint( new_pos ) );
        if (p_subregion) {
-         _p_expanding_tree_mgr->find_subregion_mgr( p_subregion );
+         SubRegionMgr* p_mgr = _p_expanding_tree_mgr->find_subregion_mgr( p_subregion );
 
        }
     }
