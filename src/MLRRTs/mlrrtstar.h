@@ -61,7 +61,8 @@ namespace mlrrts {
     void extend();
     Path* find_path( POS2D via_pos );
     std::vector<Path*> get_paths();
-
+    
+    double _calculate_cost( POS2D& pos_a, POS2D& pos_b );
     int**& get_map_info() { return _pp_map_info; }
 
     void set_reference_frames( homotopy::ReferenceFrameSet* p_reference_frames );
@@ -79,6 +80,10 @@ namespace mlrrts {
     
     KDNode2D _find_nearest( POS2D pos, ExpandingNode* p_exp_node );
     std::list<KDNode2D> _find_near( POS2D pos, ExpandingNode* p_exp_node );    
+
+    MLRRTNode* _create_new_node( POS2D pos, ExpandingNode* p_exp_node );
+    bool _attach_new_node( MLRRTNode* p_node_new, MLRRTNode* p_nearest_node, std::list<MLRRTNode*> near_nodes, ExpandingNode* p_exp_node );
+    void _rewire_near_nodes( MLRRTNode* p_node_new, std::list<MLRRTNode*> near_nodes, ExpandingNode* p_exp_node );  
 
     POS2D      _start;
     POS2D      _goal;

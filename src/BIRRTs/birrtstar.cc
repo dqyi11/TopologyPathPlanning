@@ -98,8 +98,7 @@ BIRRTstar::BIRRTstar( int width, int height, int segment_length ) {
   _gt_ball_radius = _range;
   _obs_check_resolution = 1;
   _current_iteration = 0;
-  _segment_length = segment_length;
-
+ 
   _theta = 10;
 
   _pp_cost_distribution = NULL;
@@ -121,6 +120,19 @@ BIRRTstar::~BIRRTstar() {
   if(_p_st_kd_tree) {
     delete _p_st_kd_tree;
     _p_st_kd_tree = NULL;
+  }
+  if(_p_gt_kd_tree) {
+    delete _p_gt_kd_tree;
+    _p_gt_kd_tree = NULL;
+  }
+
+  if(_pp_map_info) {
+    for(int i=0;i<_sampling_width;i++) {
+      delete _pp_map_info[i];
+      _pp_map_info[i] = NULL;
+    }
+    delete _pp_map_info;
+    _pp_map_info = NULL;
   }
 }
 

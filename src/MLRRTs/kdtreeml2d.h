@@ -54,12 +54,15 @@ namespace mlrrts {
 
   class KDNode2D : public POS2D {
   public:
-    KDNode2D(value_type x, value_type y) : POS2D(x, y) { mpMLRRTNodes.clear(); }
-    KDNode2D(POS2D & pos) : POS2D(pos) { mpMLRRTNodes.clear(); }
-    void addMLRRTNode(MLRRTNode* pNode) { mpMLRRTNodes.push_back(pNode); }
-    std::vector<MLRRTNode*>& getMLRRTNodes() { return mpMLRRTNodes; }
+    KDNode2D(value_type x, value_type y) : POS2D(x, y) { mp_pri_mlrrtnode = NULL; mp_mlrrtnodes.clear(); }
+    KDNode2D(POS2D & pos) : POS2D(pos) { mp_pri_mlrrtnode = NULL; mp_mlrrtnodes.clear(); }
+    void set_pri_mlrrtnode(MLRRTNode* p_node) { mp_pri_mlrrtnode = p_node; }
+    MLRRTNode* get_pri_mlrrtnode() { return mp_pri_mlrrtnode; }
+    void add_mlrrtnode( MLRRTNode* p_node ) { mp_mlrrtnodes.push_back( p_node ); }
+    std::vector<MLRRTNode*>& get_mlrrtnodes() { return mp_mlrrtnodes; }
   protected:
-    std::vector<MLRRTNode*> mpMLRRTNodes;
+    MLRRTNode*              mp_pri_mlrrtnode;
+    std::vector<MLRRTNode*> mp_mlrrtnodes;
   };
 
 

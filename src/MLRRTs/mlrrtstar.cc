@@ -27,9 +27,9 @@ void MLRRTNode::clear_string() {
   m_substring.clear();
 }
 
-void MLRRTNode::append_to_string( std::vector< std::string > ids ) {
+void MLRRTNode::append_to_string( vector< string > ids ) {
   for( unsigned int i = 0; i < ids.size(); i ++ ) {
-    std::string id = ids[i];
+    string id = ids[i];
     m_substring.push_back( id );
   }
 }
@@ -47,16 +47,16 @@ Path::~Path() {
   m_cost = 0.0;
 }
 
-void Path::append_waypoints( std::vector<POS2D> waypoints, bool reverse ) {
+void Path::append_waypoints( vector<POS2D> waypoints, bool reverse ) {
   if ( reverse ) {
-    for( std::vector<POS2D>::reverse_iterator itr = waypoints.rbegin();
+    for( vector<POS2D>::reverse_iterator itr = waypoints.rbegin();
          itr != waypoints.rend(); itr++ ) {
       POS2D pos = (*itr);
       m_way_points.push_back( pos );
     }
   }
   else {
-    for( std::vector<POS2D>::iterator it = waypoints.begin();
+    for( vector<POS2D>::iterator it = waypoints.begin();
          it != waypoints.end(); it++ ) {
       POS2D pos = (*it);
       m_way_points.push_back( pos );
@@ -64,29 +64,64 @@ void Path::append_waypoints( std::vector<POS2D> waypoints, bool reverse ) {
   }
 }
 
-void Path::append_substring( std::vector< std::string > ids, bool reverse ) {
+void Path::append_substring( vector< string > ids, bool reverse ) {
   if ( reverse ) {
-    for( std::vector< std::string >::reverse_iterator itr = ids.rbegin();
+    for( vector< string >::reverse_iterator itr = ids.rbegin();
          itr != ids.rend(); itr++ ) {
-      std::string str = (*itr);
+      string str = (*itr);
       m_string.push_back( str );
     }
   }
   else {
-    for( std::vector< std::string >::iterator it = ids.begin();
+    for( vector< string >::iterator it = ids.begin();
          it != ids.end(); it++ ) {
-      std::string str = (*it);
+      string str = (*it);
       m_string.push_back( str );
     }
   }
 }
 
 MLRRTstar::MLRRTstar( int width, int height, int segment_length ) {
+  _sampling_width = width;
+  _sampling_height = height;
+  _segment_length = segment_length;
 
+  _p_root = NULL;
+  _reference_frames = NULL;
+
+  _grammar_type = STRING_GRAMMAR_TYPE;
+  _p_master_kd_tree = new KDTree2D( ptr_fun(tac) );
+ 
+  _range = (_sampling_width > _sampling_height) ? _sampling_width : _sampling_height;
+  _obs_check_resolution = 1;
+  _current_iteration = 0;
+
+  _theta = 10;
+  _pp_cost_distribution = NULL;
+  _p_expanding_tree_mgr = NULL;
+
+  _pp_map_info = new int*[_sampling_width];
+  for(int i=0;i<_sampling_width;i++) {
+    _pp_map_info[i] = new int[_sampling_height];
+    for(int j=0;j<_sampling_height;j++) {
+      _pp_map_info[i][j] = 255;
+    }
+  }    
 }
 
 MLRRTstar::~MLRRTstar() {
-
+  if( _p_master_kd_tree ) {
+    delete _p_master_kd_tree;
+    _p_master_kd_tree = NULL;
+  }
+  if (_pp_map_info) {
+    for(int i=0;i<_sampling_width;i++) {
+      delete _pp_map_info[i];
+      _pp_map_info[i] = NULL;
+    }
+    delete _pp_map_info;
+    _pp_map_info = NULL;
+  }
 }
 
 bool MLRRTstar::init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp_cost_distribution, homotopy::grammar_type_t grammar_type ) {
@@ -116,12 +151,52 @@ void MLRRTstar::extend() {
        SubRegion* p_subregion = _reference_frames->get_world_map()->in_subregion( toPoint2D( new_pos ) );
        if (p_subregion) {
          SubRegionMgr* p_mgr = _p_expanding_tree_mgr->find_subregion_mgr( p_subregion );
-         for( std::vector<ExpandingNode*>::iterator it = p_mgr->mp_nodes.begin();
+         KDNode2D new_master_node( new_pos );
+         bool any_node_added = false;
+         /* EACH EXPANDING NODE OF THE NEW POS */
+         for( vector<ExpandingNode*>::iterator it = p_mgr->mp_nodes.begin();
               it != p_mgr->mp_nodes.end(); it ++ ) {
-           ExpandingNode* p_node = (*it);
-           if( p_node ) {
-                
+           ExpandingNode* p_exp_node = (*it);
+           if( p_exp_node ) {
+             KDNode2D nearest_node_in_class = _find_nearest( new_pos, p_exp_node );  
+             list<KDNode2D> near_list_in_class = _find_near( new_pos, p_exp_node );
+             KDNode2D new_node( new_pos );
+            
+             // create new node 
+             MLRRTNode* p_new_rnode = _create_new_node( new_pos, p_exp_node ); 
+             new_node.set_pri_mlrrtnode( p_new_rnode );
+
+             MLRRTNode* p_nearest_rnode = nearest_node_in_class.get_pri_mlrrtnode();
+             list<MLRRTNode*> near_rnodes;
+             near_rnodes.clear();
+             for( list<KDNode2D>::iterator itr = near_list_in_class.begin();
+                  itr != near_list_in_class.end(); itr ++ ) {
+               KDNode2D near_kd_node = (*itr);
+               MLRRTNode* p_near_rnode = near_kd_node.get_pri_mlrrtnode();
+               near_rnodes.push_back( p_near_rnode );
+             } 
+             // attach new node 
+             if( _attach_new_node( p_new_rnode, p_nearest_rnode, near_rnodes, p_exp_node ) ) {
+               any_node_added = true;
+               new_master_node.add_mlrrtnode( p_new_rnode );
+               p_new_rnode->mp_master = p_exp_node;              
+  
+               if( p_exp_node ) {
+                 for( vector<StringClass*>::iterator it_str_cls = p_exp_node->mp_string_classes.begin();
+                      it_str_cls != p_exp_node->mp_string_classes.end(); it_str_cls++ ) {
+                   StringClass* p_str_cls = (*it_str_cls);
+                   if( p_str_cls->mp_kd_tree ) {
+                     p_str_cls->mp_kd_tree->insert( new_node );
+                   }
+                 }
+               }
+             }
+             // rewire near nodes    
+             _rewire_near_nodes( p_new_rnode, near_rnodes, p_exp_node );      
            }
+         }
+         if ( any_node_added ) {
+           _p_master_kd_tree->insert( new_master_node );
          }
        }
     }
@@ -181,13 +256,13 @@ bool MLRRTstar::_is_obstacle_free( POS2D pos_a, POS2D pos_b ) {
 
   const bool steep = ( fabs(y2 - y1) > fabs(x2 - x1) );
   if ( steep ) {
-    std::swap( x1, y1 );
-    std::swap( x2, y2 );
+    swap( x1, y1 );
+    swap( x2, y2 );
   }
 
   if ( x1 > x2 ) {
-    std::swap( x1, x2 );
-    std::swap( y1, y2 );
+    swap( x1, x2 );
+    swap( y1, y2 );
   }
 
   const float dx = x2 - x1;
@@ -228,15 +303,15 @@ KDNode2D MLRRTstar::_find_nearest( POS2D pos, ExpandingNode* p_exp_node ) {
   KDNode2D node( pos );
   KDNode2D nearest_node( pos );
   if( p_exp_node == NULL ) {
-    std::pair<KDTree2D::const_iterator,double> found = _p_master_kd_tree->find_nearest( node );
+    pair<KDTree2D::const_iterator,double> found = _p_master_kd_tree->find_nearest( node );
     nearest_node = *found.first;
   }
   else {
     /* find nearest in each string class */
     double nearest_distance = _sampling_width > _sampling_height ? _sampling_width : _sampling_height;
-    for(std::vector<StringClass*>::iterator it = p_exp_node->mp_string_classes.begin(); it != p_exp_node->mp_string_classes.end(); it ++ ) {
+    for(vector<StringClass*>::iterator it = p_exp_node->mp_string_classes.begin(); it != p_exp_node->mp_string_classes.end(); it ++ ) {
       StringClass* p_class = (*it);
-      std::pair<KDTree2D::const_iterator,double> found = p_class->mp_kd_tree->find_nearest( node );
+      pair<KDTree2D::const_iterator,double> found = p_class->mp_kd_tree->find_nearest( node );
       KDNode2D nearest_node_in_class = *found.first;
       double distance_in_class = found.second;  
       
@@ -249,25 +324,25 @@ KDNode2D MLRRTstar::_find_nearest( POS2D pos, ExpandingNode* p_exp_node ) {
   return nearest_node;
 }
 
-std::list<KDNode2D> MLRRTstar::_find_near( POS2D pos, ExpandingNode* p_exp_node ) {
-  std::list<KDNode2D> near_list;
+list<KDNode2D> MLRRTstar::_find_near( POS2D pos, ExpandingNode* p_exp_node ) {
+  list<KDNode2D> near_list;
   KDNode2D node(pos);
   int num_dimensions = 2;
   if( p_exp_node == NULL ) {  
     int num_vertices = _p_master_kd_tree->size();
     double ball_radius =  _theta * _range * pow( log((double)(num_vertices + 1.0))/((double)(num_vertices + 1.0)), 1.0/((double)num_dimensions) );
 
-    _p_master_kd_tree->find_within_range( node, ball_radius, std::back_inserter( near_list ) );
+    _p_master_kd_tree->find_within_range( node, ball_radius, back_inserter( near_list ) );
   }
   else {
 
-    for(std::vector<StringClass*>::iterator it = p_exp_node->mp_string_classes.begin(); it != p_exp_node->mp_string_classes.end(); it ++ ) {
+    for(vector<StringClass*>::iterator it = p_exp_node->mp_string_classes.begin(); it != p_exp_node->mp_string_classes.end(); it ++ ) {
       StringClass* p_class = (*it);
-      std::list<KDNode2D> near_list_in_class;
+      list<KDNode2D> near_list_in_class;
       int num_vertices = p_class->mp_kd_tree->size();
       double ball_radius =  _theta * _range * pow( log((double)(num_vertices + 1.0))/((double)(num_vertices + 1.0)), 1.0/((double)num_dimensions) );
-      p_class->mp_kd_tree->find_within_range( node, ball_radius, std::back_inserter( near_list_in_class ) );
-      for( std::list<KDNode2D>::iterator it_cls = near_list.begin();
+      p_class->mp_kd_tree->find_within_range( node, ball_radius, back_inserter( near_list_in_class ) );
+      for( list<KDNode2D>::iterator it_cls = near_list.begin();
            it_cls != near_list.end(); it_cls ++ ) {
         KDNode2D kdnode = (*it_cls);
         near_list.push_back( kdnode );
@@ -291,6 +366,12 @@ bool MLRRTstar::_contains( POS2D pos ) {
   return false;
 }
 
+MLRRTNode* MLRRTstar::_create_new_node( POS2D pos, ExpandingNode* p_exp_node ) {
+  MLRRTNode* p_node = new MLRRTNode( pos );
+  _nodes.push_back( p_node );
+  return p_node;
+}
+
 void MLRRTstar::set_reference_frames( ReferenceFrameSet* p_reference_frames ) {
   _reference_frames = p_reference_frames;
 }
@@ -300,8 +381,8 @@ Path* MLRRTstar::find_path( POS2D via_pos ) {
   return p_path;
 }
 
-std::vector<Path*> MLRRTstar::get_paths() {
-  std::vector<Path*> paths;
+vector<Path*> MLRRTstar::get_paths() {
+  vector<Path*> paths;
   return paths;
 }
 
@@ -309,16 +390,16 @@ void MLRRTstar::init_feasible_paths() {
   if( _p_expanding_tree_mgr ) {
     ExpandingTree * p_expanding_tree = _p_expanding_tree_mgr->mp_expanding_tree;
     if( p_expanding_tree ) {
-      for( std::vector<ExpandingEdge*>::iterator it = p_expanding_tree->m_edges.begin();
+      for( vector<ExpandingEdge*>::iterator it = p_expanding_tree->m_edges.begin();
            it != p_expanding_tree->m_edges.end(); it++ ) {
         ExpandingEdge* p_edge = (*it);
         p_edge->m_rand_pos = p_edge->sample_random_pos();
       } 
 
-      for( std::vector<ExpandingNode*>::iterator it = p_expanding_tree->m_nodes.begin();
+      for( vector<ExpandingNode*>::iterator it = p_expanding_tree->m_nodes.begin();
            it != p_expanding_tree->m_nodes.end(); it++ ) {
         ExpandingNode* p_node = (*it);
-        for( std::vector<ExpandingEdge*>::iterator ito = p_node->mp_out_edges.begin();
+        for( vector<ExpandingEdge*>::iterator ito = p_node->mp_out_edges.begin();
              ito != p_node->mp_out_edges.end(); ito ++ ) {
           ExpandingEdge* p_out_edge = (*ito);
           vector<POS2D> feasible_path = p_node->find_feasible_path( p_node->mp_in_edge, p_out_edge );
@@ -329,4 +410,17 @@ void MLRRTstar::init_feasible_paths() {
     }
   }
 
+}
+
+bool MLRRTstar::_attach_new_node( MLRRTNode* p_node_new, MLRRTNode* p_nearest_node, list<MLRRTNode*> near_nodes, ExpandingNode* p_exp_node ) {
+
+  return false;
+}
+
+void MLRRTstar::_rewire_near_nodes( MLRRTNode* p_node_new, list<MLRRTNode*> near_nodes, ExpandingNode* p_exp_node ) {
+
+}
+
+double MLRRTstar::_calculate_cost( POS2D& pos_a, POS2D& pos_b ) {
+  return _p_cost_func( pos_a, pos_b, _pp_cost_distribution, this);
 }
