@@ -1,4 +1,5 @@
 #include "mlrrtstar.h"
+#include "ml_util.h"
 
 using namespace std;
 using namespace homotopy;
@@ -108,10 +109,16 @@ void MLRRTstar::extend() {
     }
 
     if( true == _is_obstacle_free( nearest_node, new_pos ) ) {
-       SubRegion* p_subregion = _reference_frames->get_world_map()->in_subregion( toPoint( new_pos ) );
+       SubRegion* p_subregion = _reference_frames->get_world_map()->in_subregion( toPoint2D( new_pos ) );
        if (p_subregion) {
          SubRegionMgr* p_mgr = _p_expanding_tree_mgr->find_subregion_mgr( p_subregion );
-
+         for( std::vector<ExpandingNode*>::iterator it = p_mgr->mp_nodes.begin();
+              it != p_mgr->mp_nodes.end(); it ++ ) {
+           ExpandingNode* p_node = (*it);
+           if( p_node ) {
+                
+           }
+         }
        }
     }
   }
