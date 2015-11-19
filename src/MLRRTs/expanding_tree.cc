@@ -3,6 +3,7 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/iteration_macros.hpp>
 #include "expanding_tree.h"
+#include "expanding_tree_mgr.h"
 #include "ml_util.h"
 
 using namespace std;
@@ -16,16 +17,57 @@ typedef adjacency_list<vecS, vecS, undirectedS, Vertex, Edge> Graph;
 typedef graph_traits<Graph>::vertex_descriptor vertex_t;
 typedef graph_traits<Graph>::edge_descriptor edge_t;
 
+StringClass::StringClass( std::vector< std::string > string ) {
+  m_string = string;
+  mp_kd_tree = new KDTree2D( std::ptr_fun(tac) );
+  mp_exp_nodes.clear(); 
+ 
+  mp_path = NULL;
+  m_cost = 0.0;
+}
+
+StringClass::~StringClass() {
+  m_string.clear();
+  if( mp_kd_tree ) {
+    delete mp_kd_tree;
+    mp_kd_tree = NULL;
+  }
+  mp_exp_nodes.clear(); 
+  
+  m_cost = 0.0;
+  mp_path = NULL;
+}
+
+std::string StringClass::get_name() {
+  std::string name = "";
+  for( unsigned int i = 0; i < m_string.size(); i ++ ) {
+    if (i > 0) { 
+      name += " ";
+    }
+    name += m_string[i];
+  }
+  return name;
+}
+
+void StringClass::add_exp_node( ExpandingNode* p_node ) {
+  if( p_node ) {
+    mp_exp_nodes.push_back( p_node );
+    p_node->mp_string_classes.push_back( this );
+  }
+}
+
 ExpandingNode::ExpandingNode( string name ) {
   m_name = name;
   mp_in_edge = NULL;
   mp_subregion = NULL;
+  mp_string_classes.clear();
   mp_out_edges.clear();
 }
 
 ExpandingNode::~ExpandingNode() {
   mp_in_edge = NULL;
   mp_subregion = NULL;
+  mp_string_classes.clear();
   mp_out_edges.clear();
 }
 
@@ -103,6 +145,17 @@ std::vector<std::string> ExpandingNode::get_substring() {
   return substring;
 }
 
+bool ExpandingNode::is_ancestor( ExpandingNode* p_node ) {
+  for( vector<ExpandingNode*>::iterator it = mp_ancestor_seq.begin();
+       it != mp_ancestor_seq.end(); it++) {
+    ExpandingNode* p_ancestor_node = (*it);
+    if( p_ancestor_node == p_node ) {
+      return false;
+    }
+  }
+  return false;
+}
+
 ExpandingEdge::ExpandingEdge( string name ) {
   m_name = name;
   mp_from = NULL;
@@ -153,19 +206,30 @@ ExpandingTree::~ExpandingTree() {
   m_nodes.clear();
 }
 
-bool ExpandingTree::init( homotopy::StringGrammar * p_grammar, homotopy::WorldMap* p_worldmap ) {
+std::vector< StringClass* > ExpandingTree::init( homotopy::StringGrammar * p_grammar, homotopy::WorldMap* p_worldmap ) {
+  std::vector< StringClass* > string_classes;
   if( p_grammar == NULL ) {
-    return false;
+    return string_classes;
   }
 
   std::vector< std::vector < homotopy::Adjacency > > paths = p_grammar->find_simple_paths();
 
   for( unsigned int i = 0; i < paths.size(); i ++ ) {
     std::vector< homotopy::Adjacency > path = paths[ i ];
+    
+    std::vector< std::string > string_class;
     ExpandingNode* p_current_node = NULL;
     std::vector<ExpandingNode*> node_seq;
     std::vector<ExpandingEdge*> edge_seq;
 
+    for( unsigned int j = 0; j < path.size(); j ++ ) {
+      homotopy::Adjacency adj = path[ j ];
+      if( adj.mp_transition ) {
+        string_class.push_back( adj.mp_transition->m_name );
+      }
+    }
+    StringClass* p_string_class = new StringClass( string_class );
+   
     for( unsigned int j = 0; j < path.size(); j ++ ) {
       homotopy::Adjacency adj = path[ j ];
       if ( p_current_node == NULL ) {
@@ -179,17 +243,17 @@ bool ExpandingTree::init( homotopy::StringGrammar * p_grammar, homotopy::WorldMa
             mp_root->mp_subregion = p_worldmap->find_subregion( adj.mp_state->m_name );
           }
           m_nodes.push_back( mp_root );
+          p_string_class->add_exp_node( mp_root );
           p_current_node = mp_root;
         }
         else {
           /* root initialized */
+          p_string_class->add_exp_node( mp_root );
           p_current_node = mp_root;
           if( p_current_node->m_name != adj.mp_state->m_name ) {
             cout << "ERROR [ROOT MISMATCH] Root Name=\"" << p_current_node->m_name <<"\" Adj State Name =\"" << adj.mp_state->m_name << "\""  << endl;
           }
-          if( p_worldmap ) {
-            node_seq.push_back( mp_root );
-          }
+          node_seq.push_back( mp_root );
         }                
       } 
       else {
@@ -209,6 +273,7 @@ bool ExpandingTree::init( homotopy::StringGrammar * p_grammar, homotopy::WorldMa
           p_edge->mp_from->mp_out_edges.push_back( p_edge );
           p_edge->mp_to->import_ancestor_seq( node_seq );
           node_seq.push_back( p_edge->mp_to );
+          p_string_class->add_exp_node( p_edge->mp_to );
           if( p_worldmap ) {
             p_edge->mp_to->mp_subregion = p_worldmap->find_subregion( adj.mp_state->m_name );
           }
@@ -223,6 +288,7 @@ bool ExpandingTree::init( homotopy::StringGrammar * p_grammar, homotopy::WorldMa
               p_edge->mp_to->m_name == adj.mp_state->m_name ) {
             edge_seq.push_back( p_edge );
             node_seq.push_back( p_edge->mp_to );
+            p_string_class->add_exp_node( p_edge->mp_to );
             p_current_node = p_edge->mp_to;
           }     
           else {
@@ -232,8 +298,10 @@ bool ExpandingTree::init( homotopy::StringGrammar * p_grammar, homotopy::WorldMa
         }   
       }
     }
-  }  
-  return true;
+    string_classes.push_back( p_string_class );
+  } 
+ 
+  return string_classes;
 }
 
 int ExpandingTree::get_index( ExpandingNode* p_node ) {

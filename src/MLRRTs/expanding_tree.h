@@ -10,6 +10,23 @@
 namespace mlrrts {
 
   class ExpandingEdge;
+  class ExpandingNode;
+  class Path;
+
+  class StringClass {
+  public:
+    StringClass( std::vector< std::string > string );
+    virtual ~StringClass();
+    std::string get_name();
+    void add_exp_node( ExpandingNode* p_node );
+  
+    std::vector< std::string >    m_string;
+    KDTree2D*                     mp_kd_tree;
+    std::vector< ExpandingNode* > mp_exp_nodes;    
+
+    Path*                         mp_path;  
+    double                        m_cost;
+  };
 
   class ExpandingNode {
   public:
@@ -26,11 +43,13 @@ namespace mlrrts {
 
     POS2D sample_random_pos();
     std::vector<POS2D> find_feasible_path( ExpandingEdge* p_in_edge, ExpandingEdge* p_out_edge );
+    bool is_ancestor( ExpandingNode* p_node );
  
     std::string                 m_name;
     ExpandingEdge*              mp_in_edge;
     std::vector<ExpandingEdge*> mp_out_edges;
     homotopy::SubRegion*        mp_subregion;
+    std::vector<StringClass*>   mp_string_classes;
 
     std::vector<ExpandingNode*> mp_ancestor_seq;
   };
@@ -59,7 +78,7 @@ namespace mlrrts {
     ExpandingTree();
     virtual ~ExpandingTree();
 
-    bool init( homotopy::StringGrammar* p_grammar, homotopy::WorldMap* p_worldmap = NULL );
+    std::vector< StringClass* > init( homotopy::StringGrammar* p_grammar, homotopy::WorldMap* p_worldmap = NULL );
 
     void output( std::string filename );
 

@@ -24,6 +24,8 @@ namespace mlrrts {
     POS2D m_pos;
     std::vector<MLRRTNode*> m_child_nodes;
     std::vector< std::string > m_substring;
+
+    ExpandingNode* mp_master;
   };
 
   class Path {
@@ -73,11 +75,13 @@ namespace mlrrts {
     
     bool _is_obstacle_free( POS2D pos_a, POS2D pos_b );
     bool _is_in_obstacle( POS2D pos );
-    KDNode2D _find_nearest( POS2D pos );
     bool _contains( POS2D pos );
     
-    POS2D _start;
-    POS2D _goal;
+    KDNode2D _find_nearest( POS2D pos, ExpandingNode* p_exp_node );
+    std::list<KDNode2D> _find_near( POS2D pos, ExpandingNode* p_exp_node );    
+
+    POS2D      _start;
+    POS2D      _goal;
     MLRRTNode* _p_root; 
   
     homotopy::grammar_type_t _grammar_type;
@@ -88,12 +92,13 @@ namespace mlrrts {
     int**                        _pp_map_info;
     homotopy::ReferenceFrameSet* _reference_frames;
     ExpandingTreeMgr*            _p_expanding_tree_mgr;
-    KDTree2D*                    _p_kd_tree;
+    KDTree2D*                    _p_master_kd_tree;
     COST_FUNC_PTR                _p_cost_func;
     double**                     _pp_cost_distribution;  
  
     std::list<MLRRTNode*>        _nodes;
- 
+
+    double _range; 
     double _segment_length;
     int    _obs_check_resolution;
 

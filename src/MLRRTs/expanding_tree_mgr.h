@@ -2,12 +2,12 @@
 #define EXPANDING_TREE_MGR_H_
 
 #include <vector>
+#include "kdtreeml2d.h"
 #include "expanding_tree.h"
 #include "worldmap.h"
 
 namespace mlrrts {
 
-  class Path;
 
   class SubRegionMgr {
   public:
@@ -33,17 +33,6 @@ namespace mlrrts {
     std::vector<ExpandingEdge*> mp_edges;
   };
   
-  class StringClass {
-  public:
-    StringClass( std::vector< std::string > string );
-    virtual ~StringClass();
-    std::string get_name();
-  
-    std::vector< std::string > m_string;
-    double m_cost;
-    Path*  mp_path;  
-  };
-
   class ExpandingTreeMgr {
   public:
     ExpandingTreeMgr();

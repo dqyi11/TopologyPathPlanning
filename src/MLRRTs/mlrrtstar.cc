@@ -11,12 +11,16 @@ MLRRTNode::MLRRTNode(POS2D pos) {
   m_pos = pos;
   m_cost = 0.0;
   mp_parent = NULL;
+  mp_master = NULL;
   m_child_nodes.clear();
   m_substring.clear();
 }
 
 bool MLRRTNode::operator==(const MLRRTNode &other) {
-  return m_pos==other.m_pos;
+  if( m_pos==other.m_pos && mp_parent == other.mp_parent ) {
+    return true;
+  }
+  return false;
 }
 
 void MLRRTNode::clear_string() {
@@ -94,7 +98,7 @@ void MLRRTstar::extend() {
   bool node_inserted = false;
   while( false == node_inserted ) {
     POS2D rnd_pos = _sampling();
-    KDNode2D nearest_node = _find_nearest( rnd_pos );
+    KDNode2D nearest_node = _find_nearest( rnd_pos, NULL );
    
     if (rnd_pos[0]==nearest_node[0] && rnd_pos[1]==nearest_node[1]) {
       continue;
@@ -220,18 +224,64 @@ bool MLRRTstar::_is_obstacle_free( POS2D pos_a, POS2D pos_b ) {
   return true;
 }
 
-KDNode2D MLRRTstar::_find_nearest( POS2D pos ) {
+KDNode2D MLRRTstar::_find_nearest( POS2D pos, ExpandingNode* p_exp_node ) {
   KDNode2D node( pos );
-  std::pair<KDTree2D::const_iterator,double> found = _p_kd_tree->find_nearest( node );
-  KDNode2D near_node = *found.first;
-  return near_node;
+  KDNode2D nearest_node( pos );
+  if( p_exp_node == NULL ) {
+    std::pair<KDTree2D::const_iterator,double> found = _p_master_kd_tree->find_nearest( node );
+    nearest_node = *found.first;
+  }
+  else {
+    /* find nearest in each string class */
+    double nearest_distance = _sampling_width > _sampling_height ? _sampling_width : _sampling_height;
+    for(std::vector<StringClass*>::iterator it = p_exp_node->mp_string_classes.begin(); it != p_exp_node->mp_string_classes.end(); it ++ ) {
+      StringClass* p_class = (*it);
+      std::pair<KDTree2D::const_iterator,double> found = p_class->mp_kd_tree->find_nearest( node );
+      KDNode2D nearest_node_in_class = *found.first;
+      double distance_in_class = found.second;  
+      
+      if( distance_in_class < nearest_distance ) {
+        nearest_distance = distance_in_class;
+        nearest_node = nearest_node_in_class;
+      }
+    } 
+  } 
+  return nearest_node;
+}
+
+std::list<KDNode2D> MLRRTstar::_find_near( POS2D pos, ExpandingNode* p_exp_node ) {
+  std::list<KDNode2D> near_list;
+  KDNode2D node(pos);
+  int num_dimensions = 2;
+  if( p_exp_node == NULL ) {  
+    int num_vertices = _p_master_kd_tree->size();
+    double ball_radius =  _theta * _range * pow( log((double)(num_vertices + 1.0))/((double)(num_vertices + 1.0)), 1.0/((double)num_dimensions) );
+
+    _p_master_kd_tree->find_within_range( node, ball_radius, std::back_inserter( near_list ) );
+  }
+  else {
+
+    for(std::vector<StringClass*>::iterator it = p_exp_node->mp_string_classes.begin(); it != p_exp_node->mp_string_classes.end(); it ++ ) {
+      StringClass* p_class = (*it);
+      std::list<KDNode2D> near_list_in_class;
+      int num_vertices = p_class->mp_kd_tree->size();
+      double ball_radius =  _theta * _range * pow( log((double)(num_vertices + 1.0))/((double)(num_vertices + 1.0)), 1.0/((double)num_dimensions) );
+      p_class->mp_kd_tree->find_within_range( node, ball_radius, std::back_inserter( near_list_in_class ) );
+      for( std::list<KDNode2D>::iterator it_cls = near_list.begin();
+           it_cls != near_list.end(); it_cls ++ ) {
+        KDNode2D kdnode = (*it_cls);
+        near_list.push_back( kdnode );
+      }      
+    }
+  }
+  return near_list;
 }
 
 bool MLRRTstar::_contains( POS2D pos ) {
-  if(_p_kd_tree) {
+  if(_p_master_kd_tree) {
     KDNode2D node( pos[0], pos[1] );
-    KDTree2D::const_iterator it = _p_kd_tree->find(node);
-    if( it!=_p_kd_tree->end() ) {
+    KDTree2D::const_iterator it = _p_master_kd_tree->find(node);
+    if( it!=_p_master_kd_tree->end() ) {
       return true;
     }
     else {

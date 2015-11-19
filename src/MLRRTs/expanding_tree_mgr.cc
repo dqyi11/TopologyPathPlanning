@@ -58,29 +58,6 @@ ExpandingEdge* LineSubSegmentMgr::find_edge( std::string name ) {
   return NULL;
 }
 
-StringClass::StringClass( std::vector< std::string > string ) {
-  m_string = string;
-  m_cost = 0.0;
-  mp_path = NULL;
-}
-
-StringClass::~StringClass() {
-  m_string.clear();
-  m_cost = 0.0;
-  mp_path = NULL;
-}
-
-std::string StringClass::get_name() {
-  std::string name = "";
-  for( unsigned int i = 0; i < m_string.size(); i ++ ) {
-    if (i > 0) { 
-      name += " ";
-    }
-    name += m_string[i];
-  }
-  return name;
-}
-
 ExpandingTreeMgr::ExpandingTreeMgr() {
 
   mp_expanding_tree = NULL;
@@ -137,9 +114,18 @@ void ExpandingTreeMgr::init( StringGrammar* p_grammar, WorldMap* p_worldmap ) {
     delete mp_expanding_tree;
     mp_expanding_tree = NULL;
   }
+  for( std::vector<StringClass*>::iterator it = mp_string_classes.begin();
+       it != mp_string_classes.end(); it++ ) {
+    StringClass* p_string_class = (*it);
+    delete p_string_class;
+    p_string_class = NULL;
+  }
+  mp_string_classes.clear();   
+
   mp_string_grammar = p_grammar;
   mp_expanding_tree = new ExpandingTree();
-  mp_expanding_tree->init( p_grammar, p_worldmap );
+  /* init string classes */
+  mp_string_classes = mp_expanding_tree->init( p_grammar, p_worldmap );
 
   for( std::vector<ExpandingNode*>::iterator it = mp_expanding_tree->m_nodes.begin();
        it != mp_expanding_tree->m_nodes.end(); it ++ ) {
