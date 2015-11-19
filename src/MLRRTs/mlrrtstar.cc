@@ -125,6 +125,58 @@ MLRRTstar::~MLRRTstar() {
 }
 
 bool MLRRTstar::init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp_cost_distribution, homotopy::grammar_type_t grammar_type ) {
+  if( _p_root ) {
+    delete _p_root;
+    _p_root = NULL;
+  }
+  if( _p_expanding_tree_mgr ) {
+    delete _p_expanding_tree_mgr;
+    _p_expanding_tree_mgr = NULL;
+  }
+  if (_reference_frames == NULL) {
+    return false;
+  }
+
+  _start = start;
+  _goal = goal;
+  _p_cost_func = p_func;
+
+  if(pp_cost_distribution) {
+    if(_pp_cost_distribution == NULL) {
+      _pp_cost_distribution = new double*[_sampling_width];
+      for(int i=0;i<_sampling_width;i++) {
+        _pp_cost_distribution[i] = new double[_sampling_height];
+      }
+    }
+    for(int i=0;i<_sampling_width;i++) {
+      for(int j=0;j<_sampling_height;j++) {
+        _pp_cost_distribution[i][j] = pp_cost_distribution[i][j];
+      }
+    }
+  }
+
+  std::cout << "Init grammar ... " << std::endl; 
+  Point2D start_point = toPoint2D( _start );
+  Point2D goal_point = toPoint2D( _goal );
+  set_grammar_type(grammar_type);
+  if( STRING_GRAMMAR_TYPE == grammar_type) {
+    _string_grammar = _reference_frames->get_string_grammar( start_point, goal_point );
+  }
+  else if( HOMOTOPIC_GRAMMAR_TYPE == grammar_type ) {
+    _string_grammar = _reference_frames->get_homotopic_grammar(start_point, goal_point );
+  }
+  std::cout << "Init String Class Mgr ... " << std::endl;
+  _p_expanding_tree_mgr = new ExpandingTreeMgr();
+  _p_expanding_tree_mgr->init( _string_grammar, _reference_frames->get_world_map() );
+
+  std::cout << "Init st_tree.." << std::endl;
+  KDNode2D root( start );
+  _p_root = new MLRRTNode( start );
+  _nodes.push_back(_p_root);
+  root.add_mlrrtnode(_p_root);
+  _p_master_kd_tree->insert( root );
+  
+  _current_iteration = 0; 
 
   return false;
 }
@@ -413,7 +465,26 @@ void MLRRTstar::init_feasible_paths() {
 }
 
 bool MLRRTstar::_attach_new_node( MLRRTNode* p_node_new, MLRRTNode* p_nearest_node, list<MLRRTNode*> near_nodes, ExpandingNode* p_exp_node ) {
+  double min_new_node_cost = p_nearest_node->m_cost + _calculate_cost(p_nearest_node->m_pos, p_node_new->m_pos);
+  MLRRTNode* p_min_node = p_nearest_node;
 
+  for(list<MLRRTNode*>::iterator it = near_nodes.begin(); it != near_nodes.end(); it++) {
+    MLRRTNode* p_near_node = (*it);
+    if( true == _is_obstacle_free( p_near_node->m_pos, p_node_new->m_pos ) ) {
+      double delta_cost = _calculate_cost( p_near_node->m_pos, p_node_new->m_pos );
+      double new_cost = p_near_node->m_cost + delta_cost;
+      if( new_cost < min_new_node_cost ) {
+        p_min_node = p_near_node;
+        min_new_node_cost = new_cost;
+      }
+    }
+  } 
+
+  bool added = _add_edge( p_min_node, p_node_new );
+  if( added ) {
+    p_node_new->m_cost = min_new_node_cost;
+    return true;
+  }
   return false;
 }
 
@@ -423,4 +494,68 @@ void MLRRTstar::_rewire_near_nodes( MLRRTNode* p_node_new, list<MLRRTNode*> near
 
 double MLRRTstar::_calculate_cost( POS2D& pos_a, POS2D& pos_b ) {
   return _p_cost_func( pos_a, pos_b, _pp_cost_distribution, this);
+}
+
+bool MLRRTstar::_has_edge( MLRRTNode* p_node_parent, MLRRTNode* p_node_child ) {
+  if ( p_node_parent == NULL || p_node_child == NULL ) {
+    return false;
+  }
+  for( list<MLRRTNode*>::iterator it=p_node_parent->m_child_nodes.begin();it!=p_node_parent->m_child_nodes.end();it++ ) {
+    MLRRTNode* p_curr_node = (*it);
+    if( p_curr_node == p_node_child ) {
+      return true;
+    }
+  }
+  /*
+    if (pNode_p == pNode_c->mpParent)
+        return true;
+  */
+  return false;
+}
+
+bool MLRRTstar::_add_edge( MLRRTNode* p_node_parent, MLRRTNode* p_node_child ) {
+  if( p_node_parent == NULL || p_node_child == NULL || p_node_parent == p_node_child ) {
+    return false;
+  }
+  if ( p_node_parent->m_pos == p_node_child->m_pos ) {
+    return false;
+  }
+  // generate the string of ID characters
+  Point2D start = toPoint2D( p_node_parent->m_pos );
+  Point2D goal = toPoint2D( p_node_child->m_pos );
+  //std::cout << "START " << start << " END " << goal << std::endl;
+  vector< string > ids = _reference_frames->get_string( start, goal, _grammar_type );
+  p_node_child->clear_string();
+  p_node_child->append_to_string( p_node_parent->m_substring );
+  p_node_child->append_to_string( ids );
+
+  if ( true == _has_edge( p_node_parent, p_node_child ) ) {
+    p_node_child->mp_parent = p_node_parent;
+  }
+  else {
+    p_node_parent->m_child_nodes.push_back( p_node_child );
+    p_node_child->mp_parent = p_node_parent;
+  }
+  p_node_child->m_child_nodes.unique();
+
+  return true;
+}
+
+bool MLRRTstar::_remove_edge( MLRRTNode* p_node_parent, MLRRTNode* p_node_child ) {
+  if( p_node_parent==NULL ) {
+    return false;
+  }
+
+  p_node_child->mp_parent = NULL;
+  bool removed = false;
+  for( list<MLRRTNode*>::iterator it=p_node_parent->m_child_nodes.begin();it!=p_node_parent->m_child_nodes.end();it++ ) {
+    MLRRTNode* p_current = (MLRRTNode*)(*it);
+    if ( p_current == p_node_child || p_current->m_pos==p_node_child->m_pos ) {
+      p_current->mp_parent = NULL;
+      p_current->clear_string();
+      it = p_node_parent->m_child_nodes.erase(it);
+      removed = true;
+    }
+  }
+  return removed;
 }

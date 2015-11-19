@@ -22,7 +22,7 @@ namespace mlrrts {
     double   m_cost;
     MLRRTNode* mp_parent;
     POS2D m_pos;
-    std::vector<MLRRTNode*> m_child_nodes;
+    std::list<MLRRTNode*> m_child_nodes;
     std::vector< std::string > m_substring;
 
     ExpandingNode* mp_master;
@@ -68,7 +68,8 @@ namespace mlrrts {
     void set_reference_frames( homotopy::ReferenceFrameSet* p_reference_frames );
     homotopy::ReferenceFrameSet* get_reference_frames() { return _reference_frames; }
     ExpandingTreeMgr* get_expanding_tree_mgr() { return _p_expanding_tree_mgr; }
-
+    void set_grammar_type( homotopy::grammar_type_t type ) { _grammar_type = type; }
+    homotopy::grammar_type_t get_grammar_type() { return _grammar_type; }
 
   protected:
     POS2D _sampling();
@@ -85,6 +86,10 @@ namespace mlrrts {
     bool _attach_new_node( MLRRTNode* p_node_new, MLRRTNode* p_nearest_node, std::list<MLRRTNode*> near_nodes, ExpandingNode* p_exp_node );
     void _rewire_near_nodes( MLRRTNode* p_node_new, std::list<MLRRTNode*> near_nodes, ExpandingNode* p_exp_node );  
 
+    bool _has_edge( MLRRTNode* p_node_parent, MLRRTNode* p_node_child );
+    bool _add_edge( MLRRTNode* p_node_parent, MLRRTNode* p_node_child );
+    bool _remove_edge( MLRRTNode* p_node_parent, MLRRTNode* p_node_child );
+
     POS2D      _start;
     POS2D      _goal;
     MLRRTNode* _p_root; 
@@ -96,6 +101,7 @@ namespace mlrrts {
 
     int**                        _pp_map_info;
     homotopy::ReferenceFrameSet* _reference_frames;
+    homotopy::StringGrammar*     _string_grammar;
     ExpandingTreeMgr*            _p_expanding_tree_mgr;
     KDTree2D*                    _p_master_kd_tree;
     COST_FUNC_PTR                _p_cost_func;

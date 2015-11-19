@@ -171,11 +171,6 @@ bool BIRRTstar::init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp
       }
     }
   }
-  else {
-    if(_pp_cost_distribution) {
-      _pp_cost_distribution = NULL;
-    }
-  }
   
   std::cout << "Init grammar ... " << std::endl; 
   Point2D start_point( _start[0], _start[1] );
