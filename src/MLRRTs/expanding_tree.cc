@@ -1,10 +1,9 @@
 #include <iostream>
-#include <CGAL/squared_distance_2.h>
 #include <boost/graph/graphviz.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/iteration_macros.hpp>
 #include "expanding_tree.h"
-
+#include "ml_util.h"
 
 using namespace std;
 using namespace boost;
@@ -52,9 +51,7 @@ POS2D ExpandingNode::sample_random_pos() {
   POS2D pos( 0, 0 );
   if( mp_subregion ) {
     Point2D point = mp_subregion->sample_position();
-    double x = CGAL::to_double( point.x() );
-    double y = CGAL::to_double( point.y() );
-    pos = POS2D( x, y );
+    pos = toPOS2D( point );
   }
   return pos;
 }
@@ -139,9 +136,7 @@ POS2D ExpandingEdge::sample_random_pos() {
   POS2D pos( 0, 0 );
   if( mp_line_subsegment ) {
     Point2D point = mp_line_subsegment->sample_position();
-    double x = CGAL::to_double( point.x() );
-    double y = CGAL::to_double( point.y() );
-    pos = POS2D( x, y );
+    pos = toPOS2D( point );
   }
   return pos;
 }
