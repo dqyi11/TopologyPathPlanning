@@ -24,6 +24,7 @@ MLRRTstarPathPlanningInfo::MLRRTstarPathPlanningInfo() {
    
     m_min_dist_enabled = true;
 
+    m_grammar_type = STRING_GRAMMAR_TYPE;
     m_max_iteration_num = 1000;
     m_segment_length = 5.0;
     mCostDistribution = NULL;
