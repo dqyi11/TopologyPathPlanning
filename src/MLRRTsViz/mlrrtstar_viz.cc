@@ -2,10 +2,8 @@
 
 #include "mlrrtstar_viz.h"
 
-#define START_TREE_COLOR        QColor(160,160,0)
-#define START_TREE_COLOR_ALPHA  QColor(160,160,0,100)
-#define GOAL_TREE_COLOR         QColor(0,160,160)
-#define GOAL_TREE_COLOR_ALPHA   QColor(0,160,160,100)
+#define TREE_COLOR        QColor(160,160,0)
+#define TREE_COLOR_ALPHA  QColor(160,160,0,100)
 #define START_COLOR             QColor(255,0,0)
 #define GOAL_COLOR              QColor(0,0,255)
 #define REFERENCE_FRAME_COLOR   QColor(0,255,0)
@@ -112,6 +110,31 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
         rg_painter.end();
       } 
     }
+  }
+
+  if( mp_tree ) {
+    QPainter tree_painter(device);
+    QPen tree_paintpen;
+    if(m_finished_planning) {
+      tree_paintpen.setColor(TREE_COLOR_ALPHA);
+    }
+    else{
+      tree_paintpen.setColor(TREE_COLOR);
+    }
+    tree_paintpen.setWidth(1);
+    if(m_finished_planning) {
+      tree_painter.setOpacity(0.4);
+    }
+    tree_painter.setPen(tree_paintpen);
+    for( std::list<MLRRTNode*>::iterator it= mp_tree->get_nodes().begin(); it!=mp_tree->get_nodes().end();it++ ) {
+      MLRRTNode* p_node = (*it);
+      if(p_node) {
+        if(p_node->mp_parent) {
+          tree_painter.drawLine(QPoint(p_node->m_pos[0], p_node->m_pos[1]), QPoint(p_node->mp_parent->m_pos[0], p_node->mp_parent->m_pos[1]));
+        }
+      }
+    }
+    tree_painter.end();
   }
 
   if( m_show_reference_frames ) {

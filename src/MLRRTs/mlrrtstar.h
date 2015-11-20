@@ -64,6 +64,7 @@ namespace mlrrts {
     
     double _calculate_cost( POS2D& pos_a, POS2D& pos_b );
     int**& get_map_info() { return _pp_map_info; }
+    std::list<MLRRTNode*>& get_nodes() { return _nodes; }
 
     void set_reference_frames( homotopy::ReferenceFrameSet* p_reference_frames );
     homotopy::ReferenceFrameSet* get_reference_frames() { return _reference_frames; }
