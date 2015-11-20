@@ -169,7 +169,7 @@ bool MLRRTstar::init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp
   _p_expanding_tree_mgr = new ExpandingTreeMgr();
   _p_expanding_tree_mgr->init( _string_grammar, _reference_frames->get_world_map() );
 
-  std::cout << "Init st_tree.." << std::endl;
+  std::cout << "Init tree.." << std::endl;
   KDNode2D root( start );
   _p_root = new MLRRTNode( start );
   _nodes.push_back(_p_root);
