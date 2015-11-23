@@ -29,10 +29,10 @@ namespace homotopy {
     bool                         m_is_connected_to_central_point;
   protected:
     SubRegionSet*                mp_parent;
-    int _min_x;
-    int _min_y;
-    int _max_x;
-    int _max_y;
+    int                          _min_x;
+    int                          _min_y;
+    int                          _max_x;
+    int                          _max_y;
     
   };
 
@@ -49,8 +49,8 @@ namespace homotopy {
     std::vector<SubRegion*> m_subregions;
     Point2D                 m_centroid;
 
-    LineSubSegmentSet* mp_line_segments_a;
-    LineSubSegmentSet* mp_line_segments_b;
+    LineSubSegmentSet*      mp_line_segments_a;
+    LineSubSegmentSet*      mp_line_segments_b;
   };
 
 }

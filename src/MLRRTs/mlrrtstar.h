@@ -72,6 +72,8 @@ namespace mlrrts {
     void set_grammar_type( homotopy::grammar_type_t type ) { _grammar_type = type; }
     homotopy::grammar_type_t get_grammar_type() { return _grammar_type; }
 
+    bool in_current_and_parent_exp_node( POS2D pos, ExpandingNode* p_exp_node );
+
   protected:
     POS2D _sampling();
     POS2D _steer( POS2D pos_a, POS2D pos_b );

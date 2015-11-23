@@ -155,7 +155,7 @@ bool MLRRTstar::init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp
     }
   }
 
-  std::cout << "Init grammar ... " << std::endl; 
+  cout << "Init grammar ... " << endl; 
   Point2D start_point = toPoint2D( _start );
   Point2D goal_point = toPoint2D( _goal );
   set_grammar_type(grammar_type);
@@ -165,11 +165,11 @@ bool MLRRTstar::init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp
   else if( HOMOTOPIC_GRAMMAR_TYPE == grammar_type ) {
     _string_grammar = _reference_frames->get_homotopic_grammar(start_point, goal_point );
   }
-  std::cout << "Init String Class Mgr ... " << std::endl;
+  cout << "Init String Class Mgr ... " << endl;
   _p_expanding_tree_mgr = new ExpandingTreeMgr();
   _p_expanding_tree_mgr->init( _string_grammar, _reference_frames->get_world_map() );
 
-  std::cout << "Init tree.." << std::endl;
+  cout << "Init tree.." << endl;
   KDNode2D root( start );
   _p_root = new MLRRTNode( start );
   _nodes.push_back(_p_root);
@@ -200,8 +200,8 @@ bool MLRRTstar::init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp
   } 
    
   _current_iteration = 0; 
-
-  return false;
+  
+  return true;
 }
 
 void MLRRTstar::extend() {
@@ -235,7 +235,6 @@ void MLRRTstar::extend() {
            if( p_exp_node ) {
              KDNode2D nearest_node_in_class = _find_nearest( new_pos, p_exp_node );  
              list<KDNode2D> near_list_in_class = _find_near( new_pos, p_exp_node );
-            
              // create new node 
              MLRRTNode* p_new_rnode = _create_new_node( new_pos, p_exp_node ); 
 
@@ -272,10 +271,12 @@ void MLRRTstar::extend() {
          }
          if ( any_node_added ) {
            _p_master_kd_tree->insert( new_master_node );
+           node_inserted = true;
          }
        }
     }
   }
+  _current_iteration ++;
 }
 
 POS2D MLRRTstar::_sampling() {
@@ -420,11 +421,33 @@ list<KDNode2D> MLRRTstar::_find_near( POS2D pos, ExpandingNode* p_exp_node ) {
       for( list<KDNode2D>::iterator it_cls = near_list.begin();
            it_cls != near_list.end(); it_cls ++ ) {
         KDNode2D kdnode = (*it_cls);
-        near_list.push_back( kdnode );
+        if ( in_current_and_parent_exp_node( kdnode, p_exp_node ) ) {
+          near_list.push_back( kdnode );
+        }
       }      
     }
   }
   return near_list;
+}
+
+bool MLRRTstar::in_current_and_parent_exp_node( POS2D pos, ExpandingNode* p_exp_node ) {
+  if( p_exp_node ) {
+    if( p_exp_node->mp_subregion ) {
+      if( p_exp_node->mp_subregion->contains( toPoint2D( pos ) ) ) {
+        return true;
+      }
+    } 
+    if( p_exp_node->mp_in_edge ){
+      if( p_exp_node->mp_in_edge->mp_from ){
+        if( p_exp_node->mp_in_edge->mp_from->mp_subregion ) {
+          if( p_exp_node->mp_in_edge->mp_from->mp_subregion->contains( toPoint2D( pos ) ) ) {
+            return true;
+          }
+        }
+      }
+    }
+  }
+  return false;
 }
 
 bool MLRRTstar::_contains( POS2D pos ) {

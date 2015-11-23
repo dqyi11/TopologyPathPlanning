@@ -484,7 +484,7 @@ SubRegion* WorldMap::in_subregion( Point2D point ) {
   for( unsigned int i = 0; i < get_subregion_set().size(); i ++ ) {
     SubRegionSet* p_subregion_set = get_subregion_set()[i]; 
     if( p_subregion_set ) {
-      std::cout << p_subregion_set->get_name() << std::endl;
+      //std::cout << p_subregion_set->get_name() << std::endl;
       for( std::vector<SubRegion*>::iterator itr = p_subregion_set->m_subregions.begin();
            itr != p_subregion_set->m_subregions.end(); itr ++) { 
         SubRegion* p_subregion = (*itr);
