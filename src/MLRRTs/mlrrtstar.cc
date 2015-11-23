@@ -210,7 +210,7 @@ void MLRRTstar::extend() {
     POS2D rnd_pos = _sampling();
     KDNode2D nearest_node = _find_nearest( rnd_pos, NULL );
    
-    if (rnd_pos[0]==nearest_node[0] && rnd_pos[1]==nearest_node[1]) {
+    if ( rnd_pos[0]==nearest_node[0] && rnd_pos[1]==nearest_node[1] ) {
       continue;
     }
  
@@ -223,6 +223,7 @@ void MLRRTstar::extend() {
     }
 
     if( true == _is_obstacle_free( nearest_node, new_pos ) ) {
+       cout << "NEW POS " << new_pos << endl;
        SubRegion* p_subregion = _reference_frames->get_world_map()->in_subregion( toPoint2D( new_pos ) );
        if (p_subregion) {
          SubRegionMgr* p_mgr = _p_expanding_tree_mgr->find_subregion_mgr( p_subregion );
@@ -247,7 +248,7 @@ void MLRRTstar::extend() {
                MLRRTNode* p_near_rnode = near_kd_node.get_pri_mlrrtnode();
                near_rnodes.push_back( p_near_rnode );
              } 
-             // attach new node 
+             // attach new noue 
              if( _attach_new_node( p_new_rnode, p_nearest_rnode, near_rnodes, p_exp_node ) ) {
                any_node_added = true;
                new_master_node.add_mlrrtnode( p_new_rnode );
@@ -263,6 +264,7 @@ void MLRRTstar::extend() {
                      p_str_cls->mp_kd_tree->insert( new_node );
                    }
                  }
+                 p_exp_node->mp_nodes.push_back( p_new_rnode );
                }
              }
              // rewire near nodes    
@@ -418,15 +420,17 @@ list<KDNode2D> MLRRTstar::_find_near( POS2D pos, ExpandingNode* p_exp_node ) {
       int num_vertices = p_class->mp_kd_tree->size();
       double ball_radius =  _theta * _range * pow( log((double)(num_vertices + 1.0))/((double)(num_vertices + 1.0)), 1.0/((double)num_dimensions) );
       p_class->mp_kd_tree->find_within_range( node, ball_radius, back_inserter( near_list_in_class ) );
-      for( list<KDNode2D>::iterator it_cls = near_list.begin();
-           it_cls != near_list.end(); it_cls ++ ) {
+      cout << "NEAR LIST IN CLASS " << near_list_in_class.size() << endl;
+      for( list<KDNode2D>::iterator it_cls = near_list_in_class.begin();
+           it_cls != near_list_in_class.end(); it_cls ++ ) {
         KDNode2D kdnode = (*it_cls);
-        if ( in_current_and_parent_exp_node( kdnode, p_exp_node ) ) {
+        //if ( in_current_and_parent_exp_node( kdnode, p_exp_node ) ) {
           near_list.push_back( kdnode );
-        }
+        //}
       }      
     }
   }
+  cout << "NEAR LIST " << near_list.size() << endl;
   return near_list;
 }
 
@@ -467,6 +471,9 @@ bool MLRRTstar::_contains( POS2D pos ) {
 MLRRTNode* MLRRTstar::_create_new_node( POS2D pos, ExpandingNode* p_exp_node ) {
   MLRRTNode* p_node = new MLRRTNode( pos );
   _nodes.push_back( p_node );
+  if( p_exp_node ) {
+    p_exp_node->mp_nodes.push_back( p_node );
+  }
   return p_node;
 }
 
@@ -514,6 +521,7 @@ bool MLRRTstar::_attach_new_node( MLRRTNode* p_node_new, MLRRTNode* p_nearest_no
   double min_new_node_cost = p_nearest_node->m_cost + _calculate_cost(p_nearest_node->m_pos, p_node_new->m_pos);
   MLRRTNode* p_min_node = p_nearest_node;
 
+  cout << "_attach_new_node( near_size=" << near_nodes.size()  << " )" << endl;
   for(list<MLRRTNode*>::iterator it = near_nodes.begin(); it != near_nodes.end(); it++) {
     MLRRTNode* p_near_node = (*it);
     if( true == _is_obstacle_free( p_near_node->m_pos, p_node_new->m_pos ) ) {

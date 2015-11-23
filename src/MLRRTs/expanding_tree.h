@@ -51,6 +51,7 @@ namespace mlrrts {
     homotopy::SubRegion*        mp_subregion;
     std::vector<StringClass*>   mp_string_classes;
 
+    std::list<MLRRTNode*>       mp_nodes;
     std::vector<ExpandingNode*> mp_ancestor_seq;
   };
   

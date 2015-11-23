@@ -272,9 +272,9 @@ void MLRRTstarWindow::planPath() {
   //mpMLRRTstar->dump_distribution("dist.txt");
   while(mpMLRRTstar->get_current_iteration() <= mpViz->m_PPInfo.m_max_iteration_num) {
     QString msg = "CurrentIteration " + QString::number(mpMLRRTstar->get_current_iteration()) + " ";
-    qDebug() << msg;
     mpMLRRTstar->extend();
-    //msg += QString::number(mpMLRRTstar->get_expanding_tree_mgr()->get_string_classes().size()); 
+    msg += QString::number(mpMLRRTstar->get_expanding_tree_mgr()->get_string_classes().size()); 
+    qDebug() << msg;
 
     updateStatus();
     repaint();

@@ -1,6 +1,7 @@
 #include <QtGui>
 
 #include "mlrrtstar_viz.h"
+#include "mlviz_util.h"
 
 #define TREE_COLOR        QColor(160,160,0)
 #define TREE_COLOR_ALPHA  QColor(160,160,0,100)
@@ -11,6 +12,7 @@
 #define DRAWING_LINE_COLOR      QColor(153,76,0)
 #define LINE_WIDTH              2
 
+using namespace std;
 using namespace homotopy;
 using namespace mlrrts;
 
@@ -24,6 +26,7 @@ MLRRTstarViz::MLRRTstarViz( QWidget * parent ) : QLabel(parent) {
   m_found_path_index = -1;
   m_region_index = -1;
   m_subregion_index = -1;
+  m_string_class_index = -1;
   mp_reference_frames = NULL;
   m_show_points = false;
   m_colors.clear();
@@ -56,9 +59,7 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
             if(p_subreg) {
               QPolygon poly;
               for( unsigned int k = 0; k < p_subreg->m_points.size(); k++) {
-                double x = CGAL::to_double( p_subreg->m_points[k].x() );
-                double y = CGAL::to_double( p_subreg->m_points[k].y() );
-                poly << QPoint(x , y);
+                poly << toQPoint( p_subreg->m_points[k] );
               }
               QPainterPath tmpPath;
               tmpPath.addPolygon(poly);
@@ -83,9 +84,7 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
             if(p_subreg) {
               QPolygon poly;
               for( unsigned int k = 0; k < p_subreg->m_points.size(); k++) {
-                double x = CGAL::to_double( p_subreg->m_points[k].x() );
-                double y = CGAL::to_double( p_subreg->m_points[k].y() );
-                poly << QPoint(x , y);
+                poly << toQPoint( p_subreg->m_points[k] );
               }
               QPainterPath tmpPath;
               tmpPath.addPolygon(poly);
@@ -98,9 +97,7 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
           if(p_subreg) {
             QPolygon poly;
             for( unsigned int k = 0; k < p_subreg->m_points.size(); k++) {
-              double x = CGAL::to_double( p_subreg->m_points[k].x() );
-              double y = CGAL::to_double( p_subreg->m_points[k].y() );
-              poly << QPoint(x , y);
+              poly << toQPoint( p_subreg->m_points[k] );
             }
             QPainterPath tmpPath;
             tmpPath.addPolygon(poly);
@@ -126,11 +123,32 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
       tree_painter.setOpacity(0.4);
     }
     tree_painter.setPen(tree_paintpen);
-    for( std::list<MLRRTNode*>::iterator it= mp_tree->get_nodes().begin(); it!=mp_tree->get_nodes().end();it++ ) {
-      MLRRTNode* p_node = (*it);
-      if(p_node) {
-        if(p_node->mp_parent) {
-          tree_painter.drawLine(QPoint(p_node->m_pos[0], p_node->m_pos[1]), QPoint(p_node->mp_parent->m_pos[0], p_node->mp_parent->m_pos[1]));
+    if( m_string_class_index > 0 ) {
+      for( list<MLRRTNode*>::iterator it= mp_tree->get_nodes().begin(); it!=mp_tree->get_nodes().end();it++ ) {
+        MLRRTNode* p_node = (*it);
+        if(p_node) {
+          if(p_node->mp_parent) {
+            tree_painter.drawLine( toQPoint( p_node->m_pos ), toQPoint( p_node->mp_parent->m_pos ) );
+          }
+        }
+      }
+    }
+    else {
+      StringClass* p_str_cls = mp_tree->get_expanding_tree_mgr()->get_string_classes()[ m_string_class_index ];
+      if( p_str_cls ) {
+        for( vector<ExpandingNode*>::iterator it_exp = p_str_cls->mp_exp_nodes.begin();
+             it_exp != p_str_cls->mp_exp_nodes.end(); it_exp++ ) {
+          ExpandingNode* p_node = (*it_exp);
+          if ( p_node ) {
+            for( list<MLRRTNode*>::iterator it = p_node->mp_nodes.begin(); it != p_node->mp_nodes.end(); it++ ) {
+              MLRRTNode* p_node = (*it);
+              if(p_node) {
+                if(p_node->mp_parent) {
+                  tree_painter.drawLine( toQPoint( p_node->m_pos ), toQPoint( p_node->mp_parent->m_pos ) );
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -147,14 +165,14 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
       if ( m_reference_frame_index >= mp_reference_frames->get_reference_frames().size() ) {
         for( unsigned int rf_i = 0; rf_i < mp_reference_frames->get_reference_frames().size(); rf_i ++ ) {
           ReferenceFrame* rf = mp_reference_frames->get_reference_frames()[rf_i];
-          rf_painter.drawLine( QPoint( CGAL::to_double(rf->m_segment.source().x()), CGAL::to_double(rf->m_segment.source().y()) ),
-                               QPoint( CGAL::to_double(rf->m_segment.target().x()), CGAL::to_double(rf->m_segment.target().y()) ) );
+          rf_painter.drawLine( toQPoint( rf->m_segment.source() ),
+                               toQPoint( rf->m_segment.target() ) );
         }
       }
       else{
         ReferenceFrame* rf = mp_reference_frames->get_reference_frames()[m_reference_frame_index];
-        rf_painter.drawLine( QPoint( CGAL::to_double(rf->m_segment.source().x()), CGAL::to_double(rf->m_segment.source().y()) ),
-                             QPoint( CGAL::to_double(rf->m_segment.target().x()), CGAL::to_double(rf->m_segment.target().y()) ) );
+        rf_painter.drawLine( toQPoint( rf->m_segment.source() ),
+                             toQPoint( rf->m_segment.target() ) );
       }
       rf_painter.end();
     }
@@ -177,7 +195,6 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
     gt_painter.drawPoint(m_PPInfo.m_goal);
     gt_painter.end();
   }
-
 }
 
 void MLRRTstarViz::paintEvent( QPaintEvent* e ) {
@@ -198,7 +215,7 @@ bool MLRRTstarViz::draw_path(QString filename) {
 
   QPixmap pix(m_PPInfo.m_objective_file);
 
-  std::cout << "DUMP PATH IMG " << pix.width() << " " << pix.height() << std::endl;
+  cout << "DUMP PATH IMG " << pix.width() << " " << pix.height() << endl;
 
   QFile file(filename);
   if(file.open(QIODevice::WriteOnly)) {
@@ -222,6 +239,34 @@ bool MLRRTstarViz::save_current_viz(QString filename) {
   return false;
 }
 
+void MLRRTstarViz::next_string_class() {
+  if ( mp_tree ) {
+    if ( mp_tree->get_expanding_tree_mgr() ) {
+      ExpandingTreeMgr* p_mgr = mp_tree->get_expanding_tree_mgr();
+      if ( m_string_class_index < p_mgr->get_string_classes().size()-1 ) {
+        m_string_class_index ++;
+      }
+      else {
+        m_string_class_index = -1;
+      }
+    }
+  }
+}
+
+void MLRRTstarViz::prev_string_class() {
+  if ( mp_tree ) {
+    if ( mp_tree->get_expanding_tree_mgr() ) {
+      ExpandingTreeMgr* p_mgr = mp_tree->get_expanding_tree_mgr();
+      if ( m_string_class_index > 0 ) {
+        m_string_class_index --;
+      }
+      else {
+        m_string_class_index = p_mgr->get_string_classes().size()-1;
+      }
+    }
+  }
+}
+
 void MLRRTstarViz::prev_reference_frame() {
   if (m_show_reference_frames) {
     if ( m_reference_frame_index <= 0) {
@@ -242,7 +287,7 @@ void MLRRTstarViz::next_reference_frame() {
   }
 }
 
-std::string MLRRTstarViz::get_reference_frame_name() {
+string MLRRTstarViz::get_reference_frame_name() {
 
   if ( m_reference_frame_index < mp_reference_frames->get_reference_frames().size() ) {
     return mp_reference_frames->get_reference_frames()[m_reference_frame_index]->m_name;
@@ -250,7 +295,7 @@ std::string MLRRTstarViz::get_reference_frame_name() {
   return "NO REF FRAME";
 }
 
-std::string MLRRTstarViz::get_region_name() {
+string MLRRTstarViz::get_region_name() {
   SubRegion* p_subregion = get_selected_subregion();
   if( p_subregion ) {
     return p_subregion->get_name();
@@ -284,8 +329,8 @@ void MLRRTstarViz::next_found_path() {
   }
 }
 
-void MLRRTstarViz::import_string_constraint( std::vector< QPoint > points, grammar_type_t type ) {
-  std::vector< Point2D > ref_points;
+void MLRRTstarViz::import_string_constraint( vector< QPoint > points, grammar_type_t type ) {
+  vector< Point2D > ref_points;
   for( unsigned int i = 0; i < points.size(); i ++ ) {
     ref_points.push_back( Point2D( points[i].x(), points[i].y() ) );
   }
@@ -310,8 +355,8 @@ void MLRRTstarViz::mouseMoveEvent( QMouseEvent * event ) {
     QPoint new_point( event->x(), event->y() );
     if( m_drawed_points.size() > 0 ) {
       QPoint last_point = m_drawed_points.back();
-      if( std::abs( new_point.x() - last_point.x() ) > 1 &&
-          std::abs( new_point.y() - last_point.y() ) > 1 ) {
+      if( abs( new_point.x() - last_point.x() ) > 1 &&
+          abs( new_point.y() - last_point.y() ) > 1 ) {
         m_drawed_points.push_back( new_point );
       }
     }

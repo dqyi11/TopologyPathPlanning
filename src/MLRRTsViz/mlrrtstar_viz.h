@@ -37,6 +37,9 @@ namespace mlrrts{
     void prev_subregion();
     void next_subregion();
 
+    void prev_string_class();
+    void next_string_class();
+
     void prev_reference_frame();
     void next_reference_frame();
     void prev_found_path();
@@ -78,6 +81,7 @@ namespace mlrrts{
     bool                         m_show_reference_frames;
     bool                         m_show_regions;
     bool                         m_finished_planning;
+    int                          m_string_class_index;
     int                          m_reference_frame_index;
     int                          m_found_path_index;
     int                          m_region_index;
