@@ -270,7 +270,7 @@ void MLRRTstarViz::prev_string_class() {
   if ( mp_tree ) {
     if ( mp_tree->get_expanding_tree_mgr() ) {
       ExpandingTreeMgr* p_mgr = mp_tree->get_expanding_tree_mgr();
-      if ( m_string_class_index > 0 ) {
+      if ( m_string_class_index >= 0 ) {
         m_string_class_index --;
       }
       else {
@@ -363,6 +363,7 @@ void MLRRTstarViz::mousePressEvent( QMouseEvent * event ) {
     else if( NORMAL == m_mode ) {
       QPoint new_point( event->x(), event->y() );
       m_item_selected_name = item_selected( new_point );
+      cout << "POS (" << event->x() << ", " << event->y() << ") " << m_item_selected_name.toStdString() << endl;
     }
   }
 }
@@ -542,10 +543,12 @@ QString MLRRTstarViz::item_selected( QPoint pos ) {
 
   LineSubSegment* p_line_sub_segment = mp_reference_frames->get_world_map()->find_linesubsegment( point );
   if( p_line_sub_segment ) {
+    cout << "FIND " << p_line_sub_segment->get_name() << endl;
     return QString::fromStdString( p_line_sub_segment->get_name() );
   }
   SubRegion* p_subregion = mp_reference_frames->get_world_map()->find_subregion( point );
   if( p_subregion ) {
+    cout << "FIND " << p_subregion->get_name() << endl;
     return QString::fromStdString( p_subregion->get_name() );
   }
   return name;
