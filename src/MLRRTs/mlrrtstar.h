@@ -61,6 +61,7 @@ namespace mlrrts {
     void extend();
     Path* find_path( POS2D via_pos );
     std::vector<Path*> get_paths();
+    Path* _get_path( MLRRTNode* p_node ); 
     
     double _calculate_cost( POS2D& pos_a, POS2D& pos_b );
     int**& get_map_info() { return _pp_map_info; }
@@ -118,8 +119,28 @@ namespace mlrrts {
 
     double _theta;
     int    _current_iteration;
-
   };
+
+  inline MLRRTNode* get_ancestor( MLRRTNode * node ) {
+    if( NULL == node ) {
+      return NULL;
+    }
+    if( NULL == node->mp_parent ) {
+      return node;
+    }
+    else {
+      return get_ancestor( node->mp_parent );
+    }
+  }
+
+  inline void get_parent_node_list( MLRRTNode * node, std::list<MLRRTNode*>& path ) {
+    if( node==NULL ) {
+      return;
+    }
+    path.push_back( node );
+    get_parent_node_list( node->mp_parent, path );
+    return;
+  }
 }
 
 

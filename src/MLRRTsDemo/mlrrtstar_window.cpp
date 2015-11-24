@@ -330,16 +330,16 @@ void MLRRTstarWindow::updateStatus() {
   }
   if(mpStatusLabel) {
     QString status = "";
-    //if (mpViz->get_finished_planning() == false) {
+    if (mpViz->get_finished_planning() == false) {
       status += QString::fromStdString(mpViz->get_region_name());
       status += " || ";
       status += QString::fromStdString(mpViz->get_reference_frame_name());
-    //}
-    //else {
-    //  status += QString::number( mpViz->get_found_path_index() );
-    //  status += " / ";
-    //  status += QString::number( mpViz->m_PPInfo.mp_found_paths.size() );
-    //}
+    }
+    else {
+      status += QString::number( mpViz->get_found_path_index() );
+      status += " / ";
+      status += QString::number( mpViz->m_PPInfo.mp_found_paths.size() );
+    }
     mpStatusLabel->setText(status);
   }
   if(mpStringClassLabel) {

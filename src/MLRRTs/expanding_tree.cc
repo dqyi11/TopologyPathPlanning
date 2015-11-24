@@ -354,3 +354,4 @@ std::vector<ExpandingNode*> ExpandingTree::get_leaf_nodes() {
   }
   return leaf_nodes;
 } 
+

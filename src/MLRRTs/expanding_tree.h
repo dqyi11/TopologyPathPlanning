@@ -84,8 +84,8 @@ namespace mlrrts {
     void output( std::string filename );
 
     int get_index( ExpandingNode* p_node ); 
-    std::vector<ExpandingNode*> get_leaf_nodes();   
-  
+    std::vector<ExpandingNode*> get_leaf_nodes();    
+
     ExpandingNode* mp_root; 
     std::vector<ExpandingNode*> m_nodes;
     std::vector<ExpandingEdge*> m_edges;

@@ -225,7 +225,7 @@ void MLRRTstar::extend() {
     if( true == _is_obstacle_free( nearest_node, new_pos ) ) {
        cout << "NEW POS " << new_pos << endl;
        SubRegion* p_subregion = _reference_frames->get_world_map()->in_subregion( toPoint2D( new_pos ) );
-       if (p_subregion) {
+       if ( p_subregion ) {
          SubRegionMgr* p_mgr = _p_expanding_tree_mgr->find_subregion_mgr( p_subregion );
          if( p_mgr ) {
            KDNode2D new_master_node( new_pos );
@@ -490,7 +490,42 @@ Path* MLRRTstar::find_path( POS2D via_pos ) {
 
 vector<Path*> MLRRTstar::get_paths() {
   vector<Path*> paths;
+  // find all the subregions that the goal position is in
+  Point2D goal_point = toPoint2D( _goal );
+  SubRegion* p_subregion = _reference_frames->get_world_map()->find_subregion( goal_point );
+  if( p_subregion ) {  
+    SubRegionMgr* p_subregion_mgr = _p_expanding_tree_mgr->find_subregion_mgr( p_subregion );  
+    if( p_subregion_mgr ) {
+      for( vector<ExpandingNode*>::iterator it = p_subregion_mgr->mp_nodes.begin(); it != p_subregion_mgr->mp_nodes.end(); it ++ ) {
+        // find a path start from the goal position in a corresponding subregion
+        ExpandingNode* p_exp_node = (*it);
+        if( p_exp_node ) {
+          KDNode2D kdnode = _find_nearest( _goal, p_exp_node );
+          MLRRTNode* p_near_goal = kdnode.get_pri_mlrrtnode();
+          if( p_near_goal ) {
+            Path* p_path = _get_path( p_near_goal );
+            paths.push_back( p_path ); 
+          }
+        }  
+      }
+    }
+  }
   return paths;
+}
+
+Path* MLRRTstar::_get_path( MLRRTNode* p_node ) {
+  list<MLRRTNode*> node_list;
+  get_parent_node_list( p_node, node_list );
+  Path* p_path = new Path( _start, _goal ); 
+  for( list<MLRRTNode*>::reverse_iterator itr = node_list.rbegin();
+       itr != node_list.rend(); itr ++ ) {
+    MLRRTNode* p_rrt_node = (*itr);
+    p_path->m_way_points.push_back( p_rrt_node->m_pos );
+  }
+  p_path->m_way_points.push_back( _goal );
+  p_path->append_substring( p_node->m_substring );
+  p_path->m_cost = p_node->m_cost;
+  return p_path;
 }
 
 void MLRRTstar::init_feasible_paths() {

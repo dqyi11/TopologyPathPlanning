@@ -39,7 +39,7 @@ void MLRRTstarViz::set_tree( MLRRTstar* p_tree ) {
   mp_tree = p_tree;
 }
 
-void MLRRTstarViz::set_reference_frame_set(ReferenceFrameSet* p_rf) {
+void MLRRTstarViz::set_reference_frame_set( ReferenceFrameSet* p_rf ) {
   mp_reference_frames = p_rf;
   for( unsigned int i = 0; i < mp_reference_frames->get_world_map()->get_subregion_set().size(); i++) {
     m_colors.push_back( QColor( rand()%255, rand()%255, rand()%255 ) );
@@ -158,6 +158,22 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
     tree_painter.end();
   }
 
+  if(m_PPInfo.mp_found_paths.size() > 0 && m_found_path_index >= 0  ) {
+    Path* p = m_PPInfo.mp_found_paths[m_found_path_index];
+    QPainter fpt_painter(device);
+    QPen fpt_paintpen(QColor(255,140,0));
+    fpt_paintpen.setWidth(4);
+    fpt_painter.setPen(fpt_paintpen);
+
+    int point_num = p->m_way_points.size();
+    if(point_num > 0) {
+      for(int i=0;i<point_num-1;i++) {
+        fpt_painter.drawLine(QPoint(p->m_way_points[i][0], p->m_way_points[i][1]), QPoint(p->m_way_points[i+1][0], p->m_way_points[i+1][1]));
+      }
+    }
+    fpt_painter.end();
+  }
+
   if( m_show_reference_frames ) {
     if( mp_reference_frames ) {
       QPainter rf_painter(device);
@@ -186,7 +202,7 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
     QPen st_paintpen( START_COLOR );
     st_paintpen.setWidth(8);
     st_painter.setPen(st_paintpen);
-    st_painter.drawPoint(m_PPInfo.m_start);
+    st_painter.drawPoint( m_PPInfo.m_start );
     st_painter.end();
   }
 
@@ -195,7 +211,7 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
     QPen gt_paintpen( GOAL_COLOR );
     gt_paintpen.setWidth(8);
     gt_painter.setPen(gt_paintpen);
-    gt_painter.drawPoint(m_PPInfo.m_goal);
+    gt_painter.drawPoint( m_PPInfo.m_goal );
     gt_painter.end();
   }
 
