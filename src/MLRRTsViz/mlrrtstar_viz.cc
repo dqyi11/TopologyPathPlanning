@@ -3,6 +3,7 @@
 #include "mlrrtstar_viz.h"
 #include "mlviz_util.h"
 
+#define TEXT_COLOR        QColor(0, 0, 0)
 #define TREE_COLOR        QColor(160,160,0)
 #define TREE_COLOR_ALPHA  QColor(160,160,0,100)
 #define START_COLOR             QColor(255,0,0)
@@ -29,6 +30,8 @@ MLRRTstarViz::MLRRTstarViz( QWidget * parent ) : QLabel(parent) {
   m_string_class_index = -1;
   mp_reference_frames = NULL;
   m_show_points = false;
+  m_mode = NORMAL;
+  m_item_selected_name = "";
   m_colors.clear();
 }
 
@@ -123,7 +126,7 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
       tree_painter.setOpacity(0.4);
     }
     tree_painter.setPen(tree_paintpen);
-    if( m_string_class_index > 0 ) {
+    if( m_string_class_index < 0 ) {
       for( list<MLRRTNode*>::iterator it= mp_tree->get_nodes().begin(); it!=mp_tree->get_nodes().end();it++ ) {
         MLRRTNode* p_node = (*it);
         if(p_node) {
@@ -138,9 +141,9 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
       if( p_str_cls ) {
         for( vector<ExpandingNode*>::iterator it_exp = p_str_cls->mp_exp_nodes.begin();
              it_exp != p_str_cls->mp_exp_nodes.end(); it_exp++ ) {
-          ExpandingNode* p_node = (*it_exp);
-          if ( p_node ) {
-            for( list<MLRRTNode*>::iterator it = p_node->mp_nodes.begin(); it != p_node->mp_nodes.end(); it++ ) {
+          ExpandingNode* p_exp_node = (*it_exp);
+          if ( p_exp_node ) {
+            for( list<MLRRTNode*>::iterator it = p_exp_node->mp_nodes.begin(); it != p_exp_node->mp_nodes.end(); it++ ) {
               MLRRTNode* p_node = (*it);
               if(p_node) {
                 if(p_node->mp_parent) {
@@ -194,6 +197,16 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
     gt_painter.setPen(gt_paintpen);
     gt_painter.drawPoint(m_PPInfo.m_goal);
     gt_painter.end();
+  }
+
+  if( NORMAL == m_mode ) {
+    if ( m_item_selected_name != "" ) {
+      QPainter text_painter(device);
+      QPen text_pen( TEXT_COLOR );
+      text_painter.setPen(text_pen);
+      QRect rect = QRect( 5, 5, 100, 10 );
+      text_painter.drawText( rect, Qt::AlignCenter, m_item_selected_name );
+    }
   }
 }
 
@@ -342,35 +355,48 @@ void MLRRTstarViz::import_string_constraint( vector< QPoint > points, grammar_ty
 void MLRRTstarViz::mousePressEvent( QMouseEvent * event ) {
   // std::cout << "mousePressEvent" << std::endl;
   if ( event->button() == Qt::LeftButton ) {
-    m_dragging = true;
-    m_show_points = true;
-    m_drawed_points.clear();
+    if( DRAWING == m_mode ) {
+      m_dragging = true;
+      m_show_points = true;
+      m_drawed_points.clear();
+    } 
+    else if( NORMAL == m_mode ) {
+      QPoint new_point( event->x(), event->y() );
+      m_item_selected_name = item_selected( new_point );
+    }
   }
 }
 
 void MLRRTstarViz::mouseMoveEvent( QMouseEvent * event ) {
   // std::cout << "mouseMoveEvent " << mPoints.size() << std::endl;
-  if ( m_dragging == true ) {
-    //std::cout << event->x() << " " << event->y() << std::endl;
-    QPoint new_point( event->x(), event->y() );
-    if( m_drawed_points.size() > 0 ) {
-      QPoint last_point = m_drawed_points.back();
-      if( abs( new_point.x() - last_point.x() ) > 1 &&
-          abs( new_point.y() - last_point.y() ) > 1 ) {
+  if( DRAWING == m_mode ) {
+    if ( m_dragging == true ) {
+      //std::cout << event->x() << " " << event->y() << std::endl;
+      QPoint new_point( event->x(), event->y() );
+      if( m_drawed_points.size() > 0 ) {
+        QPoint last_point = m_drawed_points.back();
+        if( abs( new_point.x() - last_point.x() ) > 1 &&
+            abs( new_point.y() - last_point.y() ) > 1 ) {
+          m_drawed_points.push_back( new_point );
+        }
+      }
+      else {
         m_drawed_points.push_back( new_point );
       }
+      repaint();
     }
-    else {
-      m_drawed_points.push_back( new_point );
-    }
-    repaint();
   }
 }
 
 void MLRRTstarViz::mouseReleaseEvent( QMouseEvent * event ){
   // std::cout << "mouseReleaseEvent" << std::endl;
   if ( event->button() == Qt::LeftButton ) {
-    m_dragging = false;
+    if( DRAWING == m_mode ) {
+      m_dragging = false;
+    }
+    else if( NORMAL == m_mode ) {
+      m_item_selected_name = "";
+    }
   }
 }
 
@@ -471,7 +497,7 @@ void MLRRTstarViz::draw_path_on_map(QPixmap& map) {
 
   if(point_num > 0) {
     for(int i=0;i<point_num-1;i++) {
-      painter.drawLine( QPoint(p->m_way_points[i][0], p->m_way_points[i][1]), QPoint(p->m_way_points[i+1][0], p->m_way_points[i+1][1]) );
+      painter.drawLine( toQPoint( p->m_way_points[i] ), toQPoint( p->m_way_points[i+1] ) );
     }
   }
 
@@ -483,15 +509,44 @@ void MLRRTstarViz::draw_path_on_map(QPixmap& map) {
   startPainter.setPen(paintpen1);
   startPainter.end();
 
-  startPainter.drawPoint( QPoint(p->m_way_points[0][0], p->m_way_points[0][1]) );
+  startPainter.drawPoint( toQPoint( p->m_way_points[0] ) );
   int lastIdx = p->m_way_points.size() - 1;
   QPainter endPainter(&map);
   QPen paintpen2(QColor(0,0,255));
   paintpen.setWidth(10);
   endPainter.setPen(paintpen2);
-  endPainter.drawPoint( QPoint(p->m_way_points[lastIdx][0], p->m_way_points[lastIdx][1]) );
+  endPainter.drawPoint( toQPoint( p->m_way_points[lastIdx] ) );
   endPainter.end();
-        
+
 }
 
+QString MLRRTstarViz::get_string_class_info() {
+  QString info;
+  if( mp_tree ) {
+    if( mp_tree->get_expanding_tree_mgr() ) {
 
+      if( m_string_class_index < 0 ) {
+        info = "ALL";
+      }
+      else {
+        info = QString::fromStdString( mp_tree->get_expanding_tree_mgr()->mp_string_classes[ m_string_class_index ]->get_name() ); 
+      }
+    }
+  }
+  return info;
+}
+
+QString MLRRTstarViz::item_selected( QPoint pos ) {
+  QString name = "";
+  Point2D point = toPoint2D( pos );
+
+  LineSubSegment* p_line_sub_segment = mp_reference_frames->get_world_map()->find_linesubsegment( point );
+  if( p_line_sub_segment ) {
+    return QString::fromStdString( p_line_sub_segment->get_name() );
+  }
+  SubRegion* p_subregion = mp_reference_frames->get_world_map()->find_subregion( point );
+  if( p_subregion ) {
+    return QString::fromStdString( p_subregion->get_name() );
+  }
+  return name;
+}

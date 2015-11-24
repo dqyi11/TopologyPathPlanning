@@ -36,6 +36,8 @@ namespace homotopy {
     virtual void from_xml( const std::string& filename );
     virtual void from_xml( xmlNodePtr root );
 
+    bool contains( Point2D point );
+
     std::string get_name();
     Point2D sample_position();
     Segment2D m_subseg;

@@ -58,6 +58,7 @@ namespace mlrrts {
 
     QLabel*       mpStatusLabel;
     QProgressBar* mpStatusProgressBar;
+    QLabel*       mpStringClassLabel;
 
     QPixmap* mpMap;
     QPoint   mCursorPoint;

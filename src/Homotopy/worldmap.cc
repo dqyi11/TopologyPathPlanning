@@ -728,6 +728,38 @@ LineSubSegment* WorldMap::find_linesubsegment( std::string name ) {
   }
   return p_linesubsegment;
 }
+    
+SubRegion* WorldMap::find_subregion( Point2D point ) {
+  SubRegion* p_subregion = NULL;
+  for( std::vector<SubRegion*>::iterator it = _subregions.begin();
+       it != _subregions.end(); it ++ ) {
+     SubRegion* p_current_subregion = (*it);
+     if( p_current_subregion->contains( point ) ) {
+       return p_current_subregion;
+     }
+  }
+  return p_subregion;
+}
+
+LineSubSegment* WorldMap::find_linesubsegment( Point2D point ) {
+  LineSubSegment* p_linesubsegment = NULL; 
+  for( std::vector<LineSubSegmentSet*>::iterator it =  _line_segments.begin();
+       it != _line_segments.end(); it ++ ) {
+    LineSubSegmentSet* p_current_linesubsegment_set = (*it);
+    if( p_current_linesubsegment_set ) {
+      for( std::vector< LineSubSegment* >::iterator its = p_current_linesubsegment_set->m_subsegs.begin();
+           its != p_current_linesubsegment_set->m_subsegs.end(); its ++ ) {
+        LineSubSegment* p_current_linesubsegment = (*its);
+        if( p_current_linesubsegment ) {
+          if( p_current_linesubsegment->contains( point ) ) {
+            return p_current_linesubsegment;
+          }
+        }
+      }
+    }
+  }
+  return p_linesubsegment;
+}
 
 std::ostream& operator<<( std::ostream& out, const WorldMap& other ) {
 

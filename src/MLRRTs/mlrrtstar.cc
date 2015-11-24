@@ -227,55 +227,57 @@ void MLRRTstar::extend() {
        SubRegion* p_subregion = _reference_frames->get_world_map()->in_subregion( toPoint2D( new_pos ) );
        if (p_subregion) {
          SubRegionMgr* p_mgr = _p_expanding_tree_mgr->find_subregion_mgr( p_subregion );
-         KDNode2D new_master_node( new_pos );
-         bool any_node_added = false;
-         /* EACH EXPANDING NODE OF THE NEW POS */
-         for( vector<ExpandingNode*>::iterator it = p_mgr->mp_nodes.begin();
-              it != p_mgr->mp_nodes.end(); it ++ ) {
-           ExpandingNode* p_exp_node = (*it);
-           if( p_exp_node ) {
-             KDNode2D nearest_node_in_class = _find_nearest( new_pos, p_exp_node );  
-             list<KDNode2D> near_list_in_class = _find_near( new_pos, p_exp_node );
-             // create new node 
-             MLRRTNode* p_new_rnode = _create_new_node( new_pos, p_exp_node ); 
+         if( p_mgr ) {
+           KDNode2D new_master_node( new_pos );
+           bool any_node_added = false;
+           /* EACH EXPANDING NODE OF THE NEW POS */
+           for( vector<ExpandingNode*>::iterator it = p_mgr->mp_nodes.begin();
+                it != p_mgr->mp_nodes.end(); it ++ ) {
+             ExpandingNode* p_exp_node = (*it);
+             if( p_exp_node ) {
+               KDNode2D nearest_node_in_class = _find_nearest( new_pos, p_exp_node );  
+               list<KDNode2D> near_list_in_class = _find_near( new_pos, p_exp_node );
+               // create new node 
+               MLRRTNode* p_new_rnode = _create_new_node( new_pos, p_exp_node ); 
 
-             MLRRTNode* p_nearest_rnode = nearest_node_in_class.get_pri_mlrrtnode();
-             list<MLRRTNode*> near_rnodes;
-             near_rnodes.clear();
-             for( list<KDNode2D>::iterator itr = near_list_in_class.begin();
-                  itr != near_list_in_class.end(); itr ++ ) {
-               KDNode2D near_kd_node = (*itr);
-               MLRRTNode* p_near_rnode = near_kd_node.get_pri_mlrrtnode();
-               near_rnodes.push_back( p_near_rnode );
-             } 
-             // attach new noue 
-             if( _attach_new_node( p_new_rnode, p_nearest_rnode, near_rnodes, p_exp_node ) ) {
-               any_node_added = true;
-               new_master_node.add_mlrrtnode( p_new_rnode );
-               p_new_rnode->mp_master = p_exp_node;              
+               MLRRTNode* p_nearest_rnode = nearest_node_in_class.get_pri_mlrrtnode();
+               list<MLRRTNode*> near_rnodes;
+               near_rnodes.clear();
+               for( list<KDNode2D>::iterator itr = near_list_in_class.begin();
+                    itr != near_list_in_class.end(); itr ++ ) {
+                 KDNode2D near_kd_node = (*itr);
+                 MLRRTNode* p_near_rnode = near_kd_node.get_pri_mlrrtnode();
+                 near_rnodes.push_back( p_near_rnode );
+               } 
+               // attach new noue 
+               if( _attach_new_node( p_new_rnode, p_nearest_rnode, near_rnodes, p_exp_node ) ) {
+                 any_node_added = true;
+                 new_master_node.add_mlrrtnode( p_new_rnode );
+                 p_new_rnode->mp_master = p_exp_node;              
   
-               if( p_exp_node ) {
-                 for( vector<StringClass*>::iterator it_str_cls = p_exp_node->mp_string_classes.begin();
-                      it_str_cls != p_exp_node->mp_string_classes.end(); it_str_cls++ ) {
-                   StringClass* p_str_cls = (*it_str_cls);
-                   if( p_str_cls->mp_kd_tree ) {
-                     KDNode2D new_node( new_pos );
-                     new_node.set_pri_mlrrtnode( p_new_rnode );
-                     p_str_cls->mp_kd_tree->insert( new_node );
+                 if( p_exp_node ) {
+                   for( vector<StringClass*>::iterator it_str_cls = p_exp_node->mp_string_classes.begin();
+                        it_str_cls != p_exp_node->mp_string_classes.end(); it_str_cls++ ) {
+                     StringClass* p_str_cls = (*it_str_cls);
+                     if( p_str_cls->mp_kd_tree ) {
+                       KDNode2D new_node( new_pos );
+                       new_node.set_pri_mlrrtnode( p_new_rnode );
+                       p_str_cls->mp_kd_tree->insert( new_node );
+                     }
                    }
+                   p_exp_node->mp_nodes.push_back( p_new_rnode );
                  }
-                 p_exp_node->mp_nodes.push_back( p_new_rnode );
                }
-             }
-             // rewire near nodes    
-             _rewire_near_nodes( p_new_rnode, near_rnodes, p_exp_node );      
-           }
-         }
-         if ( any_node_added ) {
-           _p_master_kd_tree->insert( new_master_node );
-           node_inserted = true;
-         }
-       }
+               // rewire near nodes    
+               _rewire_near_nodes( p_new_rnode, near_rnodes, p_exp_node );      
+            }
+          }  
+          if ( any_node_added ) {
+             _p_master_kd_tree->insert( new_master_node );
+             node_inserted = true;
+          }
+        }
+      }
     }
   }
   _current_iteration ++;

@@ -9,6 +9,11 @@
 
 namespace mlrrts{
 
+  enum MLRRTstarVizMode{
+    NORMAL,
+    DRAWING
+  };
+
   class MLRRTstarViz : public QLabel
   {
     Q_OBJECT
@@ -39,6 +44,8 @@ namespace mlrrts{
 
     void prev_string_class();
     void next_string_class();
+    int get_string_class_index() { return m_string_class_index; }
+    QString get_string_class_info();
 
     void prev_reference_frame();
     void next_reference_frame();
@@ -58,6 +65,7 @@ namespace mlrrts{
     bool get_show_drawed_points() { return m_show_points; }
     
     int get_found_path_index() { return m_found_path_index; }
+    QString item_selected( QPoint pos ); 
   signals:
   
   public slots:
@@ -70,7 +78,8 @@ namespace mlrrts{
     std::vector<QPoint>  m_drawed_points;
     bool                 m_dragging;
     bool                 m_show_points;
-
+    MLRRTstarVizMode     m_mode;
+    QString              m_item_selected_name;
   private:
     void draw_path_on_map(QPixmap& map);
     void draw_current_viz(QPixmap& map);

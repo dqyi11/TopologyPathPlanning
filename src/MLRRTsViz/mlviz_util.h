@@ -15,6 +15,10 @@ namespace mlrrts {
   inline QPoint toQPoint( POS2D pos ) {
     return QPoint(pos[0], pos[1]);
   }
+
+  inline Point2D toPoint2D( QPoint pos ) {
+    return Point2D( pos.x(), pos.y() );
+  }
 }
 
 #endif /* ML_UTIL_H_ */

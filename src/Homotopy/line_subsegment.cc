@@ -49,6 +49,10 @@ Point2D LineSubSegment::sample_position() {
   return Point2D( n_x, n_y );
 }
 
+bool LineSubSegment::contains( Point2D point ) {
+  return m_subseg.has_on(point);
+}
+
 void LineSubSegment::to_xml( const std::string& filename )const {
   xmlDocPtr doc = xmlNewDoc( ( xmlChar* )( "1.0" ) );
   xmlNodePtr root = xmlNewDocNode( doc, NULL, ( xmlChar* )( "root" ), NULL );

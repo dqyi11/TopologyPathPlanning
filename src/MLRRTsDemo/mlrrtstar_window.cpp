@@ -31,9 +31,12 @@ MLRRTstarWindow::MLRRTstarWindow(QWidget* parent)
   mpStatusLabel = new QLabel();
   mpStatusLabel->setFixedWidth(120);
   mpStatusProgressBar = new QProgressBar();
+  mpStringClassLabel = new QLabel();
+  mpStringClassLabel->setFixedWidth(120);
     
   statusBar()->addWidget(mpStatusLabel);
   statusBar()->addWidget(mpStatusProgressBar);
+  statusBar()->addWidget(mpStringClassLabel);
   updateTitle();
 }
 
@@ -339,6 +342,10 @@ void MLRRTstarWindow::updateStatus() {
     }
     mpStatusLabel->setText(status);
   }
+  if(mpStringClassLabel) {
+    QString status = mpViz->get_string_class_info();
+    mpStringClassLabel->setText(status);
+  }
   repaint();
 }
 
@@ -433,6 +440,21 @@ void MLRRTstarWindow::keyPressEvent(QKeyEvent *event) {
        repaint();
      }
    }
+   else if ( event->key() == Qt::Key_C ) {
+     if(mpViz) {
+       mpViz->prev_string_class();
+       updateStatus();
+       repaint();
+     }
+   }
+   else if ( event->key() == Qt::Key_V ) {
+     if(mpViz) {
+       mpViz->next_string_class();
+       updateStatus();
+       repaint();
+     }
+   }
+   
 }
 
 void MLRRTstarWindow::onExportAllSimpleStrings() {
