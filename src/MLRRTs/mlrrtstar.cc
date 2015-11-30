@@ -389,17 +389,20 @@ KDNode2D MLRRTstar::_find_nearest( POS2D pos, ExpandingNode* p_exp_node ) {
   else {
     /* find nearest in each string class */
     double nearest_distance = _sampling_width > _sampling_height ? _sampling_width : _sampling_height;
+    
     for(vector<StringClass*>::iterator it = p_exp_node->mp_string_classes.begin(); it != p_exp_node->mp_string_classes.end(); it ++ ) {
       StringClass* p_class = (*it);
       pair<KDTree2D::const_iterator,double> found = p_class->mp_kd_tree->find_nearest( node );
       KDNode2D nearest_node_in_class = *found.first;
       double distance_in_class = found.second;  
       
-      if( distance_in_class < nearest_distance ) {
+      if( (distance_in_class < nearest_distance) &&
+           in_current_and_parent_exp_node( nearest_node, p_exp_node ) ) {
         nearest_distance = distance_in_class;
         nearest_node = nearest_node_in_class;
       }
     } 
+    
   } 
   return nearest_node;
 }
@@ -426,13 +429,13 @@ list<KDNode2D> MLRRTstar::_find_near( POS2D pos, ExpandingNode* p_exp_node ) {
       for( list<KDNode2D>::iterator it_cls = near_list_in_class.begin();
            it_cls != near_list_in_class.end(); it_cls ++ ) {
         KDNode2D kdnode = (*it_cls);
-        //if ( in_current_and_parent_exp_node( kdnode, p_exp_node ) ) {
+        if ( in_current_and_parent_exp_node( kdnode, p_exp_node ) ) {
           near_list.push_back( kdnode );
-        //}
+        }
       }      
     }
   }
-  cout << "NEAR LIST " << near_list.size() << endl;
+  //cout << "NEAR LIST " << near_list.size() << endl;
   return near_list;
 }
 
@@ -558,7 +561,7 @@ bool MLRRTstar::_attach_new_node( MLRRTNode* p_node_new, MLRRTNode* p_nearest_no
   double min_new_node_cost = p_nearest_node->m_cost + _calculate_cost(p_nearest_node->m_pos, p_node_new->m_pos);
   MLRRTNode* p_min_node = p_nearest_node;
 
-  cout << "_attach_new_node( near_size=" << near_nodes.size()  << " )" << endl;
+  //cout << "_attach_new_node( near_size=" << near_nodes.size()  << " )" << endl;
   for(list<MLRRTNode*>::iterator it = near_nodes.begin(); it != near_nodes.end(); it++) {
     MLRRTNode* p_near_node = (*it);
     if( true == _is_obstacle_free( p_near_node->m_pos, p_node_new->m_pos ) ) {
