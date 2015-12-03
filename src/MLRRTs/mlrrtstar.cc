@@ -486,14 +486,10 @@ void MLRRTstar::set_reference_frames( ReferenceFrameSet* p_reference_frames ) {
   _reference_frames = p_reference_frames;
 }
 
-Path* MLRRTstar::find_path( POS2D via_pos ) {
-  Path* p_path = NULL;
-  return p_path;
-}
-
 vector<Path*> MLRRTstar::get_paths() {
   vector<Path*> paths;
   // find all the subregions that the goal position is in
+  /*
   Point2D goal_point = toPoint2D( _goal );
   SubRegion* p_subregion = _reference_frames->get_world_map()->find_subregion( goal_point );
   if( p_subregion ) {  
@@ -513,7 +509,38 @@ vector<Path*> MLRRTstar::get_paths() {
       }
     }
   }
+  */
+  
+  if( _p_expanding_tree_mgr ) {
+    vector<StringClass*> string_classes = _p_expanding_tree_mgr->get_string_classes();
+    for( vector<StringClass*>::iterator it = string_classes.begin(); 
+         it != string_classes.end(); it ++ ) {
+      StringClass* p_string_class = (*it);
+      Path* p_path = _get_path( p_string_class );
+      p_string_class->mp_path = p_path;
+      paths.push_back( p_path );
+    }
+  }
+
+
   return paths;
+}
+
+Path* MLRRTstar::_get_path( StringClass* p_string_class ) {
+
+  if( p_string_class ) {
+    int exp_node_num = p_string_class->mp_exp_nodes.size();
+    ExpandingNode* p_last_exp_node = p_string_class->mp_exp_nodes[exp_node_num-1];
+    if( p_last_exp_node ) {
+      KDNode2D kdnode = _find_nearest( _goal, p_last_exp_node );
+      MLRRTNode* p_near_goal = kdnode.get_pri_mlrrtnode();
+      if( p_near_goal ) {
+        Path* p_path = _get_path( p_near_goal );
+        return p_path;
+      }
+    }
+  }
+  return NULL;
 }
 
 Path* MLRRTstar::_get_path( MLRRTNode* p_node ) {

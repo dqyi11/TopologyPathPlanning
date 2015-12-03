@@ -565,15 +565,17 @@ QString MLRRTstarViz::item_selected( QPoint pos ) {
   QString name = "";
   Point2D point = toPoint2D( pos );
 
-  LineSubSegment* p_line_sub_segment = mp_reference_frames->get_world_map()->find_linesubsegment( point );
-  if( p_line_sub_segment ) {
-    cout << "FIND " << p_line_sub_segment->get_name() << endl;
-    return QString::fromStdString( p_line_sub_segment->get_name() );
-  }
-  SubRegion* p_subregion = mp_reference_frames->get_world_map()->find_subregion( point );
-  if( p_subregion ) {
-    cout << "FIND " << p_subregion->get_name() << endl;
-    return QString::fromStdString( p_subregion->get_name() );
+  if ( mp_reference_frames ) {
+    LineSubSegment* p_line_sub_segment = mp_reference_frames->get_world_map()->find_linesubsegment( point );
+    if( p_line_sub_segment ) {
+      cout << "FIND " << p_line_sub_segment->get_name() << endl;
+      return QString::fromStdString( p_line_sub_segment->get_name() );
+    }
+    SubRegion* p_subregion = mp_reference_frames->get_world_map()->find_subregion( point );
+    if( p_subregion ) {
+      cout << "FIND " << p_subregion->get_name() << endl;
+      return QString::fromStdString( p_subregion->get_name() );
+    }
   }
   return name;
 }

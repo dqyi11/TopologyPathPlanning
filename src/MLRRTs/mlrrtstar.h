@@ -59,8 +59,8 @@ namespace mlrrts {
     void init_feasible_paths();
  
     void extend();
-    Path* find_path( POS2D via_pos );
     std::vector<Path*> get_paths();
+    Path* _get_path( StringClass* p_string_class );
     Path* _get_path( MLRRTNode* p_node ); 
     
     double _calculate_cost( POS2D& pos_a, POS2D& pos_b );
