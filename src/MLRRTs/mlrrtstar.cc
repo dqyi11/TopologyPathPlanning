@@ -235,12 +235,12 @@ void MLRRTstar::extend() {
                 it != p_mgr->mp_nodes.end(); it ++ ) {
              ExpandingNode* p_exp_node = (*it);
              if( p_exp_node ) {
-               KDNode2D nearest_node_in_class = _find_nearest( new_pos, p_exp_node );  
-               list<KDNode2D> near_list_in_class = _find_near( new_pos, p_exp_node );
                // create new node 
                MLRRTNode* p_new_rnode = _create_new_node( new_pos, p_exp_node ); 
+               KDNode2D nearest_node_in_class = _find_nearest( new_pos, p_exp_node );  
+               list<KDNode2D> near_list_in_class = _find_near( new_pos, p_exp_node );
 
-               MLRRTNode* p_nearest_rnode = nearest_node_in_class.get_pri_mlrrtnode();
+               //MLRRTNode* p_nearest_rnode = nearest_node_in_class.get_pri_mlrrtnode();
                list<MLRRTNode*> near_rnodes;
                near_rnodes.clear();
                for( list<KDNode2D>::iterator itr = near_list_in_class.begin();
@@ -250,7 +250,7 @@ void MLRRTstar::extend() {
                  near_rnodes.push_back( p_near_rnode );
                } 
                // attach new noue 
-               if( _attach_new_node( p_new_rnode, p_nearest_rnode, near_rnodes, p_exp_node ) ) {
+               if( _attach_new_node( p_new_rnode, near_rnodes, p_exp_node ) ) {
                  any_node_added = true;
                  new_master_node.add_mlrrtnode( p_new_rnode );
                  p_new_rnode->mp_master = p_exp_node;              
@@ -584,23 +584,28 @@ void MLRRTstar::init_feasible_paths() {
 
 }
 
-bool MLRRTstar::_attach_new_node( MLRRTNode* p_node_new, MLRRTNode* p_nearest_node, list<MLRRTNode*> near_nodes, ExpandingNode* p_exp_node ) {
-  double min_new_node_cost = p_nearest_node->m_cost + _calculate_cost(p_nearest_node->m_pos, p_node_new->m_pos);
-  MLRRTNode* p_min_node = p_nearest_node;
+bool MLRRTstar::_attach_new_node( MLRRTNode* p_node_new, list<MLRRTNode*> near_nodes, ExpandingNode* p_exp_node ) {
+  double min_new_node_cost = -1;
+  MLRRTNode* p_min_node = NULL;
 
-  //cout << "_attach_new_node( near_size=" << near_nodes.size()  << " )" << endl;
   for(list<MLRRTNode*>::iterator it = near_nodes.begin(); it != near_nodes.end(); it++) {
     MLRRTNode* p_near_node = (*it);
     if( true == _is_obstacle_free( p_near_node->m_pos, p_node_new->m_pos ) ) {
-      double delta_cost = _calculate_cost( p_near_node->m_pos, p_node_new->m_pos );
-      double new_cost = p_near_node->m_cost + delta_cost;
-      if( new_cost < min_new_node_cost ) {
-        p_min_node = p_near_node;
-        min_new_node_cost = new_cost;
-      }
+
+      //if( true == _is_homotopic_constrained( p_near_node->m_pos, p_node_new->m_pos, p_exp_node ) ) {
+        double delta_cost = _calculate_cost( p_near_node->m_pos, p_node_new->m_pos );
+        double new_cost = p_near_node->m_cost + delta_cost;
+        if( (p_min_node==NULL) || (new_cost < min_new_node_cost) ) {
+          p_min_node = p_near_node;
+          min_new_node_cost = new_cost;
+        }
+      //}
     }
   } 
-
+  if( p_min_node == NULL ) {
+    return false;
+  }
+ 
   bool added = _add_edge( p_min_node, p_node_new );
   if( added ) {
     p_node_new->m_cost = min_new_node_cost;
@@ -679,4 +684,29 @@ bool MLRRTstar::_remove_edge( MLRRTNode* p_node_parent, MLRRTNode* p_node_child 
     }
   }
   return removed;
+}
+
+bool MLRRTstar::_is_homotopic_constrained( POS2D pos_a, POS2D pos_b, ExpandingNode* p_exp_node ) {
+  Point2D point_a = toPoint2D( pos_a );
+  Point2D point_b = toPoint2D( pos_b );
+  if( _reference_frames ) {
+    WorldMap* p_world_map = _reference_frames->get_world_map();
+    if( p_world_map ) {
+      SubRegion* p_subregion_a = p_world_map->in_subregion( point_a );
+      SubRegion* p_subregion_b = p_world_map->in_subregion( point_b );
+      if( p_subregion_a == p_subregion_b ) {
+        return true;
+      }
+      if( p_exp_node ) {
+        if( p_exp_node->mp_in_edge ) {
+          if( p_exp_node->mp_in_edge->mp_reference_frame ) {
+            if( p_exp_node->mp_in_edge->mp_reference_frame->is_line_crossed( point_a, point_b ) ) {
+              return true;  
+            }  
+          } 
+        }
+      }
+    }
+  }
+  return false;
 }

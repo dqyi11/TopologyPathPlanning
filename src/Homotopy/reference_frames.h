@@ -19,6 +19,8 @@ namespace homotopy {
   public:
     ReferenceFrame();
     virtual ~ReferenceFrame();
+
+    bool is_line_crossed( Point2D pos_a, Point2D pos_b );
  
     std::string m_name; 
     Segment2D   m_segment;

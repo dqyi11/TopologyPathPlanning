@@ -82,12 +82,13 @@ namespace mlrrts {
     bool _is_obstacle_free( POS2D pos_a, POS2D pos_b );
     bool _is_in_obstacle( POS2D pos );
     bool _contains( POS2D pos );
+    bool _is_homotopic_constrained( POS2D pos_a, POS2D pos_b, ExpandingNode* p_exp_node );
     
     KDNode2D _find_nearest( POS2D pos, ExpandingNode* p_exp_node );
     std::list<KDNode2D> _find_near( POS2D pos, ExpandingNode* p_exp_node );    
 
     MLRRTNode* _create_new_node( POS2D pos, ExpandingNode* p_exp_node );
-    bool _attach_new_node( MLRRTNode* p_node_new, MLRRTNode* p_nearest_node, std::list<MLRRTNode*> near_nodes, ExpandingNode* p_exp_node );
+    bool _attach_new_node( MLRRTNode* p_node_new, std::list<MLRRTNode*> near_nodes, ExpandingNode* p_exp_node );
     void _rewire_near_nodes( MLRRTNode* p_node_new, std::list<MLRRTNode*> near_nodes, ExpandingNode* p_exp_node );  
 
     bool _has_edge( MLRRTNode* p_node_parent, MLRRTNode* p_node_child );

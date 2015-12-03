@@ -9,7 +9,7 @@
 #define START_COLOR             QColor(255,0,0)
 #define GOAL_COLOR              QColor(0,0,255)
 #define REFERENCE_FRAME_COLOR   QColor(0,255,0)
-#define SUBREGION_COLOR         QColor(200,200,200)
+#define SUBREGION_COLOR         QColor(204,229,255)
 #define PATH_COLOR              QColor(255,153,21)
 #define DRAWING_LINE_COLOR      QColor(153,76,0)
 #define TREE_WIDTH              1
@@ -105,6 +105,7 @@ void MLRRTstarViz::updateVizReferenceFrames() {
 
 void MLRRTstarViz::paint( QPaintDevice* device ) {
 
+  /* DRAW SUB REGION */
   if(m_show_subregions) {
 
     QPainter rg_painter(device);
@@ -140,6 +141,7 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
     rg_painter.end();
   }
 
+  /* DRAW TREE */
   if( mp_tree ) {
     QPainter tree_painter(device);
     QPen tree_paintpen;
@@ -155,11 +157,13 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
     }
     tree_painter.setPen(tree_paintpen);
     if( m_string_class_index < 0 ) {
-      for( list<MLRRTNode*>::iterator it= mp_tree->get_nodes().begin(); it!=mp_tree->get_nodes().end();it++ ) {
+      for( list<MLRRTNode*>::iterator it= mp_tree->get_nodes().begin(); 
+           it!=mp_tree->get_nodes().end();it++ ) {
         MLRRTNode* p_node = (*it);
         if(p_node) {
           if(p_node->mp_parent) {
-            tree_painter.drawLine( toQPoint( p_node->mp_parent->m_pos ) , toQPoint( p_node->m_pos ) );
+            tree_painter.drawLine( toQPoint( p_node->mp_parent->m_pos ), 
+                                   toQPoint( p_node->m_pos ) );
           }
         }
       }
@@ -171,11 +175,13 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
              it_exp != p_str_cls->mp_exp_nodes.end(); it_exp++ ) {
           ExpandingNode* p_exp_node = (*it_exp);
           if ( p_exp_node ) {
-            for( list<MLRRTNode*>::iterator it = p_exp_node->mp_nodes.begin(); it != p_exp_node->mp_nodes.end(); it++ ) {
+            for( list<MLRRTNode*>::iterator it = p_exp_node->mp_nodes.begin();
+                 it != p_exp_node->mp_nodes.end(); it++ ) {
               MLRRTNode* p_node = (*it);
               if(p_node) {
                 if(p_node->mp_parent) {
-                  tree_painter.drawLine( toQPoint( p_node->mp_parent->m_pos ), toQPoint( p_node->m_pos ) );
+                  tree_painter.drawLine( toQPoint( p_node->mp_parent->m_pos ),
+                                         toQPoint( p_node->m_pos ) );
                 }
               }
             }
@@ -185,7 +191,8 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
     }
     tree_painter.end();
   }
- 
+
+  /* DRAW PATHS */ 
   if( m_show_paths ) {
     QPainter fpt_painter(device);
     QPen fpt_paintpen( PATH_COLOR );
@@ -221,6 +228,7 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
     fpt_painter.end();
   }
 
+  /* DRAW REFERENCE FRAMES */
   if( m_show_reference_frames ) {
     QPainter rf_painter(device);
     QPen rf_paintpen( REFERENCE_FRAME_COLOR );
@@ -242,6 +250,7 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
     rf_painter.end();
   }
 
+  /* DRAW START AND GOAL */
   if(m_PPInfo.m_start.x() >= 0 && m_PPInfo.m_start.y() >= 0) {
     QPainter st_painter(device);
     QPen st_paintpen( START_COLOR );
@@ -294,7 +303,6 @@ void MLRRTstarViz::set_show_paths(bool show) {
 bool MLRRTstarViz::draw_path(QString filename) {
 
   QPixmap pix(m_PPInfo.m_objective_file);
-
   cout << "DUMP PATH IMG " << pix.width() << " " << pix.height() << endl;
 
   QFile file(filename);
@@ -337,17 +345,6 @@ void MLRRTstarViz::next_string_class() {
       }
     }
   }
-  
-  /*
-  for( vector<ReferenceFrame*>::iterator it =  m_viz_reference_frames.begin();
-       it != m_viz_reference_frames.end(); it ++ ) {
-    ReferenceFrame* p_rf = (*it);
-    if( p_rf ) {
-      cout << p_rf->m_name << " ";
-    }
-  }
-  cout << "\n";
-  */
 }
 
 void MLRRTstarViz::prev_string_class() {
@@ -368,17 +365,6 @@ void MLRRTstarViz::prev_string_class() {
       }
     }
   }
- 
-  /* 
-  for( vector<ReferenceFrame*>::iterator it =  m_viz_reference_frames.begin();
-       it != m_viz_reference_frames.end(); it ++ ) {
-    ReferenceFrame* p_rf = (*it);
-    if( p_rf ) {
-      cout << p_rf->m_name << " ";
-    }
-  }
-  cout << "\n";
-  */
 }
 
 void MLRRTstarViz::prev_reference_frame() {

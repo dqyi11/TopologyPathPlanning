@@ -14,6 +14,21 @@ ReferenceFrame::~ReferenceFrame() {
 
 }
 
+bool ReferenceFrame::is_line_crossed( Point2D pos_a, Point2D pos_b ) {
+  Segment2D new_line( pos_a, pos_b );
+  CGAL::Object result = CGAL::intersection( new_line, m_segment );
+  Point2D ipoint;
+  Segment2D iseg; 
+ 
+  if( CGAL::assign( ipoint, result ) ) {
+    return true;
+  }
+  else if( CGAL::assign( iseg, result ) ) {
+    return true;
+  }
+  return false;
+}
+
 ReferenceFrameSet::ReferenceFrameSet() {
   _p_world_map = NULL;
   _reference_frames.clear();
