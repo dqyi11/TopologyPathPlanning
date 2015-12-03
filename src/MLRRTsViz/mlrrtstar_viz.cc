@@ -12,7 +12,11 @@
 #define SUBREGION_COLOR         QColor(200,200,200)
 #define PATH_COLOR              QColor(255,153,21)
 #define DRAWING_LINE_COLOR      QColor(153,76,0)
+#define TREE_WIDTH              1
 #define LINE_WIDTH              2
+#define PATH_WIDTH              4
+#define POINT_WIDTH             8
+#define TREE_OPACITY            0.4
 
 using namespace std;
 using namespace homotopy;
@@ -144,9 +148,9 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
     else{
       tree_paintpen.setColor(TREE_COLOR);
     }
-    tree_paintpen.setWidth(1);
+    tree_paintpen.setWidth( TREE_WIDTH );
     if(m_finished_planning) {
-      tree_painter.setOpacity(0.4);
+      tree_painter.setOpacity( TREE_OPACITY );
     }
     tree_painter.setPen(tree_paintpen);
     if( m_string_class_index < 0 ) {
@@ -181,26 +185,48 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
     tree_painter.end();
   }
 
-  if(m_PPInfo.mp_found_paths.size() > 0 && m_found_path_index >= 0  ) {
-    Path* p = m_PPInfo.mp_found_paths[m_found_path_index];
-    QPainter fpt_painter(device);
-    QPen fpt_paintpen(QColor(255,140,0));
-    fpt_paintpen.setWidth(4);
-    fpt_painter.setPen(fpt_paintpen);
+  if( m_string_class_index < 0 ) {
+    if(m_PPInfo.mp_found_paths.size() > 0 && m_found_path_index >= 0  ) {
+      QPainter fpt_painter(device);
+      QPen fpt_paintpen( PATH_COLOR );
+      fpt_paintpen.setWidth( PATH_WIDTH );
+      fpt_painter.setPen(fpt_paintpen);
 
-    int point_num = p->m_way_points.size();
-    if(point_num > 0) {
-      for(int i=0;i<point_num-1;i++) {
-        fpt_painter.drawLine(QPoint(p->m_way_points[i][0], p->m_way_points[i][1]), QPoint(p->m_way_points[i+1][0], p->m_way_points[i+1][1]));
+      Path* p = m_PPInfo.mp_found_paths[m_found_path_index];
+      int point_num = p->m_way_points.size();
+      if(point_num > 0) {
+        for(int i=0;i<point_num-1;i++) {
+          fpt_painter.drawLine( toQPoint(p->m_way_points[i]), 
+                                toQPoint(p->m_way_points[i+1]) );
+        }
+      }
+      fpt_painter.end();
+    }
+  }
+  else {
+    StringClass* p_str_cls = mp_tree->get_expanding_tree_mgr()->get_string_classes()[ m_string_class_index ];
+    if( p_str_cls ) {
+      if ( p_str_cls->mp_path ) {
+        QPainter fpt_painter(device);
+        QPen fpt_paintpen( PATH_COLOR );
+        fpt_paintpen.setWidth( PATH_WIDTH );
+        fpt_painter.setPen(fpt_paintpen);
+
+        int point_num = p_str_cls->mp_path->m_way_points.size();
+        if(point_num > 0) {
+          for(int i=0;i<point_num-1;i++) {
+            fpt_painter.drawLine( toQPoint(p_str_cls->mp_path->m_way_points[i]),
+                                  toQPoint(p_str_cls->mp_path->m_way_points[i+1]) );
+          }
+        }
       }
     }
-    fpt_painter.end();
   }
 
   if( m_show_reference_frames ) {
     QPainter rf_painter(device);
     QPen rf_paintpen( REFERENCE_FRAME_COLOR );
-    rf_paintpen.setWidth(2);
+    rf_paintpen.setWidth( LINE_WIDTH );
     rf_painter.setPen(rf_paintpen);
 
     if ( m_reference_frame_index >= m_viz_reference_frames.size() ) {
@@ -221,7 +247,7 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
   if(m_PPInfo.m_start.x() >= 0 && m_PPInfo.m_start.y() >= 0) {
     QPainter st_painter(device);
     QPen st_paintpen( START_COLOR );
-    st_paintpen.setWidth(8);
+    st_paintpen.setWidth( POINT_WIDTH );
     st_painter.setPen(st_paintpen);
     st_painter.drawPoint( m_PPInfo.m_start );
     st_painter.end();
@@ -230,7 +256,7 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
   if(m_PPInfo.m_goal.x() >= 0 && m_PPInfo.m_goal.y() >= 0) {
     QPainter gt_painter(device);
     QPen gt_paintpen( GOAL_COLOR );
-    gt_paintpen.setWidth(8);
+    gt_paintpen.setWidth( POINT_WIDTH );
     gt_painter.setPen(gt_paintpen);
     gt_painter.drawPoint( m_PPInfo.m_goal );
     gt_painter.end();
@@ -297,11 +323,13 @@ void MLRRTstarViz::next_string_class() {
         m_string_class_index ++;
         updateVizSubregions();
         updateVizReferenceFrames();
+        m_found_path_index = -1;
       }
       else {
         m_string_class_index = -1;
         updateVizSubregions();
         updateVizReferenceFrames();
+        m_found_path_index = -1;
       }
     }
   }
@@ -315,11 +343,13 @@ void MLRRTstarViz::prev_string_class() {
         m_string_class_index --;
         updateVizSubregions();
         updateVizReferenceFrames();
+        m_found_path_index = -1;
       }
       else {
         m_string_class_index = p_mgr->get_string_classes().size()-1;
         updateVizSubregions();
         updateVizReferenceFrames();
+        m_found_path_index = -1;
       }
     }
   }
