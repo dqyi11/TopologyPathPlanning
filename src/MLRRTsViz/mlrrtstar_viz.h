@@ -34,11 +34,8 @@ namespace mlrrts{
     bool is_finished_planning() { return m_finished_planning; }
  
     homotopy::ReferenceFrame* get_selected_reference_frame();
-    homotopy::SubRegionSet*   get_selected_subregion_set();
     homotopy::SubRegion*      get_selected_subregion();
 
-    void prev_region();
-    void next_region();
     void prev_subregion();
     void next_subregion();
 
@@ -53,7 +50,7 @@ namespace mlrrts{
     void next_found_path();
     int  get_reference_frame_index() { return m_reference_frame_index; }
     std::string get_reference_frame_name();
-    std::string get_region_name();
+    std::string get_subregion_name();
 
     QString generate_string();
     void import_string_constraint( std::vector< QPoint > points, homotopy::grammar_type_t type );
@@ -93,10 +90,11 @@ namespace mlrrts{
     int                          m_string_class_index;
     int                          m_reference_frame_index;
     int                          m_found_path_index;
-    int                          m_region_index;
     int                          m_subregion_index;
-    std::vector<QColor>          m_colors;
 
+    std::vector<SubRegion*>      m_viz_subregions;
+    std::vector<ReferenceFrame*> m_viz_reference_frames;
+ 
   private slots:
     void paintEvent( QPaintEvent* e );
   };

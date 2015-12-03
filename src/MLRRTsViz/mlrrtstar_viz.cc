@@ -9,6 +9,7 @@
 #define START_COLOR             QColor(255,0,0)
 #define GOAL_COLOR              QColor(0,0,255)
 #define REFERENCE_FRAME_COLOR   QColor(0,255,0)
+#define SUBREGION_COLOR         QColor(122,122,122)
 #define PATH_COLOR              QColor(255,153,21)
 #define DRAWING_LINE_COLOR      QColor(153,76,0)
 #define LINE_WIDTH              2
@@ -42,74 +43,79 @@ void MLRRTstarViz::set_tree( MLRRTstar* p_tree ) {
 void MLRRTstarViz::set_reference_frame_set( ReferenceFrameSet* p_rf ) {
   mp_reference_frames = p_rf;
   for( unsigned int i = 0; i < mp_reference_frames->get_world_map()->get_subregion_set().size(); i++) {
-    m_colors.push_back( QColor( rand()%255, rand()%255, rand()%255 ) );
+    m_colors.push_back( QColor( rand()%255, rand()%255, rand()%255, 80 ) );
   }
 }
 
+void MLRRTstarViz::updateVizSubregions() {
+
+  m_viz_subregions.clear();
+  if( m_string_class_index < 0 ) {
+    for( unsigned int i = 0; i < mp_reference_frames->get_world_map()->get_subregion_set().size(); i++) {
+      SubRegionSet* p_subregion_set = mp_reference_frames->get_world_map()->get_subregion_set()[i];
+      if(p_subregion_set) {
+        for( unsigned int j = 0; j < p_subregion_set->m_subregions.size(); j ++ ) {
+          SubRegion* p_subreg = p_subregion_set->m_subregions[j];
+          m_viz_subregions.push_back( p_subreg );
+        }
+      }
+    }
+  } 
+  else {
+
+
+  }
+}
+
+void MLRRTstarViz::updateVizReferenceFrames() {
+
+  m_viz_reference_frames.clear();
+  if( m_string_class_index < 0 ) {
+    for( int i = 0; i < mp_reference_frames->get_reference_frames().size(); i ++ ) { 
+      ReferenceFrame* p_rf = mp_reference_frames->get_reference_frames()[i];
+      m_viz_reference_frames.push_back( p_rf );
+    }
+  }
+  else {
+
+  }  
+}
+
 void MLRRTstarViz::paint( QPaintDevice* device ) {
+
   if(m_show_regions) {
 
-    if( m_region_index < 0 ) {
-      for( unsigned int i = 0; i < mp_reference_frames->get_world_map()->get_subregion_set().size(); i++) {
-        SubRegionSet* p_subregion_set = mp_reference_frames->get_world_map()->get_subregion_set()[i];
-        if(p_subregion_set) {
-          QPainter rg_painter(device);
-          rg_painter.setRenderHint(QPainter::Antialiasing);
-          QBrush rg_brush( m_colors[i] );
-          rg_painter.setPen(Qt::NoPen);
-          for( unsigned int j = 0; j < p_subregion_set->m_subregions.size(); j ++ ) {
-            SubRegion* p_subreg = p_subregion_set->m_subregions[j];
-            if(p_subreg) {
-              QPolygon poly;
-              for( unsigned int k = 0; k < p_subreg->m_points.size(); k++) {
-                poly << toQPoint( p_subreg->m_points[k] );
-              }
-              QPainterPath tmpPath;
-              tmpPath.addPolygon(poly);
-              rg_painter.fillPath(tmpPath, rg_brush);
-            }
+    QPainter rg_painter(device);
+    rg_painter.setRenderHint(QPainter::Antialiasing);
+    QBrush rg_brush( SUBREGION_COLOR );
+    rg_painter.setPen(Qt::NoPen);
+    if( m_subregion_index < 0 ) {
+      for( unsigned int i = 0; i < m_viz_subregions.size(); i ++ ) {
+        SubRegion* p_subreg = p_subregion_set->m_subregions[j];
+        if(p_subreg) {
+          QPolygon poly;
+          for( unsigned int k = 0; k < p_subreg->m_points.size(); k++) {
+            poly << toQPoint( p_subreg->m_points[k] );
           }
-          rg_painter.end();
+          QPainterPath tmpPath;
+          tmpPath.addPolygon(poly);
+          rg_painter.fillPath(tmpPath, rg_brush);
         }
       }
     }
     else {
-      SubRegionSet* p_subregion_set = mp_reference_frames->get_world_map()->get_subregion_set()[ m_region_index ];
-      if(p_subregion_set) {
-        QPainter rg_painter(device);
-        rg_painter.setRenderHint(QPainter::Antialiasing);
-        QBrush rg_brush( m_colors[m_region_index] );
-        rg_painter.setPen(Qt::NoPen);
-
-        if( m_subregion_index < 0 ) {
-          for( unsigned int j = 0; j < p_subregion_set->m_subregions.size(); j ++ ) {
-            SubRegion* p_subreg = p_subregion_set->m_subregions[j];
-            if(p_subreg) {
-              QPolygon poly;
-              for( unsigned int k = 0; k < p_subreg->m_points.size(); k++) {
-                poly << toQPoint( p_subreg->m_points[k] );
-              }
-              QPainterPath tmpPath;
-              tmpPath.addPolygon(poly);
-              rg_painter.fillPath(tmpPath, rg_brush);
-            }
-          }
+      SubRegion* p_subreg = m_viz_subregions[m_subregion_index];
+      if(p_subreg) {
+        QPolygon poly;
+        for( unsigned int k = 0; k < p_subreg->m_points.size(); k++) {
+          poly << toQPoint( p_subreg->m_points[k] );
         }
-        else {
-          SubRegion* p_subreg = p_subregion_set->m_subregions[m_subregion_index];
-          if(p_subreg) {
-            QPolygon poly;
-            for( unsigned int k = 0; k < p_subreg->m_points.size(); k++) {
-              poly << toQPoint( p_subreg->m_points[k] );
-            }
-            QPainterPath tmpPath;
-            tmpPath.addPolygon(poly);
-            rg_painter.fillPath(tmpPath, rg_brush);
-          }
-        }
-        rg_painter.end();
+        QPainterPath tmpPath;
+        tmpPath.addPolygon(poly);
+        rg_painter.fillPath(tmpPath, rg_brush);
       } 
     }
+    rg_painter.end();
   }
 
   if( mp_tree ) {
@@ -131,7 +137,7 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
         MLRRTNode* p_node = (*it);
         if(p_node) {
           if(p_node->mp_parent) {
-            tree_painter.drawLine( toQPoint( p_node->m_pos ), toQPoint( p_node->mp_parent->m_pos ) );
+            tree_painter.drawLine( toQPoint( p_node->mp_parent->m_pos ) , toQPoint( p_node->m_pos ) );
           }
         }
       }
@@ -147,7 +153,7 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
               MLRRTNode* p_node = (*it);
               if(p_node) {
                 if(p_node->mp_parent) {
-                  tree_painter.drawLine( toQPoint( p_node->m_pos ), toQPoint( p_node->mp_parent->m_pos ) );
+                  tree_painter.drawLine( toQPoint( p_node->mp_parent->m_pos ), toQPoint( p_node->m_pos ) );
                 }
               }
             }
@@ -175,26 +181,24 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
   }
 
   if( m_show_reference_frames ) {
-    if( mp_reference_frames ) {
-      QPainter rf_painter(device);
-      QPen rf_paintpen( REFERENCE_FRAME_COLOR );
-      rf_paintpen.setWidth(2);
-      rf_painter.setPen(rf_paintpen);
+    QPainter rf_painter(device);
+    QPen rf_paintpen( REFERENCE_FRAME_COLOR );
+    rf_paintpen.setWidth(2);
+    rf_painter.setPen(rf_paintpen);
 
-      if ( m_reference_frame_index >= mp_reference_frames->get_reference_frames().size() ) {
-        for( unsigned int rf_i = 0; rf_i < mp_reference_frames->get_reference_frames().size(); rf_i ++ ) {
-          ReferenceFrame* rf = mp_reference_frames->get_reference_frames()[rf_i];
-          rf_painter.drawLine( toQPoint( rf->m_segment.source() ),
-                               toQPoint( rf->m_segment.target() ) );
-        }
+    if ( m_reference_frame_index >= m_viz_reference_frames.size() ) {
+     for( unsigned int rf_i = 0; rf_i < m_viz_reference_frames.size(); rf_i ++ ) {
+       ReferenceFrame* rf = mp_reference_frames->get_reference_frames()[rf_i];
+       rf_painter.drawLine( toQPoint( rf->m_segment.source() ),
+                            toQPoint( rf->m_segment.target() ) );
       }
-      else{
-        ReferenceFrame* rf = mp_reference_frames->get_reference_frames()[m_reference_frame_index];
-        rf_painter.drawLine( toQPoint( rf->m_segment.source() ),
-                             toQPoint( rf->m_segment.target() ) );
-      }
-      rf_painter.end();
     }
+    else{
+      ReferenceFrame* rf = m_viz_referenceframes[m_reference_frame_index];
+      rf_painter.drawLine( toQPoint( rf->m_segment.source() ),
+                           toQPoint( rf->m_segment.target() ) );
+    }
+    rf_painter.end();
   }
 
   if(m_PPInfo.m_start.x() >= 0 && m_PPInfo.m_start.y() >= 0) {
@@ -324,14 +328,10 @@ string MLRRTstarViz::get_reference_frame_name() {
   return "NO REF FRAME";
 }
 
-string MLRRTstarViz::get_region_name() {
+string MLRRTstarViz::get_subregion_name() {
   SubRegion* p_subregion = get_selected_subregion();
   if( p_subregion ) {
     return p_subregion->get_name();
-  }
-  SubRegionSet* p_subregion_set = get_selected_subregion_set();
-  if( p_subregion_set ) {
-    return p_subregion_set->get_name();
   }
   return "NO REGION";
 }
@@ -428,76 +428,32 @@ ReferenceFrame* MLRRTstarViz::get_selected_reference_frame() {
   return mp_reference_frames->get_reference_frames()[ m_reference_frame_index ];
 }
     
-SubRegionSet* MLRRTstarViz::get_selected_subregion_set() {
-
-  if ( m_region_index >= mp_reference_frames->get_world_map()->get_subregion_set().size() ) {
-    return NULL;
-  }
-  if ( m_region_index < 0 ) {
-    return NULL;
-  }
-  return mp_reference_frames->get_world_map()->get_subregion_set()[ m_region_index ];
-}
-
 SubRegion* MLRRTstarViz::get_selected_subregion() {
-  SubRegionSet* p_subregion_set = get_selected_subregion_set();
-  if (p_subregion_set) {
-    if( m_subregion_index >= 0 && m_subregion_index < p_subregion_set->m_subregions.size() ) {
-      return p_subregion_set->m_subregions[ m_subregion_index ];
-    } 
-    return NULL;
+  if( m_subregion_index >= 0 && m_subregion_index < m_viz_subregions.size() ) {
+    return m_viz_subregions[ m_subregion_index ];
   } 
   return NULL;
 }
 
-void MLRRTstarViz::prev_region() {
-  if (m_show_regions) {
-    if ( m_region_index < 0) {
-      m_region_index = mp_reference_frames->get_world_map()->get_subregion_set().size() - 1;
-      m_subregion_index = -1;
-    }else{
-      m_region_index -- ;
-      m_subregion_index = -1;
-    }
-  }
-}
-
-void MLRRTstarViz::next_region() {
-  if (m_show_regions) {
-    if ( m_region_index >= mp_reference_frames->get_world_map()->get_subregion_set().size()-1 ) {
-      m_region_index = -1; 
-      m_subregion_index = -1;
-    }else{
-      m_region_index ++; 
-      m_subregion_index = -1;
-    }
-  }
-}
  
 void MLRRTstarViz::prev_subregion() {
   if (m_show_regions) {
-    if( m_region_index >= 0 && m_region_index < mp_reference_frames->get_world_map()->get_subregion_set().size()-1 ) {
-      SubRegionSet* p_subregions = mp_reference_frames->get_world_map()->get_subregion_set()[ m_region_index ];
-      if( m_subregion_index > 0 ) {
-        m_subregion_index --;
-      }
-      else {
-        m_subregion_index = p_subregions->m_subregions.size()-1;
-      }
-    } 
+    if( m_subregion_index > 0 ) {
+      m_subregion_index --;
+    }
+    else {
+      m_subregion_index = m_viz_subregions.size()-1;
+    }
   }
 }
 
 void MLRRTstarViz::next_subregion() {
   if (m_show_regions) {
-    if( m_region_index >= 0 && m_region_index < mp_reference_frames->get_world_map()->get_subregion_set().size()-1 ) {
-      SubRegionSet* p_subregions = mp_reference_frames->get_world_map()->get_subregion_set()[ m_region_index ];
-      if( m_subregion_index < p_subregions->m_subregions.size()-1 ) {
-        m_subregion_index ++;
-      }
-      else {
-        m_subregion_index = 0;
-      }
+    if( m_subregion_index < m_viz_subregions.size()-1 ) {
+      m_subregion_index ++;
+    }
+    else {
+      m_subregion_index = 0;
     } 
   }
 }
@@ -517,7 +473,6 @@ void MLRRTstarViz::draw_path_on_map(QPixmap& map) {
       painter.drawLine( toQPoint( p->m_way_points[i] ), toQPoint( p->m_way_points[i+1] ) );
     }
   }
-
   painter.end();
 
   QPainter startPainter(&map);
@@ -534,14 +489,12 @@ void MLRRTstarViz::draw_path_on_map(QPixmap& map) {
   endPainter.setPen(paintpen2);
   endPainter.drawPoint( toQPoint( p->m_way_points[lastIdx] ) );
   endPainter.end();
-
 }
 
 QString MLRRTstarViz::get_string_class_info() {
   QString info;
   if( mp_tree ) {
     if( mp_tree->get_expanding_tree_mgr() ) {
-
       if( m_string_class_index < 0 ) {
         info = "ALL";
       }
