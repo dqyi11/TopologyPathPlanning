@@ -330,7 +330,7 @@ void MLRRTstarWindow::updateStatus() {
   }
   if(mpStatusLabel) {
     QString status = "";
-    if (mpViz->get_finished_planning() == false) {
+    if (mpViz->is_finished_planning() == false) {
       status += QString::fromStdString(mpViz->get_subregion_name());
       status += " || ";
       status += QString::fromStdString(mpViz->get_reference_frame_name());
@@ -364,11 +364,23 @@ void MLRRTstarWindow::keyPressEvent(QKeyEvent *event) {
    }
    else if ( event->key() == Qt::Key_S ) {
      if(mpViz) {
-       if(mpViz->show_regions() == true) {
-         mpViz->set_show_regions( false );
+       if(mpViz->show_subregions() == true) {
+         mpViz->set_show_subregions( false );
        }
        else {
-         mpViz->set_show_regions( true );
+         mpViz->set_show_subregions( true );
+       }
+       updateStatus();
+       repaint();
+     }
+   }
+   else if ( event->key() == Qt::Key_P ) {
+     if(mpViz) {
+       if(mpViz->show_paths() == true) {
+         mpViz->set_show_paths( false );
+       }
+       else {
+         mpViz->set_show_paths( true );
        }
        updateStatus();
        repaint();

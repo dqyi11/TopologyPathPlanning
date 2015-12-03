@@ -26,12 +26,13 @@ namespace mlrrts{
     bool save_current_viz(QString filename);
 
     void set_show_reference_frames( bool show );
-    void set_show_regions( bool show );
+    void set_show_subregions( bool show );
     void set_finished_planning( bool finished ) { m_finished_planning = finished; }
-    bool get_finished_planning() { return m_finished_planning; }
+    void set_show_paths( bool show );
 
     bool show_reference_frames() { return m_show_reference_frames; }
-    bool show_regions() { return m_show_regions; }
+    bool show_subregions() { return m_show_subregions; }
+    bool show_paths() { return m_show_paths; }    
     bool is_finished_planning() { return m_finished_planning; }
  
     homotopy::ReferenceFrame* get_selected_reference_frame();
@@ -89,7 +90,8 @@ namespace mlrrts{
     MLRRTstar*                   mp_tree;
     homotopy::ReferenceFrameSet* mp_reference_frames;
     bool                         m_show_reference_frames;
-    bool                         m_show_regions;
+    bool                         m_show_subregions;
+    bool                         m_show_paths;
     bool                         m_finished_planning;
     int                          m_string_class_index;
     int                          m_reference_frame_index;

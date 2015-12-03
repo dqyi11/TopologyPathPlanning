@@ -223,7 +223,7 @@ void MLRRTstar::extend() {
     }
 
     if( true == _is_obstacle_free( nearest_node, new_pos ) ) {
-       cout << "NEW POS " << new_pos << endl;
+       //cout << "NEW POS " << new_pos << endl;
        SubRegion* p_subregion = _reference_frames->get_world_map()->in_subregion( toPoint2D( new_pos ) );
        if ( p_subregion ) {
          SubRegionMgr* p_mgr = _p_expanding_tree_mgr->find_subregion_mgr( p_subregion );
@@ -425,7 +425,7 @@ list<KDNode2D> MLRRTstar::_find_near( POS2D pos, ExpandingNode* p_exp_node ) {
       int num_vertices = p_class->mp_kd_tree->size();
       double ball_radius =  _theta * _range * pow( log((double)(num_vertices + 1.0))/((double)(num_vertices + 1.0)), 1.0/((double)num_dimensions) );
       p_class->mp_kd_tree->find_within_range( node, ball_radius, back_inserter( near_list_in_class ) );
-      cout << "NEAR LIST IN CLASS " << near_list_in_class.size() << endl;
+      //cout << "NEAR LIST IN CLASS " << near_list_in_class.size() << endl;
       for( list<KDNode2D>::iterator it_cls = near_list_in_class.begin();
            it_cls != near_list_in_class.end(); it_cls ++ ) {
         KDNode2D kdnode = (*it_cls);

@@ -26,7 +26,8 @@ MLRRTstarViz::MLRRTstarViz( QWidget * parent ) : QLabel(parent) {
 
   mp_tree = NULL;
   m_show_reference_frames = false;
-  m_show_regions = false;
+  m_show_subregions = false;
+  m_show_paths = false;
   m_finished_planning = false;
   m_reference_frame_index = -1;
   m_found_path_index = -1;
@@ -104,7 +105,7 @@ void MLRRTstarViz::updateVizReferenceFrames() {
 
 void MLRRTstarViz::paint( QPaintDevice* device ) {
 
-  if(m_show_regions) {
+  if(m_show_subregions) {
 
     QPainter rg_painter(device);
     rg_painter.setRenderHint(QPainter::Antialiasing);
@@ -184,43 +185,40 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
     }
     tree_painter.end();
   }
+ 
+  if( m_show_paths ) {
+    QPainter fpt_painter(device);
+    QPen fpt_paintpen( PATH_COLOR );
+    fpt_paintpen.setWidth( PATH_WIDTH );
+    fpt_painter.setPen(fpt_paintpen);
 
-  if( m_string_class_index < 0 ) {
-    if(m_PPInfo.mp_found_paths.size() > 0 && m_found_path_index >= 0  ) {
-      QPainter fpt_painter(device);
-      QPen fpt_paintpen( PATH_COLOR );
-      fpt_paintpen.setWidth( PATH_WIDTH );
-      fpt_painter.setPen(fpt_paintpen);
-
-      Path* p = m_PPInfo.mp_found_paths[m_found_path_index];
-      int point_num = p->m_way_points.size();
-      if(point_num > 0) {
-        for(int i=0;i<point_num-1;i++) {
-          fpt_painter.drawLine( toQPoint(p->m_way_points[i]), 
-                                toQPoint(p->m_way_points[i+1]) );
-        }
-      }
-      fpt_painter.end();
-    }
-  }
-  else {
-    StringClass* p_str_cls = mp_tree->get_expanding_tree_mgr()->get_string_classes()[ m_string_class_index ];
-    if( p_str_cls ) {
-      if ( p_str_cls->mp_path ) {
-        QPainter fpt_painter(device);
-        QPen fpt_paintpen( PATH_COLOR );
-        fpt_paintpen.setWidth( PATH_WIDTH );
-        fpt_painter.setPen(fpt_paintpen);
-
-        int point_num = p_str_cls->mp_path->m_way_points.size();
+    if( m_string_class_index < 0 ) {
+      if(m_PPInfo.mp_found_paths.size() > 0 && m_found_path_index >= 0  ) {
+        Path* p = m_PPInfo.mp_found_paths[m_found_path_index];
+        int point_num = p->m_way_points.size();
         if(point_num > 0) {
           for(int i=0;i<point_num-1;i++) {
-            fpt_painter.drawLine( toQPoint(p_str_cls->mp_path->m_way_points[i]),
-                                  toQPoint(p_str_cls->mp_path->m_way_points[i+1]) );
+            fpt_painter.drawLine( toQPoint(p->m_way_points[i]), 
+                                  toQPoint(p->m_way_points[i+1]) );
           }
         }
       }
     }
+    else {
+      StringClass* p_str_cls = mp_tree->get_expanding_tree_mgr()->get_string_classes()[ m_string_class_index ];
+      if( p_str_cls ) {
+        if ( p_str_cls->mp_path ) {
+          int point_num = p_str_cls->mp_path->m_way_points.size();
+          if(point_num > 0) {
+            for(int i=0;i<point_num-1;i++) {
+              fpt_painter.drawLine( toQPoint(p_str_cls->mp_path->m_way_points[i]),
+                                    toQPoint(p_str_cls->mp_path->m_way_points[i+1]) );
+            }
+          }
+        }
+      }
+    }
+    fpt_painter.end();
   }
 
   if( m_show_reference_frames ) {
@@ -229,9 +227,9 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
     rf_paintpen.setWidth( LINE_WIDTH );
     rf_painter.setPen(rf_paintpen);
 
-    if ( m_reference_frame_index >= m_viz_reference_frames.size() ) {
+    if ( m_reference_frame_index < 0 ) {
      for( unsigned int rf_i = 0; rf_i < m_viz_reference_frames.size(); rf_i ++ ) {
-       ReferenceFrame* rf = mp_reference_frames->get_reference_frames()[rf_i];
+       ReferenceFrame* rf = m_viz_reference_frames[rf_i];
        rf_painter.drawLine( toQPoint( rf->m_segment.source() ),
                             toQPoint( rf->m_segment.target() ) );
       }
@@ -280,11 +278,17 @@ void MLRRTstarViz::paintEvent( QPaintEvent* e ) {
 
 void MLRRTstarViz::set_show_reference_frames(bool show) {
   m_show_reference_frames = show;
-  m_reference_frame_index = 0;
+  m_reference_frame_index = -1;
 }
 
-void MLRRTstarViz::set_show_regions(bool show) {
-  m_show_regions = show;
+void MLRRTstarViz::set_show_subregions(bool show) {
+  m_show_subregions = show;
+  m_subregion_index = -1;
+}
+
+void MLRRTstarViz::set_show_paths(bool show) {
+  m_show_paths = show;
+  m_found_path_index = -1;
 }
 
 bool MLRRTstarViz::draw_path(QString filename) {
@@ -333,6 +337,17 @@ void MLRRTstarViz::next_string_class() {
       }
     }
   }
+  
+  /*
+  for( vector<ReferenceFrame*>::iterator it =  m_viz_reference_frames.begin();
+       it != m_viz_reference_frames.end(); it ++ ) {
+    ReferenceFrame* p_rf = (*it);
+    if( p_rf ) {
+      cout << p_rf->m_name << " ";
+    }
+  }
+  cout << "\n";
+  */
 }
 
 void MLRRTstarViz::prev_string_class() {
@@ -353,12 +368,23 @@ void MLRRTstarViz::prev_string_class() {
       }
     }
   }
+ 
+  /* 
+  for( vector<ReferenceFrame*>::iterator it =  m_viz_reference_frames.begin();
+       it != m_viz_reference_frames.end(); it ++ ) {
+    ReferenceFrame* p_rf = (*it);
+    if( p_rf ) {
+      cout << p_rf->m_name << " ";
+    }
+  }
+  cout << "\n";
+  */
 }
 
 void MLRRTstarViz::prev_reference_frame() {
   if (m_show_reference_frames) {
-    if ( m_reference_frame_index <= 0) {
-      m_reference_frame_index = mp_reference_frames->get_reference_frames().size();
+    if ( m_reference_frame_index < 0) {
+      m_reference_frame_index = m_viz_reference_frames.size()-1;
     }else{
       m_reference_frame_index -- ;
     }
@@ -367,8 +393,8 @@ void MLRRTstarViz::prev_reference_frame() {
 
 void MLRRTstarViz::next_reference_frame() {
   if (m_show_reference_frames) {
-    if ( m_reference_frame_index >= mp_reference_frames->get_reference_frames().size() ) {
-      m_reference_frame_index = 0;
+    if ( m_reference_frame_index >= m_viz_reference_frames.size()-1 ) {
+      m_reference_frame_index = -1;
     }else{
       m_reference_frame_index ++;
     }
@@ -492,7 +518,7 @@ SubRegion* MLRRTstarViz::get_selected_subregion() {
 
  
 void MLRRTstarViz::prev_subregion() {
-  if (m_show_regions) {
+  if (m_show_subregions) {
     if( m_subregion_index > 0 ) {
       m_subregion_index --;
     }
@@ -503,7 +529,7 @@ void MLRRTstarViz::prev_subregion() {
 }
 
 void MLRRTstarViz::next_subregion() {
-  if (m_show_regions) {
+  if (m_show_subregions) {
     if( m_subregion_index < m_viz_subregions.size()-1 ) {
       m_subregion_index ++;
     }
