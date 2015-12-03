@@ -331,7 +331,7 @@ void MLRRTstarWindow::updateStatus() {
   if(mpStatusLabel) {
     QString status = "";
     if (mpViz->get_finished_planning() == false) {
-      status += QString::fromStdString(mpViz->get_region_name());
+      status += QString::fromStdString(mpViz->get_subregion_name());
       status += " || ";
       status += QString::fromStdString(mpViz->get_reference_frame_name());
     }
@@ -414,14 +414,14 @@ void MLRRTstarWindow::keyPressEvent(QKeyEvent *event) {
    }
    else if ( event->key() == Qt::Key_PageUp ) {
      if(mpViz) {
-       mpViz->prev_region();
+       mpViz->prev_string_class();
        updateStatus();
        repaint();
      }
    }
    else if ( event->key() == Qt::Key_PageDown ) {
      if(mpViz) {
-       mpViz->next_region();
+       mpViz->next_string_class();
        updateStatus();
        repaint();
      }
@@ -436,20 +436,6 @@ void MLRRTstarWindow::keyPressEvent(QKeyEvent *event) {
    else if ( event->key() == Qt::Key_X ) {
      if(mpViz) {
        mpViz->next_subregion();
-       updateStatus();
-       repaint();
-     }
-   }
-   else if ( event->key() == Qt::Key_C ) {
-     if(mpViz) {
-       mpViz->prev_string_class();
-       updateStatus();
-       repaint();
-     }
-   }
-   else if ( event->key() == Qt::Key_V ) {
-     if(mpViz) {
-       mpViz->next_string_class();
        updateStatus();
        repaint();
      }

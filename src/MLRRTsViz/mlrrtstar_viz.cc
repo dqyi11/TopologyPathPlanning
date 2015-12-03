@@ -26,14 +26,12 @@ MLRRTstarViz::MLRRTstarViz( QWidget * parent ) : QLabel(parent) {
   m_finished_planning = false;
   m_reference_frame_index = -1;
   m_found_path_index = -1;
-  m_region_index = -1;
   m_subregion_index = -1;
   m_string_class_index = -1;
   mp_reference_frames = NULL;
   m_show_points = false;
   m_mode = NORMAL;
   m_item_selected_name = "";
-  m_colors.clear();
 }
 
 void MLRRTstarViz::set_tree( MLRRTstar* p_tree ) {
@@ -42,9 +40,6 @@ void MLRRTstarViz::set_tree( MLRRTstar* p_tree ) {
 
 void MLRRTstarViz::set_reference_frame_set( ReferenceFrameSet* p_rf ) {
   mp_reference_frames = p_rf;
-  for( unsigned int i = 0; i < mp_reference_frames->get_world_map()->get_subregion_set().size(); i++) {
-    m_colors.push_back( QColor( rand()%255, rand()%255, rand()%255, 80 ) );
-  }
 }
 
 void MLRRTstarViz::updateVizSubregions() {
@@ -91,7 +86,7 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
     rg_painter.setPen(Qt::NoPen);
     if( m_subregion_index < 0 ) {
       for( unsigned int i = 0; i < m_viz_subregions.size(); i ++ ) {
-        SubRegion* p_subreg = p_subregion_set->m_subregions[j];
+        SubRegion* p_subreg = m_viz_subregions[i];
         if(p_subreg) {
           QPolygon poly;
           for( unsigned int k = 0; k < p_subreg->m_points.size(); k++) {
@@ -194,7 +189,7 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
       }
     }
     else{
-      ReferenceFrame* rf = m_viz_referenceframes[m_reference_frame_index];
+      ReferenceFrame* rf = m_viz_reference_frames[m_reference_frame_index];
       rf_painter.drawLine( toQPoint( rf->m_segment.source() ),
                            toQPoint( rf->m_segment.target() ) );
     }

@@ -6,6 +6,7 @@
 #include "mlrrtstar.h"
 #include "mlrrtstar_path_planning_info.h"
 #include "reference_frames.h"
+#include "region.h"
 
 namespace mlrrts{
 
@@ -72,6 +73,9 @@ namespace mlrrts{
     void mouseMoveEvent( QMouseEvent * event );
     void mouseReleaseEvent( QMouseEvent * event );
 
+    void updateVizSubregions();
+    void updateVizReferenceFrames();
+
     std::vector<QPoint>  m_drawed_points;
     bool                 m_dragging;
     bool                 m_show_points;
@@ -92,8 +96,8 @@ namespace mlrrts{
     int                          m_found_path_index;
     int                          m_subregion_index;
 
-    std::vector<SubRegion*>      m_viz_subregions;
-    std::vector<ReferenceFrame*> m_viz_reference_frames;
+    std::vector<homotopy::SubRegion*>      m_viz_subregions;
+    std::vector<homotopy::ReferenceFrame*> m_viz_reference_frames;
  
   private slots:
     void paintEvent( QPaintEvent* e );
