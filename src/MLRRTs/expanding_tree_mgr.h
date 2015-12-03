@@ -4,7 +4,7 @@
 #include <vector>
 #include "kdtreeml2d.h"
 #include "expanding_tree.h"
-#include "worldmap.h"
+#include "reference_frames.h"
 
 namespace mlrrts {
 
@@ -38,7 +38,7 @@ namespace mlrrts {
     ExpandingTreeMgr();
     virtual ~ExpandingTreeMgr();
 
-    void init( homotopy::StringGrammar* p_grammar, homotopy::WorldMap* p_worldmap );
+    void init( homotopy::StringGrammar* p_grammar, homotopy::ReferenceFrameSet* p_reference_frame_set );
     
     SubRegionMgr* find_subregion_mgr( homotopy::SubRegion* p_subregion );
     LineSubSegmentMgr* find_line_subsegment_mgr( homotopy::LineSubSegment* p_line_subsegment );

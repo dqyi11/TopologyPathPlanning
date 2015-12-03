@@ -9,7 +9,7 @@
 #define START_COLOR             QColor(255,0,0)
 #define GOAL_COLOR              QColor(0,0,255)
 #define REFERENCE_FRAME_COLOR   QColor(0,255,0)
-#define SUBREGION_COLOR         QColor(122,122,122)
+#define SUBREGION_COLOR         QColor(200,200,200)
 #define PATH_COLOR              QColor(255,153,21)
 #define DRAWING_LINE_COLOR      QColor(153,76,0)
 #define LINE_WIDTH              2
@@ -40,6 +40,8 @@ void MLRRTstarViz::set_tree( MLRRTstar* p_tree ) {
 
 void MLRRTstarViz::set_reference_frame_set( ReferenceFrameSet* p_rf ) {
   mp_reference_frames = p_rf;
+  updateVizSubregions();
+  updateVizReferenceFrames();
 }
 
 void MLRRTstarViz::updateVizSubregions() {
@@ -71,6 +73,7 @@ void MLRRTstarViz::updateVizSubregions() {
       }
     }
   }
+  m_subregion_index = -1;
 }
 
 void MLRRTstarViz::updateVizReferenceFrames() {
@@ -83,8 +86,16 @@ void MLRRTstarViz::updateVizReferenceFrames() {
     }
   }
   else {
-
+    StringClass* p_str_cls = mp_tree->get_expanding_tree_mgr()->get_string_classes()[ m_string_class_index ];
+    if( p_str_cls ) {
+      for( vector<ReferenceFrame*>::iterator it_rf = p_str_cls->mp_reference_frames.begin();
+           it_rf != p_str_cls->mp_reference_frames.end(); it_rf++ ) {
+        ReferenceFrame* p_rf = (*it_rf); 
+        m_viz_reference_frames.push_back( p_rf );
+      }
+    }
   }  
+  m_reference_frame_index = -1;
 }
 
 void MLRRTstarViz::paint( QPaintDevice* device ) {

@@ -9,6 +9,7 @@
 using namespace std;
 using namespace boost;
 using namespace mlrrts;
+using namespace homotopy;
 
 struct Vertex{ std::string name; };
 struct Edge{ std::string name; };
@@ -21,6 +22,7 @@ StringClass::StringClass( std::vector< std::string > string ) {
   m_string = string;
   mp_kd_tree = new KDTree2D( std::ptr_fun(tac) );
   mp_exp_nodes.clear(); 
+  mp_reference_frames.clear();  
  
   mp_path = NULL;
   m_cost = 0.0;
@@ -33,9 +35,22 @@ StringClass::~StringClass() {
     mp_kd_tree = NULL;
   }
   mp_exp_nodes.clear(); 
+  mp_reference_frames.clear();  
   
   m_cost = 0.0;
   mp_path = NULL;
+}
+
+void StringClass::init( homotopy::ReferenceFrameSet* p_rfs ) {
+  if( p_rfs ) {
+    for( unsigned int i=0; i < m_string.size(); i++ ) {
+      string id = m_string[i];
+      ReferenceFrame* p_rf = p_rfs->get_reference_frame( id );
+      if( p_rf ) {
+        mp_reference_frames.push_back( p_rf );
+      }
+    }
+  }
 }
 
 std::string StringClass::get_name() {
@@ -206,7 +221,7 @@ ExpandingTree::~ExpandingTree() {
   m_nodes.clear();
 }
 
-std::vector< StringClass* > ExpandingTree::init( homotopy::StringGrammar * p_grammar, homotopy::WorldMap* p_worldmap ) {
+std::vector< StringClass* > ExpandingTree::init( homotopy::StringGrammar * p_grammar, homotopy::ReferenceFrameSet* p_reference_frame_set ) {
   std::vector< StringClass* > string_classes;
   if( p_grammar == NULL ) {
     return string_classes;
@@ -229,6 +244,7 @@ std::vector< StringClass* > ExpandingTree::init( homotopy::StringGrammar * p_gra
       }
     }
     StringClass* p_string_class = new StringClass( string_class );
+    p_string_class->init( p_reference_frame_set );
    
     for( unsigned int j = 0; j < path.size(); j ++ ) {
       homotopy::Adjacency adj = path[ j ];
@@ -239,8 +255,9 @@ std::vector< StringClass* > ExpandingTree::init( homotopy::StringGrammar * p_gra
           mp_root = new ExpandingNode( adj.mp_state->m_name );
           mp_root->import_ancestor_seq( node_seq );
           node_seq.push_back( mp_root );
-          if ( p_worldmap ) {
-            mp_root->mp_subregion = p_worldmap->find_subregion( adj.mp_state->m_name );
+          if ( p_reference_frame_set 
+               && p_reference_frame_set->get_world_map() ) {
+            mp_root->mp_subregion = p_reference_frame_set->get_world_map()->find_subregion( adj.mp_state->m_name );
           }
           m_nodes.push_back( mp_root );
           p_string_class->add_exp_node( mp_root );
@@ -265,8 +282,9 @@ std::vector< StringClass* > ExpandingTree::init( homotopy::StringGrammar * p_gra
           p_edge->mp_from = p_current_node;
           p_edge->import_ancestor_seq( edge_seq );
           edge_seq.push_back( p_edge );
-          if( p_worldmap ) {
-            p_edge->mp_line_subsegment = p_worldmap->find_linesubsegment( adj.mp_transition->m_name );
+          if ( p_reference_frame_set 
+               && p_reference_frame_set->get_world_map() ) {
+            p_edge->mp_line_subsegment = p_reference_frame_set->get_world_map()->find_linesubsegment( adj.mp_transition->m_name );
           }
           p_edge->mp_to = new ExpandingNode( adj.mp_state->m_name );
           p_edge->mp_to->mp_in_edge = p_edge;
@@ -274,8 +292,9 @@ std::vector< StringClass* > ExpandingTree::init( homotopy::StringGrammar * p_gra
           p_edge->mp_to->import_ancestor_seq( node_seq );
           node_seq.push_back( p_edge->mp_to );
           p_string_class->add_exp_node( p_edge->mp_to );
-          if( p_worldmap ) {
-            p_edge->mp_to->mp_subregion = p_worldmap->find_subregion( adj.mp_state->m_name );
+          if ( p_reference_frame_set 
+               && p_reference_frame_set->get_world_map() ) {
+            p_edge->mp_to->mp_subregion = p_reference_frame_set->get_world_map()->find_subregion( adj.mp_state->m_name );
           }
           m_edges.push_back( p_edge );
           m_nodes.push_back( p_edge->mp_to );

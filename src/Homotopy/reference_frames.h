@@ -43,6 +43,7 @@ namespace homotopy {
     std::vector<ReferenceFrame*>& get_reference_frames() { return _reference_frames; }
 
     WorldMap* get_world_map() { return _p_world_map; }
+    ReferenceFrame* get_reference_frame( std::string name );    
    
     void import_string_constraint( std::vector<Point2D> points, grammar_type_t type );
     bool is_constained_substring( std::vector< std::string > sub_str, bool reverse );

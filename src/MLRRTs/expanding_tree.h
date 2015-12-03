@@ -5,7 +5,7 @@
 #include <string>
 #include "kdtreeml2d.h"
 #include "string_grammar.h"
-#include "worldmap.h"
+#include "reference_frames.h"
 
 namespace mlrrts {
 
@@ -19,10 +19,12 @@ namespace mlrrts {
     virtual ~StringClass();
     std::string get_name();
     void add_exp_node( ExpandingNode* p_node );
+    void init( homotopy::ReferenceFrameSet* p_rf );
   
-    std::vector< std::string >    m_string;
-    KDTree2D*                     mp_kd_tree;
-    std::vector< ExpandingNode* > mp_exp_nodes;    
+    std::vector< std::string >               m_string;
+    KDTree2D*                                mp_kd_tree;
+    std::vector< ExpandingNode* >            mp_exp_nodes;   
+    std::vector< homotopy::ReferenceFrame* > mp_reference_frames; 
 
     Path*                         mp_path;  
     double                        m_cost;
@@ -79,7 +81,7 @@ namespace mlrrts {
     ExpandingTree();
     virtual ~ExpandingTree();
 
-    std::vector< StringClass* > init( homotopy::StringGrammar* p_grammar, homotopy::WorldMap* p_worldmap = NULL );
+    std::vector< StringClass* > init( homotopy::StringGrammar* p_grammar, homotopy::ReferenceFrameSet* p_reference_frame_set = NULL );
 
     void output( std::string filename );
 

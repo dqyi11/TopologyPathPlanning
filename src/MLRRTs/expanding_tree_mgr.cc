@@ -109,7 +109,7 @@ LineSubSegmentMgr* ExpandingTreeMgr::find_line_subsegment_mgr( LineSubSegment* p
   return NULL;
 }
 
-void ExpandingTreeMgr::init( StringGrammar* p_grammar, WorldMap* p_worldmap ) {
+void ExpandingTreeMgr::init( StringGrammar* p_grammar, ReferenceFrameSet* p_reference_frame_set ) {
   if ( mp_expanding_tree ) {
     delete mp_expanding_tree;
     mp_expanding_tree = NULL;
@@ -125,7 +125,7 @@ void ExpandingTreeMgr::init( StringGrammar* p_grammar, WorldMap* p_worldmap ) {
   mp_string_grammar = p_grammar;
   mp_expanding_tree = new ExpandingTree();
   /* init string classes */
-  mp_string_classes = mp_expanding_tree->init( p_grammar, p_worldmap );
+  mp_string_classes = mp_expanding_tree->init( p_grammar, p_reference_frame_set );
 
   for( std::vector<ExpandingNode*>::iterator it = mp_expanding_tree->m_nodes.begin();
        it != mp_expanding_tree->m_nodes.end(); it ++ ) {

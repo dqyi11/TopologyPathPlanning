@@ -167,7 +167,7 @@ bool MLRRTstar::init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp
   }
   cout << "Init String Class Mgr ... " << endl;
   _p_expanding_tree_mgr = new ExpandingTreeMgr();
-  _p_expanding_tree_mgr->init( _string_grammar, _reference_frames->get_world_map() );
+  _p_expanding_tree_mgr->init( _string_grammar, _reference_frames );
 
   cout << "Init tree.." << endl;
   KDNode2D root( start );

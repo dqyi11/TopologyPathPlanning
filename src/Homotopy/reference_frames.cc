@@ -73,6 +73,17 @@ void ReferenceFrameSet::init(int width, int height, std::vector< std::vector<Poi
   }
 }
 
+ReferenceFrame* ReferenceFrameSet::get_reference_frame( std::string name ) {  
+  for( std::vector<ReferenceFrame*>::iterator it = _reference_frames.begin();
+       it != _reference_frames.end(); it ++ ) {
+    ReferenceFrame* p_rf = (*it);
+    if( p_rf->m_name == name ) {
+      return p_rf;
+    }
+  }
+  return NULL; 
+}
+
 StringGrammar* ReferenceFrameSet::get_string_grammar( int init_x, int init_y, int goal_x, int goal_y ) {
   Point2D init_point( init_x, init_y );
   Point2D goal_point( goal_x, goal_y );
