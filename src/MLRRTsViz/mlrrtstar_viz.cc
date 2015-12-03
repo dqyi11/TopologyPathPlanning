@@ -57,8 +57,19 @@ void MLRRTstarViz::updateVizSubregions() {
     }
   } 
   else {
-
-
+    StringClass* p_str_cls = mp_tree->get_expanding_tree_mgr()->get_string_classes()[ m_string_class_index ];
+    if( p_str_cls ) {
+      for( vector<ExpandingNode*>::iterator it_exp = p_str_cls->mp_exp_nodes.begin();
+           it_exp != p_str_cls->mp_exp_nodes.end(); it_exp++ ) {
+        ExpandingNode* p_exp_node = (*it_exp);
+        if ( p_exp_node ) {
+          SubRegion* p_subreg = p_exp_node->mp_subregion;
+          if ( p_subreg ) {
+            m_viz_subregions.push_back( p_subreg );
+          }
+        }
+      }
+    }
   }
 }
 
@@ -273,9 +284,13 @@ void MLRRTstarViz::next_string_class() {
       ExpandingTreeMgr* p_mgr = mp_tree->get_expanding_tree_mgr();
       if ( m_string_class_index < p_mgr->get_string_classes().size()-1 ) {
         m_string_class_index ++;
+        updateVizSubregions();
+        updateVizReferenceFrames();
       }
       else {
         m_string_class_index = -1;
+        updateVizSubregions();
+        updateVizReferenceFrames();
       }
     }
   }
@@ -287,9 +302,13 @@ void MLRRTstarViz::prev_string_class() {
       ExpandingTreeMgr* p_mgr = mp_tree->get_expanding_tree_mgr();
       if ( m_string_class_index >= 0 ) {
         m_string_class_index --;
+        updateVizSubregions();
+        updateVizReferenceFrames();
       }
       else {
         m_string_class_index = p_mgr->get_string_classes().size()-1;
+        updateVizSubregions();
+        updateVizReferenceFrames();
       }
     }
   }
