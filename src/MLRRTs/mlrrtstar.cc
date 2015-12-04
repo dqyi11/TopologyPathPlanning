@@ -95,6 +95,7 @@ MLRRTstar::MLRRTstar( int width, int height, int segment_length ) {
   _range = (_sampling_width > _sampling_height) ? _sampling_width : _sampling_height;
   _obs_check_resolution = 1;
   _current_iteration = 0;
+  _homotopic_enforcement = false;
 
   _theta = 10;
   _pp_cost_distribution = NULL;
@@ -591,15 +592,18 @@ bool MLRRTstar::_attach_new_node( MLRRTNode* p_node_new, list<MLRRTNode*> near_n
   for(list<MLRRTNode*>::iterator it = near_nodes.begin(); it != near_nodes.end(); it++) {
     MLRRTNode* p_near_node = (*it);
     if( true == _is_obstacle_free( p_near_node->m_pos, p_node_new->m_pos ) ) {
-
-      //if( true == _is_homotopic_constrained( p_near_node->m_pos, p_node_new->m_pos, p_exp_node ) ) {
+      bool eligible = true;
+      if( _homotopic_enforcement ) {
+        eligible = _is_homotopic_constrained( p_near_node->m_pos, p_node_new->m_pos, p_exp_node );
+      } 
+      if( eligible ) { 
         double delta_cost = _calculate_cost( p_near_node->m_pos, p_node_new->m_pos );
         double new_cost = p_near_node->m_cost + delta_cost;
         if( (p_min_node==NULL) || (new_cost < min_new_node_cost) ) {
           p_min_node = p_near_node;
           min_new_node_cost = new_cost;
         }
-      //}
+      }
     }
   } 
   if( p_min_node == NULL ) {

@@ -264,6 +264,12 @@ void MLRRTstarWindow::planPath() {
 
   mpMLRRTstar = new MLRRTstar(mpMap->width(), mpMap->height(), mpViz->m_PPInfo.m_segment_length);
   mpMLRRTstar->set_reference_frames( mpReferenceFrameSet );
+  if( mpViz->m_PPInfo.m_homotopic_enforcement ) {
+    mpMLRRTstar->set_homotopic_enforcement( true );
+  }
+  else {
+    mpMLRRTstar->set_homotopic_enforcement( false );
+  }
   POS2D start(mpViz->m_PPInfo.m_start.x(), mpViz->m_PPInfo.m_start.y());
   POS2D goal(mpViz->m_PPInfo.m_goal.x(), mpViz->m_PPInfo.m_goal.y());
     

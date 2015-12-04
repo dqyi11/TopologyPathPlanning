@@ -127,6 +127,7 @@ namespace mlrrts {
 
     int m_max_iteration_num;
     double m_segment_length;
+    bool m_homotopic_enforcement;
 
     std::vector<Path*> mp_found_paths;
   };

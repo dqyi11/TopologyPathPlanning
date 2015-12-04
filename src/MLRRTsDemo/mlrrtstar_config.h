@@ -36,11 +36,14 @@ namespace mlrrts {
     QLabel    * mpLabelSegmentLength;
     QLineEdit * mpLineEditSegmentLength;
 
+    QCheckBox * mpCheckHomotopicEnforcement;
+    QLabel    * mpLabelHomotopicEnforcement;
+    
     MLRRTstarWindow* mpParentWindow;
 
     bool isCompatible(QString fitnessFile);
   public slots:
-    void checkBoxStateChanged(int state);
+    void checkMinDistStateChange(int state);
     void onBtnOKClicked();
     void onBtnCancelClicked();
     void onBtnAddClicked();

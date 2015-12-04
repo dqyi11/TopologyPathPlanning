@@ -28,6 +28,7 @@ MLRRTstarPathPlanningInfo::MLRRTstarPathPlanningInfo() {
     m_max_iteration_num = 1000;
     m_segment_length = 5.0;
     mCostDistribution = NULL;
+    m_homotopic_enforcement = true;
 
     m_map_width = 0;
     m_map_height = 0;
@@ -167,6 +168,16 @@ void MLRRTstarPathPlanningInfo::read( xmlNodePtr root ) {
                 m_min_dist_enabled = false;
             }
         }
+        tmp = xmlGetProp( root, ( const xmlChar* )( "homotopic_enforcement" ) );
+        if ( tmp != NULL ) {
+            std::string homotopic_enforcement = ( char * )( tmp );
+            int homotopic_enforcement_int = strtol( homotopic_enforcement.c_str(), NULL, 10 );
+            if (homotopic_enforcement_int > 0) {
+                m_homotopic_enforcement = true;
+            } else {
+                m_homotopic_enforcement = false;
+            }
+        }
         tmp = xmlGetProp( root, ( const xmlChar* )( "objective_file" ) );
         if ( tmp != NULL ) {
             std::string objective_file = ( char * )( tmp );
@@ -220,6 +231,13 @@ void MLRRTstarPathPlanningInfo::write( xmlDocPtr doc, xmlNodePtr root ) const {
         min_dist_enabled = "1";
     } else {
         min_dist_enabled = "0";
+    }
+    xmlNewProp( node, ( const xmlChar* )( "min_dist_enabled" ), ( const xmlChar* )( min_dist_enabled.c_str() ) );
+    std::string homotopic_enforcement;
+    if ( m_homotopic_enforcement ) {
+        homotopic_enforcement = "1";
+    } else {
+        homotopic_enforcement = "0";
     }
     xmlNewProp( node, ( const xmlChar* )( "min_dist_enabled" ), ( const xmlChar* )( min_dist_enabled.c_str() ) );
     xmlNewProp( node, ( const xmlChar* )( "objective_file" ), ( const xmlChar* )( m_objective_file.toStdString().c_str() ) );

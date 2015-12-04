@@ -75,6 +75,8 @@ namespace mlrrts {
 
     bool in_current_and_parent_exp_node( POS2D pos, ExpandingNode* p_exp_node );
 
+    bool is_homotopic_enforcement() { return _homotopic_enforcement; };
+    void set_homotopic_enforcement( bool enforcement ) { _homotopic_enforcement = enforcement; };
   protected:
     POS2D _sampling();
     POS2D _steer( POS2D pos_a, POS2D pos_b );
@@ -117,6 +119,7 @@ namespace mlrrts {
     double _range; 
     double _segment_length;
     int    _obs_check_resolution;
+    bool   _homotopic_enforcement;
 
     double _theta;
     int    _current_iteration;

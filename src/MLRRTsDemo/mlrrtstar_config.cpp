@@ -18,7 +18,7 @@ MLRRTstarConfig::MLRRTstarConfig(MLRRTstarWindow * parent) {
   else {
     mpCheckMinDist->setChecked(false);
   }
-  connect(mpCheckMinDist , SIGNAL(stateChanged(int)),this, SLOT(checkBoxStateChanged(int)));
+  connect(mpCheckMinDist , SIGNAL(stateChanged(int)),this, SLOT(checkMinDistStateChange(int)));
   mpLabelMinDist = new QLabel("Minimize distance");
 
   mpLabelIterationNum = new QLabel("Iteration Num: ");
@@ -44,6 +44,19 @@ MLRRTstarConfig::MLRRTstarConfig(MLRRTstarWindow * parent) {
   minDistLayout->addWidget(mpLineEditSegmentLength);
   mpBtnAdd = new QPushButton(tr("Add"));
   connect(mpBtnAdd, SIGNAL(clicked()), this, SLOT(onBtnAddClicked()));
+  
+  mpCheckHomotopicEnforcement = new QCheckBox();
+  if (mpParentWindow->mpViz->m_PPInfo.m_homotopic_enforcement==true) {
+    mpCheckHomotopicEnforcement->setChecked(true);
+  }
+  else {
+    mpCheckHomotopicEnforcement->setChecked(false);
+  }
+  mpLabelHomotopicEnforcement = new QLabel("Homotopic Enforcement");
+
+  QHBoxLayout * paramConfigLayout = new QHBoxLayout();
+  paramConfigLayout->addWidget(mpLabelHomotopicEnforcement);
+  paramConfigLayout->addWidget(mpCheckHomotopicEnforcement);
 
   QHBoxLayout * costMapLayout = new QHBoxLayout();
   costMapLayout->addWidget(mpLabelCost);
@@ -62,6 +75,7 @@ MLRRTstarConfig::MLRRTstarConfig(MLRRTstarWindow * parent) {
   QVBoxLayout * mainLayout = new QVBoxLayout();
   mainLayout->addLayout(minDistLayout);
   mainLayout->addLayout(costMapLayout);
+  mainLayout->addLayout(paramConfigLayout);
   mainLayout->addLayout(buttonsLayout);
 
   setWindowTitle("Config Objectives");
@@ -106,6 +120,12 @@ void MLRRTstarConfig::updateDisplay() {
       else {
         mpCheckMinDist->setChecked(false);
       }
+      if( mpParentWindow->mpViz->m_PPInfo.m_homotopic_enforcement==true ) {
+        mpCheckHomotopicEnforcement->setChecked(true);
+      }
+      else {
+        mpCheckHomotopicEnforcement->setChecked(false);
+      }
       mpLineEditSegmentLength->setText(QString::number(mpParentWindow->mpViz->m_PPInfo.m_segment_length));
       mpLineEditIterationNum->setText(QString::number(mpParentWindow->mpViz->m_PPInfo.m_max_iteration_num));
       mpLineEditCost->setText(mpParentWindow->mpViz->m_PPInfo.m_objective_file);
@@ -114,13 +134,17 @@ void MLRRTstarConfig::updateDisplay() {
 }
 
 void MLRRTstarConfig::updateConfiguration() {
-  int numObj = 0;
   if (mpCheckMinDist->isChecked()==true) {
-    numObj += 1;
     mpParentWindow->mpViz->m_PPInfo.m_min_dist_enabled=true;
   }
   else {
     mpParentWindow->mpViz->m_PPInfo.m_min_dist_enabled=false;
+  }
+  if (mpCheckHomotopicEnforcement->isChecked()==true) {
+    mpParentWindow->mpViz->m_PPInfo.m_homotopic_enforcement=true;
+  }
+  else {
+    mpParentWindow->mpViz->m_PPInfo.m_homotopic_enforcement=false;
   }
 
   mpParentWindow->mpViz->m_PPInfo.m_objective_file = mpLineEditCost->text();
@@ -138,7 +162,7 @@ bool MLRRTstarConfig::isCompatible(QString fitnessFile) {
   return false;
 }
 
-void MLRRTstarConfig::checkBoxStateChanged(int state) {
+void MLRRTstarConfig::checkMinDistStateChange(int state) {
   if(mpCheckMinDist->checkState()==Qt::Checked) {
     mpLineEditCost->setEnabled(false);
     mpBtnAdd->setEnabled(false);
@@ -149,3 +173,4 @@ void MLRRTstarConfig::checkBoxStateChanged(int state) {
   }
   repaint();
 }
+
