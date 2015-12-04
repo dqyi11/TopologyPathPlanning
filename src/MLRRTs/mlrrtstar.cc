@@ -619,6 +619,41 @@ bool MLRRTstar::_attach_new_node( MLRRTNode* p_node_new, list<MLRRTNode*> near_n
 }
 
 void MLRRTstar::_rewire_near_nodes( MLRRTNode* p_node_new, list<MLRRTNode*> near_nodes, ExpandingNode* p_exp_node ) {
+  for( list<MLRRTNode*>::iterator it = near_nodes.begin();
+       it != near_nodes.end(); it++ ) {
+    MLRRTNode* p_near_node = (*it);
+
+    if( p_near_node->m_pos == p_node_new->m_pos ||
+        p_near_node->m_pos == _p_root->m_pos ) {
+      continue;
+    }
+
+    if( true == _is_obstacle_free( p_node_new->m_pos, p_near_node->m_pos ) ) {
+      bool eligible = true;
+      if( _homotopic_enforcement ) {
+        eligible = _is_homotopic_constrained( p_near_node->m_pos, p_node_new->m_pos, p_exp_node ); 
+      }
+      if( eligible ) {
+        double temp_delta_cost = _calculate_cost( p_node_new->m_pos, p_near_node->m_pos );
+        double temp_cost_from_new_node = p_node_new->m_cost + temp_delta_cost;
+        if( temp_cost_from_new_node < p_near_node->m_cost ) {
+          double min_delta_cost = p_near_node->m_cost - temp_cost_from_new_node;
+          MLRRTNode* p_parent_node = p_near_node->mp_parent;
+          bool removed = _remove_edge( p_parent_node, p_near_node );
+          if( removed ) {
+            bool added = _add_edge( p_node_new, p_near_node );
+            if( added ) {
+              p_near_node->m_cost = temp_cost_from_new_node;
+              _update_cost_to_children( p_near_node, min_delta_cost );
+            }
+          }
+          else {
+            std::cout << " Failed in removing " << std::endl;
+          }
+        }
+      }
+    }
+  }
 
 }
 
@@ -716,4 +751,69 @@ bool MLRRTstar::_is_homotopic_constrained( POS2D pos_a, POS2D pos_b, ExpandingNo
     }
   }
   return false;
+}
+
+void MLRRTstar::_update_cost_to_children( MLRRTNode* p_node, double delta_cost ) {
+  list<MLRRTNode*> child_list = _find_all_children( p_node );
+  for( list<MLRRTNode*>::iterator it = child_list.begin();
+       it != child_list.end(); it++ ) {
+    MLRRTNode* p_child_node = (*it);
+    if( p_child_node ) {
+      p_child_node->m_cost -= delta_cost;
+    }
+  }
+}
+
+list<MLRRTNode*> MLRRTstar::_find_all_children( MLRRTNode* p_node ) {
+  int level = 0;
+  bool finished = false;
+  list<MLRRTNode*> child_list;
+  
+  list<MLRRTNode*> current_level_nodes;
+  current_level_nodes.push_back( p_node );
+  while( false == finished ) {
+    list<MLRRTNode*> current_level_children;
+    int child_list_num = child_list.size();
+
+    for( list<MLRRTNode*>::iterator it = current_level_nodes.begin();
+         it != current_level_nodes.end(); it ++ ) {
+      MLRRTNode* p_current_node = (*it);
+      for( list<MLRRTNode*>::iterator itc = p_current_node->m_child_nodes.begin();
+           itc != p_current_node->m_child_nodes.end(); itc ++ ) {
+         MLRRTNode* p_child_node = (*itc);
+         if( p_child_node ) {
+           current_level_children.push_back( p_child_node );
+           child_list.push_back( p_child_node );
+         }
+      }
+    }
+
+    child_list.unique();
+    current_level_children.unique();
+
+    if( current_level_children.size() == 0 ) {
+      finished = true;
+    }
+    else if( child_list.size() == child_list_num ) {
+      finished = true;
+    }
+    else {
+      current_level_nodes.clear();
+      for( list<MLRRTNode*>::iterator itt = current_level_children.begin();
+           itt != current_level_children.end(); itt ++ ) {
+        MLRRTNode* p_temp_node = (*itt);
+        if( p_temp_node ) {
+          current_level_nodes.push_back( p_temp_node );
+        }
+      }
+      level += 1;
+    }
+
+    if( level > 100 ) {
+      cout << "LEVEL > 100" << endl;
+      break;
+    }
+  }
+  child_list.unique();
+  return child_list;
 }

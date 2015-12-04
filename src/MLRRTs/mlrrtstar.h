@@ -92,10 +92,13 @@ namespace mlrrts {
     MLRRTNode* _create_new_node( POS2D pos, ExpandingNode* p_exp_node );
     bool _attach_new_node( MLRRTNode* p_node_new, std::list<MLRRTNode*> near_nodes, ExpandingNode* p_exp_node );
     void _rewire_near_nodes( MLRRTNode* p_node_new, std::list<MLRRTNode*> near_nodes, ExpandingNode* p_exp_node );  
+    void _update_cost_to_children( MLRRTNode* p_node, double delta_cost );
 
     bool _has_edge( MLRRTNode* p_node_parent, MLRRTNode* p_node_child );
     bool _add_edge( MLRRTNode* p_node_parent, MLRRTNode* p_node_child );
     bool _remove_edge( MLRRTNode* p_node_parent, MLRRTNode* p_node_child );
+
+    std::list<MLRRTNode*> _find_all_children( MLRRTNode* p_node );
 
     POS2D      _start;
     POS2D      _goal;
