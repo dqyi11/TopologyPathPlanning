@@ -176,12 +176,14 @@ ExpandingEdge::ExpandingEdge( string name ) {
   mp_from = NULL;
   mp_to = NULL;
   mp_line_subsegment = NULL;
+  mp_reference_frame = NULL;
 }
 
 ExpandingEdge::~ExpandingEdge() {
   mp_from = NULL;
   mp_to = NULL;
   mp_line_subsegment = NULL;
+  mp_reference_frame = NULL;
 }
 
 void ExpandingEdge::import_ancestor_seq ( std::vector<ExpandingEdge*> ancestor_seq ) {
@@ -285,6 +287,7 @@ std::vector< StringClass* > ExpandingTree::init( homotopy::StringGrammar * p_gra
           if ( p_reference_frame_set 
                && p_reference_frame_set->get_world_map() ) {
             p_edge->mp_line_subsegment = p_reference_frame_set->get_world_map()->find_linesubsegment( adj.mp_transition->m_name );
+            p_edge->mp_reference_frame = p_reference_frame_set->get_reference_frame( adj.mp_transition->m_name );
           }
           p_edge->mp_to = new ExpandingNode( adj.mp_state->m_name );
           p_edge->mp_to->mp_in_edge = p_edge;

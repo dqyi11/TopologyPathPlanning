@@ -699,12 +699,15 @@ bool MLRRTstar::_is_homotopic_constrained( POS2D pos_a, POS2D pos_b, ExpandingNo
       SubRegion* p_subregion_a = p_world_map->in_subregion( point_a );
       SubRegion* p_subregion_b = p_world_map->in_subregion( point_b );
       if( p_subregion_a == p_subregion_b ) {
+        //cout << "SAME REGION" << endl;
         return true;
       }
       if( p_exp_node ) {
         if( p_exp_node->mp_in_edge ) {
           if( p_exp_node->mp_in_edge->mp_reference_frame ) {
+
             if( p_exp_node->mp_in_edge->mp_reference_frame->is_line_crossed( point_a, point_b ) ) {
+              //cout << "CROSSED REF" << endl;
               return true;  
             }  
           } 

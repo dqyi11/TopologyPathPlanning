@@ -5,9 +5,10 @@
 
 using namespace homotopy;
 
-ReferenceFrame::ReferenceFrame() {
-  m_name = "";
+ReferenceFrame::ReferenceFrame( std::string name, Point2D source, Point2D target ) {
+  m_name = name;
   m_connect_to_cp = false;
+  m_segment = Segment2D( source, target );
 }
 
 ReferenceFrame::~ReferenceFrame() {
@@ -16,6 +17,7 @@ ReferenceFrame::~ReferenceFrame() {
 
 bool ReferenceFrame::is_line_crossed( Point2D pos_a, Point2D pos_b ) {
   Segment2D new_line( pos_a, pos_b );
+  //std::cout << "CHECK " << new_line << " with " << m_segment << std::endl;
   CGAL::Object result = CGAL::intersection( new_line, m_segment );
   Point2D ipoint;
   Segment2D iseg; 
@@ -63,10 +65,9 @@ void ReferenceFrameSet::init(int width, int height, std::vector< std::vector<Poi
         for( unsigned int a_i = 0; a_i < p_obstacle->mp_alpha_seg->m_subsegs.size(); a_i ++ ) {
           LineSubSegment* p_subseg_a = p_obstacle->mp_alpha_seg->m_subsegs[a_i];
           if (p_subseg_a) {
-            ReferenceFrame* p_rf = new ReferenceFrame();
-            p_rf->m_name = p_subseg_a->get_name();
+            ReferenceFrame* p_rf = new ReferenceFrame( p_subseg_a->get_name(),  p_subseg_a->m_subseg.source(), p_subseg_a->m_subseg.target() );
             p_rf->m_connect_to_cp = p_subseg_a->m_is_connected_to_central_point; 
-            p_rf->m_segment = Segment2D( p_subseg_a->m_subseg.source(), p_subseg_a->m_subseg.target());
+            //std::cout << "REF " << p_rf->m_segment << std::endl; 
             _reference_frames.push_back(p_rf);
           }
         }
@@ -76,10 +77,9 @@ void ReferenceFrameSet::init(int width, int height, std::vector< std::vector<Poi
         for( unsigned int b_i = 0; b_i < p_obstacle->mp_beta_seg->m_subsegs.size(); b_i ++ ) {
           LineSubSegment* p_subseg_b = p_obstacle->mp_beta_seg->m_subsegs[b_i];
           if (p_subseg_b) {
-            ReferenceFrame* p_rf = new ReferenceFrame();
-            p_rf->m_name = p_subseg_b->get_name();
+            ReferenceFrame* p_rf = new ReferenceFrame( p_subseg_b->get_name(), p_subseg_b->m_subseg.source(), p_subseg_b->m_subseg.target() );
             p_rf->m_connect_to_cp = p_subseg_b->m_is_connected_to_central_point; 
-            p_rf->m_segment = Segment2D( p_subseg_b->m_subseg.source(), p_subseg_b->m_subseg.target());
+            //std::cout << "REF " << p_rf->m_segment << std::endl; 
             _reference_frames.push_back(p_rf);
           }
         }

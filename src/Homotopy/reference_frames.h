@@ -17,7 +17,7 @@ namespace homotopy {
 
   class ReferenceFrame {
   public:
-    ReferenceFrame();
+    ReferenceFrame( std::string name, Point2D source, Point2D target );
     virtual ~ReferenceFrame();
 
     bool is_line_crossed( Point2D pos_a, Point2D pos_b );
