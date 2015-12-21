@@ -27,11 +27,20 @@ MLRRTstarPathPlanningInfo::MLRRTstarPathPlanningInfo() {
     m_grammar_type = STRING_GRAMMAR_TYPE;
     m_max_iteration_num = 10000;
     m_segment_length = 5.0;
-    mCostDistribution = NULL;
+    m_cost_distribution = NULL;
     m_homotopic_enforcement = true;
 
     m_map_width = 0;
     m_map_height = 0;
+
+    mp_obj = NULL;
+}
+
+MLRRTstarPathPlanningInfo::~MLRRTstarPathPlanningInfo() {
+    if( mp_obj ) {
+        delete mp_obj;
+        mp_obj = NULL;
+    }
 }
 
 bool MLRRTstarPathPlanningInfo::get_obstacle_info( int** pp_obstacle_info ) {
@@ -48,6 +57,10 @@ bool MLRRTstarPathPlanningInfo::get_cost_distribution( double** pp_cost_distribu
 bool MLRRTstarPathPlanningInfo::get_pix_info( QString filename, double** pp_pix_info ) {
     if( pp_pix_info==NULL ) {
         return false;
+    }
+    if( mp_obj ) {
+        delete mp_obj;
+        mp_obj = NULL;
     }
     QPixmap map(filename);
     QImage gray_img = map.toImage();
@@ -89,23 +102,32 @@ bool MLRRTstarPathPlanningInfo::get_pix_info(QString filename, int ** pp_pix_inf
     return true;
 }
 
+void MLRRTstarPathPlanningInfo::init_obj_pixmap(){
+    if( mp_obj ) {
+        delete mp_obj;
+        mp_obj = NULL;
+    }
+  
+    mp_obj = new QPixmap( m_objective_file );   
+    
+}
 
 void MLRRTstarPathPlanningInfo::init_func_param() {
     if( m_min_dist_enabled == true ) {
         mp_func = MLRRTstarPathPlanningInfo::calc_dist;
-        mCostDistribution = NULL;
+        m_cost_distribution = NULL;
     }
     else {
         mp_func = MLRRTstarPathPlanningInfo::calc_cost;
-        if(mCostDistribution) {
-            delete[] mCostDistribution;
-            mCostDistribution = NULL;
+        if(m_cost_distribution) {
+            delete[] m_cost_distribution;
+            m_cost_distribution = NULL;
         }
-        mCostDistribution = new double*[m_map_width];
+        m_cost_distribution = new double*[m_map_width];
         for(int i=0;i<m_map_width;i++) {
-            mCostDistribution[i] = new double[m_map_height];
+            m_cost_distribution[i] = new double[m_map_height];
         }
-        get_cost_distribution( mCostDistribution );
+        get_cost_distribution( m_cost_distribution );
     }
 }
 
@@ -313,10 +335,10 @@ void MLRRTstarPathPlanningInfo::dump_cost_distribution( QString filename ) {
     if( file.open(QIODevice::ReadWrite) ) {
         QTextStream stream( & file );
 
-        if( mCostDistribution ) {
+        if( m_cost_distribution ) {
             for(int i=0;i<m_map_width;i++) {
                 for(int j=0;j<m_map_height;j++) {
-                    stream << mCostDistribution[i][j] << " ";
+                    stream << m_cost_distribution[i][j] << " ";
                 }
                 stream << "\n";
             }

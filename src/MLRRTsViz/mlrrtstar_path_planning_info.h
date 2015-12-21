@@ -1,13 +1,14 @@
 #ifndef MLRRTSTAR_PATH_PLANNING_INFO_H_
 #define MLRRTSTAR_PATH_PLANNING_INFO_H_
 
+#include <math.h>
+#include <list>
+#include <vector>
 #include <libxml/tree.h>
 #include <QString>
 #include <QPoint>
-#include <list>
-#include <vector>
+#include <QPixmap>
 #include <QDebug>
-#include <math.h>
 
 #include "mlrrtstar.h"
 
@@ -16,6 +17,7 @@ namespace mlrrts {
   class MLRRTstarPathPlanningInfo {
   public:
     MLRRTstarPathPlanningInfo();
+    virtual ~MLRRTstarPathPlanningInfo();
 
     bool get_obstacle_info( int** pp_obstacle_info );
     bool get_cost_distribution( double** pp_cost_distribution );
@@ -34,6 +36,8 @@ namespace mlrrts {
 
     void load_paths( std::vector<Path*> paths );
     bool export_paths( QString filename );
+ 
+    void init_obj_pixmap();
 
     static double calc_dist( POS2D pos_a, POS2D pos_b, double** pp_distribution, void* tree ) {
       double dist = 0.0;
@@ -121,7 +125,9 @@ namespace mlrrts {
     QString m_objective_file;
 
     COST_FUNC_PTR mp_func;
-    double** mCostDistribution; 
+    double** m_cost_distribution; 
+
+    QPixmap* mp_obj;
 
     homotopy::grammar_type_t m_grammar_type;
 

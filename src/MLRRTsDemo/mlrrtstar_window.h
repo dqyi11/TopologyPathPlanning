@@ -28,6 +28,8 @@ namespace mlrrts {
 
     void keyPressEvent(QKeyEvent* e);
 
+    void setShowObj( bool show );
+    bool getShowObj() { return mShowObj; }
   protected:
     void createMenuBar();
     void createActions();
@@ -66,6 +68,7 @@ namespace mlrrts {
     MLRRTstarConfig* mpMLRRTstarConfig;
     MLRRTstar*       mpMLRRTstar;
     homotopy::ReferenceFrameSet* mpReferenceFrameSet;
+    bool mShowObj;
 
   private slots:
     void contextMenuRequested(QPoint point);

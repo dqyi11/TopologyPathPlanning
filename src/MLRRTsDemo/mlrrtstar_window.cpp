@@ -16,6 +16,8 @@ using namespace mlrrts;
 MLRRTstarWindow::MLRRTstarWindow(QWidget* parent) 
     : QMainWindow(parent) {
 
+  mShowObj = false;
+
   mpViz = new MLRRTstarViz();
   createActions();
   createMenuBar();
@@ -141,6 +143,27 @@ bool MLRRTstarWindow::setupPlanning(QString filename) {
     return true;
   }
   return false;
+}
+
+void MLRRTstarWindow::setShowObj( bool show ) {
+  mShowObj = show;
+  if( mShowObj ) {
+    if( mpViz ) {
+      if( mpViz->m_PPInfo.m_min_dist_enabled == false ) {
+        if(mpViz->m_PPInfo.mp_obj==NULL) {
+          mpViz->m_PPInfo.init_obj_pixmap();
+        }
+        mpViz->setPixmap( *(mpViz->m_PPInfo.mp_obj) );
+        repaint();
+      }  
+    }
+  }
+  else {
+    if( mpViz) {
+      mpViz->setPixmap( *mpMap );
+      repaint();
+    }
+  } 
 }
 
 void MLRRTstarWindow::onSave() {
@@ -273,7 +296,7 @@ void MLRRTstarWindow::planPath() {
   POS2D start(mpViz->m_PPInfo.m_start.x(), mpViz->m_PPInfo.m_start.y());
   POS2D goal(mpViz->m_PPInfo.m_goal.x(), mpViz->m_PPInfo.m_goal.y());
     
-  mpMLRRTstar->init(start, goal, mpViz->m_PPInfo.mp_func, mpViz->m_PPInfo.mCostDistribution, mpViz->m_PPInfo.m_grammar_type);
+  mpMLRRTstar->init(start, goal, mpViz->m_PPInfo.mp_func, mpViz->m_PPInfo.m_cost_distribution, mpViz->m_PPInfo.m_grammar_type);
   mpViz->m_PPInfo.get_obstacle_info(mpMLRRTstar->get_map_info());
   mpViz->set_tree(mpMLRRTstar);
   mpViz->set_finished_planning( false );
@@ -409,6 +432,14 @@ void MLRRTstarWindow::keyPressEvent(QKeyEvent *event) {
      }
      updateStatus();
      repaint();
+   }
+   else if ( event->key() == Qt::Key_O ) {
+     if( getShowObj() ) {
+       setShowObj( false ); 
+     }
+     else {
+       setShowObj( true );
+     }
    }
    else if ( event->key() == Qt::Key_Space ) {
      if( mpViz ) {
