@@ -410,6 +410,16 @@ void MLRRTstarWindow::keyPressEvent(QKeyEvent *event) {
      updateStatus();
      repaint();
    }
+   else if ( event->key() == Qt::Key_Space ) {
+     if( mpViz ) {
+       if( mpViz->get_mode() == NORMAL ) {
+         mpViz->set_mode( DRAWING );
+       }
+       else{
+         mpViz->set_mode( NORMAL );
+       }
+     }
+   }
    else if ( event->key() == Qt::Key_Up ) {
      if(mpViz) {
        mpViz->prev_reference_frame();

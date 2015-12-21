@@ -228,6 +228,20 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
     fpt_painter.end();
   }
 
+  /* DRAW DRAWED POINTS */
+  if( m_show_points ) {
+    if( m_drawed_points.size() > 1 ) {
+      QPainter dp_painter(device);
+      QPen dp_paintpen( DRAWING_LINE_COLOR );
+      dp_paintpen.setWidth( LINE_WIDTH );
+      dp_painter.setPen(dp_paintpen);
+      for( unsigned int i = 0; i < m_drawed_points.size()-1; i++ ) {
+        dp_painter.drawLine( m_drawed_points[ i ] ,
+                             m_drawed_points[ i+1 ] );
+      }
+    }
+  }
+
   /* DRAW REFERENCE FRAMES */
   if( m_show_reference_frames ) {
     QPainter rf_painter(device);

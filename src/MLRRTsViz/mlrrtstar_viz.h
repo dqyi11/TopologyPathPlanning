@@ -29,12 +29,15 @@ namespace mlrrts{
     void set_show_subregions( bool show );
     void set_finished_planning( bool finished ) { m_finished_planning = finished; }
     void set_show_paths( bool show );
-
+  
     bool show_reference_frames() { return m_show_reference_frames; }
     bool show_subregions() { return m_show_subregions; }
     bool show_paths() { return m_show_paths; }    
     bool is_finished_planning() { return m_finished_planning; }
  
+    void set_mode( MLRRTstarVizMode mode ) { m_mode = mode; }
+    MLRRTstarVizMode get_mode() { return m_mode; }
+
     homotopy::ReferenceFrame* get_selected_reference_frame();
     homotopy::SubRegion*      get_selected_subregion();
 
@@ -60,7 +63,7 @@ namespace mlrrts{
     MLRRTstarPathPlanningInfo m_PPInfo;
 
     std::vector<QPoint>& get_drawed_points() { return m_drawed_points; }
-    void set_show_drawed_points( bool show ) { m_show_points = show; }
+    void set_show_drawed_points( bool show ) { m_show_points = show; m_drawed_points.clear(); }
     bool get_show_drawed_points() { return m_show_points; }
     
     int get_found_path_index() { return m_found_path_index; }
