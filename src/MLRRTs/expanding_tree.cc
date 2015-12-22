@@ -225,11 +225,17 @@ ExpandingTree::~ExpandingTree() {
 
 std::vector< StringClass* > ExpandingTree::init( homotopy::StringGrammar * p_grammar, homotopy::ReferenceFrameSet* p_reference_frame_set ) {
   std::vector< StringClass* > string_classes;
-  if( p_grammar == NULL ) {
+  if( p_grammar == NULL || p_reference_frame_set == NULL ) {
     return string_classes;
   }
 
-  std::vector< std::vector < homotopy::Adjacency > > paths = p_grammar->find_simple_paths();
+  std::vector< std::vector < homotopy::Adjacency > > paths;
+  if( p_reference_frame_set->get_string_constraint().size() > 0 ) {  
+    paths = p_grammar->find_paths( p_reference_frame_set->get_string_constraint() );
+  }
+  else {
+    paths = p_grammar->find_simple_paths();
+  }
 
   for( unsigned int i = 0; i < paths.size(); i ++ ) {
     std::vector< homotopy::Adjacency > path = paths[ i ];

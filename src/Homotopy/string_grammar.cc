@@ -380,3 +380,27 @@ std::vector< std::vector< Adjacency > > StringGrammar::find_simple_paths() {
 
   return path_list;
 }
+
+std::vector< std::vector< Adjacency > > StringGrammar::find_paths( std::vector< std::vector< std::string > > strs ) {
+
+  std::vector< std::vector< Adjacency > > path_list;
+  for( unsigned int i = 0; i < strs.size(); i++ ) {
+    std::vector< std::string > str_id = strs[i];
+    std::vector< Adjacency > path;
+    Adjacency init_adj;
+    init_adj.mp_state = _p_init_state;
+    init_adj.mp_transition = NULL;  
+    path.push_back(init_adj);
+
+    Adjacency current_adj = init_adj;
+    for( unsigned int j = 0; j < str_id.size(); j ++ ) {
+      std::string id = str_id[j];
+
+      Adjacency next_adj = current_adj.mp_state->find_adjacency( id );
+      path.push_back( next_adj );
+      current_adj = next_adj;
+    }
+    path_list.push_back( path );
+  }
+  return path_list;
+}

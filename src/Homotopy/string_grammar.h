@@ -66,6 +66,7 @@ namespace homotopy {
     std::vector< std::string > get_non_repeating_form( std::vector< std::string > str );
     virtual bool is_equivalent( std::vector< std::string > str_a , std::vector< std::string > str_b );
     std::vector< std::vector< Adjacency > > find_simple_paths();
+    std::vector< std::vector< Adjacency > > find_paths( std::vector< std::vector< std::string > > strs );
 protected:
     std::vector< std::vector< std::string > > find_simple_strings();
 

@@ -34,6 +34,7 @@ bool ReferenceFrame::is_line_crossed( Point2D pos_a, Point2D pos_b ) {
 ReferenceFrameSet::ReferenceFrameSet() {
   _p_world_map = NULL;
   _reference_frames.clear();
+  _string_constraint.clear();
 }
 
 ReferenceFrameSet::~ReferenceFrameSet() {
