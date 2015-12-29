@@ -184,6 +184,7 @@ bool MLRRTstar::init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp
            it != p_mgr->mp_nodes.end(); it ++ ) {
         ExpandingNode* p_exp_node = (*it);
         if(p_exp_node) {
+          _p_root->mp_master = p_exp_node;
           for( vector<StringClass*>::iterator it_str_cls = p_exp_node->mp_string_classes.begin();
                it_str_cls != p_exp_node->mp_string_classes.end(); it_str_cls++ ) {
             StringClass* p_str_cls = (*it_str_cls);
@@ -251,10 +252,9 @@ void MLRRTstar::extend() {
                  near_rnodes.push_back( p_near_rnode );
                } 
                // attach new noue 
-               if( _attach_new_node( p_new_rnode, near_rnodes, p_exp_node ) ) {
+               if( _attach_new_node( p_new_rnode, near_rnodes ) ) {
                  any_node_added = true;
                  new_master_node.add_mlrrtnode( p_new_rnode );
-                 p_new_rnode->mp_master = p_exp_node;              
   
                  if( p_exp_node ) {
                    for( vector<StringClass*>::iterator it_str_cls = p_exp_node->mp_string_classes.begin();
@@ -270,7 +270,7 @@ void MLRRTstar::extend() {
                  }
                }
                // rewire near nodes    
-               _rewire_near_nodes( p_new_rnode, near_rnodes, p_exp_node );      
+               _rewire_near_nodes( p_new_rnode, near_rnodes );      
             }
           }  
           if ( any_node_added ) {
@@ -480,6 +480,7 @@ MLRRTNode* MLRRTstar::_create_new_node( POS2D pos, ExpandingNode* p_exp_node ) {
   if( p_exp_node ) {
     p_exp_node->mp_nodes.push_back( p_node );
   }
+  p_node->mp_master = p_exp_node;
   return p_node;
 }
 
@@ -562,7 +563,7 @@ void MLRRTstar::init_feasible_paths() {
 
 }
 
-bool MLRRTstar::_attach_new_node( MLRRTNode* p_node_new, list<MLRRTNode*> near_nodes, ExpandingNode* p_exp_node ) {
+bool MLRRTstar::_attach_new_node( MLRRTNode* p_node_new, list<MLRRTNode*> near_nodes ) {
   double min_new_node_cost = -1;
   MLRRTNode* p_min_node = NULL;
 
@@ -571,7 +572,7 @@ bool MLRRTstar::_attach_new_node( MLRRTNode* p_node_new, list<MLRRTNode*> near_n
     if( true == _is_obstacle_free( p_near_node->m_pos, p_node_new->m_pos ) ) {
       bool eligible = true;
       if( _homotopic_enforcement ) {
-        eligible = _is_homotopic_constrained( p_near_node, p_node_new, p_exp_node );
+        eligible = _is_homotopic_constrained( p_near_node, p_node_new );
       } 
       if( eligible ) { 
         double delta_cost = _calculate_cost( p_near_node->m_pos, p_node_new->m_pos );
@@ -595,7 +596,7 @@ bool MLRRTstar::_attach_new_node( MLRRTNode* p_node_new, list<MLRRTNode*> near_n
   return false;
 }
 
-void MLRRTstar::_rewire_near_nodes( MLRRTNode* p_node_new, list<MLRRTNode*> near_nodes, ExpandingNode* p_exp_node ) {
+void MLRRTstar::_rewire_near_nodes( MLRRTNode* p_node_new, list<MLRRTNode*> near_nodes ) {
   for( list<MLRRTNode*>::iterator it = near_nodes.begin();
        it != near_nodes.end(); it++ ) {
     MLRRTNode* p_near_node = (*it);
@@ -608,7 +609,7 @@ void MLRRTstar::_rewire_near_nodes( MLRRTNode* p_node_new, list<MLRRTNode*> near
     if( true == _is_obstacle_free( p_node_new->m_pos, p_near_node->m_pos ) ) {
       bool eligible = true;
       if( _homotopic_enforcement ) {
-        eligible = _is_homotopic_constrained( p_node_new, p_near_node, p_exp_node ); 
+        eligible = _is_homotopic_constrained( p_node_new, p_near_node ); 
       }
       if( eligible ) {
         double temp_delta_cost = _calculate_cost( p_node_new->m_pos, p_near_node->m_pos );
@@ -702,31 +703,27 @@ bool MLRRTstar::_remove_edge( MLRRTNode* p_node_parent, MLRRTNode* p_node_child 
   return removed;
 }
 
-bool MLRRTstar::_is_homotopic_constrained( MLRRTNode* p_node_parent, MLRRTNode* p_node_child, ExpandingNode* p_exp_node ) {
-  Point2D point_a = toPoint2D( p_node_parent->m_pos );
-  Point2D point_b = toPoint2D( p_node_child->m_pos );
-  if( _reference_frames ) {
-    WorldMap* p_world_map = _reference_frames->get_world_map();
-    if( p_world_map ) {
-      SubRegion* p_subregion_a = p_world_map->in_subregion( point_a );
-      SubRegion* p_subregion_b = p_world_map->in_subregion( point_b );
-      if( p_subregion_a == p_subregion_b ) {
-        //cout << "SAME REGION" << endl;
+bool MLRRTstar::_is_homotopic_constrained( MLRRTNode* p_node_parent, MLRRTNode* p_node_child ) {
+  if( p_node_parent && p_node_child ) {
+    if( p_node_parent->mp_master && p_node_child->mp_master ) {
+      ExpandingNode* p_exp_node_parent = p_node_parent->mp_master;
+      ExpandingNode* p_exp_node_child = p_node_child->mp_master;
+      // cout << "Parent " << p_exp_node_parent->m_name <<  endl;
+      // cout << "Child " << p_exp_node_child->m_name <<  endl;
+      if( p_exp_node_parent == p_exp_node_child ) {
         return true;
       }
-      if( p_exp_node ) {
-        if( p_exp_node->mp_in_edge ) {
-          if( p_exp_node->mp_in_edge->mp_reference_frame ) {
-
-            if( p_exp_node->mp_in_edge->mp_reference_frame->is_line_crossed( point_a, point_b ) ) {
-              //cout << "CROSSED REF" << endl;
-              return true;  
-            }  
-          } 
+  
+      if( p_exp_node_child->mp_in_edge ) {
+        // cout << "COMPARE " << p_exp_node_child->mp_in_edge->mp_from->m_name << " " << p_exp_node_parent->m_name << endl;
+            
+        if( p_exp_node_child->mp_in_edge->mp_from == p_exp_node_parent ) {
+          return true;
         }
       }
     }
   }
+  
   return false;
 }
 
