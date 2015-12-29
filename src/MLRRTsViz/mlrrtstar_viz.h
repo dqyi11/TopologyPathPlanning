@@ -46,6 +46,8 @@ namespace mlrrts{
 
     void prev_string_class();
     void next_string_class();
+    void prev_exp_node();
+    void next_exp_node();
     int get_string_class_index() { return m_string_class_index; }
     QString get_string_class_info();
 
@@ -97,9 +99,12 @@ namespace mlrrts{
     bool                         m_show_paths;
     bool                         m_finished_planning;
     int                          m_string_class_index;
+    int                          m_exp_node_index;
     int                          m_reference_frame_index;
     int                          m_found_path_index;
     int                          m_subregion_index;
+
+    int                          m_exp_node_num;
 
     std::vector<homotopy::SubRegion*>      m_viz_subregions;
     std::vector<homotopy::ReferenceFrame*> m_viz_reference_frames;

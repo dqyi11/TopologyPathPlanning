@@ -505,7 +505,7 @@ void MLRRTstarWindow::keyPressEvent(QKeyEvent *event) {
      if(mpViz) {
        mpViz->next_subregion();
        updateStatus();
-       repaint();
+       repaint()
      }
    }
    

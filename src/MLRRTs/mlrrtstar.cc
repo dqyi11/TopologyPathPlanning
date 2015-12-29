@@ -208,13 +208,14 @@ bool MLRRTstar::init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp
 
 void MLRRTstar::extend() {
   bool node_inserted = false;
-  int retry_cnt = 0;
+  //int retry_cnt = 0;
   while( false == node_inserted ) {
+    /*
     if( retry_cnt > 0 ) {
       cout << "RETRY " << retry_cnt << endl;
     }
     retry_cnt ++; 
-
+    */
     POS2D rnd_pos = _sampling();
     KDNode2D nearest_node = _find_nearest( rnd_pos, NULL );
    
@@ -689,19 +690,22 @@ bool MLRRTstar::_is_homotopic_constrained( MLRRTNode* p_node_parent, MLRRTNode* 
     if( p_node_parent->mp_master && p_node_child->mp_master ) {
       ExpandingNode* p_exp_node_parent = p_node_parent->mp_master;
       ExpandingNode* p_exp_node_child = p_node_child->mp_master;
-      // cout << "Parent " << p_exp_node_parent->m_name <<  endl;
-      // cout << "Child " << p_exp_node_child->m_name <<  endl;
+      //cout << "Parent " << p_exp_node_parent->m_name <<  endl;
+      //cout << "Child " << p_exp_node_child->m_name <<  endl;
       if( p_exp_node_parent == p_exp_node_child ) {
         return true;
       }
   
       if( p_exp_node_child->mp_in_edge ) {
-        // cout << "COMPARE " << p_exp_node_child->mp_in_edge->mp_from->m_name << " " << p_exp_node_parent->m_name << endl;
+        cout << "COMPARE " << p_exp_node_child->mp_in_edge->mp_from->m_name << " " << p_exp_node_parent->m_name << endl;
             
         if( p_exp_node_child->mp_in_edge->mp_from == p_exp_node_parent ) {
           return true;
         }
       }
+    }
+    else{
+      cout << "NULL PARENT" << endl;
     }
   }
   

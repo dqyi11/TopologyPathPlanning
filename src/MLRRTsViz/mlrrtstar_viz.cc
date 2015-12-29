@@ -33,6 +33,8 @@ MLRRTstarViz::MLRRTstarViz( QWidget * parent ) : QLabel(parent) {
   m_found_path_index = -1;
   m_subregion_index = -1;
   m_string_class_index = -1;
+  m_exp_node_index = -1;
+  m_exp_node_num = 0;
   mp_reference_frames = NULL;
   m_show_points = false;
   m_mode = NORMAL;
@@ -66,6 +68,8 @@ void MLRRTstarViz::updateVizSubregions() {
   else {
     StringClass* p_str_cls = mp_tree->get_expanding_tree_mgr()->get_string_classes()[ m_string_class_index ];
     if( p_str_cls ) {
+      m_exp_node_num = p_str_cls->mp_exp_nodes.size();
+       
       for( vector<ExpandingNode*>::iterator it_exp = p_str_cls->mp_exp_nodes.begin();
            it_exp != p_str_cls->mp_exp_nodes.end(); it_exp++ ) {
         ExpandingNode* p_exp_node = (*it_exp);
@@ -341,6 +345,26 @@ bool MLRRTstarViz::save_current_viz(QString filename) {
   return false;
 }
 
+void MLRRTstarViz::next_exp_node() {
+
+  if ( m_exp_node_index < m_exp_node_num - 1 ) {
+    m_exp_node_index ++;
+  }
+  else {
+    m_exp_node_index = -1;
+  }
+}
+
+void MLRRTstarViz::prev_exp_node() {
+
+  if ( m_exp_node_index >= 0 ) {
+     m_exp_node_index --;
+  }
+  else {
+     m_exp_node_index = m_exp_node_num-1;
+  }
+}
+
 void MLRRTstarViz::next_string_class() {
   if ( mp_tree ) {
     if ( mp_tree->get_expanding_tree_mgr() ) {
@@ -350,12 +374,14 @@ void MLRRTstarViz::next_string_class() {
         updateVizSubregions();
         updateVizReferenceFrames();
         m_found_path_index = -1;
+        m_exp_node_index = -1;
       }
       else {
         m_string_class_index = -1;
         updateVizSubregions();
         updateVizReferenceFrames();
         m_found_path_index = -1;
+        m_exp_node_index = -1;
       }
     }
   }
