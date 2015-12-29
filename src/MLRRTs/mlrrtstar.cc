@@ -208,7 +208,13 @@ bool MLRRTstar::init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp
 
 void MLRRTstar::extend() {
   bool node_inserted = false;
+  int retry_cnt = 0;
   while( false == node_inserted ) {
+    if( retry_cnt > 0 ) {
+      cout << "RETRY " << retry_cnt << endl;
+    }
+    retry_cnt ++; 
+
     POS2D rnd_pos = _sampling();
     KDNode2D nearest_node = _find_nearest( rnd_pos, NULL );
    
@@ -217,7 +223,7 @@ void MLRRTstar::extend() {
     }
  
     POS2D new_pos = _steer( rnd_pos, nearest_node ); 
-    if( true == _contains(new_pos) ) {
+    if( true == _contains( new_pos ) ) {
       continue;
     }
     if( true == _is_in_obstacle( new_pos ) ) {
