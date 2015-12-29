@@ -489,28 +489,6 @@ void MLRRTstar::set_reference_frames( ReferenceFrameSet* p_reference_frames ) {
 
 vector<Path*> MLRRTstar::get_paths() {
   vector<Path*> paths;
-  // find all the subregions that the goal position is in
-  /*
-  Point2D goal_point = toPoint2D( _goal );
-  SubRegion* p_subregion = _reference_frames->get_world_map()->find_subregion( goal_point );
-  if( p_subregion ) {  
-    SubRegionMgr* p_subregion_mgr = _p_expanding_tree_mgr->find_subregion_mgr( p_subregion );  
-    if( p_subregion_mgr ) {
-      for( vector<ExpandingNode*>::iterator it = p_subregion_mgr->mp_nodes.begin(); it != p_subregion_mgr->mp_nodes.end(); it ++ ) {
-        // find a path start from the goal position in a corresponding subregion
-        ExpandingNode* p_exp_node = (*it);
-        if( p_exp_node ) {
-          KDNode2D kdnode = _find_nearest( _goal, p_exp_node );
-          MLRRTNode* p_near_goal = kdnode.get_pri_mlrrtnode();
-          if( p_near_goal ) {
-            Path* p_path = _get_path( p_near_goal );
-            paths.push_back( p_path ); 
-          }
-        }  
-      }
-    }
-  }
-  */
   
   if( _p_expanding_tree_mgr ) {
     vector<StringClass*> string_classes = _p_expanding_tree_mgr->get_string_classes();
@@ -522,7 +500,6 @@ vector<Path*> MLRRTstar::get_paths() {
       paths.push_back( p_path );
     }
   }
-
 
   return paths;
 }
@@ -594,7 +571,7 @@ bool MLRRTstar::_attach_new_node( MLRRTNode* p_node_new, list<MLRRTNode*> near_n
     if( true == _is_obstacle_free( p_near_node->m_pos, p_node_new->m_pos ) ) {
       bool eligible = true;
       if( _homotopic_enforcement ) {
-        eligible = _is_homotopic_constrained( p_near_node->m_pos, p_node_new->m_pos, p_exp_node );
+        eligible = _is_homotopic_constrained( p_near_node, p_node_new, p_exp_node );
       } 
       if( eligible ) { 
         double delta_cost = _calculate_cost( p_near_node->m_pos, p_node_new->m_pos );
@@ -631,7 +608,7 @@ void MLRRTstar::_rewire_near_nodes( MLRRTNode* p_node_new, list<MLRRTNode*> near
     if( true == _is_obstacle_free( p_node_new->m_pos, p_near_node->m_pos ) ) {
       bool eligible = true;
       if( _homotopic_enforcement ) {
-        eligible = _is_homotopic_constrained( p_near_node->m_pos, p_node_new->m_pos, p_exp_node ); 
+        eligible = _is_homotopic_constrained( p_node_new, p_near_node, p_exp_node ); 
       }
       if( eligible ) {
         double temp_delta_cost = _calculate_cost( p_node_new->m_pos, p_near_node->m_pos );
@@ -725,9 +702,9 @@ bool MLRRTstar::_remove_edge( MLRRTNode* p_node_parent, MLRRTNode* p_node_child 
   return removed;
 }
 
-bool MLRRTstar::_is_homotopic_constrained( POS2D pos_a, POS2D pos_b, ExpandingNode* p_exp_node ) {
-  Point2D point_a = toPoint2D( pos_a );
-  Point2D point_b = toPoint2D( pos_b );
+bool MLRRTstar::_is_homotopic_constrained( MLRRTNode* p_node_parent, MLRRTNode* p_node_child, ExpandingNode* p_exp_node ) {
+  Point2D point_a = toPoint2D( p_node_parent->m_pos );
+  Point2D point_b = toPoint2D( p_node_child->m_pos );
   if( _reference_frames ) {
     WorldMap* p_world_map = _reference_frames->get_world_map();
     if( p_world_map ) {

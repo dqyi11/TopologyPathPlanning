@@ -84,7 +84,7 @@ namespace mlrrts {
     bool _is_obstacle_free( POS2D pos_a, POS2D pos_b );
     bool _is_in_obstacle( POS2D pos );
     bool _contains( POS2D pos );
-    bool _is_homotopic_constrained( POS2D pos_a, POS2D pos_b, ExpandingNode* p_exp_node );
+    bool _is_homotopic_constrained( MLRRTNode* p_node_parent, MLRRTNode* p_node_child, ExpandingNode* p_exp_node );
     
     KDNode2D _find_nearest( POS2D pos, ExpandingNode* p_exp_node );
     std::list<KDNode2D> _find_near( POS2D pos, ExpandingNode* p_exp_node );    
