@@ -537,31 +537,6 @@ Path* MLRRTstar::_get_path( MLRRTNode* p_node ) {
   return p_path;
 }
 
-void MLRRTstar::init_feasible_paths() {
-  if( _p_expanding_tree_mgr ) {
-    ExpandingTree * p_expanding_tree = _p_expanding_tree_mgr->mp_expanding_tree;
-    if( p_expanding_tree ) {
-      for( vector<ExpandingEdge*>::iterator it = p_expanding_tree->m_edges.begin();
-           it != p_expanding_tree->m_edges.end(); it++ ) {
-        ExpandingEdge* p_edge = (*it);
-        p_edge->m_rand_pos = p_edge->sample_random_pos();
-      } 
-
-      for( vector<ExpandingNode*>::iterator it = p_expanding_tree->m_nodes.begin();
-           it != p_expanding_tree->m_nodes.end(); it++ ) {
-        ExpandingNode* p_node = (*it);
-        for( vector<ExpandingEdge*>::iterator ito = p_node->mp_out_edges.begin();
-             ito != p_node->mp_out_edges.end(); ito ++ ) {
-          ExpandingEdge* p_out_edge = (*ito);
-          vector<POS2D> feasible_path = p_node->find_feasible_path( p_node->mp_in_edge, p_out_edge );
-          /* add the set of POS2D as new nodes */
-          /* TODO */
-        }
-      } 
-    }
-  }
-
-}
 
 bool MLRRTstar::_attach_new_node( MLRRTNode* p_node_new, list<MLRRTNode*> near_nodes ) {
   double min_new_node_cost = -1;

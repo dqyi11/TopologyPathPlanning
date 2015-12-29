@@ -580,7 +580,7 @@ QString MLRRTstarViz::get_string_class_info() {
         info = "ALL";
       }
       else {
-        info = QString::fromStdString( mp_tree->get_expanding_tree_mgr()->mp_string_classes[ m_string_class_index ]->get_name() ); 
+        info = QString::fromStdString( mp_tree->get_expanding_tree_mgr()->get_string_classes()[ m_string_class_index ]->get_name() ); 
       }
     }
   }

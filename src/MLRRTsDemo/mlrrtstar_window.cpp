@@ -300,7 +300,9 @@ void MLRRTstarWindow::planPath() {
   mpViz->m_PPInfo.get_obstacle_info(mpMLRRTstar->get_map_info());
   mpViz->set_tree(mpMLRRTstar);
   mpViz->set_finished_planning( false );
-    
+   
+  mpMLRRTstar->get_expanding_tree_mgr()->get_expanding_tree()->output( "output.dot" );
+ 
   while( ( false == mpViz->is_finished_planning() )
          && mpMLRRTstar->get_current_iteration() <= mpViz->m_PPInfo.m_max_iteration_num) {
     QString msg = "CurrentIteration " + QString::number(mpMLRRTstar->get_current_iteration()) + " ";

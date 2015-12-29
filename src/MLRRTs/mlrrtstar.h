@@ -56,7 +56,6 @@ namespace mlrrts {
     int get_sampling_height() { return _sampling_height; }
     int get_current_iteration() { return _current_iteration; }
 
-    void init_feasible_paths();
  
     void extend();
     std::vector<Path*> get_paths();
