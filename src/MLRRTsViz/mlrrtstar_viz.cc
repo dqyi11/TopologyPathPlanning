@@ -175,10 +175,28 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
     else {
       StringClass* p_str_cls = mp_tree->get_expanding_tree_mgr()->get_string_classes()[ m_string_class_index ];
       if( p_str_cls ) {
-        for( vector<ExpandingNode*>::iterator it_exp = p_str_cls->mp_exp_nodes.begin();
-             it_exp != p_str_cls->mp_exp_nodes.end(); it_exp++ ) {
-          ExpandingNode* p_exp_node = (*it_exp);
-          if ( p_exp_node ) {
+
+        if( m_exp_node_index < 0 ) {
+          for( vector<ExpandingNode*>::iterator it_exp = p_str_cls->mp_exp_nodes.begin();
+               it_exp != p_str_cls->mp_exp_nodes.end(); it_exp++ ) {
+            ExpandingNode* p_exp_node = (*it_exp);
+            if ( p_exp_node ) {
+              for( list<MLRRTNode*>::iterator it = p_exp_node->mp_nodes.begin();
+                   it != p_exp_node->mp_nodes.end(); it++ ) {
+                MLRRTNode* p_node = (*it);
+                if(p_node) {
+                  if(p_node->mp_parent) {
+                    tree_painter.drawLine( toQPoint( p_node->mp_parent->m_pos ),
+                                         toQPoint( p_node->m_pos ) );
+                  }
+                }
+              }
+            }
+          }
+        }
+        else {
+          ExpandingNode* p_exp_node = p_str_cls->mp_exp_nodes[ m_exp_node_index ];
+          if( p_exp_node ) {
             for( list<MLRRTNode*>::iterator it = p_exp_node->mp_nodes.begin();
                  it != p_exp_node->mp_nodes.end(); it++ ) {
               MLRRTNode* p_node = (*it);
@@ -190,6 +208,7 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
               }
             }
           }
+
         }
       }
     }
@@ -252,8 +271,7 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
     QPen rf_paintpen( REFERENCE_FRAME_COLOR );
     rf_paintpen.setWidth( LINE_WIDTH );
     rf_painter.setPen(rf_paintpen);
-
-    if ( m_reference_frame_index < 0 ) {
+    if( m_reference_frame_index < 0 ) {
      for( unsigned int rf_i = 0; rf_i < m_viz_reference_frames.size(); rf_i ++ ) {
        ReferenceFrame* rf = m_viz_reference_frames[rf_i];
        rf_painter.drawLine( toQPoint( rf->m_segment.source() ),

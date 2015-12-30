@@ -494,6 +494,18 @@ void MLRRTstarWindow::keyPressEvent(QKeyEvent *event) {
        repaint();
      }
    }
+   else if ( event->key() == Qt::Key_Q ) {
+     if(mpViz) {
+       mpViz->prev_exp_node();
+       repaint();
+     }
+   }
+   else if ( event->key() == Qt::Key_W ) {
+     if(mpViz) {
+       mpViz->next_exp_node();
+       repaint();
+     }
+   }
    else if ( event->key() == Qt::Key_Z ) {
      if(mpViz) {
        mpViz->prev_subregion();
