@@ -44,6 +44,8 @@ namespace mlrrts {
     LineSubSegmentMgr* find_line_subsegment_mgr( homotopy::LineSubSegment* p_line_subsegment );
     std::vector<StringClass*>& get_string_classes() { return mp_string_classes; };
     ExpandingTree* get_expanding_tree() { return mp_expanding_tree; };
+    
+    void export_subregion_mgrs( std::string filename );
 
   protected:
     ExpandingTree*                  mp_expanding_tree;

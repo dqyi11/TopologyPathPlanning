@@ -302,7 +302,8 @@ void MLRRTstarWindow::planPath() {
   mpViz->set_finished_planning( false );
    
   mpMLRRTstar->get_expanding_tree_mgr()->get_expanding_tree()->output( "output.dot" );
- 
+  mpMLRRTstar->get_expanding_tree_mgr()->export_subregion_mgrs("subregion_mgrs.txt"); 
+
   while( ( false == mpViz->is_finished_planning() )
          && mpMLRRTstar->get_current_iteration() <= mpViz->m_PPInfo.m_max_iteration_num) {
     QString msg = "CurrentIteration " + QString::number(mpMLRRTstar->get_current_iteration()) + " ";
@@ -429,6 +430,7 @@ void MLRRTstarWindow::keyPressEvent(QKeyEvent *event) {
        if( mpViz->get_drawed_points().size() > 1 ) {
          mpViz->import_string_constraint( mpViz->get_drawed_points(), mpViz->m_PPInfo.m_grammar_type );
          mpViz->set_show_drawed_points(false);
+         mpViz->set_mode( NORMAL );
        }
      }
      updateStatus();
