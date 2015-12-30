@@ -258,7 +258,7 @@ void MLRRTstar::extend() {
                  MLRRTNode* p_near_rnode = near_kd_node.get_pri_mlrrtnode();
                  near_rnodes.push_back( p_near_rnode );
                } 
-               std::cout << "IN " << p_exp_node->m_name << std::endl;
+               //std::cout << "IN " << p_exp_node->m_name << std::endl;
                // attach new noue 
                if( _attach_new_node( p_new_rnode, near_rnodes ) ) {
                  any_node_added = true;
