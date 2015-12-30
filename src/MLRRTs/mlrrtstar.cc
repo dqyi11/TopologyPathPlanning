@@ -171,32 +171,32 @@ bool MLRRTstar::init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp
   _p_expanding_tree_mgr->init( _string_grammar, _reference_frames );
 
   cout << "Init tree.." << endl;
+
+  ExpandingNode* p_exp_node_root = _p_expanding_tree_mgr->get_expanding_tree()->get_root();
+  if( p_exp_node_root == NULL ) {
+    cout << "NO EXP NODE ROOT" << endl;
+    return false;
+  }
+
+  if( false == p_exp_node_root->mp_subregion->contains( toPoint2D( start ) ) ) {
+    cout << "ROOT NODE REGION MISMATCH" << endl;
+    return false;
+  }
+
+  _p_root = _create_new_node( start, p_exp_node_root ); 
+  
   KDNode2D root( start );
-  _p_root = new MLRRTNode( start );
-  _nodes.push_back(_p_root);
   root.add_mlrrtnode(_p_root);
   _p_master_kd_tree->insert( root );
-  SubRegion* p_subregion = _reference_frames->get_world_map()->in_subregion( toPoint2D( start ) );
-  if (p_subregion) {
-    SubRegionMgr* p_mgr = _p_expanding_tree_mgr->find_subregion_mgr( p_subregion );
-    if(p_mgr) {
-      for( vector<ExpandingNode*>::iterator it = p_mgr->mp_nodes.begin();
-           it != p_mgr->mp_nodes.end(); it ++ ) {
-        ExpandingNode* p_exp_node = (*it);
-        if(p_exp_node) {
-          _p_root->mp_master = p_exp_node;
-          for( vector<StringClass*>::iterator it_str_cls = p_exp_node->mp_string_classes.begin();
-               it_str_cls != p_exp_node->mp_string_classes.end(); it_str_cls++ ) {
-            StringClass* p_str_cls = (*it_str_cls);
-            if( p_str_cls ) {
-              if( p_str_cls->mp_kd_tree ) {
-                KDNode2D new_node( start );
-                new_node.set_pri_mlrrtnode( _p_root );
-                p_str_cls->mp_kd_tree->insert( new_node );
-              }
-            }
-          }
-        }
+
+  for( vector<StringClass*>::iterator it_str_cls = p_exp_node_root->mp_string_classes.begin();
+       it_str_cls != p_exp_node_root->mp_string_classes.end(); it_str_cls++ ) {
+    StringClass* p_str_cls = (*it_str_cls);
+    if( p_str_cls ) {
+      if( p_str_cls->mp_kd_tree ) {
+        KDNode2D new_node( start );
+        new_node.set_pri_mlrrtnode( _p_root );
+        p_str_cls->mp_kd_tree->insert( new_node );
       }
     }
   } 
@@ -258,6 +258,7 @@ void MLRRTstar::extend() {
                  MLRRTNode* p_near_rnode = near_kd_node.get_pri_mlrrtnode();
                  near_rnodes.push_back( p_near_rnode );
                } 
+               std::cout << "IN " << p_exp_node->m_name << std::endl;
                // attach new noue 
                if( _attach_new_node( p_new_rnode, near_rnodes ) ) {
                  any_node_added = true;
@@ -690,13 +691,13 @@ bool MLRRTstar::_is_homotopic_constrained( MLRRTNode* p_node_parent, MLRRTNode* 
     if( p_node_parent->mp_master && p_node_child->mp_master ) {
       ExpandingNode* p_exp_node_parent = p_node_parent->mp_master;
       ExpandingNode* p_exp_node_child = p_node_child->mp_master;
-      //cout << "Parent " << p_exp_node_parent->m_name <<  endl;
-      //cout << "Child " << p_exp_node_child->m_name <<  endl;
       if( p_exp_node_parent == p_exp_node_child ) {
         return true;
       }
   
       if( p_exp_node_child->mp_in_edge ) {
+        cout << "Parent " << p_exp_node_parent->m_name <<  endl;
+        cout << "Child " << p_exp_node_child->m_name << " ( " << p_exp_node_child->mp_in_edge->mp_from->m_name << " ) " << endl;
         //cout << "COMPARE child=" << p_exp_node_child->m_name << "(" << p_exp_node_child->mp_in_edge->mp_from->m_name << ") " << p_exp_node_parent->m_name << endl;
         if( p_exp_node_child->mp_in_edge->mp_from == p_exp_node_parent ) {
           cout << "HAPPENED " << endl;

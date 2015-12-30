@@ -82,6 +82,7 @@ namespace mlrrts {
     virtual ~ExpandingTree();
 
     std::vector< StringClass* > init( homotopy::StringGrammar* p_grammar, homotopy::ReferenceFrameSet* p_reference_frame_set = NULL );
+    ExpandingNode* get_root() { return mp_root; }
 
     void output( std::string filename );
 
