@@ -696,11 +696,11 @@ bool MLRRTstar::_is_homotopic_constrained( MLRRTNode* p_node_parent, MLRRTNode* 
       }
   
       if( p_exp_node_child->mp_in_edge ) {
-        cout << "Parent " << p_exp_node_parent->m_name <<  endl;
-        cout << "Child " << p_exp_node_child->m_name << " ( " << p_exp_node_child->mp_in_edge->mp_from->m_name << " ) " << endl;
+        //cout << "Parent " << p_exp_node_parent->m_name <<  endl;
+        //cout << "Child " << p_exp_node_child->m_name << " ( " << p_exp_node_child->mp_in_edge->mp_from->m_name << " ) " << endl;
         //cout << "COMPARE child=" << p_exp_node_child->m_name << "(" << p_exp_node_child->mp_in_edge->mp_from->m_name << ") " << p_exp_node_parent->m_name << endl;
         if( p_exp_node_child->mp_in_edge->mp_from == p_exp_node_parent ) {
-          cout << "HAPPENED " << endl;
+          //cout << "HAPPENED " << endl;
           return true;
         }
       }
