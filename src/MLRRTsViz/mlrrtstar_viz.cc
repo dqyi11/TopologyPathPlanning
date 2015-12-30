@@ -354,6 +354,9 @@ bool MLRRTstarViz::draw_path(QString filename) {
 
 bool MLRRTstarViz::save_current_viz(QString filename) {
   QPixmap pix(m_PPInfo.m_map_fullpath);
+  if( m_PPInfo.m_min_dist_enabled == false ) {
+    pix = QPixmap( m_PPInfo.m_objective_file );
+  }
   QFile file(filename);
   if(file.open(QIODevice::WriteOnly)) {
     paint( dynamic_cast<QPaintDevice*>(&pix) );
