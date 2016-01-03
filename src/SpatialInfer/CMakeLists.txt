@@ -1,16 +1,12 @@
 
-set(LIB tbpp-tarrts)
+set(LIB tbpp-spatial-infer)
 
-set(HDR    mlrrtstar.h
-           expanding_tree.h
-           expanding_tree_mgr.h
-           kdtreeml2d.h
+set(HDR    spatial_relation_function.h
+           inbetween_relation_function.h
    )
 
 add_library(${LIB} SHARED
-            mlrrtstar.cc 
-            expanding_tree.cc
-            expanding_tree_mgr.cc
+            inbetween_relation_function.cc
            )
 
 target_link_libraries(${LIB}
