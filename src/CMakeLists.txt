@@ -69,12 +69,12 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(${PROJECT_SOURCE_DIR}/src/Homotopy
                     ${PROJECT_SOURCE_DIR}/src/HomotopyViz 
                     ${PROJECT_SOURCE_DIR}/src/HomotopyDemo
-                    ${PROJECT_SOURCE_DIR}/src/BIRRTs
-                    ${PROJECT_SOURCE_DIR}/src/BIRRTsViz
-                    ${PROJECT_SOURCE_DIR}/src/BIRRTsDemo
-                    ${PROJECT_SOURCE_DIR}/src/MLRRTs
-                    ${PROJECT_SOURCE_DIR}/src/MLRRTsViz
-                    ${PROJECT_SOURCE_DIR}/src/MLRRTsDemo
+                    ${PROJECT_SOURCE_DIR}/src/HARRTs
+                    ${PROJECT_SOURCE_DIR}/src/HARRTsViz
+                    ${PROJECT_SOURCE_DIR}/src/HARRTsDemo
+                    ${PROJECT_SOURCE_DIR}/src/TARRTs
+                    ${PROJECT_SOURCE_DIR}/src/TARRTsViz
+                    ${PROJECT_SOURCE_DIR}/src/TARRTsDemo
                    )
 
 add_definitions(-Wall -g -O3)
@@ -82,10 +82,10 @@ add_definitions(-Wall -g -O3)
 add_subdirectory(Homotopy)
 add_subdirectory(HomotopyViz)
 add_subdirectory(HomotopyDemo)
-add_subdirectory(BIRRTs)
-add_subdirectory(BIRRTsViz)
-add_subdirectory(BIRRTsDemo)
-add_subdirectory(MLRRTs)
-add_subdirectory(MLRRTsViz)
-add_subdirectory(MLRRTsDemo)
+add_subdirectory(HARRTs)
+add_subdirectory(HARRTsViz)
+add_subdirectory(HARRTsDemo)
+add_subdirectory(TARRTs)
+add_subdirectory(TARRTsViz)
+add_subdirectory(TARRTsDemo)
 

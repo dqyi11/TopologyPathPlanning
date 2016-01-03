@@ -1,5 +1,5 @@
 
-set(LIB harrts-homotopy)
+set(LIB tbpp-homotopy)
 
 set(HDR obstacle.h
          line_subsegment.h

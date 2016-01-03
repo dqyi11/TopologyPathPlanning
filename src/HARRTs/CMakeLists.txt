@@ -1,5 +1,5 @@
 
-set(LIB harrts-birrts)
+set(LIB tbpp-harrts)
 
 set(HDR birrtstar.h
         string_class_mgr.h
@@ -19,11 +19,15 @@ add_library(${LIB} SHARED
             string_class_mgr.cc
            )
 
+include_directories(
+                   )
+
 target_link_libraries(${LIB}
-                      harrts-homotopy
+                      tbpp-homotopy
                       ${CGAL_LIBRARIES}
                       ${BOOST_LIBRARIES}
                      ) 
+
 install(FILES ${HDR} DESTINATION include/)
 install(FILES ${KD_HDR} DESTINATION include/kdtree++/)
 

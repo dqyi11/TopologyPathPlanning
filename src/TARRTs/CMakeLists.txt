@@ -1,5 +1,5 @@
 
-set(LIB harrts-mlrrts)
+set(LIB tbpp-tarrts)
 
 set(HDR    mlrrtstar.h
            expanding_tree.h
@@ -14,8 +14,7 @@ add_library(${LIB} SHARED
            )
 
 target_link_libraries(${LIB}
-                      harrts-homotopy
-                      harrts-birrts
+                      tbpp-homotopy
                       ${CGAL_LIBRARIES}
                       ${BOOST_LIBRARIES}
                       ${HARRT_LIBRARIES}

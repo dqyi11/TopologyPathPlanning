@@ -1,7 +1,7 @@
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-add_executable(harrts-birrts-demo
+add_executable(tbpp-harrts-demo
                birrtstar_config.h
                birrtstar_config.cpp
                birrtstar_window.h
@@ -12,12 +12,12 @@ add_executable(harrts-birrts-demo
 include_directories(
                    )
 
-target_link_libraries(harrts-birrts-demo
-                      harrts-homotopy
-                      harrts-homotopy-viz
-                      harrts-birrts
-                      harrts-birrts-viz
-                      harrts-mlrrts
+target_link_libraries(tbpp-harrts-demo
+                      tbpp-homotopy
+                      tbpp-homotopy-viz
+                      tbpp-harrts
+                      tbpp-harrts-viz
+                      #tbpp-tarrts
                       ${QT_LIBRARIES}
                      )
-install(TARGETS harrts-birrts-demo DESTINATION bin)
+install(TARGETS tbpp-harrts-demo DESTINATION bin)
