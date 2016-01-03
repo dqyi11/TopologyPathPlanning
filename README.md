@@ -1,1 +1,1 @@
-# HARRT stands for Homotopy-Aware RRT*
+# Topology-based Path-Planning
