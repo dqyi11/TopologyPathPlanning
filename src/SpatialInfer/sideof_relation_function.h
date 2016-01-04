@@ -10,6 +10,8 @@ namespace topology_inference {
     SIDE_TYPE_UNKNOWN,
     SIDE_TYPE_LEFT,
     SIDE_TYPE_RIGHT,
+    SIDE_TYPE_TOP,
+    SIDE_TYPE_BOTTOM,
     NUM_SIDE_TYPES
   } side_type_t;
 
