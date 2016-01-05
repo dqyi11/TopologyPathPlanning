@@ -69,7 +69,8 @@ bool HomotopyViz::initWorld(QString filename) {
 
         mColors.clear();
         for( unsigned int i=0; i< mpWorld->get_obstacles().size(); i++ ) {
-            mColors.push_back(QColor( rand()%255, rand()%255, rand()%255 ));
+            mColors.push_back( QColor( rand()%255, rand()%255, rand()%255 ) );
+            mColors.push_back( QColor( rand()%255, rand()%255, rand()%255 ) );
         }
     }
     return true;

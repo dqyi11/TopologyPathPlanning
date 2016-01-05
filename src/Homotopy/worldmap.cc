@@ -111,7 +111,7 @@ bool WorldMap::_init_points() {
   // select central point c
   bool found_cp = false;
   while( found_cp == false ) {
-    if ( (false == _is_in_obstacle(_central_point)) && (false == _is_in_obs_bk_lines(_central_point)) ) {
+    if ( (false == is_in_obstacle(_central_point)) && (false == is_in_obs_bk_lines(_central_point)) ) {
       found_cp = true;
     }
     else {
@@ -183,26 +183,27 @@ bool WorldMap::_init_segments() {
     for( std::vector<Obstacle*>::iterator itr=_obstacles.begin(); itr!=_obstacles.end(); itr++) {
       Obstacle* p_ref_obstacle = (*itr);
       // check alpha_seg with obstacles
-      std::vector< Point2D > a_ints = _intersect(p_obstacle->mp_alpha_seg->m_seg, p_ref_obstacle->m_border_segments);
-      std::vector< Point2D > b_ints = _intersect(p_obstacle->mp_beta_seg->m_seg, p_ref_obstacle->m_border_segments);
-      for( std::vector< Point2D >::iterator itp = a_ints.begin(); itp != a_ints.end(); itp++ ) {
-        Point2D p = (*itp);
-        IntersectionPoint ip;
-        ip.m_point = p;
-        ip.m_dist_to_bk = p_obstacle->distance_to_bk(p);
+      std::vector< std::pair< Point2D, Obstacle* > > a_ints = _intersect( p_obstacle->mp_alpha_seg->m_seg, p_ref_obstacle );
+      std::vector< std::pair< Point2D, Obstacle* > > b_ints = _intersect( p_obstacle->mp_beta_seg->m_seg, p_ref_obstacle );
+
+      for( std::vector< std::pair< Point2D, Obstacle* > >::iterator itp = a_ints.begin(); itp != a_ints.end(); itp++ ) {
+        std::pair< Point2D, Obstacle* > p = (*itp);
+        IntersectionPoint ip( p.first );
+        ip.m_dist_to_bk = p_obstacle->distance_to_bk( p.first );
+        ip.mp_obstacle = p.second;
         p_obstacle->m_alpha_intersection_points.push_back(ip);
       }
-      for( std::vector< Point2D >::iterator itp = b_ints.begin(); itp != b_ints.end(); itp++ ) {
-        Point2D p = (*itp);
-        IntersectionPoint ip;
-        ip.m_point = p;
-        ip.m_dist_to_bk = p_obstacle->distance_to_bk(p);
+      for( std::vector< std::pair< Point2D, Obstacle* > >::iterator itp = b_ints.begin(); itp != b_ints.end(); itp++ ) {
+        std::pair< Point2D, Obstacle* > p = (*itp);
+        IntersectionPoint ip( p.first );
+        ip.m_dist_to_bk = p_obstacle->distance_to_bk( p.first );
+        ip.mp_obstacle = p.second;
         p_obstacle->m_beta_intersection_points.push_back(ip);
       }
     }
 
-    std::sort(p_obstacle->m_alpha_intersection_points.begin(), p_obstacle->m_alpha_intersection_points.end());
-    std::sort(p_obstacle->m_beta_intersection_points.begin(), p_obstacle->m_beta_intersection_points.end());
+    std::sort( p_obstacle->m_alpha_intersection_points.begin(), p_obstacle->m_alpha_intersection_points.end() );
+    std::sort( p_obstacle->m_beta_intersection_points.begin(), p_obstacle->m_beta_intersection_points.end() );
 
     p_obstacle->mp_alpha_seg->load( p_obstacle->m_alpha_intersection_points );
     p_obstacle->mp_beta_seg->load( p_obstacle->m_beta_intersection_points );
@@ -433,7 +434,7 @@ std::list<Point2D> WorldMap::_intersect_with_boundaries( LineSubSegmentSet* p_se
   return points;
 }
 
-bool WorldMap::_is_in_obs_bk_lines(Point2D point) {
+bool WorldMap::is_in_obs_bk_lines(Point2D point) {
   for( std::vector<Line2D>::iterator it = _obs_bk_pair_lines.begin(); it != _obs_bk_pair_lines.end(); it++ ) {
     Line2D bk_line = (*it);
     if ( bk_line.has_on( point )==true ) {
@@ -470,7 +471,7 @@ Point2D* WorldMap::_find_intersection_with_boundary(Ray2D* p_ray) {
   return NULL;
 }
 
-bool WorldMap::_is_in_obstacle( Point2D point ) {
+bool WorldMap::is_in_obstacle( Point2D point ) {
   for( std::vector<Obstacle*>::iterator it = _obstacles.begin(); it != _obstacles.end(); it++ ) {
     Obstacle * p_obstacle = (*it);
     if ( CGAL::ON_UNBOUNDED_SIDE != p_obstacle->m_pgn.bounded_side( point ) ) {
@@ -499,14 +500,16 @@ SubRegion* WorldMap::in_subregion( Point2D point ) {
   return NULL;
 }
 
-std::vector<Point2D> WorldMap::_intersect( Segment2D seg, std::vector<Segment2D> segments ) {
-  std::vector<Point2D> points;
-  for(std::vector<Segment2D>::iterator it=segments.begin(); it!=segments.end(); it++) {
-    Segment2D bound = (*it);
-    CGAL::Object result = intersection(seg, bound);
-    Point2D p;
-    if ( CGAL::assign(p, result) ) {
-      points.push_back(p);
+std::vector< std::pair<Point2D, Obstacle*> > WorldMap::_intersect( Segment2D seg, Obstacle* p_obstacle ) {
+  std::vector< std::pair<Point2D, Obstacle*> > points;
+  if( p_obstacle ) {
+    for(std::vector<Segment2D>::iterator it=p_obstacle->m_border_segments.begin(); it!=p_obstacle->m_border_segments.end(); it++) {
+      Segment2D bound = (*it);
+      CGAL::Object result = intersection(seg, bound);
+      Point2D p;
+      if ( CGAL::assign(p, result) ) {
+        points.push_back( std::make_pair( p , p_obstacle ) );
+      }
     }
   }
   return points;

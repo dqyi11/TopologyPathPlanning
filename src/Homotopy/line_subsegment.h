@@ -1,6 +1,7 @@
 #ifndef LINE_SUBSEGMENT_H
 #define LINE_SUBSEGMENT_H
 
+#include <utility>
 #include <vector>
 #include <libxml/tree.h>
 #include "world_datatype.h"
@@ -14,8 +15,12 @@ namespace homotopy {
 
   class IntersectionPoint {
   public:
-    Point2D m_point;
-    double  m_dist_to_bk;
+    IntersectionPoint( Point2D point );
+    virtual ~IntersectionPoint();
+
+    Point2D   m_point;
+    double    m_dist_to_bk;
+    Obstacle* mp_obstacle;
 
     bool operator<(const  IntersectionPoint& other) const {
         return ( m_dist_to_bk < other.m_dist_to_bk );
@@ -41,10 +46,14 @@ namespace homotopy {
     std::string get_name();
     Point2D sample_position();
     Segment2D m_subseg;
-    LineSubSegmentSet* _p_subseg_set;
     bool m_is_connected_to_central_point;
     std::vector< SubRegion* > m_neighbors;
+
+    bool m_connected_to_boundary;
+    std::vector< Obstacle* > m_connected_obstacles;
+     
   protected:
+    LineSubSegmentSet* _p_subseg_set;
     unsigned int _index;
 
   };

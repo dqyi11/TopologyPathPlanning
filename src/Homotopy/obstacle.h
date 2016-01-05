@@ -25,6 +25,9 @@ namespace homotopy {
     virtual void from_xml( const std::string& filename );
     virtual void from_xml( xmlNodePtr root );
 
+    WorldMap* get_world() { return _p_world; }
+    int get_index () { return _index; }
+    
     std::vector<Point2D> m_points;
     Polygon2D m_pgn;
     Point2D m_bk;
@@ -36,10 +39,7 @@ namespace homotopy {
     std::vector<IntersectionPoint> m_alpha_intersection_points;
     std::vector<IntersectionPoint> m_beta_intersection_points;
 
-    WorldMap* get_world() { return _p_world; }
-
     double m_dist_bk2cp;
-    int get_index () { return _index; }
 
   protected:
     int _index;

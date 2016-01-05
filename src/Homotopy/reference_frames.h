@@ -17,14 +17,15 @@ namespace homotopy {
 
   class ReferenceFrame {
   public:
-    ReferenceFrame( std::string name, Point2D source, Point2D target );
+    ReferenceFrame( LineSubSegment* p_subseg );
     virtual ~ReferenceFrame();
 
     bool is_line_crossed( Point2D pos_a, Point2D pos_b );
  
-    std::string m_name; 
-    Segment2D   m_segment;
-    bool        m_connect_to_cp;
+    std::string     m_name; 
+    Segment2D       m_segment;
+    bool            m_connect_to_cp;
+    LineSubSegment* mp_line_subsegment;
   };
 
   class ReferenceFrameSet {
