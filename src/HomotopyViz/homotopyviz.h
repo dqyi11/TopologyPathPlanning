@@ -7,6 +7,11 @@
 #include "reference_frames.h"
 
 namespace homotopy {
+  
+  enum HomotopyVizMode {
+    SUBREGION,
+    LINE_SUBSEGMENT 
+  };
 
   class HomotopyViz : public QLabel {
     Q_OBJECT
@@ -14,8 +19,7 @@ namespace homotopy {
     explicit HomotopyViz( QWidget *parent = 0 );
     bool loadMap( QString filename );
 
-    bool                 mShowSubregion;
-    bool                 mShowSubsegment;
+    bool mShowSubsegment;
     void prevRegion();
     void nextRegion();
 
@@ -28,16 +32,35 @@ namespace homotopy {
     SubRegionSet* getSelectedRegion();
     SubRegion* getSelectedSubregion();
 
+    void prevLineSubsegmentSet();
+    void nextLineSubsegmentSet();
+
+    void prevLineSubsegment();
+    void nextLineSubsegment();
+    
+    int  getLineSubsegmentSetIdx() { return mSubsegmentSetIdx; }
+    int  getLineSubsegmentIdx() { return mSubsegmentIdx; } 
+
+    LineSubSegmentSet* getSelectedLineSubsegmentSet();
+    LineSubSegment*    getSelectedLineSubsegment();
+    
+
     bool save( QString filename );
     bool load( QString filename );
     
     QString generate_string();
+
+    void setMode( HomotopyVizMode mode );
+    HomotopyVizMode getMode() { return mMode; }
 
   protected:
     void mousePressEvent( QMouseEvent * event );
     void mouseMoveEvent( QMouseEvent * event );
     void mouseReleaseEvent( QMouseEvent * event );
     bool initWorld(QString filename);
+
+    void updateVizSubregions();
+    void updateVizLineSubsegments();
 
     WorldMap*            mpWorld;
     ReferenceFrameSet*   mpReferenceFrameSet;
@@ -46,9 +69,16 @@ namespace homotopy {
     std::vector<QColor>  mColors;
     std::vector<QPoint>  mPoints;
     bool                 mDragging;
+    HomotopyVizMode      mMode;
 
     int                  mRegionIdx;
     int                  mSubRegionIdx;
+    
+    int                  mSubsegmentSetIdx;
+    int                  mSubsegmentIdx;
+
+    std::vector<SubRegion*>      m_viz_subregions;
+    std::vector<LineSubSegment*> m_viz_subsegments;
   signals:
 
   public slots:

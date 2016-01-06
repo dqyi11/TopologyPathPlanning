@@ -71,13 +71,13 @@ void MainWindow::onLoad() {
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {
-   if (event->key() == Qt::Key_R  ) {
+   if (event->key() == Qt::Key_Space  ) {
        if(mpViz) {
-           if(mpViz->mShowSubregion == true) {
-               mpViz->mShowSubregion = false;
+           if(mpViz->getMode() == SUBREGION ) {
+               mpViz->setMode( LINE_SUBSEGMENT );
            }
            else {
-               mpViz->mShowSubregion = true;
+               mpViz->setMode( SUBREGION );
            }
            updateStatusBar();
            repaint();
@@ -106,28 +106,48 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
    } 
    else if(event->key() == Qt::Key_Up ) {
        if(mpViz) {
-           mpViz->nextRegion();
+           if( mpViz->getMode() == SUBREGION ) {
+               mpViz->nextRegion();
+           }
+           else {
+               mpViz->nextLineSubsegmentSet();
+           }
            updateStatusBar();
            repaint();
        }
    }
    else if(event->key() == Qt::Key_Down ) {
        if(mpViz) {
-           mpViz->prevRegion();
+           if( mpViz->getMode() == SUBREGION ) {
+               mpViz->prevRegion();
+           }
+           else {
+               mpViz->prevLineSubsegmentSet();
+           }
            updateStatusBar();
            repaint();
        }
    }
    else if(event->key() == Qt::Key_Right ) {
        if(mpViz) {
-           mpViz->nextSubregion();
+           if( mpViz->getMode() == SUBREGION ) {
+               mpViz->nextSubregion();
+           }
+           else {
+               mpViz->nextLineSubsegment();
+           }
            updateStatusBar();
            repaint();
        }
    }
    else if(event->key() == Qt::Key_Left ) {
        if(mpViz) {
-           mpViz->prevSubregion();
+           if( mpViz->getMode() == SUBREGION ) {
+               mpViz->prevSubregion();
+           }
+           else {
+               mpViz->prevLineSubsegment();
+           }
            updateStatusBar();
            repaint();
        }
@@ -136,29 +156,27 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
 
 void MainWindow::updateStatusBar() {
 
-    if(mpStatusLabel) {
-        QString status = "";
-        status += "Region (" + QString::number(mpViz->getRegionIdx()) + ")";
-        if ( mpViz->mShowSubregion ) {
-            status += "- (" + QString::number(mpViz->getSubregionIdx()) + ")";
-            status += " = ";
-            if ( mpViz->getSelectedSubregion() ) {
-                for( unsigned int i = 0; i < mpViz->getSelectedSubregion()->m_neighbors.size(); i ++ ) {
-                    LineSubSegment* p_line_subseg = mpViz->getSelectedSubregion()->m_neighbors[i];
-                    status += " [ " + QString::fromStdString(p_line_subseg->get_name())  + " ] ";
-                } 
-            }
+  if(mpStatusLabel) {
+    QString status = "";
+    if( mpViz->getSelectedRegion() ) {
+      status += "Region (" + QString::number(mpViz->getRegionIdx()) + ")";
+      if ( mpViz->getSelectedSubregion() ) {
+        status += "- (" + QString::number(mpViz->getSubregionIdx()) + ")";
+        status += " = ";
+        for( unsigned int i = 0; i < mpViz->getSelectedSubregion()->m_neighbors.size(); i ++ ) {
+          LineSubSegment* p_line_subseg = mpViz->getSelectedSubregion()->m_neighbors[i];
+          status += " [ " + QString::fromStdString(p_line_subseg->get_name())  + " ] ";
+        } 
+      }
+      else {
+        status += " = ";
+        if ( mpViz->getSelectedRegion() ) {
+          status += " [ " + QString::fromStdString(mpViz->getSelectedRegion()->mp_line_segments_a->get_name())  + " ] ";
+          status += " [ " + QString::fromStdString(mpViz->getSelectedRegion()->mp_line_segments_b->get_name())  + " ] ";
         }
-        else {
-            status += " = ";
-            if ( mpViz->getSelectedRegion() ) {
-                status += " [ " + QString::fromStdString(mpViz->getSelectedRegion()->mp_line_segments_a->get_name())  + " ] ";
-                status += " [ " + QString::fromStdString(mpViz->getSelectedRegion()->mp_line_segments_b->get_name())  + " ] ";
-            }
-
-        }
-        
-        mpStatusLabel->setText(status);
+      }
     }
-    repaint();
+    mpStatusLabel->setText(status);
+  }
+  repaint();
 }
