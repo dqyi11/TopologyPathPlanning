@@ -66,7 +66,6 @@ namespace homotopy {
     ReferenceFrameSet*   mpReferenceFrameSet;
     int                  mWorldWidth;
     int                  mWorldHeight;
-    std::vector<QColor>  mColors;
     std::vector<QPoint>  mPoints;
     bool                 mDragging;
     HomotopyVizMode      mMode;

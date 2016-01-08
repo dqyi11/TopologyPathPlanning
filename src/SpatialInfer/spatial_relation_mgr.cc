@@ -4,11 +4,17 @@ using namespace std;
 using namespace homotopy;
 using namespace topology_inference;
 
-SpatialRelationMgr::SpatialRelationMgr() {
+SpatialRelationMgr::SpatialRelationMgr( WorldMap* worldmap ) {
+  mp_worldmap = worldmap;
   mp_functions.clear();
+  m_start_x = -1;
+  m_start_y = -1;
+  m_goal_x = -1;
+  m_goal_y = -1;
 }
 
 SpatialRelationMgr::~SpatialRelationMgr() {
+  mp_worldmap = NULL;
   mp_functions.clear();
 }
 

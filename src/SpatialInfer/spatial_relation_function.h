@@ -9,8 +9,8 @@ namespace topology_inference {
 
   class SpatialRelationFunction {
   public:
-    SpatialRelationFunction();
-    virtual ~SpatialRelationFunction();
+    SpatialRelationFunction() {};
+    virtual ~SpatialRelationFunction() {};
 
     virtual std::vector< std::pair<homotopy::ReferenceFrame*, bool> > get_reference_frames( homotopy::ReferenceFrameSet* p_reference_frame_set ) = 0; 
   };

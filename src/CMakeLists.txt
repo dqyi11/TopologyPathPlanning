@@ -77,6 +77,7 @@ include_directories(${PROJECT_SOURCE_DIR}/src/Homotopy
                     ${PROJECT_SOURCE_DIR}/src/TARRTsDemo
                     ${PROJECT_SOURCE_DIR}/src/SpatialInfer
                     ${PROJECT_SOURCE_DIR}/src/SpatialInferViz
+                    ${PROJECT_SOURCE_DIR}/src/SpatialInferDemo
                    )
 
 add_definitions(-Wall -g -O3)
@@ -92,4 +93,5 @@ add_subdirectory(TARRTsViz)
 add_subdirectory(TARRTsDemo)
 add_subdirectory(SpatialInfer)
 add_subdirectory(SpatialInferViz)
+add_subdirectory(SpatialInferDemo)
 

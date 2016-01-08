@@ -68,16 +68,6 @@ bool HomotopyViz::initWorld(QString filename) {
   mpReferenceFrameSet->init( map_width, map_height, conts );
   //std::cout << "NUM OF OBS " << conts.size() << std::endl;
   mpWorld = mpReferenceFrameSet->get_world_map();
-  if (mpWorld) {
-    //std::cout << "INIT ... " << std::endl;
-    //mpWorld->init();
-
-    mColors.clear();
-    for( unsigned int i=0; i< mpWorld->get_obstacles().size(); i++ ) {
-      mColors.push_back( QColor( rand()%255, rand()%255, rand()%255 ) );
-      mColors.push_back( QColor( rand()%255, rand()%255, rand()%255 ) );
-    }
-  } 
   return true;
 }
 
@@ -515,11 +505,6 @@ bool HomotopyViz::load( QString filename ) {
   setPixmap(emptyPix);
 
   mpWorld->init(false);
-  mColors.clear();
-  for( unsigned int i=0; i< mpWorld->get_obstacles().size(); i++ ) {
-    mColors.push_back(QColor( rand()%255, rand()%255, rand()%255 ));
-    mColors.push_back(QColor( rand()%255, rand()%255, rand()%255 ));
-  }
   repaint();
 
   return true;

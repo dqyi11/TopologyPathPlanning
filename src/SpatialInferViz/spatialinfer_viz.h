@@ -3,10 +3,10 @@
 
 #include <vector>
 #include <QLabel>
-#include "worldmap.h"
+#include "spatial_relation_mgr.h"
 #include "reference_frames.h"
 
-namespace homotopy {
+namespace topology_inference {
   
   enum SpatialInferVizMode {
     SUBREGION,
@@ -29,8 +29,8 @@ namespace homotopy {
     int  getRegionIdx()    { return mRegionIdx; }
     int  getSubregionIdx() { return mSubRegionIdx; }
 
-    SubRegionSet* getSelectedRegion();
-    SubRegion* getSelectedSubregion();
+    homotopy::SubRegionSet* getSelectedRegion();
+    homotopy::SubRegion* getSelectedSubregion();
 
     void prevLineSubsegmentSet();
     void nextLineSubsegmentSet();
@@ -41,35 +41,30 @@ namespace homotopy {
     int  getLineSubsegmentSetIdx() { return mSubsegmentSetIdx; }
     int  getLineSubsegmentIdx() { return mSubsegmentIdx; } 
 
-    LineSubSegmentSet* getSelectedLineSubsegmentSet();
-    LineSubSegment*    getSelectedLineSubsegment();
+    homotopy::LineSubSegmentSet* getSelectedLineSubsegmentSet();
+    homotopy::LineSubSegment*    getSelectedLineSubsegment();
     
 
     bool save( QString filename );
     bool load( QString filename );
     
-    QString generate_string();
-
     void setMode( SpatialInferVizMode mode );
     SpatialInferVizMode getMode() { return mMode; }
+    
+    SpatialRelationMgr* get_spatial_relation_mgr() { return mpMgr; }
 
   protected:
-    void mousePressEvent( QMouseEvent * event );
-    void mouseMoveEvent( QMouseEvent * event );
-    void mouseReleaseEvent( QMouseEvent * event );
     bool initWorld(QString filename);
 
     void updateVizSubregions();
     void updateVizLineSubsegments();
 
-    WorldMap*            mpWorld;
-    ReferenceFrameSet*   mpReferenceFrameSet;
+    SpatialRelationMgr*           mpMgr;
+    homotopy::ReferenceFrameSet*  mpReferenceFrameSet;
     int                  mWorldWidth;
     int                  mWorldHeight;
-    std::vector<QColor>  mColors;
-    std::vector<QPoint>  mPoints;
-    bool                 mDragging;
-    SpatialInferVizMode      mMode;
+    
+    SpatialInferVizMode  mMode;
 
     int                  mRegionIdx;
     int                  mSubRegionIdx;
@@ -77,8 +72,8 @@ namespace homotopy {
     int                  mSubsegmentSetIdx;
     int                  mSubsegmentIdx;
 
-    std::vector<SubRegion*>      m_viz_subregions;
-    std::vector<LineSubSegment*> m_viz_subsegments;
+    std::vector<homotopy::SubRegion*>      m_viz_subregions;
+    std::vector<homotopy::LineSubSegment*> m_viz_subsegments;
   signals:
 
   public slots:
