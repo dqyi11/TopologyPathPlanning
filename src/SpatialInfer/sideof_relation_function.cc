@@ -18,3 +18,25 @@ vector< pair<ReferenceFrame*, bool> > SideOfRelationFunction::get_reference_fram
 
   return reference_frames;  
 }
+
+string SideOfRelationFunction::get_name() {
+  string name = "";
+  switch( m_type ) {
+    default:
+      name = "UNKNOWN";
+      break;
+    case SIDE_TYPE_LEFT:
+      name = "LEFT";
+      break;
+    case SIDE_TYPE_RIGHT:
+      name = "RIGHT";
+      break;
+    case SIDE_TYPE_TOP:
+      name = "TOP";
+      break;
+    case SIDE_TYPE_BOTTOM:
+      name = "BOTTOM";
+      break;
+  }
+  return name;
+}

@@ -12,6 +12,7 @@ namespace topology_inference {
     virtual ~AvoidRelationFunction();
 
     virtual std::vector< std::pair<homotopy::ReferenceFrame*, bool> > get_reference_frames( homotopy::ReferenceFrameSet* p_reference_frame_set ); 
+    virtual std::string get_name();
 
     homotopy::Obstacle* mp_obstacle;
   };

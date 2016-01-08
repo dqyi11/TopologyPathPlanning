@@ -25,3 +25,8 @@ vector< pair<ReferenceFrame*, bool> > InBetweenRelationFunction::get_reference_f
   }
   return reference_frames;  
 }
+
+string InBetweenRelationFunction::get_name() {
+  string name = "IN_BETWEEN";
+  return name;
+}

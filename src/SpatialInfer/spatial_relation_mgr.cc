@@ -28,3 +28,14 @@ vector< pair<ReferenceFrame*, bool> > SpatialRelationMgr::get_reference_frames( 
   }
   return reference_frames;
 }
+
+vector< string > SpatialRelationMgr::get_spatial_relation_function_names() {
+  vector< string > names;
+  for(unsigned int i=0; i < mp_functions.size(); i++) {
+    SpatialRelationFunction* p_func = mp_functions[i];
+    if( p_func ) {
+      names.push_back( p_func->get_name() );
+    }
+  }
+  return names;
+}

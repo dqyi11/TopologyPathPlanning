@@ -3,6 +3,7 @@
 
 #include <utility>
 #include <vector>
+#include <string>
 #include "reference_frames.h"
 
 namespace topology_inference {
@@ -13,6 +14,7 @@ namespace topology_inference {
     virtual ~SpatialRelationFunction() {};
 
     virtual std::vector< std::pair<homotopy::ReferenceFrame*, bool> > get_reference_frames( homotopy::ReferenceFrameSet* p_reference_frame_set ) = 0; 
+    virtual std::string get_name() = 0;
   };
 }
 

@@ -17,3 +17,8 @@ vector< pair<ReferenceFrame*, bool> > AvoidRelationFunction::get_reference_frame
 
   return reference_frames;  
 }
+
+string AvoidRelationFunction::get_name() {
+  string name = "AVOID";
+  return name;
+}
