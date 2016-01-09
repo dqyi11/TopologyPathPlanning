@@ -34,7 +34,8 @@ namespace homotopy {
 
     SubRegion* find_subregion( Point2D point );
     LineSubSegment* find_linesubsegment( Point2D point );
-    
+    Obstacle* find_obstacle( Point2D point );
+ 
     Point2D get_central_point() const { return _central_point; }
     std::vector<Obstacle*> get_obstacles() const { return _obstacles; }
     std::vector<SubRegionSet*> get_subregion_set() const { return _region_sets; }

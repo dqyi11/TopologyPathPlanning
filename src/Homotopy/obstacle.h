@@ -18,6 +18,7 @@ namespace homotopy {
 
     Point2D sample_position();
     double distance_to_bk( Point2D& point );
+    bool contains( Point2D point );
 
     virtual void to_xml( const std::string& filename )const;
     virtual void to_xml( xmlDocPtr doc, xmlNodePtr root )const;

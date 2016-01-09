@@ -15,7 +15,8 @@
 #define INTERSECTION_COLOR      QColor(160,160,160)
 #define TEXT_COLOR              QColor(0,0,0)
 #define OBSTACLE_COLOR          QColor(125,125,125)
-#define SELECTED_OBSTACLE_COLOR QColor(255,0,0)
+#define ASSOCIATED_OBSTACLE_COLOR QColor(255,0,0)
+#define SELECTED_OBSTACLE_COLOR QColor(0,255,0)
 #define LINE_HIGHLIGHTED_COLOR  QColor(204,204,0)
 #define DRAWING_LINE_COLOR      QColor(153,76,0)
 #define SUBREGION_COLOR         QColor(204,229,255)
@@ -148,7 +149,7 @@ void SpatialInferViz::paintEvent(QPaintEvent * e) {
 
       QPainter hl_obs_painter(this);
       hl_obs_painter.setRenderHint(QPainter::Antialiasing);
-      QPen hl_obs_pen( SELECTED_OBSTACLE_COLOR );
+      QPen hl_obs_pen( ASSOCIATED_OBSTACLE_COLOR );
       hl_obs_pen.setWidth( SELECTED_LINE_WIDTH );
       hl_obs_painter.setPen(hl_obs_pen);
       LineSubSegment* p_subseg = getSelectedLineSubsegment();
@@ -169,7 +170,29 @@ void SpatialInferViz::paintEvent(QPaintEvent * e) {
           }
         }
       }
-      obstacle_painter.end();
+      hl_obs_painter.end();
+
+      QPainter sl_obs_painter(this);
+      sl_obs_painter.setRenderHint(QPainter::Antialiasing);
+      QPen sl_obs_pen( SELECTED_OBSTACLE_COLOR );
+      sl_obs_pen.setWidth( SELECTED_LINE_WIDTH );
+      sl_obs_painter.setPen(sl_obs_pen);
+      for( std::vector<Obstacle*>::iterator it = m_selected_obstacles.begin();
+           it != m_selected_obstacles.end(); it++ ) {
+        Obstacle* p_obstacle = (*it);
+        if (p_obstacle) {
+          QPolygon poly;
+          for( Polygon2D::Vertex_iterator itP=p_obstacle->m_pgn.vertices_begin();
+               itP != p_obstacle->m_pgn.vertices_end(); itP++ ) {
+            Point2D p = (*itP);
+            double p_x = CGAL::to_double( p.x() );
+            double p_y = CGAL::to_double( p.y() );
+            poly << QPoint( p_x, p_y );
+          }
+          sl_obs_painter.drawPolygon(poly);
+        }
+      }
+      sl_obs_painter.end();
 
       if ( mShowSubsegment == false ) {
         /*
@@ -663,4 +686,47 @@ void SpatialInferViz::setMode( SpatialInferVizMode mode ) {
   mSubsegmentIdx = -1;
   updateVizSubregions();
   updateVizLineSubsegments();
+}
+
+void SpatialInferViz::mousePressEvent( QMouseEvent * event ) {
+  if( event->button() == Qt::LeftButton ) {
+    Point2D clicked_point( event->x(), event->y() );
+    Obstacle* p_selected_obstacle = mpReferenceFrameSet->get_world_map()->find_obstacle( clicked_point );
+    if( p_selected_obstacle ) {
+      if( is_selected_obstacle( p_selected_obstacle ) ) {
+        unselect_obstacle( p_selected_obstacle );
+      }
+      else{ 
+        m_selected_obstacles.push_back( p_selected_obstacle );
+      }
+      repaint(); 
+    }
+  }
+}
+
+bool SpatialInferViz::is_selected_obstacle( Obstacle* p_obstacle ) {
+  for(unsigned int i=0; i < m_selected_obstacles.size(); i++ ) {
+    Obstacle* p_current_obstacle = m_selected_obstacles[i];
+    if( p_current_obstacle ) {
+      if( p_current_obstacle == p_obstacle ) {
+        return true;
+      }
+    }
+  }
+  return false;
+
+}
+  
+bool SpatialInferViz::unselect_obstacle( Obstacle* p_obstacle ) {
+  for( std::vector< Obstacle* >::iterator it = m_selected_obstacles.begin();
+       it != m_selected_obstacles.end(); it ++ ) {
+    Obstacle* p_current_obstacle = (*it);
+    if( p_current_obstacle ) {
+      if( p_current_obstacle == p_obstacle ) {
+        m_selected_obstacles.erase(it);
+        return true;
+      }
+    }
+  }
+  return false;
 }

@@ -52,12 +52,16 @@ namespace topology_inference {
     SpatialInferVizMode getMode() { return mMode; }
     
     SpatialRelationMgr* get_spatial_relation_mgr() { return mpMgr; }
+    bool is_selected_obstacle( homotopy::Obstacle* p_obstacle );
+    bool unselect_obstacle( homotopy::Obstacle* p_obstacle );
 
   protected:
     bool initWorld(QString filename);
 
     void updateVizSubregions();
     void updateVizLineSubsegments();
+
+    void mousePressEvent( QMouseEvent * event );
 
     SpatialRelationMgr*           mpMgr;
     homotopy::ReferenceFrameSet*  mpReferenceFrameSet;
@@ -74,6 +78,9 @@ namespace topology_inference {
 
     std::vector<homotopy::SubRegion*>      m_viz_subregions;
     std::vector<homotopy::LineSubSegment*> m_viz_subsegments;
+
+    std::vector<homotopy::Obstacle*>        m_selected_obstacles;   
+
   signals:
 
   public slots:

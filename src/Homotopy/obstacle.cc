@@ -69,6 +69,13 @@ double Obstacle::distance_to_bk( Point2D& point ) {
   return dist;
 }
 
+bool Obstacle::contains( Point2D point ) {
+  if ( CGAL::ON_UNBOUNDED_SIDE != m_pgn.bounded_side( point ) ) { 
+    return true;
+  }
+  return false;
+}
+
 Point2D Obstacle::sample_position() {
 
   bool found = false;
