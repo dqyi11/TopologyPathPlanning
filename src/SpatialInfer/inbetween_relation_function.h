@@ -6,7 +6,7 @@
 
 namespace topology_inference {
 
-  class InBetweenRelationFunction : SpatialRelationFunction {
+  class InBetweenRelationFunction : public SpatialRelationFunction {
   public:
     InBetweenRelationFunction();
     virtual ~InBetweenRelationFunction();

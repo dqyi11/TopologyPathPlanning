@@ -15,6 +15,8 @@ namespace topology_inference {
     std::vector< std::pair<homotopy::ReferenceFrame*, bool> > get_reference_frames( homotopy::ReferenceFrameSet* p_reference_frame_set );
     std::vector< std::string > get_spatial_relation_function_names();
   
+    bool has_spatial_relation_function( std::string name );
+    void remove_spatial_relation_function( std::string name );
 
     std::vector<SpatialRelationFunction*> mp_functions; 
     homotopy::WorldMap*                   mp_worldmap;

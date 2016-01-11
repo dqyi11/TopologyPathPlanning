@@ -1,12 +1,12 @@
-#ifndef INBETWEEN_RELATION_FUNC_H_
-#define INBETWEEN_RELATION_FUNC_H_
+#ifndef AVOID_RELATION_FUNC_H_
+#define AVOID_RELATION_FUNC_H_
 
 #include "obstacle.h"
 #include "spatial_relation_function.h"
 
 namespace topology_inference {
 
-  class AvoidRelationFunction : SpatialRelationFunction {
+  class AvoidRelationFunction : public SpatialRelationFunction {
   public:
     AvoidRelationFunction();
     virtual ~AvoidRelationFunction();
@@ -18,4 +18,4 @@ namespace topology_inference {
   };
 }
 
-#endif // INBETWEEN_RELATION_FUNC_H_
+#endif // AVOID_RELATION_FUNC_H_

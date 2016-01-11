@@ -11,6 +11,8 @@
 #include "spatialinfer_viz.h"
 
 namespace topology_inference {
+  
+  class SpatialInferConfig;
 
   class SpatialInferWindow : public QMainWindow {
     Q_OBJECT
@@ -30,6 +32,9 @@ namespace topology_inference {
   private:
     QMessageBox*  mpMsgBox;
     QMenu*        mpFileMenu;
+    QMenu*        mpAddMenu;
+    QMenu*        mpAddSideofRelationMenu;
+    QMenu*        mpManageMenu;
     QAction*      mpOpenAction;
     QAction*      mpSaveAction;
     QAction*      mpLoadAction;
@@ -39,6 +44,18 @@ namespace topology_inference {
     QAction*      mpAddGoalAction; 
     QMenu*        mpContextMenu;
 
+    QAction*      mpAddInbetweenSpatialRelationAction;
+    QAction*      mpAddAvoidSpatialRelationAction;
+    QAction*      mpAddLeftofSpatialRelationAction;
+    QAction*      mpAddRightofSpatialRelationAction;
+    QAction*      mpAddTopofSpatialRelationAction;
+    QAction*      mpAddBottomofSpatialRelationAction;
+
+    QAction*      mpShowConfigAction;
+    QAction*      mpExecuteAction;
+
+    SpatialInferConfig* mpConfig;
+
     QPoint        mCursorPoint;
   private slots:
     void contextMenuRequested( QPoint point );
@@ -47,6 +64,16 @@ namespace topology_inference {
     void onLoad();
     void onAddStart();
     void onAddGoal();
+
+    void onAddInbetweenSpatialRelation();
+    void onAddAvoidSpatialRelation();
+    void onAddLeftofSpatialRelation();
+    void onAddRightofSpatialRelation();
+    void onAddTopofSpatialRelation();
+    void onAddBottomofSpatialRelation();
+
+    void onShowConfig();
+    void onExecute();
   };
 }
 

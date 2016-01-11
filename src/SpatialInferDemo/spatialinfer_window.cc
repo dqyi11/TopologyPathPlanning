@@ -1,15 +1,20 @@
-#include "spatialinfer_window.h"
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QtDebug>
 #include <QKeyEvent>
 #include <QStatusBar>
+#include "spatialinfer_window.h"
+#include "inbetween_relation_function.h"
+#include "avoid_relation_function.h"
+#include "sideof_relation_function.h"
+#include "spatialinfer_config.h"
 
+using namespace std;
 using namespace homotopy;
 using namespace topology_inference;
 
-SpatialInferWindow::SpatialInferWindow(QWidget *parent)
-    : QMainWindow(parent) {
+SpatialInferWindow::SpatialInferWindow( QWidget *parent )
+    : QMainWindow( parent ) {
   mpViz = new SpatialInferViz();
   mpMsgBox = new QMessageBox();
   createActions();
@@ -17,14 +22,21 @@ SpatialInferWindow::SpatialInferWindow(QWidget *parent)
   mpStatusLabel = new QLabel();
   statusBar()->addWidget(mpStatusLabel);
   setCentralWidget(mpViz);
+
+  mpConfig = new SpatialInferConfig( this );
+  mpConfig->hide();
 }
 
 SpatialInferWindow::~SpatialInferWindow() {
-  if(mpMsgBox) {
+  if( mpMsgBox ) {
     delete mpMsgBox;
     mpMsgBox = NULL;
   }
-  if(mpViz) {
+  if( mpConfig ) {
+    delete mpConfig;
+    mpConfig = NULL;
+  }
+  if( mpViz ) {
     delete mpViz;
     mpViz = NULL;
   }
@@ -35,6 +47,19 @@ void SpatialInferWindow::createMenuBar() {
   mpFileMenu->addAction( mpOpenAction );
   mpFileMenu->addAction( mpSaveAction );
   mpFileMenu->addAction( mpLoadAction );
+
+  mpAddMenu = menuBar()->addMenu("&Add");
+  mpAddMenu->addAction( mpAddInbetweenSpatialRelationAction );
+  mpAddSideofRelationMenu = mpAddMenu->addMenu("&Side-of Relation");
+  mpAddSideofRelationMenu->addAction( mpAddLeftofSpatialRelationAction );
+  mpAddSideofRelationMenu->addAction( mpAddRightofSpatialRelationAction );
+  mpAddSideofRelationMenu->addAction( mpAddTopofSpatialRelationAction );
+  mpAddSideofRelationMenu->addAction( mpAddBottomofSpatialRelationAction );
+  mpAddMenu->addAction( mpAddAvoidSpatialRelationAction );
+
+  mpManageMenu = menuBar()->addMenu("&Manage");
+  mpManageMenu->addAction( mpShowConfigAction ); 
+  mpManageMenu->addAction( mpExecuteAction ); 
 
   mpContextMenu = new QMenu();
   setContextMenuPolicy( Qt::CustomContextMenu );
@@ -55,6 +80,24 @@ void SpatialInferWindow::createActions() {
   connect( mpAddStartAction, SIGNAL(triggered()), this, SLOT(onAddStart()) );
   connect( mpAddGoalAction, SIGNAL(triggered()), this, SLOT(onAddGoal()) );
  
+  mpAddInbetweenSpatialRelationAction = new QAction("In-between Relation", this);
+  connect(mpAddInbetweenSpatialRelationAction, SIGNAL(triggered()), this, SLOT(onAddInbetweenSpatialRelation()));
+  mpAddAvoidSpatialRelationAction = new QAction("Avoid Relation", this);
+  connect(mpAddAvoidSpatialRelationAction, SIGNAL(triggered()), this, SLOT(onAddAvoidSpatialRelation()));
+  mpAddLeftofSpatialRelationAction = new QAction("Left-of Relation", this);
+  connect(mpAddLeftofSpatialRelationAction, SIGNAL(triggered()), this, SLOT(onAddLeftofSpatialRelation()));
+  mpAddRightofSpatialRelationAction = new QAction("Right-of Relation", this);
+  connect(mpAddRightofSpatialRelationAction, SIGNAL(triggered()), this, SLOT(onAddRightofSpatialRelation()));
+  mpAddTopofSpatialRelationAction = new QAction("Top-of Relation", this);
+  connect(mpAddTopofSpatialRelationAction, SIGNAL(triggered()), this, SLOT(onAddTopofSpatialRelation()));
+  mpAddBottomofSpatialRelationAction = new QAction("Bottom-of Relation", this);
+  connect(mpAddBottomofSpatialRelationAction, SIGNAL(triggered()), this, SLOT(onAddBottomofSpatialRelation()));
+
+  mpShowConfigAction = new QAction("Show", this);
+  connect(mpShowConfigAction, SIGNAL(triggered()), this, SLOT(onShowConfig()));
+  mpExecuteAction = new QAction("Execute", this);
+  connect(mpExecuteAction, SIGNAL(triggered()), this, SLOT(onExecute()));
+
   connect( this, SIGNAL(customContextMenuRequested(const QPoint)), this, SLOT(contextMenuRequested(QPoint)) ); 
 }
 
@@ -208,5 +251,148 @@ void SpatialInferWindow::onAddGoal() {
       repaint();
     }
   }
+}
+  
+void SpatialInferWindow::onAddInbetweenSpatialRelation() {
+  vector<Obstacle*> selected_obstacles;
+  if( mpViz) {
+    selected_obstacles = mpViz->get_selected_obstacles();
+  }
+  if( selected_obstacles.size() != 2 ) {
+    if( mpMsgBox ) {
+      mpMsgBox->setText( "Add Inbetween Spatial : Number of obstacles mismatch " );
+      mpMsgBox->show();
+    } 
+    return;
+  }
+  InBetweenRelationFunction* p_func = new InBetweenRelationFunction();
+  for( unsigned int i=0; i < selected_obstacles.size(); i++ ) {
+    Obstacle* p_obs = selected_obstacles[i];
+    p_func->mp_obstacles.push_back( p_obs );
+  }
+  if( mpViz ) {
+    mpViz->get_spatial_relation_mgr()->mp_functions.push_back( p_func );
+  } 
+  mpViz->clear_selected_obstacles();
+  repaint(); 
+}
+
+void SpatialInferWindow::onAddAvoidSpatialRelation() {
+  vector<Obstacle*> selected_obstacles;
+  if( mpViz) {
+    selected_obstacles = mpViz->get_selected_obstacles();
+  }
+  if( selected_obstacles.size() != 1 ) {
+    if( mpMsgBox ) {
+      mpMsgBox->setText( "Add Avoid Spatial : Number of obstacles mismatch " );
+      mpMsgBox->show();
+    } 
+    return;
+  }
+  AvoidRelationFunction* p_func = new AvoidRelationFunction();
+  p_func->mp_obstacle = selected_obstacles[0];
+  if( mpViz ) {
+    mpViz->get_spatial_relation_mgr()->mp_functions.push_back( p_func );
+  } 
+  mpViz->clear_selected_obstacles();
+  repaint();
+  
+  if( mpConfig ) {
+    mpConfig->updateDisplay();
+  }
+}
+
+void SpatialInferWindow::onAddLeftofSpatialRelation() {
+  vector<Obstacle*> selected_obstacles;
+  if( mpViz) {
+    selected_obstacles = mpViz->get_selected_obstacles();
+  }
+  if( selected_obstacles.size() != 1 ) {
+    if( mpMsgBox ) {
+      mpMsgBox->setText( "Add Left-of Spatial : Number of obstacles mismatch " );
+      mpMsgBox->show();
+    } 
+    return;
+  }
+  SideOfRelationFunction* p_func = new SideOfRelationFunction( SIDE_TYPE_LEFT );
+  p_func->mp_obstacle = selected_obstacles[0];
+  if( mpViz ) {
+    mpViz->get_spatial_relation_mgr()->mp_functions.push_back( p_func );
+  } 
+  mpViz->clear_selected_obstacles();
+  repaint(); 
+}
+
+void SpatialInferWindow::onAddRightofSpatialRelation() {
+  vector<Obstacle*> selected_obstacles;
+  if( mpViz) {
+    selected_obstacles = mpViz->get_selected_obstacles();
+  }
+  if( selected_obstacles.size() != 1 ) {
+    if( mpMsgBox ) {
+      mpMsgBox->setText( "Add Right-of Spatial : Number of obstacles mismatch " );
+      mpMsgBox->show();
+    } 
+    return;
+  }
+  SideOfRelationFunction* p_func = new SideOfRelationFunction( SIDE_TYPE_RIGHT );
+  p_func->mp_obstacle = selected_obstacles[0];
+  if( mpViz ) {
+    mpViz->get_spatial_relation_mgr()->mp_functions.push_back( p_func );
+  } 
+  mpViz->clear_selected_obstacles();
+  repaint(); 
+}
+
+void SpatialInferWindow::onAddTopofSpatialRelation() {
+  vector<Obstacle*> selected_obstacles;
+  if( mpViz) {
+    selected_obstacles = mpViz->get_selected_obstacles();
+  }
+  if( selected_obstacles.size() != 1 ) {
+    if( mpMsgBox ) {
+      mpMsgBox->setText( "Add Top-of Spatial : Number of obstacles mismatch " );
+      mpMsgBox->show();
+    } 
+    return;
+  }
+  SideOfRelationFunction* p_func = new SideOfRelationFunction( SIDE_TYPE_TOP );
+  p_func->mp_obstacle = selected_obstacles[0];
+  if( mpViz ) {
+    mpViz->get_spatial_relation_mgr()->mp_functions.push_back( p_func );
+  } 
+  mpViz->clear_selected_obstacles();
+  repaint(); 
+}
+
+void SpatialInferWindow::onAddBottomofSpatialRelation() {
+  vector<Obstacle*> selected_obstacles;
+  if( mpViz) {
+    selected_obstacles = mpViz->get_selected_obstacles();
+  }
+  if( selected_obstacles.size() != 1 ) {
+    if( mpMsgBox ) {
+      mpMsgBox->setText( "Add Bottom-of Spatial : Number of obstacles mismatch " );
+      mpMsgBox->show();
+    } 
+    return;
+  }
+  SideOfRelationFunction* p_func = new SideOfRelationFunction( SIDE_TYPE_BOTTOM );
+  p_func->mp_obstacle = selected_obstacles[0];
+  if( mpViz ) {
+    mpViz->get_spatial_relation_mgr()->mp_functions.push_back( p_func );
+  }
+  mpViz->clear_selected_obstacles();
+  repaint(); 
+}
+
+void SpatialInferWindow::onShowConfig() {
+  if( mpConfig ) {
+    mpConfig->updateDisplay();
+    mpConfig->exec();
+  }
+}
+
+void SpatialInferWindow::onExecute() {
 
 }

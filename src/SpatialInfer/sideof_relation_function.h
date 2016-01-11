@@ -1,5 +1,5 @@
-#ifndef INBETWEEN_RELATION_FUNC_H_
-#define INBETWEEN_RELATION_FUNC_H_
+#ifndef SIDEOF_RELATION_FUNC_H_
+#define SIDEOF_RELATION_FUNC_H_
 
 #include "obstacle.h"
 #include "spatial_relation_function.h"
@@ -15,7 +15,7 @@ namespace topology_inference {
     NUM_SIDE_TYPES
   } side_type_t;
 
-  class SideOfRelationFunction : SpatialRelationFunction {
+  class SideOfRelationFunction : public SpatialRelationFunction {
   public:
     SideOfRelationFunction( side_type_t side_type = SIDE_TYPE_UNKNOWN );
     virtual ~SideOfRelationFunction();
@@ -31,4 +31,4 @@ namespace topology_inference {
   };
 }
 
-#endif // INBETWEEN_RELATION_FUNC_H_
+#endif // SIDEOF_RELATION_FUNC_H_

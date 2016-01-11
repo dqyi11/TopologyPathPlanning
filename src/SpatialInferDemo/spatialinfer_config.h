@@ -14,7 +14,7 @@ namespace topology_inference {
     Q_OBJECT
   public:
     SpatialInferConfig( SpatialInferWindow* parent );
-   
+    void updateDisplay();   
   private:
     QListWidget* mpListWidget;
     QPushButton* mpBtnRemove;

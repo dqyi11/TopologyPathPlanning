@@ -39,3 +39,29 @@ vector< string > SpatialRelationMgr::get_spatial_relation_function_names() {
   }
   return names;
 }
+
+bool SpatialRelationMgr::has_spatial_relation_function( string name ) {
+  for(unsigned int i=0; i < mp_functions.size(); i++) {
+    SpatialRelationFunction* p_func = mp_functions[i];
+    if( p_func ) {
+      if( p_func->get_name() == name ) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+void SpatialRelationMgr::remove_spatial_relation_function( string name ) {
+
+  for( vector<SpatialRelationFunction*>::iterator it = mp_functions.begin();
+       it != mp_functions.end(); /* it ++ */ ) { 
+    SpatialRelationFunction* p_func = (*it);
+    if( p_func && ( p_func->get_name() == name ) ) {
+      mp_functions.erase( it );
+    }
+    else {
+      ++ it;
+    }
+  }
+}

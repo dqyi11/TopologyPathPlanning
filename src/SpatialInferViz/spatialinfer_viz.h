@@ -55,6 +55,8 @@ namespace topology_inference {
     bool is_selected_obstacle( homotopy::Obstacle* p_obstacle );
     bool unselect_obstacle( homotopy::Obstacle* p_obstacle );
 
+    std::vector<homotopy::Obstacle*> get_selected_obstacles() { return m_selected_obstacles; }
+    void clear_selected_obstacles() { m_selected_obstacles.clear(); }  
   protected:
     bool initWorld(QString filename);
 
