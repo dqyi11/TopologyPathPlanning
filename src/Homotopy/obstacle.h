@@ -28,6 +28,7 @@ namespace homotopy {
 
     WorldMap* get_world() { return _p_world; }
     int get_index () { return _index; }
+    std::string get_name();
     
     std::vector<Point2D> m_points;
     Polygon2D m_pgn;

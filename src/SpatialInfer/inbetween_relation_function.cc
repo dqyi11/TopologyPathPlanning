@@ -27,6 +27,15 @@ vector< pair<ReferenceFrame*, bool> > InBetweenRelationFunction::get_reference_f
 }
 
 string InBetweenRelationFunction::get_name() {
-  string name = "IN_BETWEEN";
+  string name = "IN_BETWEEN(";
+  for(unsigned int i=0; i<mp_obstacles.size(); i++) {
+    if( i < mp_obstacles.size()-1 ) {
+      name += mp_obstacles[i]->get_name() + ",";
+    }
+    else{
+      name += mp_obstacles[i]->get_name();
+    }
+  }  
+  name += ")";
   return name;
 }

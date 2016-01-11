@@ -1,12 +1,14 @@
+#include <sstream>
 #include <stdlib.h>
 #include <CGAL/centroid.h>
 #include <CGAL/squared_distance_2.h>
 #include "obstacle.h"
 #include "worldmap.h"
 
+using namespace std;
 using namespace homotopy;
 
-Obstacle::Obstacle(std::vector<Point2D> points, int index, WorldMap* world ){
+Obstacle::Obstacle(vector<Point2D> points, int index, WorldMap* world ){
   _index = index;
   _p_world = world;
 
@@ -14,7 +16,7 @@ Obstacle::Obstacle(std::vector<Point2D> points, int index, WorldMap* world ){
 
   m_points.clear();
   m_border_segments.clear();
-  for( std::vector<Point2D>::iterator it = points.begin(); it != points.end(); it++ ) {
+  for( vector<Point2D>::iterator it = points.begin(); it != points.end(); it++ ) {
     Point2D pos = (*it);
     m_points.push_back(pos);
     m_pgn.push_back(pos);
@@ -93,7 +95,13 @@ Point2D Obstacle::sample_position() {
   return _centroid;
 }
 
-void Obstacle::to_xml( const std::string& filename )const {
+string Obstacle::get_name() {
+  stringstream ss;
+  ss << "OBS" << _index;
+  return ss.str(); 
+}
+
+void Obstacle::to_xml( const string& filename )const {
   xmlDocPtr doc = xmlNewDoc( ( xmlChar* )( "1.0" ) );
   xmlNodePtr root = xmlNewDocNode( doc, NULL, ( xmlChar* )( "root" ), NULL );
   xmlDocSetRootElement( doc, root );
@@ -107,7 +115,7 @@ void Obstacle::to_xml( xmlDocPtr doc, xmlNodePtr root )const {
 
 }
 
-void Obstacle::from_xml( const std::string& filename ) {
+void Obstacle::from_xml( const string& filename ) {
   xmlDoc * doc = NULL;
   xmlNodePtr root = NULL;
   doc = xmlReadFile( filename.c_str(), NULL, 0 );

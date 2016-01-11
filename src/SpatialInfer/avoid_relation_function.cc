@@ -20,5 +20,8 @@ vector< pair<ReferenceFrame*, bool> > AvoidRelationFunction::get_reference_frame
 
 string AvoidRelationFunction::get_name() {
   string name = "AVOID";
+  if( mp_obstacle ){
+    name += "(" + mp_obstacle->get_name() + ")";
+  }
   return name;
 }

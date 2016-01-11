@@ -38,5 +38,8 @@ string SideOfRelationFunction::get_name() {
       name = "BOTTOM";
       break;
   }
+  if( mp_obstacle ) {
+    name += "(" + mp_obstacle->get_name() + ")";
+  }
   return name;
 }
