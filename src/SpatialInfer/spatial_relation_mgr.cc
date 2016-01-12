@@ -50,6 +50,8 @@ bool contains( vector< string > string_set, string string_item ) {
 SpatialRelationMgr::SpatialRelationMgr( WorldMap* p_worldmap ) {
   mp_worldmap = p_worldmap;
   mp_functions.clear();
+  mp_string_classes.clear();
+  m_rules.clear();
   m_start_x = -1;
   m_start_y = -1;
   m_goal_x = -1;
@@ -59,12 +61,20 @@ SpatialRelationMgr::SpatialRelationMgr( WorldMap* p_worldmap ) {
 SpatialRelationMgr::~SpatialRelationMgr() {
   mp_worldmap = NULL;
   mp_functions.clear();
+  for( vector<StringClass*>::iterator it = mp_string_classes.begin();
+       it != mp_string_classes.end(); it++ ) {
+    StringClass* p_str_cls = (*it);
+    delete p_str_cls;
+    p_str_cls = NULL;
+  }
+  mp_string_classes.clear();
+  m_rules.clear();
 }
 
 vector< pair<ReferenceFrame*, bool> > SpatialRelationMgr::get_rules( ReferenceFrameSet* p_reference_frame_set ) {
   vector< pair<ReferenceFrame*, bool> > reference_frames;
   for( unsigned int i=0; i < mp_functions.size(); i++ ) {
-    vector< pair<ReferenceFrame*, bool> > rfs = mp_functions[i]->get_reference_frames( p_reference_frame_set );
+    vector< pair<ReferenceFrame*, bool> > rfs = mp_functions[i]->get_rules( p_reference_frame_set );
     for( unsigned int j=0; j < rfs.size(); j ++ ) {
       reference_frames.push_back( rfs[j] );
     } 
@@ -109,15 +119,17 @@ void SpatialRelationMgr::remove_spatial_relation_function( string name ) {
   }
 }
 
-vector< StringClass* > SpatialRelationMgr::get_string_classes( ReferenceFrameSet* p_rfs  ) {
-  vector< StringClass* > string_classes;
+void SpatialRelationMgr::get_string_classes( ReferenceFrameSet* p_rfs  ) {
+  mp_string_classes.clear();
+  m_rules.clear();
   vector< vector< string > > string_set;
   
   if( p_rfs ) {
     StringGrammar* p_grammar = p_rfs->get_string_grammar( m_start_x, m_start_y, m_goal_x, m_goal_y );
     if( p_grammar ){
       vector< vector< string > > all_simple_strings = p_grammar->find_simple_strings(); 
-      string_set = filter( all_simple_strings, get_rules( p_rfs ) );
+      m_rules = get_rules( p_rfs );
+      string_set = filter( all_simple_strings, m_rules );
         
       delete p_grammar;
       p_grammar=NULL;
@@ -128,10 +140,9 @@ vector< StringClass* > SpatialRelationMgr::get_string_classes( ReferenceFrameSet
     vector< string > item = (*it);
     StringClass* p_class = new StringClass( item );
     p_class->init( p_rfs );
-    string_classes.push_back( p_class );
+    mp_string_classes.push_back( p_class );
   }
 
-  return string_classes;
 }
 
 

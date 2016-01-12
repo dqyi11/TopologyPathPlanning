@@ -12,8 +12,8 @@ InBetweenRelationFunction::~InBetweenRelationFunction() {
   mp_obstacles.clear();
 }
 
-vector< pair<ReferenceFrame*, bool> > InBetweenRelationFunction::get_reference_frames( ReferenceFrameSet* p_reference_frame_set ) {
-  vector< pair<ReferenceFrame*, bool> > reference_frames;
+vector< pair<ReferenceFrame*, bool> > InBetweenRelationFunction::get_rules( ReferenceFrameSet* p_reference_frame_set ) {
+  vector< pair<ReferenceFrame*, bool> > rules;
 
   if( p_reference_frame_set ) {
     for( unsigned int i=0; i<p_reference_frame_set->get_reference_frames().size(); i++ ) {
@@ -23,7 +23,7 @@ vector< pair<ReferenceFrame*, bool> > InBetweenRelationFunction::get_reference_f
       }
     }
   }
-  return reference_frames;  
+  return rules;  
 }
 
 string InBetweenRelationFunction::get_name() {

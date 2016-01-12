@@ -204,6 +204,19 @@ void SpatialInferWindow::keyPressEvent(QKeyEvent *event) {
       repaint();
     }
   }
+  else if(event->key() == Qt::Key_PageDown ) {
+    if(mpViz) {
+      mpViz->nextStringClass();
+      repaint();
+    }
+  }
+  else if(event->key() == Qt::Key_PageUp ) {
+    if(mpViz) {
+      mpViz->prevStringClass();
+      repaint();
+    }
+  }
+
 }
 
 void SpatialInferWindow::updateStatusBar() {
@@ -410,5 +423,6 @@ void SpatialInferWindow::onExecute() {
     } 
   }
 
-  vector<StringClass*> string_classes = mpViz->get_spatial_relation_mgr()->get_string_classes( mpViz->get_reference_frame_set() ); 
+  mpViz->get_spatial_relation_mgr()->get_string_classes( mpViz->get_reference_frame_set() ); 
+
 }

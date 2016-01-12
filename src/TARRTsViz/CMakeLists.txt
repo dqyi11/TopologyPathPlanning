@@ -3,7 +3,8 @@ set(LIB tbpp-tarrts-viz)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set(HDR    mlrrtstar_path_planning_info.h
+set(HDR    ml_viz_util.h
+           mlrrtstar_path_planning_info.h
            mlrrtstar_viz.h
            )
 

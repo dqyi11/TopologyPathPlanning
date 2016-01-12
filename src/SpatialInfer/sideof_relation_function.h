@@ -23,7 +23,7 @@ namespace topology_inference {
     void set_side_type( side_type_t side_type ) { m_type = side_type; }
     side_type_t get_side_type( void ) { return m_type; }
 
-    virtual std::vector< std::pair<homotopy::ReferenceFrame*, bool> > get_reference_frames( homotopy::ReferenceFrameSet* p_reference_frame_set ); 
+    virtual std::vector< std::pair<homotopy::ReferenceFrame*, bool> > get_rules( homotopy::ReferenceFrameSet* p_reference_frame_set ); 
     virtual std::string get_name();
 
     homotopy::Obstacle* mp_obstacle;

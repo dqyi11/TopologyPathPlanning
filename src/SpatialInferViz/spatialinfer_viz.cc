@@ -2,6 +2,7 @@
 #include <QPainter>
 #include <QMouseEvent>
 #include "spatialinfer_viz.h"
+#include "si_viz_util.h"
 #include "img_load_util.h"
 
 #define LINE_WIDTH              1
@@ -44,7 +45,11 @@ SpatialInferViz::SpatialInferViz(QWidget *parent) :
   mSubRegionIdx = -1;
   mSubsegmentSetIdx = -1;
   mSubsegmentIdx = -1;
+  mStringClassIdx = -1;
   mShowSubsegment = true;
+  m_viz_subregions.clear();
+  m_viz_subsegments.clear();
+  mp_viz_string_class = NULL;
   mMode = SUBREGION;
 }
 
@@ -97,9 +102,7 @@ void SpatialInferViz::paintEvent(QPaintEvent * e) {
         if (p_subreg) {
           QPolygon poly;
           for( unsigned int j=0; j < p_subreg->m_points.size(); j++ ) {
-            double x = CGAL::to_double( p_subreg->m_points[j].x() );
-            double y = CGAL::to_double( p_subreg->m_points[j].y() );
-            poly << QPoint( x, y );
+            poly << toQPoint( p_subreg->m_points[j] );
           }
           QPainterPath tmpPath;
           tmpPath.addPolygon(poly);
@@ -117,15 +120,8 @@ void SpatialInferViz::paintEvent(QPaintEvent * e) {
            itLSS != m_viz_subsegments.end(); itLSS++ ) {
         LineSubSegment* p_line_subsegment = (*itLSS);
         if( p_line_subsegment ) {
-          Point2D line_hl_src = p_line_subsegment->m_subseg.source();
-          Point2D line_hl_end = p_line_subsegment->m_subseg.target();
-          double line_hl_src_x = CGAL::to_double( line_hl_src.x() );
-          double line_hl_src_y = CGAL::to_double( line_hl_src.y() );
-          double line_hl_end_x = CGAL::to_double( line_hl_end.x() );
-          double line_hl_end_y = CGAL::to_double( line_hl_end.y() );
-
-          line_hl_painter.drawLine( QPoint( line_hl_src_x, line_hl_src_y ),
-                                    QPoint( line_hl_end_x, line_hl_end_y ) );
+          line_hl_painter.drawLine( toQPoint( p_line_subsegment->m_subseg.source() ),
+                                    toQPoint( p_line_subsegment->m_subseg.target() ) );
         }
       }
       line_hl_painter.end();
@@ -144,9 +140,7 @@ void SpatialInferViz::paintEvent(QPaintEvent * e) {
           for( Polygon2D::Vertex_iterator itP=p_obstacle->m_pgn.vertices_begin();
                itP != p_obstacle->m_pgn.vertices_end(); itP++ ) {
             Point2D p = (*itP);
-            double p_x = CGAL::to_double( p.x() );
-            double p_y = CGAL::to_double( p.y() );
-            poly << QPoint( p_x, p_y );
+            poly << toQPoint( p );
           }
           obstacle_painter.drawPolygon(poly);
         }
@@ -168,9 +162,7 @@ void SpatialInferViz::paintEvent(QPaintEvent * e) {
             for( Polygon2D::Vertex_iterator itP=p_obstacle->m_pgn.vertices_begin();
                  itP != p_obstacle->m_pgn.vertices_end(); itP++ ) {
               Point2D p = (*itP);
-              double p_x = CGAL::to_double( p.x() );
-              double p_y = CGAL::to_double( p.y() );
-              poly << QPoint( p_x, p_y );
+              poly << toQPoint( p );
             }
             hl_obs_painter.drawPolygon(poly);
           }
@@ -191,9 +183,7 @@ void SpatialInferViz::paintEvent(QPaintEvent * e) {
           for( Polygon2D::Vertex_iterator itP=p_obstacle->m_pgn.vertices_begin();
                itP != p_obstacle->m_pgn.vertices_end(); itP++ ) {
             Point2D p = (*itP);
-            double p_x = CGAL::to_double( p.x() );
-            double p_y = CGAL::to_double( p.y() );
-            poly << QPoint( p_x, p_y );
+            poly << toQPoint( p );
           }
           sl_obs_painter.drawPolygon(poly);
         }
@@ -256,11 +246,8 @@ void SpatialInferViz::paintEvent(QPaintEvent * e) {
             for( std::vector< LineSubSegment* >::iterator itap = p_obstacle->mp_alpha_seg->m_subsegs.begin();
                  itap != p_obstacle->mp_alpha_seg->m_subsegs.end(); itap++ ) {
               LineSubSegment* p_subseg_a = (*itap);
-              double a_src_x = CGAL::to_double( p_subseg_a->m_subseg.source().x() );
-              double a_src_y = CGAL::to_double( p_subseg_a->m_subseg.source().y() );
-              double a_end_x = CGAL::to_double( p_subseg_a->m_subseg.target().x() );
-              double a_end_y = CGAL::to_double( p_subseg_a->m_subseg.target().y() );
-              a_subseg_painter.drawLine( QPoint( a_src_x , a_src_y ), QPoint( a_end_x , a_end_y ));
+              a_subseg_painter.drawLine( toQPoint( p_subseg_a->m_subseg.source() ), 
+                                         toQPoint( p_subseg_a->m_subseg.target() ));
             }
           }
         }
@@ -277,11 +264,8 @@ void SpatialInferViz::paintEvent(QPaintEvent * e) {
             for( std::vector< LineSubSegment* >::iterator itbp = p_obstacle->mp_beta_seg->m_subsegs.begin();
                  itbp != p_obstacle->mp_beta_seg->m_subsegs.end(); itbp++ ) {
               LineSubSegment* p_subseg_b = (*itbp);
-              double b_src_x = CGAL::to_double( p_subseg_b->m_subseg.source().x() );
-              double b_src_y = CGAL::to_double( p_subseg_b->m_subseg.source().y() );
-              double b_end_x = CGAL::to_double( p_subseg_b->m_subseg.target().x() );
-              double b_end_y = CGAL::to_double( p_subseg_b->m_subseg.target().y() );
-              b_subseg_painter.drawLine( QPoint( b_src_x , b_src_y ), QPoint( b_end_x , b_end_y ));
+              b_subseg_painter.drawLine( toQPoint( p_subseg_b->m_subseg.source() ), 
+                                         toQPoint( p_subseg_b->m_subseg.target() ));
             }
           }
         }
@@ -292,9 +276,7 @@ void SpatialInferViz::paintEvent(QPaintEvent * e) {
       QPen cp_pen( CENTER_POINT_COLOR );
       cp_pen.setWidth( POINT_SIZE );
       cp_painter.setPen( cp_pen );
-      double cp_x = CGAL::to_double( mpMgr->mp_worldmap->get_central_point().x() );
-      double cp_y = CGAL::to_double( mpMgr->mp_worldmap->get_central_point().y() );
-      cp_painter.drawPoint( QPoint( cp_x , cp_y ) );
+      cp_painter.drawPoint( toQPoint( mpMgr->mp_worldmap->get_central_point() ) );
       cp_painter.end();
 
       QPainter bk_painter(this);
@@ -305,9 +287,7 @@ void SpatialInferViz::paintEvent(QPaintEvent * e) {
            it != obstacles.end(); it++ ) {
         Obstacle* p_obstacle = (*it);
         if ( p_obstacle ) {
-          double bk_x = CGAL::to_double( p_obstacle->m_bk.x() );
-          double bk_y = CGAL::to_double( p_obstacle->m_bk.y() );
-          bk_painter.drawPoint( QPoint( bk_x , bk_y ) );
+          bk_painter.drawPoint( toQPoint( p_obstacle->m_bk ) );
         }
       }
       bk_painter.end();
@@ -323,16 +303,12 @@ void SpatialInferViz::paintEvent(QPaintEvent * e) {
           for( std::vector< IntersectionPoint >::iterator itap = p_obstacle->m_alpha_intersection_points.begin();
                itap != p_obstacle->m_alpha_intersection_points.end(); itap++ ) {
             IntersectionPoint alpha_intsec = (*itap);
-            double alpha_intsec_x = CGAL::to_double( alpha_intsec.m_point.x() );
-            double alpha_intsec_y = CGAL::to_double( alpha_intsec.m_point.y() );
-            intsec_painter.drawPoint( QPoint( alpha_intsec_x , alpha_intsec_y ) );
+            intsec_painter.drawPoint( toQPoint( alpha_intsec.m_point ) );
           }
           for( std::vector< IntersectionPoint >::iterator itbp = p_obstacle->m_beta_intersection_points.begin();
                itbp != p_obstacle->m_beta_intersection_points.end(); itbp++ ) {
             IntersectionPoint beta_intsec = (*itbp);
-            double beta_intsec_x = CGAL::to_double( beta_intsec.m_point.x() );
-            double beta_intsec_y = CGAL::to_double( beta_intsec.m_point.y() );
-            intsec_painter.drawPoint( QPoint( beta_intsec_x, beta_intsec_y ) );
+            intsec_painter.drawPoint( toQPoint( beta_intsec.m_point ) );
           }
         }
       }
@@ -380,44 +356,46 @@ void SpatialInferViz::paintEvent(QPaintEvent * e) {
       QPen neg_ref_paintpen( RULE_NEG_COLOR );
       neg_ref_paintpen.setWidth( RULE_LINE_WIDTH );
       neg_ref_painter.setPen( neg_ref_paintpen );
-      for( vector< pair< ReferenceFrame*, bool > >::iterator it =  m_rules.begin();
-           it != m_rules.end(); it++ ) {
+      for( vector< pair< ReferenceFrame*, bool > >::iterator it =  mpMgr->m_rules.begin();
+           it != mpMgr->m_rules.end(); it++ ) {
         pair< ReferenceFrame*, bool > rule = (*it);
-        double r_src_x = CGAL::to_double( rule.first->m_segment.source().x() );
-        double r_src_y = CGAL::to_double( rule.first->m_segment.source().y() );
-        double r_end_x = CGAL::to_double( rule.first->m_segment.target().x() );
-        double r_end_y = CGAL::to_double( rule.first->m_segment.target().y() );
         if( true == rule.second ) {
-          pos_ref_painter.drawLine( QPoint( r_src_x , r_src_y ), QPoint( r_end_x , r_end_y ));
+          pos_ref_painter.drawLine( toQPoint( rule.first->m_segment.source() ), 
+                                    toQPoint( rule.first->m_segment.target() ));
         }
         else {
-          neg_ref_painter.drawLine( QPoint( r_src_x , r_src_y ), QPoint( r_end_x , r_end_y ));
+          neg_ref_painter.drawLine( toQPoint( rule.first->m_segment.source() ),
+                                    toQPoint( rule.first->m_segment.target() ));
         } 
       }
       pos_ref_painter.end();
       neg_ref_painter.end();
 
-      QPainter st_cls_painter(this);
-      QPen st_cls_paintpen( STRING_CLASS_POINT_COLOR );
-      st_cls_paintpen.setWidth( STRING_CLASS_POINT_SIZE );
-      st_cls_painter.setPen( st_cls_paintpen ); 
-      for( vector< StringClass* >::iterator it = m_string_classes.begin();
-           it != m_string_classes.end(); it++ ) {
-        StringClass* p_string_class = (*it);
-        if( p_string_class ) {
-          for( vector<ReferenceFrame*>::iterator rf_it = p_string_class->mp_reference_frames.begin();
-               rf_it != p_string_class->mp_reference_frames.end(); rf_it++ ) {
+      if( mp_viz_string_class ) {
+        QPainter st_cls_painter(this);
+        QPen st_cls_paintpen( STRING_CLASS_POINT_COLOR );
+        st_cls_paintpen.setWidth( STRING_CLASS_POINT_SIZE );
+        st_cls_painter.setPen( st_cls_paintpen ); 
 
-            ReferenceFrame* p_rf_str_cls = (*rf_it);
-            if( p_rf_str_cls ) {
-              double r_mid_x = CGAL::to_double( p_rf_str_cls->m_mid_point.x() );
-              double r_mid_y = CGAL::to_double( p_rf_str_cls->m_mid_point.y() );
-              st_cls_painter.drawPoint( QPoint( r_mid_x, r_mid_y ) );
+        if( mp_viz_string_class->mp_reference_frames.size() > 0 ) {
+          
+          st_cls_painter.drawLine( QPoint( mpMgr->m_start_x, mpMgr->m_start_y ),
+                                   toQPoint( mp_viz_string_class->mp_reference_frames[0]->m_mid_point ) );
+          for( unsigned int i=0; i < mp_viz_string_class->mp_reference_frames.size()-1; i++ ) {
+
+            ReferenceFrame* p_curr_rf_str_cls = mp_viz_string_class->mp_reference_frames[i];
+            ReferenceFrame* p_next_rf_str_cls = mp_viz_string_class->mp_reference_frames[i+1];
+            if( p_curr_rf_str_cls && p_next_rf_str_cls ) {
+              st_cls_painter.drawLine( toQPoint( p_curr_rf_str_cls->m_mid_point ),
+                                       toQPoint( p_next_rf_str_cls->m_mid_point ) );
             }
           }
+          st_cls_painter.drawLine( toQPoint( mp_viz_string_class->mp_reference_frames.back()->m_mid_point ),
+                                   QPoint( mpMgr->m_goal_x, mpMgr->m_goal_y ) );
         }
+ 
+        st_cls_painter.end();     
       }
-      st_cls_painter.end();     
 
     } 
   }
@@ -529,6 +507,32 @@ void SpatialInferViz::nextLineSubsegmentSet() {
   }
 }
 
+void SpatialInferViz::prevStringClass() {
+  if( mpMgr ) {
+    if( mStringClassIdx >= 0 ) {
+      mStringClassIdx --;
+      updateVizStringClass();
+    }
+    else {
+      mStringClassIdx = mpMgr->mp_string_classes.size()-1;
+      updateVizStringClass();
+    }
+  }
+}
+
+void SpatialInferViz::nextStringClass() {
+  if( mpMgr ) {
+    if( mStringClassIdx < mpMgr->mp_string_classes.size()-1 ) {
+      mStringClassIdx ++;
+      updateVizStringClass();
+    }
+    else {
+      mStringClassIdx = -1;
+      updateVizStringClass();
+    }
+  }
+}
+
 void SpatialInferViz::prevLineSubsegment() {
   if ( mpMgr->mp_worldmap ) {
     if ( mSubsegmentSetIdx >= 0 && mSubsegmentSetIdx < static_cast<int>(mpMgr->mp_worldmap->get_linesubsegment_set().size()) ) {
@@ -618,6 +622,16 @@ SubRegion* SpatialInferViz::getSelectedSubregion() {
     }
   }
   return p_subregion;
+}
+
+StringClass* SpatialInferViz::getSelectedStringClass() {
+  StringClass* p_string_class = NULL;
+  if( mpMgr->mp_string_classes.size() > 0 ) {
+    if( mStringClassIdx >= 0 && mStringClassIdx < mpMgr->mp_string_classes.size() ) {
+      return mpMgr->mp_string_classes[mStringClassIdx];
+    }
+  } 
+  return p_string_class;
 }
 
 LineSubSegmentSet* SpatialInferViz::getSelectedLineSubsegmentSet() {
@@ -730,6 +744,10 @@ void SpatialInferViz::updateVizLineSubsegments() {
     }
   }
 
+}
+
+void SpatialInferViz::updateVizStringClass() {
+  mp_viz_string_class = getSelectedStringClass();
 }
 
 void SpatialInferViz::setMode( SpatialInferVizMode mode ) {

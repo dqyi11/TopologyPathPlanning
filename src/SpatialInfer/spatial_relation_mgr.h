@@ -30,7 +30,7 @@ namespace topology_inference {
     bool has_spatial_relation_function( std::string name );
     void remove_spatial_relation_function( std::string name );
   
-    std::vector< StringClass* > get_string_classes( homotopy::ReferenceFrameSet* p_rfs  );
+    void get_string_classes( homotopy::ReferenceFrameSet* p_rfs  );
  
     homotopy::WorldMap* get_world_map() {  return mp_worldmap; }
 
@@ -38,8 +38,11 @@ namespace topology_inference {
     bool is_eligible( std::vector< std::string > string_item, std::vector< std::pair< homotopy::ReferenceFrame*, bool > > rules );
     bool is_eligible( std::vector< std::string > string_item, std::pair< homotopy::ReferenceFrame*, bool >  rule );
 
-    std::vector<SpatialRelationFunction*> mp_functions; 
-    homotopy::WorldMap*                   mp_worldmap;
+    std::vector<StringClass*>                                   mp_string_classes;
+    std::vector< std::pair< homotopy::ReferenceFrame*, bool > > m_rules;
+
+    std::vector<SpatialRelationFunction*>                       mp_functions; 
+    homotopy::WorldMap*                                         mp_worldmap;
     int m_start_x;
     int m_start_y;
     int m_goal_x;

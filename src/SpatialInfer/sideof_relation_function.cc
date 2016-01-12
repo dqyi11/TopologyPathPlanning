@@ -13,10 +13,10 @@ SideOfRelationFunction::~SideOfRelationFunction() {
   mp_obstacle = NULL;
 }
 
-vector< pair<ReferenceFrame*, bool> > SideOfRelationFunction::get_reference_frames( ReferenceFrameSet* p_reference_frame_set ) {
-  vector< pair<ReferenceFrame*, bool> > reference_frames;
+vector< pair<ReferenceFrame*, bool> > SideOfRelationFunction::get_rules( ReferenceFrameSet* p_reference_frame_set ) {
+  vector< pair<ReferenceFrame*, bool> > rules;
 
-  return reference_frames;  
+  return rules;  
 }
 
 string SideOfRelationFunction::get_name() {

@@ -37,13 +37,16 @@ namespace topology_inference {
 
     void prevLineSubsegment();
     void nextLineSubsegment();
+
+    void prevStringClass();
+    void nextStringClass();
     
     int  getLineSubsegmentSetIdx() { return mSubsegmentSetIdx; }
     int  getLineSubsegmentIdx() { return mSubsegmentIdx; } 
 
     homotopy::LineSubSegmentSet* getSelectedLineSubsegmentSet();
     homotopy::LineSubSegment*    getSelectedLineSubsegment();
-    
+    StringClass*                 getSelectedStringClass();  
 
     bool save( QString filename );
     bool load( QString filename );
@@ -59,11 +62,13 @@ namespace topology_inference {
     void clear_selected_obstacles() { m_selected_obstacles.clear(); }  
 
     homotopy::ReferenceFrameSet* get_reference_frame_set() {  return mpReferenceFrameSet; }
+
   protected:
     bool initWorld(QString filename);
 
     void updateVizSubregions();
     void updateVizLineSubsegments();
+    void updateVizStringClass();
 
     void mousePressEvent( QMouseEvent * event );
 
@@ -80,13 +85,14 @@ namespace topology_inference {
     int                  mSubsegmentSetIdx;
     int                  mSubsegmentIdx;
 
+    int                  mStringClassIdx;
+ 
     std::vector<homotopy::SubRegion*>      m_viz_subregions;
     std::vector<homotopy::LineSubSegment*> m_viz_subsegments;
 
-    std::vector<homotopy::Obstacle*>        m_selected_obstacles;   
+    std::vector<homotopy::Obstacle*>       m_selected_obstacles;   
 
-    std::vector< std::pair< homotopy::ReferenceFrame*, bool > > m_rules;
-    std::vector< StringClass* > m_string_classes;
+    StringClass*                           mp_viz_string_class;
 
   signals:
 

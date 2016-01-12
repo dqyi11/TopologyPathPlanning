@@ -1,5 +1,4 @@
 #include <QtGui>
-
 #include "mlrrtstar_viz.h"
 #include "mlviz_util.h"
 
