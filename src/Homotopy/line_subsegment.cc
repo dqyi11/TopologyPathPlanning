@@ -4,6 +4,7 @@
 #include "obstacle.h"
 #include "worldmap.h"
 
+using namespace std;
 using namespace homotopy;
 
 IntersectionPoint::IntersectionPoint( Point2D point ) {
@@ -42,9 +43,9 @@ LineSubSegment::~LineSubSegment() {
   m_connected_obstacles.clear();
 }
 
-std::string LineSubSegment::get_name() {
+string LineSubSegment::get_name() {
   if( _p_subseg_set ) {
-    std::stringstream ss;
+    stringstream ss;
     ss << _p_subseg_set->get_name().c_str() << "-" << _index;
     return ss.str();
   }
@@ -69,7 +70,7 @@ bool LineSubSegment::contains( Point2D point ) {
   return m_subseg.has_on(point);
 }
 
-void LineSubSegment::to_xml( const std::string& filename )const {
+void LineSubSegment::to_xml( const string& filename )const {
   xmlDocPtr doc = xmlNewDoc( ( xmlChar* )( "1.0" ) );
   xmlNodePtr root = xmlNewDocNode( doc, NULL, ( xmlChar* )( "root" ), NULL );
   xmlDocSetRootElement( doc, root );
@@ -79,11 +80,25 @@ void LineSubSegment::to_xml( const std::string& filename )const {
   return;
 }
 
+bool LineSubSegment::is_connected( Obstacle* p_obstacle ) {
+
+  for( vector< Obstacle* >::iterator it = m_connected_obstacles.begin();
+       it != m_connected_obstacles.end(); it++ ) {
+    Obstacle* p_current_obstacle = (*it);
+    if( p_current_obstacle ) {
+      if( p_current_obstacle == p_obstacle ) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 void LineSubSegment::to_xml( xmlDocPtr doc, xmlNodePtr root )const {
 
 }
 
-void LineSubSegment::from_xml( const std::string& filename ) {
+void LineSubSegment::from_xml( const string& filename ) {
   xmlDoc * doc = NULL;
   xmlNodePtr root = NULL;
   doc = xmlReadFile( filename.c_str(), NULL, 0 );
@@ -125,7 +140,7 @@ LineSubSegmentSet::LineSubSegmentSet( Point2D pos_a, Point2D pos_b, unsigned int
 }
 
 LineSubSegmentSet::~LineSubSegmentSet() {
-  for( std::vector< LineSubSegment* >::iterator it=m_subsegs.begin(); it != m_subsegs.end(); it++ ) {
+  for( vector< LineSubSegment* >::iterator it=m_subsegs.begin(); it != m_subsegs.end(); it++ ) {
     LineSubSegment* p_line_subseg = (*it);
     delete p_line_subseg;
     p_line_subseg = NULL;
@@ -133,7 +148,7 @@ LineSubSegmentSet::~LineSubSegmentSet() {
   m_subsegs.clear();
 }
 
-std::string LineSubSegmentSet::type_to_std_string ( const unsigned int& type ) {
+string LineSubSegmentSet::type_to_std_string ( const unsigned int& type ) {
   switch( type ) {
   case( LINE_TYPE_ALPHA ):
     return "A";
@@ -145,7 +160,7 @@ std::string LineSubSegmentSet::type_to_std_string ( const unsigned int& type ) {
   }
 }
 
-unsigned int LineSubSegmentSet::type_from_std_string ( const std::string& type_str ) {
+unsigned int LineSubSegmentSet::type_from_std_string ( const string& type_str ) {
   for( unsigned int i = 0; i < NUM_LINE_TYPE; i++ ){
     if( type_str == LineSubSegmentSet::type_to_std_string( i ) ){
       return i;
@@ -154,7 +169,7 @@ unsigned int LineSubSegmentSet::type_from_std_string ( const std::string& type_s
   return LINE_TYPE_UNKNOWN;
 }
 
-bool LineSubSegmentSet::load( std::vector<IntersectionPoint>& intersections ) {
+bool LineSubSegmentSet::load( vector<IntersectionPoint>& intersections ) {
 
   if( _p_obstacle == NULL ) {
     return false;
@@ -266,8 +281,8 @@ bool LineSubSegmentSet::load( std::vector<IntersectionPoint>& intersections ) {
   return true;
 }
 
-std::string LineSubSegmentSet::get_name() {
-  std::stringstream ss;
+string LineSubSegmentSet::get_name() {
+  stringstream ss;
   if( m_type == LINE_TYPE_ALPHA ) {
     ss << "A";
   }
@@ -278,7 +293,7 @@ std::string LineSubSegmentSet::get_name() {
   return ss.str();
 }
 
-void LineSubSegmentSet::to_xml( const std::string& filename )const {
+void LineSubSegmentSet::to_xml( const string& filename )const {
   xmlDocPtr doc = xmlNewDoc( ( xmlChar* )( "1.0" ) );
   xmlNodePtr root = xmlNewDocNode( doc, NULL, ( xmlChar* )( "root" ), NULL );
   xmlDocSetRootElement( doc, root );
@@ -300,7 +315,7 @@ void LineSubSegmentSet::to_xml( xmlDocPtr doc, xmlNodePtr root )const {
   return;
 }
 
-void LineSubSegmentSet::from_xml( const std::string& filename ) {
+void LineSubSegmentSet::from_xml( const string& filename ) {
   xmlDoc * doc = NULL;
   xmlNodePtr root = NULL;
   doc = xmlReadFile( filename.c_str(), NULL, 0 );

@@ -424,5 +424,5 @@ void SpatialInferWindow::onExecute() {
   }
 
   mpViz->get_spatial_relation_mgr()->get_string_classes( mpViz->get_reference_frame_set() ); 
-
+  repaint();
 }

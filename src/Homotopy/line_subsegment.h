@@ -42,7 +42,8 @@ namespace homotopy {
     virtual void from_xml( xmlNodePtr root );
 
     bool contains( Point2D point );
-
+    bool is_connected( Obstacle* p_obstacle );
+    
     std::string get_name();
     Point2D sample_position();
     Segment2D m_subseg;
