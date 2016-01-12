@@ -10,7 +10,7 @@ namespace topology_inference {
   
   enum SpatialInferVizMode {
     SUBREGION,
-    LINE_SUBSEGMENT 
+    LINE_SUBSEGMENT,
   };
 
   class SpatialInferViz : public QLabel {
@@ -57,6 +57,8 @@ namespace topology_inference {
 
     std::vector<homotopy::Obstacle*> get_selected_obstacles() { return m_selected_obstacles; }
     void clear_selected_obstacles() { m_selected_obstacles.clear(); }  
+
+    homotopy::ReferenceFrameSet* get_reference_frame_set() {  return mpReferenceFrameSet; }
   protected:
     bool initWorld(QString filename);
 
@@ -82,6 +84,9 @@ namespace topology_inference {
     std::vector<homotopy::LineSubSegment*> m_viz_subsegments;
 
     std::vector<homotopy::Obstacle*>        m_selected_obstacles;   
+
+    std::vector< std::pair< homotopy::ReferenceFrame*, bool > > m_rules;
+    std::vector< StringClass* > m_string_classes;
 
   signals:
 

@@ -394,5 +394,21 @@ void SpatialInferWindow::onShowConfig() {
 }
 
 void SpatialInferWindow::onExecute() {
+  if( mpViz->get_spatial_relation_mgr()->m_start_x < 0 ||
+      mpViz->get_spatial_relation_mgr()->m_start_y < 0 ) {
+    if( mpMsgBox ) {
+      mpMsgBox->setText( "Start position not set" );
+      mpMsgBox->show();
+    }
+  } 
 
+  if( mpViz->get_spatial_relation_mgr()->m_goal_x < 0 ||
+      mpViz->get_spatial_relation_mgr()->m_goal_y < 0 ) {
+    if( mpMsgBox ) {
+      mpMsgBox->setText( "Goal position not set" );
+      mpMsgBox->show();
+    } 
+  }
+
+  vector<StringClass*> string_classes = mpViz->get_spatial_relation_mgr()->get_string_classes( mpViz->get_reference_frame_set() ); 
 }

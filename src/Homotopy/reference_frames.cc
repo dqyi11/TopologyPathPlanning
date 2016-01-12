@@ -10,6 +10,7 @@ ReferenceFrame::ReferenceFrame( LineSubSegment* p_subseg ) {
   m_connect_to_cp = false;
   m_segment = Segment2D( p_subseg->m_subseg.source(), p_subseg->m_subseg.target() );
   mp_line_subsegment = NULL;
+  m_mid_point = Point2D( (p_subseg->m_subseg.source().x()+p_subseg->m_subseg.target().x())/2, (p_subseg->m_subseg.source().y()+p_subseg->m_subseg.target().y())/2 ); 
 }
 
 ReferenceFrame::~ReferenceFrame() {

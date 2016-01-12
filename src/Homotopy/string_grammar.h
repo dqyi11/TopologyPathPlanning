@@ -67,9 +67,9 @@ namespace homotopy {
     virtual bool is_equivalent( std::vector< std::string > str_a , std::vector< std::string > str_b );
     std::vector< std::vector< Adjacency > > find_simple_paths();
     std::vector< std::vector< Adjacency > > find_paths( std::vector< std::vector< std::string > > strs );
-protected:
     std::vector< std::vector< std::string > > find_simple_strings();
 
+protected:
     std::vector<Transition*> _transitions;
     std::vector<State*>      _states;
 

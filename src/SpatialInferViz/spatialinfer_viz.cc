@@ -23,7 +23,13 @@
 #define START_COLOR             QColor(255,0,0)
 #define GOAL_COLOR              QColor(0,0,255)
 
+#define RULE_LINE_WIDTH         4
+#define RULE_POS_COLOR          QColor(0,255,0)
+#define RULE_NEG_COLOR          QColor(255,0,0)
+#define STRING_CLASS_POINT_SIZE 4
+#define STRING_CLASS_POINT_COLOR QColor(0,255,255)
 
+using namespace std;
 using namespace homotopy;
 using namespace topology_inference;
 
@@ -365,7 +371,55 @@ void SpatialInferViz::paintEvent(QPaintEvent * e) {
           gt_painter.end();
         }
       }
-    }
+
+      QPainter pos_ref_painter(this);
+      QPen pos_ref_paintpen( RULE_POS_COLOR );
+      pos_ref_paintpen.setWidth( RULE_LINE_WIDTH );
+      pos_ref_painter.setPen( pos_ref_paintpen );
+      QPainter neg_ref_painter(this);
+      QPen neg_ref_paintpen( RULE_NEG_COLOR );
+      neg_ref_paintpen.setWidth( RULE_LINE_WIDTH );
+      neg_ref_painter.setPen( neg_ref_paintpen );
+      for( vector< pair< ReferenceFrame*, bool > >::iterator it =  m_rules.begin();
+           it != m_rules.end(); it++ ) {
+        pair< ReferenceFrame*, bool > rule = (*it);
+        double r_src_x = CGAL::to_double( rule.first->m_segment.source().x() );
+        double r_src_y = CGAL::to_double( rule.first->m_segment.source().y() );
+        double r_end_x = CGAL::to_double( rule.first->m_segment.target().x() );
+        double r_end_y = CGAL::to_double( rule.first->m_segment.target().y() );
+        if( true == rule.second ) {
+          pos_ref_painter.drawLine( QPoint( r_src_x , r_src_y ), QPoint( r_end_x , r_end_y ));
+        }
+        else {
+          neg_ref_painter.drawLine( QPoint( r_src_x , r_src_y ), QPoint( r_end_x , r_end_y ));
+        } 
+      }
+      pos_ref_painter.end();
+      neg_ref_painter.end();
+
+      QPainter st_cls_painter(this);
+      QPen st_cls_paintpen( STRING_CLASS_POINT_COLOR );
+      st_cls_paintpen.setWidth( STRING_CLASS_POINT_SIZE );
+      st_cls_painter.setPen( st_cls_paintpen ); 
+      for( vector< StringClass* >::iterator it = m_string_classes.begin();
+           it != m_string_classes.end(); it++ ) {
+        StringClass* p_string_class = (*it);
+        if( p_string_class ) {
+          for( vector<ReferenceFrame*>::iterator rf_it = p_string_class->mp_reference_frames.begin();
+               rf_it != p_string_class->mp_reference_frames.end(); rf_it++ ) {
+
+            ReferenceFrame* p_rf_str_cls = (*rf_it);
+            if( p_rf_str_cls ) {
+              double r_mid_x = CGAL::to_double( p_rf_str_cls->m_mid_point.x() );
+              double r_mid_y = CGAL::to_double( p_rf_str_cls->m_mid_point.y() );
+              st_cls_painter.drawPoint( QPoint( r_mid_x, r_mid_y ) );
+            }
+          }
+        }
+      }
+      st_cls_painter.end();     
+
+    } 
   }
 }
 
@@ -528,13 +582,13 @@ bool SpatialInferViz::load( QString filename ) {
 
   mpMgr->mp_worldmap->from_xml(filename.toStdString());
 
-  QPixmap emptyPix( mpMgr->mp_worldmap->get_width(), mpMgr->mp_worldmap->get_height() );
+  QPixmap emptyPix( mpMgr->get_world_map()->get_width(), mpMgr->get_world_map()->get_height() );
   emptyPix.fill(QColor("white"));
   std::cout << " EMPTY PIX " << emptyPix.width() << " * " << emptyPix.height() << std::endl;
   //setPixmap(pix);
   setPixmap(emptyPix);
 
-  mpMgr->mp_worldmap->init(false);
+  mpMgr->get_world_map()->init(false);
   repaint();
 
   return true;
@@ -542,10 +596,10 @@ bool SpatialInferViz::load( QString filename ) {
 
 SubRegionSet* SpatialInferViz::getSelectedRegion() {
   SubRegionSet* p_region = NULL;
-  if ( mpMgr->mp_worldmap ) {
-    if ( mpMgr->mp_worldmap->get_subregion_set().size() > 0 ) {
-      if( mRegionIdx >= 0 && mRegionIdx < mpMgr->mp_worldmap->get_subregion_set().size() ) {
-        return mpMgr->mp_worldmap->get_subregion_set()[ mRegionIdx ];
+  if ( mpMgr->get_world_map() ) {
+    if ( mpMgr->get_world_map()->get_subregion_set().size() > 0 ) {
+      if( mRegionIdx >= 0 && mRegionIdx < mpMgr->get_world_map()->get_subregion_set().size() ) {
+        return mpMgr->get_world_map()->get_subregion_set()[ mRegionIdx ];
       }
     }  
   }
@@ -568,10 +622,10 @@ SubRegion* SpatialInferViz::getSelectedSubregion() {
 
 LineSubSegmentSet* SpatialInferViz::getSelectedLineSubsegmentSet() {
   LineSubSegmentSet* p_subseg_set = NULL;
-  if ( mpMgr->mp_worldmap ) {
-    if ( mpMgr->mp_worldmap->get_linesubsegment_set().size() > 0 ) {
-      if( mSubsegmentSetIdx >= 0 && mSubsegmentSetIdx < mpMgr->mp_worldmap->get_linesubsegment_set().size() ) {
-        return mpMgr->mp_worldmap->get_linesubsegment_set()[ mSubsegmentSetIdx ];
+  if ( mpMgr->get_world_map() ) {
+    if ( mpMgr->get_world_map()->get_linesubsegment_set().size() > 0 ) {
+      if( mSubsegmentSetIdx >= 0 && mSubsegmentSetIdx < mpMgr->get_world_map()->get_linesubsegment_set().size() ) {
+        return mpMgr->get_world_map()->get_linesubsegment_set()[ mSubsegmentSetIdx ];
       }
     }  
   }
