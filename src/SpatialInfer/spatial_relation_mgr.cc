@@ -72,15 +72,25 @@ SpatialRelationMgr::~SpatialRelationMgr() {
 }
 
 vector< pair<ReferenceFrame*, bool> > SpatialRelationMgr::get_rules( ReferenceFrameSet* p_reference_frame_set ) {
-  vector< pair<ReferenceFrame*, bool> > reference_frames;
+  vector< pair<ReferenceFrame*, bool> > rules;
   for( unsigned int i=0; i < mp_functions.size(); i++ ) {
     cout << "FUNC: " << mp_functions[i]->get_name() << endl;
     vector< pair<ReferenceFrame*, bool> > rfs = mp_functions[i]->get_rules( p_reference_frame_set );
+    print_rules( rfs );
     for( unsigned int j=0; j < rfs.size(); j ++ ) {
-      reference_frames.push_back( rfs[j] );
+      rules.push_back( rfs[j] );
     } 
   }
-  return reference_frames;
+  return rules;
+}
+
+void SpatialRelationMgr::print_rules( vector< pair< ReferenceFrame*, bool > > rules ) {
+
+  cout << "RULES" << endl;
+  for( unsigned int i=0; i<m_rules.size(); i++ ) {
+    pair<ReferenceFrame*, bool> rule = m_rules[i];
+    cout << rule.first->get_name() << " " << rule.second << endl;
+  }
 }
 
 vector< string > SpatialRelationMgr::get_spatial_relation_function_names() {

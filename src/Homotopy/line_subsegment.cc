@@ -86,7 +86,8 @@ bool LineSubSegment::is_connected( Obstacle* p_obstacle ) {
        it != m_connected_obstacles.end(); it++ ) {
     Obstacle* p_current_obstacle = (*it);
     if( p_current_obstacle ) {
-      if( p_current_obstacle == p_obstacle ) {
+      //cout << "COMPARE " << p_current_obstacle->get_name() << " " << p_obstacle->get_name() << endl;
+      if( p_current_obstacle->get_name() == p_obstacle->get_name() ) {
         return true;
       }
     }

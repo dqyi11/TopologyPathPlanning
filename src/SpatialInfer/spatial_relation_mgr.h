@@ -33,6 +33,7 @@ namespace topology_inference {
     void get_string_classes( homotopy::ReferenceFrameSet* p_rfs  );
  
     homotopy::WorldMap* get_world_map() {  return mp_worldmap; }
+    void print_rules( std::vector< std::pair< homotopy::ReferenceFrame*, bool > > rules );
 
     std::vector< std::vector< std::string > > filter( std::vector< std::vector< std::string > > string_set, std::vector< std::pair< homotopy::ReferenceFrame*, bool > > rules );
     bool is_eligible( std::vector< std::string > string_item, std::vector< std::pair< homotopy::ReferenceFrame*, bool > > rules );
