@@ -196,12 +196,12 @@ bool LineSubSegmentSet::load( vector<IntersectionPoint>& intersections ) {
         if ( sec1.m_dist_to_bk <= _p_obstacle->m_dist_bk2cp && sec2.m_dist_to_bk >= _p_obstacle->m_dist_bk2cp ) {
           LineSubSegment* p_subseg = new LineSubSegment( sec1.m_point , _p_obstacle->get_world()->get_central_point(), this, idx, true );
           p_subseg->m_connected_obstacles.push_back( sec1.mp_obstacle );
-          p_subseg->m_connected_obstacles.push_back( sec2.mp_obstacle );
+          p_subseg->m_is_connected_to_central_point = true;
           m_subsegs.push_back( p_subseg );
           idx += 1;
 
           LineSubSegment* p_subseg2 = new LineSubSegment( _p_obstacle->get_world()->get_central_point(), sec2.m_point, this, idx, true );
-          p_subseg2->m_connected_obstacles.push_back( sec1.mp_obstacle );
+          p_subseg2->m_is_connected_to_central_point = true;
           p_subseg2->m_connected_obstacles.push_back( sec2.mp_obstacle );
           m_subsegs.push_back( p_subseg2 );
           idx += 1;
@@ -237,12 +237,13 @@ bool LineSubSegmentSet::load( vector<IntersectionPoint>& intersections ) {
       if( _p_obstacle->get_world()->is_in_obstacle(mid_point) == false ) {
         LineSubSegment* p_subseg = new LineSubSegment( intersections[intersections.size()-1].m_point, _p_obstacle->get_world()->get_central_point(), this, idx, true );
         p_subseg->m_connected_obstacles.push_back( intersections[intersections.size()-1].mp_obstacle );
-        p_subseg->m_connected_to_boundary = true;
+        p_subseg->m_is_connected_to_central_point = true;
         m_subsegs.push_back( p_subseg );
         idx += 1;
 
         LineSubSegment* p_subseg2 = new LineSubSegment( _p_obstacle->get_world()->get_central_point(), end_point, this, idx, true );
         p_subseg2->m_connected_obstacles.push_back( intersections[intersections.size()-1].mp_obstacle );
+        p_subseg2->m_is_connected_to_central_point = true;
         p_subseg2->m_connected_to_boundary = true;
         m_subsegs.push_back( p_subseg2 );
         idx += 1;
