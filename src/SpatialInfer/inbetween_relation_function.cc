@@ -16,10 +16,34 @@ vector< pair<ReferenceFrame*, bool> > InBetweenRelationFunction::get_rules( Refe
   vector< pair<ReferenceFrame*, bool> > rules;
 
   if( p_reference_frame_set ) {
+    // check whether there is a reference frame connecting to reference frames
     for( unsigned int i=0; i<p_reference_frame_set->get_reference_frames().size(); i++ ) {
       ReferenceFrame* p_ref = p_reference_frame_set->get_reference_frames()[i];
       if( p_ref ) {
-        
+        if( p_ref->mp_line_subsegment ) {
+          if( p_ref->mp_line_subsegment->is_connected( mp_obstacles[0] ) &&
+              p_ref->mp_line_subsegment->is_connected( mp_obstacles[1] ) ) {
+            rules.push_back( make_pair( p_ref, true ) );
+          }
+        }    
+      }
+    }
+    if( rules.size() == 0 ) {
+      for( unsigned int i=0; i<p_reference_frame_set->get_reference_frames().size(); i++ ) {
+        ReferenceFrame* p_ref = p_reference_frame_set->get_reference_frames()[i];
+        if( p_ref ) {
+          if( p_ref->mp_line_subsegment ) {
+            if( p_ref->mp_line_subsegment->is_connected( mp_obstacles[0] ) &&
+                p_ref->mp_line_subsegment->m_is_connected_to_central_point ) {
+
+              rules.push_back( make_pair( p_ref, true ) );
+            }
+            else if( p_ref->mp_line_subsegment->is_connected( mp_obstacles[1] ) &&
+                     p_ref->mp_line_subsegment->m_is_connected_to_central_point ) {
+              rules.push_back( make_pair( p_ref, true ) );
+            }
+          }
+        }
       }
     }
   }

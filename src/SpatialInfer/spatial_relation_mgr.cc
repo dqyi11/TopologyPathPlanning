@@ -140,6 +140,7 @@ void SpatialRelationMgr::get_string_classes( ReferenceFrameSet* p_rfs  ) {
     if( p_grammar ){
       vector< vector< string > > all_simple_strings = p_grammar->find_simple_strings(); 
       m_rules = get_rules( p_rfs );
+      print_rules( m_rules );
       string_set = filter( all_simple_strings, m_rules );
         
       delete p_grammar;

@@ -26,6 +26,8 @@ namespace homotopy {
     virtual void from_xml( const std::string& filename );
     virtual void from_xml( xmlNodePtr root );
 
+    Point2D get_centroid() { return _centroid; }
+
     WorldMap* get_world() { return _p_world; }
     int get_index () { return _index; }
     std::string get_name();

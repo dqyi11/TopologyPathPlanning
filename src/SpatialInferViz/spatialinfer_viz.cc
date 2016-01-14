@@ -352,10 +352,6 @@ void SpatialInferViz::paintEvent(QPaintEvent * e) {
       QPen pos_ref_paintpen( RULE_POS_COLOR );
       pos_ref_paintpen.setWidth( RULE_LINE_WIDTH );
       pos_ref_painter.setPen( pos_ref_paintpen );
-      QPainter neg_ref_painter(this);
-      QPen neg_ref_paintpen( RULE_NEG_COLOR );
-      neg_ref_paintpen.setWidth( RULE_LINE_WIDTH );
-      neg_ref_painter.setPen( neg_ref_paintpen );
       for( vector< pair< ReferenceFrame*, bool > >::iterator it =  mpMgr->m_rules.begin();
            it != mpMgr->m_rules.end(); it++ ) {
         pair< ReferenceFrame*, bool > rule = (*it);
@@ -363,12 +359,21 @@ void SpatialInferViz::paintEvent(QPaintEvent * e) {
           pos_ref_painter.drawLine( toQPoint( rule.first->m_segment.source() ), 
                                     toQPoint( rule.first->m_segment.target() ));
         }
-        else {
-          neg_ref_painter.drawLine( toQPoint( rule.first->m_segment.source() ),
-                                    toQPoint( rule.first->m_segment.target() ));
-        } 
       }
       pos_ref_painter.end();
+
+      QPainter neg_ref_painter(this);
+      QPen neg_ref_paintpen( RULE_NEG_COLOR );
+      neg_ref_paintpen.setWidth( RULE_LINE_WIDTH );
+      neg_ref_painter.setPen( neg_ref_paintpen );
+      for( vector< pair< ReferenceFrame*, bool > >::iterator it =  mpMgr->m_rules.begin();
+           it != mpMgr->m_rules.end(); it++ ) {
+        pair< ReferenceFrame*, bool > rule = (*it);
+        if( false == rule.second ) {
+          neg_ref_painter.drawLine( toQPoint( rule.first->m_segment.source() ),
+                                    toQPoint( rule.first->m_segment.target() ));
+        }
+      }
       neg_ref_painter.end();
 
       if( mp_viz_string_class ) {
