@@ -10,6 +10,7 @@
 #include "img_load_util.h"
 #include "expanding_tree.h"
 
+using namespace std;
 using namespace homotopy;
 using namespace mlrrts;
 
@@ -66,6 +67,7 @@ void MLRRTstarWindow::createMenuBar() {
   mpFileMenu->addAction(mpOpenAction);
   mpFileMenu->addAction(mpSaveAction);
   mpFileMenu->addAction(mpExportAction);
+  mpFileMenu->addAction(mpExportPathAction);
 
   mpEditMenu = menuBar()->addMenu("&Edit");
   mpEditMenu->addAction(mpLoadMapAction);
@@ -88,6 +90,7 @@ void MLRRTstarWindow::createActions() {
   mpOpenAction = new QAction("Open", this);
   mpSaveAction = new QAction("Save", this);
   mpExportAction = new QAction("Export", this);
+  mpExportPathAction = new QAction("Export Path", this);
   mpLoadMapAction = new QAction("Load Map", this);
   mpLoadObjAction = new QAction("Config Objective", this);
   mpRunAction = new QAction("Run", this);
@@ -95,6 +98,8 @@ void MLRRTstarWindow::createActions() {
   connect(mpOpenAction, SIGNAL(triggered()), this, SLOT(onOpen()));
   connect(mpSaveAction, SIGNAL(triggered()), this, SLOT(onSave()));
   connect(mpExportAction, SIGNAL(triggered()), this, SLOT(onExport()));
+  connect(mpExportPathAction, SIGNAL(triggered()), this, SLOT(onExportPath()));
+
   connect(mpLoadMapAction, SIGNAL(triggered()), this, SLOT(onLoadMap()));
   connect(mpLoadObjAction, SIGNAL(triggered()), this, SLOT(onLoadObj()));
   connect(mpRunAction, SIGNAL(triggered()), this, SLOT(onRun()));
@@ -179,6 +184,17 @@ void MLRRTstarWindow::onExport() {
   if (pathFilename != "") {
     mpViz->m_PPInfo.m_paths_output = pathFilename;
     exportPaths();
+  }
+}
+
+void MLRRTstarWindow::onExportPath() {
+
+  QString pathFilename = QFileDialog::getSaveFileName(this, tr("Save File"), "./", tr("Txt Files (*.txt)"));
+  if (pathFilename != "") {
+    Path* p_viz_path = mpViz->get_viz_path();
+    if( p_viz_path ) {
+      exportPath( p_viz_path, pathFilename );
+    }
   }
 }
 
@@ -553,4 +569,19 @@ void MLRRTstarWindow::onExportAllSimpleStrings() {
       }
     }
   }
+}
+
+bool MLRRTstarWindow::exportPath( Path* path, QString filename ) {
+  if( path ) {
+    QFile file( filename );
+    if( file.open( QIODevice::ReadWrite ) ) {
+      QTextStream stream( &file );
+      //stream << path->m_start[0] << " " << path->m_start[1] << "\n";
+      for( unsigned int i=0; i < path->m_way_points.size(); i++ ) {
+        stream << path->m_way_points[i][0] << " " << path->m_way_points[i][1] << "\n";
+      }
+      //stream << path->m_goal[0] << " " << path->m_goal[1] << "\n";
+    }
+  }
+  return false;
 }

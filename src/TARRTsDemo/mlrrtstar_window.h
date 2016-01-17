@@ -22,6 +22,7 @@ namespace mlrrts {
     ~MLRRTstarWindow();
 
     bool exportPaths();
+    bool exportPath( Path* path, QString filename );
     void planPath();
     bool setupPlanning(QString filename);
     MLRRTstarViz* mpViz;
@@ -43,6 +44,7 @@ namespace mlrrts {
     QAction* mpOpenAction;
     QAction* mpSaveAction;
     QAction* mpExportAction;
+    QAction* mpExportPathAction;
 
     QMenu*   mpEditMenu;
     QAction* mpLoadMapAction;
@@ -65,8 +67,8 @@ namespace mlrrts {
     QPixmap* mpMap;
     QPoint   mCursorPoint;
 
-    MLRRTstarConfig* mpMLRRTstarConfig;
-    MLRRTstar*       mpMLRRTstar;
+    MLRRTstarConfig*             mpMLRRTstarConfig;
+    MLRRTstar*                   mpMLRRTstar;
     homotopy::ReferenceFrameSet* mpReferenceFrameSet;
     bool mShowObj;
 
@@ -75,6 +77,7 @@ namespace mlrrts {
     void onOpen();
     void onSave();
     void onExport();
+    void onExportPath();
     void onLoadMap();
     void onLoadObj();
     void onRun();

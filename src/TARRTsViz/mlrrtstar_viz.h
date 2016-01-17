@@ -70,6 +70,8 @@ namespace mlrrts{
     
     int get_found_path_index() { return m_found_path_index; }
     QString item_selected( QPoint pos ); 
+
+    Path* get_viz_path();
   signals:
   
   public slots:

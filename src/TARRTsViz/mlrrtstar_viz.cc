@@ -220,30 +220,14 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
     QPen fpt_paintpen( PATH_COLOR );
     fpt_paintpen.setWidth( PATH_WIDTH );
     fpt_painter.setPen(fpt_paintpen);
-
-    if( m_string_class_index < 0 ) {
-      if(m_PPInfo.mp_found_paths.size() > 0 && m_found_path_index >= 0  ) {
-        Path* p = m_PPInfo.mp_found_paths[m_found_path_index];
-        int point_num = p->m_way_points.size();
-        if(point_num > 0) {
-          for(int i=0;i<point_num-1;i++) {
-            fpt_painter.drawLine( toQPoint(p->m_way_points[i]), 
-                                  toQPoint(p->m_way_points[i+1]) );
-          }
-        }
-      }
-    }
-    else {
-      StringClass* p_str_cls = mp_tree->get_expanding_tree_mgr()->get_string_classes()[ m_string_class_index ];
-      if( p_str_cls ) {
-        if ( p_str_cls->mp_path ) {
-          int point_num = p_str_cls->mp_path->m_way_points.size();
-          if(point_num > 0) {
-            for(int i=0;i<point_num-1;i++) {
-              fpt_painter.drawLine( toQPoint(p_str_cls->mp_path->m_way_points[i]),
-                                    toQPoint(p_str_cls->mp_path->m_way_points[i+1]) );
-            }
-          }
+    
+    Path* p_viz_path = get_viz_path();
+    if( p_viz_path ) {
+      int point_num = p_viz_path->m_way_points.size();
+      if(point_num > 0) {
+        for(int i=0;i<point_num-1;i++) {
+          fpt_painter.drawLine( toQPoint(p_viz_path->m_way_points[i]), 
+                                toQPoint(p_viz_path->m_way_points[i+1]) );
         }
       }
     }
@@ -650,4 +634,27 @@ QString MLRRTstarViz::item_selected( QPoint pos ) {
     }
   }
   return name;
+}
+
+Path* MLRRTstarViz::get_viz_path() {
+
+  /* DRAW PATHS */ 
+  if( m_show_paths ) {
+
+    if( m_string_class_index < 0 ) {
+      if(m_PPInfo.mp_found_paths.size() > 0 && m_found_path_index >= 0  ) {
+        Path* p = m_PPInfo.mp_found_paths[m_found_path_index];
+        return p;
+      }
+    }
+    else {
+      StringClass* p_str_cls = mp_tree->get_expanding_tree_mgr()->get_string_classes()[ m_string_class_index ];
+      if( p_str_cls ) {
+        if ( p_str_cls->mp_path ) {
+          return p_str_cls->mp_path;
+        }
+      }
+    }
+  }
+  return NULL;
 }
