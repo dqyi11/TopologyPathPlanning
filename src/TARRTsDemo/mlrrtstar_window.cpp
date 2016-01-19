@@ -318,6 +318,7 @@ void MLRRTstarWindow::planPath() {
   mpViz->set_finished_planning( false );
    
   mpMLRRTstar->get_expanding_tree_mgr()->get_expanding_tree()->output( "output.dot" );
+  mpMLRRTstar->get_expanding_tree_mgr()->get_expanding_tree()->print();
   mpMLRRTstar->get_expanding_tree_mgr()->export_subregion_mgrs("subregion_mgrs.txt"); 
 
   while( ( false == mpViz->is_finished_planning() )

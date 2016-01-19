@@ -701,7 +701,9 @@ bool MLRRTstar::_is_homotopic_constrained( MLRRTNode* p_node_parent, MLRRTNode* 
         //cout << "COMPARE child=" << p_exp_node_child->m_name << "(" << p_exp_node_child->mp_in_edge->mp_from->m_name << ") " << p_exp_node_parent->m_name << endl;
         if( p_exp_node_child->mp_in_edge->mp_from == p_exp_node_parent ) {
           //cout << "HAPPENED " << endl;
-          return true;
+          if( p_exp_node_child->mp_in_edge->mp_reference_frame->is_line_crossed( toPoint2D( p_node_parent->m_pos ), toPoint2D( p_node_child->m_pos ) ) ) {
+            return true;
+          }
         }
       }
     }

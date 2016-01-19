@@ -383,3 +383,19 @@ std::vector<ExpandingNode*> ExpandingTree::get_leaf_nodes() {
   return leaf_nodes;
 } 
 
+void ExpandingTree::print() {
+  std::cout << "NODE " << std::endl;
+  for( unsigned int i=0; i < m_nodes.size(); i++ ) {
+    ExpandingNode* p_node = m_nodes[i];
+    if(p_node) {
+      std::cout << p_node->m_name << " " << p_node->mp_subregion->get_name() << " " << std::endl;
+    }
+  }
+  std::cout << "EDGE " << std::endl;
+  for( unsigned int i=0; i < m_edges.size(); i++ ) {
+    ExpandingEdge* p_edge = m_edges[i];
+    if(p_edge) {
+      std::cout << p_edge->m_name << " " << p_edge->mp_reference_frame->get_name() << " " << p_edge->mp_line_subsegment->get_name() << std::endl;
+    }
+  }
+}
