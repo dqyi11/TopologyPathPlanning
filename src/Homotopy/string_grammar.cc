@@ -7,18 +7,19 @@
 #include <boost/graph/iteration_macros.hpp>
 #include "string_grammar.h"
 
+using namespace std;
 using namespace boost;
 using namespace homotopy;
 
-struct Vertex{ std::string name; };
-struct Edge{ std::string name; double weight; };
+struct Vertex{ string name; };
+struct Edge{ string name; double weight; };
 
 typedef adjacency_list<vecS, vecS, undirectedS, Vertex, Edge> Graph;
 typedef graph_traits<Graph>::vertex_descriptor vertex_t;
 typedef graph_traits<Graph>::edge_descriptor   edge_t;
 
 
-State::State( std::string name ) {
+State::State( string name ) {
   m_name = name;
 }
 
@@ -34,8 +35,8 @@ bool State::operator==(const State& other) const {
 }
 
 /*
-Transition* State::find_transition( std::string trans_name ) {
-  for( std::vector<Transition*>::iterator it = m_transitions.begin();
+Transition* State::find_transition( string trans_name ) {
+  for( vector<Transition*>::iterator it = m_transitions.begin();
        it != m_transitions.end(); it++ ) {
     Transition* p_ref_transition = (*it);
     if ( p_ref_transition->m_name == trans_name ) {
@@ -45,12 +46,12 @@ Transition* State::find_transition( std::string trans_name ) {
   return NULL;
 }*/
 
-Adjacency State::find_adjacency( std::string trans_name ) {
+Adjacency State::find_adjacency( string trans_name ) {
   Adjacency find_adj;
   find_adj.mp_state = NULL;
   find_adj.mp_transition = NULL;
 
-  for( std::vector<Adjacency>::iterator it = m_adjacencies.begin();
+  for( vector<Adjacency>::iterator it = m_adjacencies.begin();
        it != m_adjacencies.end(); it++ ) {
     Adjacency ref_adjacency = (*it);
     if ( ref_adjacency.mp_transition == NULL ) {
@@ -63,7 +64,7 @@ Adjacency State::find_adjacency( std::string trans_name ) {
   return find_adj;  
 }
 
-Transition::Transition( State* p_from , State* p_to , std::string name ) {
+Transition::Transition( State* p_from , State* p_to , string name ) {
   m_name = name;
   mp_from_state = p_from;
   mp_to_state = p_to;
@@ -88,8 +89,8 @@ StringGrammar::~StringGrammar() {
 
 }
 
-State* StringGrammar::find_state( std::string name ) {
-  for( std::vector<State*>::iterator it = _states.begin();
+State* StringGrammar::find_state( string name ) {
+  for( vector<State*>::iterator it = _states.begin();
        it != _states.end(); it++ ) {
     State* p_ref_state = (*it);
     if ( p_ref_state->m_name == name ) {
@@ -99,7 +100,7 @@ State* StringGrammar::find_state( std::string name ) {
   return NULL;
 }
     
-int StringGrammar::get_state_index( std::string name ) {
+int StringGrammar::get_state_index( string name ) {
   for( unsigned int i = 0; i < _states.size(); i ++ ) {
     if( _states[i]->m_name == name ) {
       return i;
@@ -108,8 +109,8 @@ int StringGrammar::get_state_index( std::string name ) {
   return -1;
 }
 
-Transition* StringGrammar::find_transition( std::string name ) {
-  for( std::vector<Transition*>::iterator it = _transitions.begin();
+Transition* StringGrammar::find_transition( string name ) {
+  for( vector<Transition*>::iterator it = _transitions.begin();
        it != _transitions.end(); it++ ) {
     Transition* p_ref_transition = (*it);
     if (p_ref_transition->m_name == name) {
@@ -121,7 +122,7 @@ Transition* StringGrammar::find_transition( std::string name ) {
 
 
 bool StringGrammar::has_transition( Transition* p_transition ) {
-  for( std::vector<Transition*>::iterator it = _transitions.begin();
+  for( vector<Transition*>::iterator it = _transitions.begin();
        it != _transitions.end(); it++ ) {
     Transition* p_ref_transition = (*it);
     if ((*p_ref_transition) == (*p_transition)) {
@@ -132,7 +133,7 @@ bool StringGrammar::has_transition( Transition* p_transition ) {
 }
 
 bool StringGrammar::has_state( State* p_state ) {
-  for( std::vector<State*>::iterator it = _states.begin();
+  for( vector<State*>::iterator it = _states.begin();
        it != _states.end(); it++ ) {
     State* p_ref_state = (*it);
     if ( (*p_ref_state)==(*p_state) ) {
@@ -142,7 +143,7 @@ bool StringGrammar::has_state( State* p_state ) {
   return false;
 }
 
-bool StringGrammar::add_transition( std::string from_name, std::string to_name, std::string name ) {
+bool StringGrammar::add_transition( string from_name, string to_name, string name ) {
   Transition* p_transition = find_transition( name );
   if ( p_transition ) {
     return false;
@@ -173,7 +174,7 @@ bool StringGrammar::add_transition( std::string from_name, std::string to_name, 
   return true;
 }
 
-bool StringGrammar::set_init( std::string name ) {
+bool StringGrammar::set_init( string name ) {
   State* p_state = find_state( name );
   if ( p_state == NULL ) {
     return false;
@@ -182,7 +183,7 @@ bool StringGrammar::set_init( std::string name ) {
   return true;
 }
 
-bool StringGrammar::set_goal( std::string name ) {
+bool StringGrammar::set_goal( string name ) {
   State* p_state = find_state( name );
   if ( p_state == NULL ) {
     return false;
@@ -191,11 +192,11 @@ bool StringGrammar::set_goal( std::string name ) {
   return true;
 }
 
-bool StringGrammar::is_valid_substring( std::vector< std::string > substr ) {
+bool StringGrammar::is_valid_substring( vector< string > substr ) {
   State* p_current_state = _p_init_state;
-  for ( std::vector< std::string >::iterator it = substr.begin();
+  for ( vector< string >::iterator it = substr.begin();
         it != substr.end(); it++ ) {
-    std::string name = (*it);
+    string name = (*it);
     Adjacency adj = p_current_state->find_adjacency( name );
     if ( adj.mp_transition == NULL ) {
       return false;
@@ -205,11 +206,11 @@ bool StringGrammar::is_valid_substring( std::vector< std::string > substr ) {
   return true;
 }
 
-bool StringGrammar::is_valid_string( std::vector< std::string > str ) {
+bool StringGrammar::is_valid_string( vector< string > str ) {
   unsigned int str_num = str.size();
   State* p_current_state = _p_init_state;
   for ( unsigned int i=0; i < str_num; i++ ) {
-    std::string name = str[i];
+    string name = str[i];
     Adjacency adj = p_current_state->find_adjacency( name );
     if ( adj.mp_transition == NULL ) {
       return false;
@@ -226,9 +227,9 @@ bool StringGrammar::is_valid_string( std::vector< std::string > str ) {
   return false;
 }
 
-bool StringGrammar::is_equivalent( std::vector< std::string > str_a , std::vector< std::string > str_b ) {
-  std::vector< std::string > str_a_stack;
-  std::vector< std::string > str_b_stack;
+bool StringGrammar::is_equivalent( vector< string > str_a , vector< string > str_b ) {
+  vector< string > str_a_stack;
+  vector< string > str_b_stack;
   
   str_a_stack = get_non_repeating_form( str_a );
   str_b_stack = get_non_repeating_form( str_b );
@@ -244,10 +245,10 @@ bool StringGrammar::is_equivalent( std::vector< std::string > str_a , std::vecto
   return true;
 }
 
-std::vector< std::string > StringGrammar::get_non_repeating_form( std::vector< std::string > id_str ) {
-  std::vector< std::string > str_non_repeat;
+vector< string > StringGrammar::get_non_repeating_form( vector< string > id_str ) {
+  vector< string > str_non_repeat;
   for( unsigned int i = 0; i < id_str.size(); i ++ ) {
-    std::string id = id_str[i];
+    string id = id_str[i];
     if ( str_non_repeat.size() > 0 && str_non_repeat.back() == id ) {
       str_non_repeat.pop_back();
     }
@@ -258,43 +259,43 @@ std::vector< std::string > StringGrammar::get_non_repeating_form( std::vector< s
   return str_non_repeat;
 }
 
-void StringGrammar::output( std::string filename ) {
+void StringGrammar::output( string filename ) {
     
   const unsigned int edge_num = _transitions.size();
   const unsigned int vertex_num = _states.size();
 
-  //std::cout << "STRING_GRAMMR::EDGE_NUM::" << edge_num << std::endl;
-  //std::cout << "STRING_GRAMMR::VERTEX_NUM::" << vertex_num << std::endl;
+  //cout << "STRING_GRAMMR::EDGE_NUM::" << edge_num << endl;
+  //cout << "STRING_GRAMMR::VERTEX_NUM::" << vertex_num << endl;
   
   Graph g; 
-  std::vector<vertex_t> vs;
+  vector<vertex_t> vs;
   for( unsigned int i=0; i < vertex_num; i++) {
     vertex_t vt =  add_vertex( g );
     g[vt].name = _states[i]->m_name;
     vs.push_back(vt);
   }
-  //std::cout << "Finish VERTEX INIT " << vs.size() << std::endl;
-  std::vector<edge_t> es;
+  //cout << "Finish VERTEX INIT " << vs.size() << endl;
+  vector<edge_t> es;
   for( unsigned int i=0; i < edge_num; i ++) {
     bool b = false;
     edge_t et;
     Transition* p_trans = _transitions[i];
     int s_i = get_state_index( p_trans->mp_from_state->m_name );
     int g_i = get_state_index( p_trans->mp_to_state->m_name );
-    std::cout << p_trans->m_name <<  " From " << s_i << " to "  << g_i << std::endl;
+    cout << p_trans->m_name <<  " From " << s_i << " to "  << g_i << endl;
     tie(et, b) = add_edge( vs[s_i], vs[g_i], g );
     g[et].weight = 1.0;
     g[et].name = p_trans->m_name;
     es.push_back(et);
   }
-  //std::cout << "Finish EDGE INIT " << es.size() << std::endl;
-  std::ofstream dot( filename.c_str() );
+  //cout << "Finish EDGE INIT " << es.size() << endl;
+  ofstream dot( filename.c_str() );
   write_graphviz( dot, g , make_label_writer( get( &Vertex::name, g) ), make_label_writer( get( &Edge::name, g) ) );
-  //std::cout << "WRITING " << filename << std::endl;
+  //cout << "WRITING " << filename << endl;
 }
 
-std::vector< std::vector< std::string > > StringGrammar::get_all_simple_strings( ) {
-  std::vector< std::vector< std::string > > simple_strings;
+vector< vector< string > > StringGrammar::get_all_simple_strings( ) {
+  vector< vector< string > > simple_strings;
   if( _p_init_state && _p_goal_state ) { 
     simple_strings = find_simple_strings();
   }
@@ -302,7 +303,7 @@ std::vector< std::vector< std::string > > StringGrammar::get_all_simple_strings(
 }
 
 
-bool is_adjacency_node_not_in_current_path(Adjacency node, std::vector< Adjacency > path ) {
+bool is_adjacency_node_not_in_current_path(Adjacency node, vector< Adjacency > path ) {
   for(unsigned int i=0;i<path.size();i++) {
     /*
     if( path[i].mp_transition == NULL) {
@@ -318,21 +319,21 @@ bool is_adjacency_node_not_in_current_path(Adjacency node, std::vector< Adjacenc
   return true;
 }
 
-void print_path( std::vector< Adjacency > path ) {
-  std::cout << "PATH:";
+void print_path( vector< Adjacency > path ) {
+  cout << "PATH:";
   for(unsigned int i=0;i<path.size();i++) {
-    std::cout << path[i].mp_state->m_name.c_str() << " ";
+    cout << path[i].mp_state->m_name.c_str() << " ";
   }
-  std::cout << std::endl;
+  cout << endl;
 }
 
-std::vector< std::vector< std::string > > StringGrammar::find_simple_strings() {
+vector< vector< string > > StringGrammar::find_simple_strings() {
 
-  std::vector< std::vector< Adjacency > > path_list = find_simple_paths();
-  std::vector< std::vector< std::string > > ids_list;
+  vector< vector< Adjacency > > path_list = find_simple_paths();
+  vector< vector< string > > ids_list;
   for( unsigned int i=0;i<path_list.size(); i++) {
-    std::vector< std::string > ids;
-    std::vector< Adjacency > p = path_list[i];
+    vector< string > ids;
+    vector< Adjacency > p = path_list[i];
     for( unsigned int j=0;j<p.size();j++) {
       Transition* p_transition = p[j].mp_transition;
       if( p_transition ) {
@@ -344,16 +345,16 @@ std::vector< std::vector< std::string > > StringGrammar::find_simple_strings() {
   return ids_list;
 }
 
-std::vector< std::vector< Adjacency > > StringGrammar::find_simple_paths() {
+vector< vector< Adjacency > > StringGrammar::find_simple_paths() {
 
-  std::vector< std::vector< Adjacency > > path_list;
-  std::vector< Adjacency > path;
+  vector< vector< Adjacency > > path_list;
+  vector< Adjacency > path;
   Adjacency init_adj;
   init_adj.mp_state = _p_init_state;
   init_adj.mp_transition = NULL;  
   path.push_back(init_adj);
 
-  std::queue< std::vector< Adjacency > > q;
+  queue< vector< Adjacency > > q;
   q.push(path);
 
   while(!q.empty()) {
@@ -367,26 +368,26 @@ std::vector< std::vector< Adjacency > > StringGrammar::find_simple_paths() {
     }
     State* p_state = last_node_of_path.mp_state;
     if( p_state ) {
-       for(unsigned int i=0; i<p_state->m_adjacencies.size(); i++) {
-         Adjacency adj = p_state->m_adjacencies[i];
-         if(is_adjacency_node_not_in_current_path(adj, path)) {
-           std::vector<Adjacency> new_path( path.begin(), path.end() );
-           new_path.push_back( adj );
-           q.push(new_path);
-         }         
-       }
+      for(unsigned int i=0; i<p_state->m_adjacencies.size(); i++) {
+        Adjacency adj = p_state->m_adjacencies[i];
+        if(is_adjacency_node_not_in_current_path(adj, path)) {
+          vector<Adjacency> new_path( path.begin(), path.end() );
+          new_path.push_back( adj );
+          q.push(new_path);
+        }         
+      }
     }
   }
 
   return path_list;
 }
 
-std::vector< std::vector< Adjacency > > StringGrammar::find_paths( std::vector< std::vector< std::string > > strs ) {
+vector< vector< Adjacency > > StringGrammar::find_paths( vector< vector< string > > strs ) {
 
-  std::vector< std::vector< Adjacency > > path_list;
+  vector< vector< Adjacency > > path_list;
   for( unsigned int i = 0; i < strs.size(); i++ ) {
-    std::vector< std::string > str_id = strs[i];
-    std::vector< Adjacency > path;
+    vector< string > str_id = strs[i];
+    vector< Adjacency > path;
     Adjacency init_adj;
     init_adj.mp_state = _p_init_state;
     init_adj.mp_transition = NULL;  
@@ -394,7 +395,7 @@ std::vector< std::vector< Adjacency > > StringGrammar::find_paths( std::vector< 
 
     Adjacency current_adj = init_adj;
     for( unsigned int j = 0; j < str_id.size(); j ++ ) {
-      std::string id = str_id[j];
+      string id = str_id[j];
 
       Adjacency next_adj = current_adj.mp_state->find_adjacency( id );
       path.push_back( next_adj );
