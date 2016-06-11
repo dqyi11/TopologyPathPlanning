@@ -116,8 +116,10 @@ void BIRRTstarWindow::onOpen() {
   QString tempFilename = QFileDialog::getOpenFileName(this,
              tr("Open File"), "./", tr("XML Files (*.xml)"));
 
-  if(setupPlanning(tempFilename)) {
-    repaint();
+  if(tempFilename!="") {
+    if(setupPlanning(tempFilename)) {
+      repaint();
+    }
   }
 }
 
@@ -136,8 +138,10 @@ bool BIRRTstarWindow::setupPlanning(QString filename) {
 void BIRRTstarWindow::onSave() {
   QString tempFilename = QFileDialog::getSaveFileName(this, tr("Save File"), "./", tr("XML Files (*.xml)"));
 
-  if(mpViz) {
-    mpViz->m_PPInfo.save_to_file(tempFilename);
+  if(tempFilename!="") {
+    if(mpViz) {
+      mpViz->m_PPInfo.save_to_file(tempFilename);
+    }
   }
 }
 
@@ -152,6 +156,10 @@ void BIRRTstarWindow::onExport() {
 bool BIRRTstarWindow::exportPaths() {
   if(mpViz) {
     bool success = false;
+    //Path* path = mpBIRRTstar->find_path();
+    std::vector<Path*> p_paths = mpBIRRTstar->get_paths();
+    mpViz->m_PPInfo.load_paths(p_paths);
+
     success = mpViz->m_PPInfo.export_paths(mpViz->m_PPInfo.m_paths_output);
     success = mpViz->draw_path(mpViz->m_PPInfo.m_paths_output+".png");
     return success;
@@ -163,13 +171,15 @@ void BIRRTstarWindow::onLoadMap() {
   QString tempFilename = QFileDialog::getOpenFileName(this,
              tr("Open Map File"), "./", tr("Map Files (*.*)"));
 
-  QFileInfo fileInfo(tempFilename);
-  QString filename(fileInfo.fileName());
-  mpViz->m_PPInfo.m_map_filename = filename;
-  mpViz->m_PPInfo.m_map_fullpath = tempFilename;
-  qDebug("OPENING ");
-  //qDebug(mpViz->m_PPInfo.m_map_filename.toStdString().c_str());
-  openMap(mpViz->m_PPInfo.m_map_fullpath);
+  if(tempFilename != "") {
+    QFileInfo fileInfo(tempFilename);
+    QString filename(fileInfo.fileName());
+    mpViz->m_PPInfo.m_map_filename = filename;
+    mpViz->m_PPInfo.m_map_fullpath = tempFilename;
+    qDebug("OPENING ");
+    //qDebug(mpViz->m_PPInfo.m_map_filename.toStdString().c_str());
+    openMap(mpViz->m_PPInfo.m_map_fullpath);
+  }
 }
 
 
@@ -241,38 +251,37 @@ void BIRRTstarWindow::onExportGrammar() {
 }
 
 void BIRRTstarWindow::planPath() {
+
   if(mpBIRRTstar) {
-    delete mpBIRRTstar;
-    mpBIRRTstar = NULL;
-  }
-  if (mpViz) {
-    for( std::vector<Path*>::iterator it = mpViz->m_PPInfo.mp_found_paths.begin();
-         it != mpViz->m_PPInfo.mp_found_paths.end(); it ++ ) {
-      Path * p_path = (*it);
-      delete p_path;
-      p_path = NULL;
-    }
-    mpViz->m_PPInfo.mp_found_paths.clear();
+
+      if (mpViz) {
+        for( std::vector<Path*>::iterator it = mpViz->m_PPInfo.mp_found_paths.begin();
+             it != mpViz->m_PPInfo.mp_found_paths.end(); it ++ ) {
+          Path * p_path = (*it);
+          delete p_path;
+          p_path = NULL;
+        }
+        mpViz->m_PPInfo.mp_found_paths.clear();
+      }
+
+      mpViz->m_PPInfo.init_func_param();
+      QString msg = "INIT RRTstar ... \n";
+      msg += "SegmentLen( " + QString::number(mpViz->m_PPInfo.m_segment_length) + " ) \n";
+      msg += "MaxIterationNum( " + QString::number(mpViz->m_PPInfo.m_max_iteration_num) + " ) \n";
+      qDebug() << msg;
+
+      mpBIRRTstar = new BIRRTstar(mpMap->width(), mpMap->height(), mpViz->m_PPInfo.m_segment_length);
+      mpBIRRTstar->set_reference_frames( mpReferenceFrameSet );
+      mpBIRRTstar->set_run_type( mpViz->m_PPInfo.m_run_type );
+      POS2D start(mpViz->m_PPInfo.m_start.x(), mpViz->m_PPInfo.m_start.y());
+      POS2D goal(mpViz->m_PPInfo.m_goal.x(), mpViz->m_PPInfo.m_goal.y());
+
+      mpBIRRTstar->init(start, goal, mpViz->m_PPInfo.mp_func, mpViz->m_PPInfo.mCostDistribution, mpViz->m_PPInfo.m_grammar_type);
+      mpViz->m_PPInfo.get_obstacle_info(mpBIRRTstar->get_map_info());
+      mpViz->set_tree(mpBIRRTstar);
   }
 
-  mpViz->m_PPInfo.init_func_param();
-  QString msg = "INIT RRTstar ... \n";
-  msg += "SegmentLen( " + QString::number(mpViz->m_PPInfo.m_segment_length) + " ) \n";
-  msg += "MaxIterationNum( " + QString::number(mpViz->m_PPInfo.m_max_iteration_num) + " ) \n";
-  qDebug() << msg;
-
-  mpBIRRTstar = new BIRRTstar(mpMap->width(), mpMap->height(), mpViz->m_PPInfo.m_segment_length);
-  mpBIRRTstar->set_reference_frames( mpReferenceFrameSet );
-  mpBIRRTstar->set_run_type( mpViz->m_PPInfo.m_run_type );
-  POS2D start(mpViz->m_PPInfo.m_start.x(), mpViz->m_PPInfo.m_start.y());
-  POS2D goal(mpViz->m_PPInfo.m_goal.x(), mpViz->m_PPInfo.m_goal.y());
-    
-  mpBIRRTstar->init(start, goal, mpViz->m_PPInfo.mp_func, mpViz->m_PPInfo.mCostDistribution, mpViz->m_PPInfo.m_grammar_type);
-  mpViz->m_PPInfo.get_obstacle_info(mpBIRRTstar->get_map_info());
-  mpViz->set_tree(mpBIRRTstar);
   mpViz->set_finished_planning( false );
-    
-
   //mpBIRRTstar->dump_distribution("dist.txt");
   while(mpBIRRTstar->get_current_iteration() <= mpViz->m_PPInfo.m_max_iteration_num) {
     QString msg = "CurrentIteration " + QString::number(mpBIRRTstar->get_current_iteration()) + " ";
@@ -283,12 +292,11 @@ void BIRRTstarWindow::planPath() {
     updateStatus();
     repaint();
   }
+
   qDebug() << "START MERGE ";
   mpBIRRTstar->get_string_class_mgr()->merge();
   qDebug() << "END MERGE ";
-  //Path* path = mpBIRRTstar->find_path();
-  std::vector<Path*> p_paths = mpBIRRTstar->get_paths();
-  mpViz->m_PPInfo.load_paths(p_paths);
+
   mpViz->set_finished_planning( true );
   repaint();
 }
