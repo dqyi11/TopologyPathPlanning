@@ -361,13 +361,19 @@ vector< vector< Adjacency > > StringGrammar::find_simple_paths() {
     path = q.front();
     q.pop();
 
+    // take the last node of a path
     Adjacency last_node_of_path = path[path.size()-1];
+    
+    // see if the last node of a path is the goal state
     if( last_node_of_path.mp_state->m_name == _p_goal_state->m_name ) {
       print_path(path);
       path_list.push_back(path);
     }
+
+    
     State* p_state = last_node_of_path.mp_state;
     if( p_state ) {
+      // check the adjacency
       for(unsigned int i=0; i<p_state->m_adjacencies.size(); i++) {
         Adjacency adj = p_state->m_adjacencies[i];
         if(is_adjacency_node_not_in_current_path(adj, path)) {
