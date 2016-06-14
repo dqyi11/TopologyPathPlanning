@@ -147,3 +147,17 @@ void StringClassMgr::export_grammar( std::string filename ) {
     _p_grammar->output( filename );
   }
 }
+
+void StringClassMgr::dump_historical_data( std::string filename ) {
+  std::ofstream hist_data_file;
+  hist_data_file.open(filename.c_str());
+  for(std::vector< StringClass* >::iterator it = _classes.begin();
+      it != _classes.end(); it++ ) {
+    StringClass* p_str_cls = (*it);
+    if(p_str_cls) {
+      hist_data_file << p_str_cls->get_name() << " : ";
+      p_str_cls->write_historical_data( hist_data_file );
+    }
+  }
+  hist_data_file.close();
+}

@@ -37,6 +37,8 @@ namespace birrts {
     StringClass* find_string_class( std::vector< std::string > str );
     std::vector< StringClass* >& get_string_classes() { return _classes; }  
     void export_grammar( std::string filename );
+
+    void dump_historical_data( std::string filename );
   protected:
     homotopy::StringGrammar* _p_grammar;
     std::vector< StringClass* > _classes;
