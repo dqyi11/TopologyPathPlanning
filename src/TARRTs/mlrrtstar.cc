@@ -535,8 +535,13 @@ Path* MLRRTstar::_get_path( StringClass* p_string_class ) {
       KDNode2D kdnode = _find_nearest( _goal, p_last_exp_node );
       MLRRTNode* p_near_goal = kdnode.get_pri_mlrrtnode();
       if( p_near_goal ) {
-        Path* p_path = _get_path( p_near_goal );
-        return p_path;
+        if( _is_obstacle_free( p_near_goal->m_pos, _goal ) == false ) {
+          Path* p_path = _get_path( p_near_goal );
+          return p_path;
+        }
+        else {
+          return NULL;
+        }
       }
     }
   }

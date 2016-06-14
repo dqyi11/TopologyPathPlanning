@@ -1,3 +1,4 @@
+#include <limits>
 #include "string_class_mgr.h"
 #include "birrtstar.h"
 
@@ -6,7 +7,7 @@ using namespace birrts;
 
 StringClass::StringClass( std::vector< std::string > string, unsigned int created_iteration_num ) {
   m_string = string;
-  m_cost = 0.0;
+  m_cost = numeric_limits<float>::max();
   mp_path = NULL;
   m_created_iteration_num = created_iteration_num;
 }
@@ -38,7 +39,7 @@ void StringClass::dump_historical_data( std::string filename ) {
 
 void StringClass::write_historical_data( std::ostream& out ) {
   for(unsigned int i=0;i<m_created_iteration_num;i++) {
-    out << "None" << " ";
+    out << numeric_limits<float>::max() << " ";
   }
   out << std::endl;
   for(std::vector<double>::iterator it = m_historical_data.begin();
