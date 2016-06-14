@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <iostream>
 #include "kdtreeml2d.h"
 #include "string_grammar.h"
 #include "reference_frames.h"
@@ -25,6 +26,11 @@ namespace mlrrts {
     KDTree2D*                                mp_kd_tree;
     std::vector< ExpandingNode* >            mp_exp_nodes;   
     std::vector< homotopy::ReferenceFrame* > mp_reference_frames; 
+    std::vector< double >                    m_historical_data;
+
+    void dump_historical_data( std::string filename );
+    void write_historical_data( std::ostream& out );
+    void record();
 
     Path*                         mp_path;  
     double                        m_cost;

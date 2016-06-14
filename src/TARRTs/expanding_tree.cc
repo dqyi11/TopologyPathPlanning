@@ -1,4 +1,5 @@
 #include <iostream>
+#include <limits>
 #include <boost/graph/graphviz.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/iteration_macros.hpp>
@@ -25,7 +26,7 @@ StringClass::StringClass( std::vector< std::string > string ) {
   mp_reference_frames.clear();  
  
   mp_path = NULL;
-  m_cost = 0.0;
+  m_cost = numeric_limits<float>::max();
 }
 
 StringClass::~StringClass() {
@@ -69,6 +70,27 @@ void StringClass::add_exp_node( ExpandingNode* p_node ) {
     mp_exp_nodes.push_back( p_node );
     p_node->mp_string_classes.push_back( this );
   }
+}
+
+void StringClass::dump_historical_data( std::string filename ) {
+  std::ofstream hist_data_file;
+  hist_data_file.open(filename.c_str());
+  hist_data_file << get_name() << std::endl;
+  write_historical_data( hist_data_file );
+  hist_data_file.close();
+}
+
+void StringClass::write_historical_data( std::ostream& out ) {
+  for(std::vector<double>::iterator it = m_historical_data.begin();
+      it != m_historical_data.end(); it++ ) {
+    double data = (*it);
+    out << data << " ";
+  }
+  out << std::endl;
+}
+
+void StringClass::record() {
+  m_historical_data.push_back(m_cost);
 }
 
 ExpandingNode::ExpandingNode( string name ) {

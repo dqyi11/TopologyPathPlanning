@@ -73,7 +73,7 @@ void BIRRTstarWindow::createMenuBar() {
   mpToolMenu->addAction(mpSaveScreenAction);
   mpToolMenu->addAction(mpExportGrammarGraphAction);
   mpToolMenu->addAction(mpExportAllSimpleStringsAction);
-  mpFileMenu->addAction(mpExportStringClassHistAction);
+  mpToolMenu->addAction(mpExportStringClassHistAction);
 
   mpContextMenu = new QMenu();
   setContextMenuPolicy(Qt::CustomContextMenu);

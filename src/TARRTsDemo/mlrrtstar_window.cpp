@@ -187,6 +187,8 @@ void MLRRTstarWindow::onExport() {
   QString pathFilename = QFileDialog::getSaveFileName(this, tr("Save File"), "./", tr("Txt Files (*.txt)"));
   if (pathFilename != "") {
     mpViz->m_PPInfo.m_paths_output = pathFilename;
+    std::vector<Path*> p_paths = mpMLRRTstar->get_paths();
+    mpViz->m_PPInfo.load_paths(p_paths);
     exportPaths();
   }
 }
@@ -323,6 +325,7 @@ void MLRRTstarWindow::planPath() {
     msg += QString::number(mpMLRRTstar->get_expanding_tree_mgr()->get_string_classes().size()); 
     qDebug() << msg;
 
+    mpMLRRTstar->update_paths();
     updateStatus();
     repaint();
   }
@@ -331,8 +334,6 @@ void MLRRTstarWindow::planPath() {
   //mpMLRRTstar->get_string_class_mgr()->merge();
   qDebug() << "END MERGE ";
   //Path* path = mpMLRRTstar->find_path();
-  std::vector<Path*> p_paths = mpMLRRTstar->get_paths();
-  mpViz->m_PPInfo.load_paths(p_paths);
 
   mpViz->set_finished_planning( true );
   repaint();

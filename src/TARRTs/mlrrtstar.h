@@ -58,6 +58,7 @@ namespace mlrrts {
 
  
     void extend();
+    void update_paths();
     std::vector<Path*> get_paths();
     Path* _get_path( StringClass* p_string_class );
     Path* _get_path( MLRRTNode* p_node ); 

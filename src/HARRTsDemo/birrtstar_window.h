@@ -82,7 +82,6 @@ namespace birrts {
     void onExportGrammar();
     void onExportAllSimpleStrings();
     void onReset();
-
     void onExportStringClassHist();
   };
 

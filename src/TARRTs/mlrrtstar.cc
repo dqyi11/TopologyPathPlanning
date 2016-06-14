@@ -496,9 +496,8 @@ void MLRRTstar::set_reference_frames( ReferenceFrameSet* p_reference_frames ) {
   _reference_frames = p_reference_frames;
 }
 
-vector<Path*> MLRRTstar::get_paths() {
-  vector<Path*> paths;
-  
+void MLRRTstar::update_paths() {
+
   if( _p_expanding_tree_mgr ) {
     vector<StringClass*> string_classes = _p_expanding_tree_mgr->get_string_classes();
     for( vector<StringClass*>::iterator it = string_classes.begin(); 
@@ -506,10 +505,24 @@ vector<Path*> MLRRTstar::get_paths() {
       StringClass* p_string_class = (*it);
       Path* p_path = _get_path( p_string_class );
       p_string_class->mp_path = p_path;
-      paths.push_back( p_path );
+      p_string_class->m_cost = p_path->m_cost;
     }
   }
+}
 
+vector<Path*> MLRRTstar::get_paths() {
+  vector<Path*> paths;
+  update_paths(); 
+  if( _p_expanding_tree_mgr ) {
+    vector<StringClass*> string_classes = _p_expanding_tree_mgr->get_string_classes();
+    for( vector<StringClass*>::iterator it = string_classes.begin(); 
+         it != string_classes.end(); it ++ ) {
+      StringClass* p_string_class = (*it);
+      if(p_string_class) {
+        paths.push_back( p_string_class->mp_path );
+      }
+    }
+  }
   return paths;
 }
 

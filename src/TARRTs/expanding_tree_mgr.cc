@@ -174,3 +174,28 @@ void ExpandingTreeMgr::export_subregion_mgrs( string filename ) {
   outfile.close();
   return;
 }
+
+void ExpandingTreeMgr::record() {
+
+  for(std::vector< StringClass* >::iterator it = mp_string_classes.begin();
+      it != mp_string_classes.end(); it++ ) {
+    StringClass* p_str_cls = (*it);
+    if(p_str_cls) {
+      p_str_cls->record();
+    }
+  }
+}
+
+void ExpandingTreeMgr::dump_historical_data( std::string filename ) {
+  std::ofstream hist_data_file;
+  hist_data_file.open(filename.c_str());
+  for(std::vector< StringClass* >::iterator it = mp_string_classes.begin();
+      it != mp_string_classes.end(); it++ ) {
+    StringClass* p_str_cls = (*it);
+    if(p_str_cls) {
+      hist_data_file << p_str_cls->get_name() << " : ";
+      p_str_cls->write_historical_data( hist_data_file );
+    }
+  }
+  hist_data_file.close();
+}

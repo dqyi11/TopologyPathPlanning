@@ -339,6 +339,7 @@ void BIRRTstar::extend() {
       _p_string_class_mgr->import_path( p_gt_new_path, _current_iteration );
     }
   }
+  _p_string_class_mgr->record();
   _current_iteration++;
 }
 

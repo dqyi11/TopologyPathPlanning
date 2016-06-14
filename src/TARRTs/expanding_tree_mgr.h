@@ -47,6 +47,9 @@ namespace mlrrts {
     
     void export_subregion_mgrs( std::string filename );
 
+    void dump_historical_data( std::string filename );
+    void record();
+
   protected:
     ExpandingTree*                  mp_expanding_tree;
     homotopy::StringGrammar*        mp_string_grammar;
