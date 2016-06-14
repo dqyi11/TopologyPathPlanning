@@ -10,13 +10,18 @@ namespace birrts {
 
   class StringClass {
   public:
-    StringClass( std::vector< std::string > string );
+    StringClass( std::vector< std::string > string, unsigned int created_iteration_num = 0 );
     virtual ~StringClass();
     std::string get_name();
   
     std::vector< std::string > m_string;
+    
+    std::vector< double > m_historical_data;
+    unsigned int m_created_iteration_num;   
     double m_cost;
     Path*  mp_path;
+
+    void dump_historical_data( std::string filename );
   };
 
   class StringClassMgr {

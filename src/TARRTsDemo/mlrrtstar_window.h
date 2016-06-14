@@ -31,6 +31,7 @@ namespace mlrrts {
 
     void setShowObj( bool show );
     bool getShowObj() { return mShowObj; }
+
   protected:
     void createMenuBar();
     void createActions();
@@ -50,6 +51,7 @@ namespace mlrrts {
     QAction* mpLoadMapAction;
     QAction* mpLoadObjAction;
     QAction* mpRunAction;
+    QAction* mpResetAction;
 
     QMenu*   mpToolMenu;
     QAction* mpSaveScreenAction;
@@ -86,6 +88,7 @@ namespace mlrrts {
     void onSaveScreen();
     void onExportGrammar();
     void onExportAllSimpleStrings();
+    void onReset();
   };
 
 }

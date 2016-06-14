@@ -73,6 +73,7 @@ void MLRRTstarWindow::createMenuBar() {
   mpEditMenu->addAction(mpLoadMapAction);
   mpEditMenu->addAction(mpLoadObjAction);
   mpEditMenu->addAction(mpRunAction);
+  mpEditMenu->addAction(mpResetAction);
 
   mpToolMenu = menuBar()->addMenu("&Tool");
   mpToolMenu->addAction(mpSaveScreenAction);
@@ -87,6 +88,7 @@ void MLRRTstarWindow::createMenuBar() {
 }
 
 void MLRRTstarWindow::createActions() {
+
   mpOpenAction = new QAction("Open", this);
   mpSaveAction = new QAction("Save", this);
   mpExportAction = new QAction("Export", this);
@@ -94,6 +96,7 @@ void MLRRTstarWindow::createActions() {
   mpLoadMapAction = new QAction("Load Map", this);
   mpLoadObjAction = new QAction("Config Objective", this);
   mpRunAction = new QAction("Run", this);
+  mpResetAction = new QAction("Reset", this);
 
   connect(mpOpenAction, SIGNAL(triggered()), this, SLOT(onOpen()));
   connect(mpSaveAction, SIGNAL(triggered()), this, SLOT(onSave()));
@@ -103,6 +106,7 @@ void MLRRTstarWindow::createActions() {
   connect(mpLoadMapAction, SIGNAL(triggered()), this, SLOT(onLoadMap()));
   connect(mpLoadObjAction, SIGNAL(triggered()), this, SLOT(onLoadObj()));
   connect(mpRunAction, SIGNAL(triggered()), this, SLOT(onRun()));
+  connect(mpResetAction, SIGNAL(triggered()), this, SLOT(onReset()));
 
   mpAddStartAction = new QAction("Add Start", this);
   mpAddGoalAction = new QAction("Add Goal", this);
@@ -191,6 +195,7 @@ void MLRRTstarWindow::onExportPath() {
 
   QString pathFilename = QFileDialog::getSaveFileName(this, tr("Save File"), "./", tr("Txt Files (*.txt)"));
   if (pathFilename != "") {
+
     Path* p_viz_path = mpViz->get_viz_path();
     if( p_viz_path ) {
       exportPath( p_viz_path, pathFilename );
@@ -281,45 +286,35 @@ void MLRRTstarWindow::onExportGrammar() {
 }
 
 void MLRRTstarWindow::planPath() {
-  if(mpMLRRTstar) {
-    delete mpMLRRTstar;
-    mpMLRRTstar = NULL;
-  }
-  if (mpViz) {
-    for( std::vector<Path*>::iterator it = mpViz->m_PPInfo.mp_found_paths.begin();
-         it != mpViz->m_PPInfo.mp_found_paths.end(); it ++ ) {
-      Path * p_path = (*it);
-      delete p_path;
-      p_path = NULL;
-    }
-    mpViz->m_PPInfo.mp_found_paths.clear();
+
+  if(mpMLRRTstar==NULL) {
+      mpViz->m_PPInfo.init_func_param();
+      QString msg = "INIT RRTstar ... \n";
+      msg += "SegmentLen( " + QString::number(mpViz->m_PPInfo.m_segment_length) + " ) \n";
+      msg += "MaxIterationNum( " + QString::number(mpViz->m_PPInfo.m_max_iteration_num) + " ) \n";
+      qDebug() << msg;
+
+      mpMLRRTstar = new MLRRTstar(mpMap->width(), mpMap->height(), mpViz->m_PPInfo.m_segment_length);
+      mpMLRRTstar->set_reference_frames( mpReferenceFrameSet );
+      if( mpViz->m_PPInfo.m_homotopic_enforcement ) {
+        mpMLRRTstar->set_homotopic_enforcement( true );
+      }
+      else {
+        mpMLRRTstar->set_homotopic_enforcement( false );
+      }
+      POS2D start(mpViz->m_PPInfo.m_start.x(), mpViz->m_PPInfo.m_start.y());
+      POS2D goal(mpViz->m_PPInfo.m_goal.x(), mpViz->m_PPInfo.m_goal.y());
+
+      mpMLRRTstar->init(start, goal, mpViz->m_PPInfo.mp_func, mpViz->m_PPInfo.m_cost_distribution, mpViz->m_PPInfo.m_grammar_type);
+      mpViz->m_PPInfo.get_obstacle_info(mpMLRRTstar->get_map_info());
+      mpViz->set_tree(mpMLRRTstar);
+
+      mpMLRRTstar->get_expanding_tree_mgr()->get_expanding_tree()->output( "output.dot" );
+      mpMLRRTstar->get_expanding_tree_mgr()->get_expanding_tree()->print();
+      mpMLRRTstar->get_expanding_tree_mgr()->export_subregion_mgrs("subregion_mgrs.txt");
   }
 
-  mpViz->m_PPInfo.init_func_param();
-  QString msg = "INIT RRTstar ... \n";
-  msg += "SegmentLen( " + QString::number(mpViz->m_PPInfo.m_segment_length) + " ) \n";
-  msg += "MaxIterationNum( " + QString::number(mpViz->m_PPInfo.m_max_iteration_num) + " ) \n";
-  qDebug() << msg;
-
-  mpMLRRTstar = new MLRRTstar(mpMap->width(), mpMap->height(), mpViz->m_PPInfo.m_segment_length);
-  mpMLRRTstar->set_reference_frames( mpReferenceFrameSet );
-  if( mpViz->m_PPInfo.m_homotopic_enforcement ) {
-    mpMLRRTstar->set_homotopic_enforcement( true );
-  }
-  else {
-    mpMLRRTstar->set_homotopic_enforcement( false );
-  }
-  POS2D start(mpViz->m_PPInfo.m_start.x(), mpViz->m_PPInfo.m_start.y());
-  POS2D goal(mpViz->m_PPInfo.m_goal.x(), mpViz->m_PPInfo.m_goal.y());
-    
-  mpMLRRTstar->init(start, goal, mpViz->m_PPInfo.mp_func, mpViz->m_PPInfo.m_cost_distribution, mpViz->m_PPInfo.m_grammar_type);
-  mpViz->m_PPInfo.get_obstacle_info(mpMLRRTstar->get_map_info());
-  mpViz->set_tree(mpMLRRTstar);
   mpViz->set_finished_planning( false );
-   
-  mpMLRRTstar->get_expanding_tree_mgr()->get_expanding_tree()->output( "output.dot" );
-  mpMLRRTstar->get_expanding_tree_mgr()->get_expanding_tree()->print();
-  mpMLRRTstar->get_expanding_tree_mgr()->export_subregion_mgrs("subregion_mgrs.txt"); 
 
   while( ( false == mpViz->is_finished_planning() )
          && mpMLRRTstar->get_current_iteration() <= mpViz->m_PPInfo.m_max_iteration_num) {
@@ -331,12 +326,14 @@ void MLRRTstarWindow::planPath() {
     updateStatus();
     repaint();
   }
+
   qDebug() << "START MERGE ";
   //mpMLRRTstar->get_string_class_mgr()->merge();
   qDebug() << "END MERGE ";
   //Path* path = mpMLRRTstar->find_path();
   std::vector<Path*> p_paths = mpMLRRTstar->get_paths();
   mpViz->m_PPInfo.load_paths(p_paths);
+
   mpViz->set_finished_planning( true );
   repaint();
 }
@@ -585,4 +582,22 @@ bool MLRRTstarWindow::exportPath( Path* path, QString filename ) {
     }
   }
   return false;
+}
+
+void MLRRTstarWindow::onReset() {
+
+    if(mpMLRRTstar) {
+      delete mpMLRRTstar;
+      mpMLRRTstar = NULL;
+    }
+    if (mpViz) {
+      for( std::vector<Path*>::iterator it = mpViz->m_PPInfo.mp_found_paths.begin();
+           it != mpViz->m_PPInfo.mp_found_paths.end(); it ++ ) {
+        Path * p_path = (*it);
+        delete p_path;
+        p_path = NULL;
+      }
+      mpViz->m_PPInfo.mp_found_paths.clear();
+    }
+
 }

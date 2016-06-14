@@ -4,15 +4,16 @@
 using namespace homotopy;
 using namespace birrts;
 
-StringClass::StringClass( std::vector< std::string > string ) {
+StringClass::StringClass( std::vector< std::string > string, unsigned int created_iteration_num ) {
   m_string = string;
   m_cost = 0.0;
   mp_path = NULL;
+  m_created_iteration_num = created_iteration_num;
 }
 
 StringClass::~StringClass() {
   m_string.clear();
-  m_cost = 0.0;
+  m_historical_data.clear();
   mp_path = NULL;
 }
 
@@ -27,6 +28,9 @@ std::string StringClass::get_name() {
   return name;
 }
 
+void StringClass::dump_historical_data( std::string filename ) {
+
+}
 
 StringClassMgr::StringClassMgr( StringGrammar* p_grammar ) {
   _p_grammar = p_grammar;

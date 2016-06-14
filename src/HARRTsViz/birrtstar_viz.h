@@ -39,6 +39,8 @@ namespace birrts {
     homotopy::SubRegionSet*   get_selected_subregion_set();
     homotopy::SubRegion*      get_selected_subregion();
 
+    void reset();
+
     void prev_region();
     void next_region();
     void prev_subregion();

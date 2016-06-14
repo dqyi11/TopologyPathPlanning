@@ -46,6 +46,7 @@ namespace birrts {
     QAction* mpLoadMapAction;
     QAction* mpLoadObjAction;
     QAction* mpRunAction;
+    QAction* mpResetAction;
 
     QMenu*   mpToolMenu;
     QAction* mpSaveScreenAction;
@@ -79,6 +80,7 @@ namespace birrts {
     void onSaveScreen();
     void onExportGrammar();
     void onExportAllSimpleStrings();
+    void onReset();
   };
 
 }

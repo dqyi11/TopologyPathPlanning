@@ -67,6 +67,7 @@ void BIRRTstarWindow::createMenuBar() {
   mpEditMenu->addAction(mpLoadMapAction);
   mpEditMenu->addAction(mpLoadObjAction);
   mpEditMenu->addAction(mpRunAction);
+  mpEditMenu->addAction(mpResetAction);
 
   mpToolMenu = menuBar()->addMenu("&Tool");
   mpToolMenu->addAction(mpSaveScreenAction);
@@ -88,6 +89,7 @@ void BIRRTstarWindow::createActions() {
   mpLoadMapAction = new QAction("Load Map", this);
   mpLoadObjAction = new QAction("Config Objective", this);
   mpRunAction = new QAction("Run", this);
+  mpResetAction = new QAction("Reset", this);
 
   connect(mpOpenAction, SIGNAL(triggered()), this, SLOT(onOpen()));
   connect(mpSaveAction, SIGNAL(triggered()), this, SLOT(onSave()));
@@ -95,6 +97,7 @@ void BIRRTstarWindow::createActions() {
   connect(mpLoadMapAction, SIGNAL(triggered()), this, SLOT(onLoadMap()));
   connect(mpLoadObjAction, SIGNAL(triggered()), this, SLOT(onLoadObj()));
   connect(mpRunAction, SIGNAL(triggered()), this, SLOT(onRun()));
+  connect(mpResetAction, SIGNAL(triggered()), this, SLOT(onReset()));
 
   mpAddStartAction = new QAction("Add Start", this);
   mpAddGoalAction = new QAction("Add Goal", this);
@@ -156,10 +159,6 @@ void BIRRTstarWindow::onExport() {
 bool BIRRTstarWindow::exportPaths() {
   if(mpViz) {
     bool success = false;
-    //Path* path = mpBIRRTstar->find_path();
-    std::vector<Path*> p_paths = mpBIRRTstar->get_paths();
-    mpViz->m_PPInfo.load_paths(p_paths);
-
     success = mpViz->m_PPInfo.export_paths(mpViz->m_PPInfo.m_paths_output);
     success = mpViz->draw_path(mpViz->m_PPInfo.m_paths_output+".png");
     return success;
@@ -252,7 +251,7 @@ void BIRRTstarWindow::onExportGrammar() {
 
 void BIRRTstarWindow::planPath() {
 
-  if(mpBIRRTstar) {
+  if(mpBIRRTstar==NULL) {
 
       if (mpViz) {
         for( std::vector<Path*>::iterator it = mpViz->m_PPInfo.mp_found_paths.begin();
@@ -297,6 +296,10 @@ void BIRRTstarWindow::planPath() {
   mpBIRRTstar->get_string_class_mgr()->merge();
   qDebug() << "END MERGE ";
 
+  //Path* path = mpBIRRTstar->find_path();
+  std::vector<Path*> p_paths = mpBIRRTstar->get_paths();
+  mpViz->m_PPInfo.load_paths(p_paths);
+
   mpViz->set_finished_planning( true );
   repaint();
 }
@@ -334,7 +337,12 @@ void BIRRTstarWindow::updateStatus() {
     if(mpBIRRTstar) {
       mpStatusProgressBar->setMinimum(0);
       mpStatusProgressBar->setMaximum(mpViz->m_PPInfo.m_max_iteration_num);
-      mpStatusProgressBar->setValue(mpBIRRTstar->get_current_iteration());
+      if(mpBIRRTstar) {
+        mpStatusProgressBar->setValue(mpBIRRTstar->get_current_iteration());
+      }
+      else {
+        mpStatusProgressBar->setValue(0);
+      }
     }
   }
   if(mpStatusLabel) {
@@ -483,4 +491,14 @@ void BIRRTstarWindow::onExportAllSimpleStrings() {
       }
     }
   }
+}
+
+void BIRRTstarWindow::onReset() {
+  if(mpBIRRTstar) {
+    delete mpBIRRTstar;
+    mpBIRRTstar = NULL;
+  }
+  mpViz->reset();
+  updateStatus();
+  repaint();
 }

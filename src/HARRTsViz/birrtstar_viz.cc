@@ -51,6 +51,13 @@ void BIRRTstarViz::paintEvent( QPaintEvent * e ) {
 
 
 void BIRRTstarViz::paint(QPaintDevice * device) {
+  if(mp_reference_frames==NULL) {
+    return;
+  }
+  if(mp_reference_frames->get_world_map()==NULL) {
+    return;
+  }
+
   if(m_show_regions) {
 
     if( m_region_index < 0 ) {
@@ -359,29 +366,35 @@ void BIRRTstarViz::switch_tree_show_type() {
 }
 
 void BIRRTstarViz::prev_reference_frame() {
-  if (m_show_reference_frames) {
-    if ( m_reference_frame_index <= 0) {
-      m_reference_frame_index = mp_reference_frames->get_reference_frames().size();
-    }else{
-      m_reference_frame_index -- ;
+  if(mp_reference_frames) {
+    if (m_show_reference_frames) {
+      if ( m_reference_frame_index <= 0) {
+        m_reference_frame_index = mp_reference_frames->get_reference_frames().size();
+      }else{
+        m_reference_frame_index -- ;
+      }
     }
   }
 }
 
 void BIRRTstarViz::next_reference_frame() {
-  if (m_show_reference_frames) {
-    if ( m_reference_frame_index >= mp_reference_frames->get_reference_frames().size() ) {
-      m_reference_frame_index = 0;
-    }else{
-      m_reference_frame_index ++;
+  if(mp_reference_frames) {
+    if (m_show_reference_frames) {
+      if ( m_reference_frame_index >= mp_reference_frames->get_reference_frames().size() ) {
+        m_reference_frame_index = 0;
+      }else{
+        m_reference_frame_index ++;
+      }
     }
   }
 }
 
 std::string BIRRTstarViz::get_reference_frame_name() {
 
-  if ( m_reference_frame_index < mp_reference_frames->get_reference_frames().size() ) {
-    return mp_reference_frames->get_reference_frames()[m_reference_frame_index]->m_name;
+  if (mp_reference_frames) {
+    if ( m_reference_frame_index < mp_reference_frames->get_reference_frames().size() ) {
+      return mp_reference_frames->get_reference_frames()[m_reference_frame_index]->m_name;
+    }
   }
   return "NO REF FRAME";
 }
@@ -467,6 +480,9 @@ void BIRRTstarViz::mouseReleaseEvent( QMouseEvent * event ){
 
 ReferenceFrame* BIRRTstarViz::get_selected_reference_frame() {
 
+  if(mp_reference_frames == NULL) {
+      return NULL;
+  }
   if ( m_reference_frame_index >= mp_reference_frames->get_reference_frames().size() ) {
     return NULL;
   }
@@ -478,6 +494,9 @@ ReferenceFrame* BIRRTstarViz::get_selected_reference_frame() {
     
 SubRegionSet* BIRRTstarViz::get_selected_subregion_set() {
 
+  if ( mp_reference_frames == NULL ) {
+      return NULL;
+  }
   if ( m_region_index >= mp_reference_frames->get_world_map()->get_subregion_set().size() ) {
     return NULL;
   }
@@ -488,6 +507,7 @@ SubRegionSet* BIRRTstarViz::get_selected_subregion_set() {
 }
 
 SubRegion* BIRRTstarViz::get_selected_subregion() {
+
   SubRegionSet* p_subregion_set = get_selected_subregion_set();
   if (p_subregion_set) {
     if( m_subregion_index >= 0 && m_subregion_index < p_subregion_set->m_subregions.size() ) {
@@ -499,53 +519,72 @@ SubRegion* BIRRTstarViz::get_selected_subregion() {
 }
 
 void BIRRTstarViz::prev_region() {
-  if (m_show_regions) {
-    if ( m_region_index < 0) {
-      m_region_index = mp_reference_frames->get_world_map()->get_subregion_set().size() - 1;
-      m_subregion_index = -1;
-    }else{
-      m_region_index -- ;
-      m_subregion_index = -1;
+  if(mp_reference_frames) {
+    if (m_show_regions) {
+      if ( m_region_index < 0) {
+        m_region_index = mp_reference_frames->get_world_map()->get_subregion_set().size() - 1;
+        m_subregion_index = -1;
+      }else{
+        m_region_index -- ;
+        m_subregion_index = -1;
+      }
     }
   }
 }
 
 void BIRRTstarViz::next_region() {
-  if (m_show_regions) {
-    if ( m_region_index >= mp_reference_frames->get_world_map()->get_subregion_set().size()-1 ) {
-      m_region_index = -1; 
-      m_subregion_index = -1;
-    }else{
-      m_region_index ++; 
-      m_subregion_index = -1;
+  if(mp_reference_frames) {
+    if (m_show_regions) {
+      if ( m_region_index >= mp_reference_frames->get_world_map()->get_subregion_set().size()-1 ) {
+        m_region_index = -1;
+        m_subregion_index = -1;
+      }else{
+        m_region_index ++;
+        m_subregion_index = -1;
+      }
     }
   }
 }
  
 void BIRRTstarViz::prev_subregion() {
-  if (m_show_regions) {
-    if( m_region_index >= 0 && m_region_index < mp_reference_frames->get_world_map()->get_subregion_set().size()-1 ) {
-      SubRegionSet* p_subregions = mp_reference_frames->get_world_map()->get_subregion_set()[ m_region_index ];
-      if( m_subregion_index > 0 ) {
-        m_subregion_index --;
+  if(mp_reference_frames) {
+    if (m_show_regions) {
+      if( m_region_index >= 0 && m_region_index < mp_reference_frames->get_world_map()->get_subregion_set().size()-1 ) {
+        SubRegionSet* p_subregions = mp_reference_frames->get_world_map()->get_subregion_set()[ m_region_index ];
+        if( m_subregion_index > 0 ) {
+          m_subregion_index --;
+        }
+        else {
+          m_subregion_index = p_subregions->m_subregions.size()-1;
+        }
       }
-      else {
-        m_subregion_index = p_subregions->m_subregions.size()-1;
-      }
-    } 
+    }
   }
 }
 
 void BIRRTstarViz::next_subregion() {
-  if (m_show_regions) {
-    if( m_region_index >= 0 && m_region_index < mp_reference_frames->get_world_map()->get_subregion_set().size()-1 ) {
-      SubRegionSet* p_subregions = mp_reference_frames->get_world_map()->get_subregion_set()[ m_region_index ];
-      if( m_subregion_index < p_subregions->m_subregions.size()-1 ) {
-        m_subregion_index ++;
+  if(mp_reference_frames) {
+    if (m_show_regions) {
+      if( m_region_index >= 0 && m_region_index < mp_reference_frames->get_world_map()->get_subregion_set().size()-1 ) {
+        SubRegionSet* p_subregions = mp_reference_frames->get_world_map()->get_subregion_set()[ m_region_index ];
+        if( m_subregion_index < p_subregions->m_subregions.size()-1 ) {
+          m_subregion_index ++;
+        }
+        else {
+          m_subregion_index = 0;
+        }
       }
-      else {
-        m_subregion_index = 0;
-      }
-    } 
+    }
   }
+}
+
+void BIRRTstarViz::reset() {
+  mp_tree = NULL;
+  m_finished_planning = false;
+  m_reference_frame_index = -1;
+  m_found_path_index = -1;
+  m_region_index = -1;
+  m_subregion_index = -1;
+  m_tree_show_type = BOTH_TREES_SHOW;
+  m_show_points = false;
 }
