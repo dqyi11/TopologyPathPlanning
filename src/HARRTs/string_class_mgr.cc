@@ -29,7 +29,24 @@ std::string StringClass::get_name() {
 }
 
 void StringClass::dump_historical_data( std::string filename ) {
+  std::ofstream hist_data_file;
+  hist_data_file.open(filename.c_str());
+  hist_data_file << get_name() << std::endl;
+  write_historical_data( hist_data_file );
+  hist_data_file.close();
+}
 
+void StringClass::write_historical_data( std::ostream& out ) {
+  for(unsigned int i=0;i<m_created_iteration_num;i++) {
+    out << "None" << " ";
+  }
+  out << std::endl;
+  for(std::vector<double>::iterator it = m_historical_data.begin();
+      it != m_historical_data.end(); it++ ) {
+    double data = (*it);
+    out << data << " ";
+  }
+  out << std::endl;
 }
 
 StringClassMgr::StringClassMgr( StringGrammar* p_grammar ) {

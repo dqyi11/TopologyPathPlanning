@@ -2,6 +2,7 @@
 #define STRING_CLASS_MGR_H
 
 #include <vector>
+#include <iostream>
 #include "string_grammar.h"
 
 namespace birrts {
@@ -22,6 +23,7 @@ namespace birrts {
     Path*  mp_path;
 
     void dump_historical_data( std::string filename );
+    void write_historical_data( std::ostream& out ); 
   };
 
   class StringClassMgr {
