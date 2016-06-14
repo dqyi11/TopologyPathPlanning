@@ -5,6 +5,7 @@
 #include <QtDebug>
 #include <QKeyEvent>
 #include <QStatusBar>
+#include <QApplication>
 #include "mlrrtstar_config.h"
 #include "mlrrtstar_window.h"
 #include "img_load_util.h"
@@ -79,6 +80,7 @@ void MLRRTstarWindow::createMenuBar() {
   mpToolMenu->addAction(mpSaveScreenAction);
   mpToolMenu->addAction(mpExportGrammarGraphAction);
   mpToolMenu->addAction(mpExportAllSimpleStringsAction);
+  mpToolMenu->addAction(mpExportStringClassHistAction);
 
   mpContextMenu = new QMenu();
   setContextMenuPolicy(Qt::CustomContextMenu);
@@ -93,6 +95,7 @@ void MLRRTstarWindow::createActions() {
   mpSaveAction = new QAction("Save", this);
   mpExportAction = new QAction("Export", this);
   mpExportPathAction = new QAction("Export Path", this);
+  mpExportStringClassHistAction = new QAction("Export String Class Hist", this);
   mpLoadMapAction = new QAction("Load Map", this);
   mpLoadObjAction = new QAction("Config Objective", this);
   mpRunAction = new QAction("Run", this);
@@ -102,6 +105,7 @@ void MLRRTstarWindow::createActions() {
   connect(mpSaveAction, SIGNAL(triggered()), this, SLOT(onSave()));
   connect(mpExportAction, SIGNAL(triggered()), this, SLOT(onExport()));
   connect(mpExportPathAction, SIGNAL(triggered()), this, SLOT(onExportPath()));
+  connect(mpExportStringClassHistAction, SIGNAL(triggered()), this, SLOT(onExportStringClassHist()));
 
   connect(mpLoadMapAction, SIGNAL(triggered()), this, SLOT(onLoadMap()));
   connect(mpLoadObjAction, SIGNAL(triggered()), this, SLOT(onLoadObj()));
@@ -326,6 +330,9 @@ void MLRRTstarWindow::planPath() {
     qDebug() << msg;
 
     mpMLRRTstar->update_paths();
+
+    QApplication::processEvents();
+    
     updateStatus();
     repaint();
   }
@@ -601,4 +608,13 @@ void MLRRTstarWindow::onReset() {
       mpViz->m_PPInfo.mp_found_paths.clear();
     }
 
+}
+
+void MLRRTstarWindow::onExportStringClassHist() {
+  QString pathFilename = QFileDialog::getSaveFileName(this, tr("Save File"), "./", tr("Txt Files (*.txt)"));
+  if(pathFilename != "") {
+    if(mpMLRRTstar) {
+      mpMLRRTstar->get_expanding_tree_mgr()->dump_historical_data( pathFilename.toStdString() );
+    }
+  }
 }

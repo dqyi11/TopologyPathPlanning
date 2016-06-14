@@ -5,6 +5,7 @@
 #include <QtDebug>
 #include <QKeyEvent>
 #include <QStatusBar>
+#include <QApplication>
 #include "birrtstar_config.h"
 #include "birrtstar_window.h"
 #include "img_load_util.h"
@@ -290,6 +291,8 @@ void BIRRTstarWindow::planPath() {
     mpBIRRTstar->extend();
     msg += QString::number(mpBIRRTstar->get_string_class_mgr()->get_string_classes().size()); 
     qDebug() << msg;
+
+    QApplication::processEvents();
 
     updateStatus();
     repaint();

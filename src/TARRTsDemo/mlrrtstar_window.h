@@ -57,6 +57,7 @@ namespace mlrrts {
     QAction* mpSaveScreenAction;
     QAction* mpExportGrammarGraphAction;
     QAction* mpExportAllSimpleStringsAction;
+    QAction* mpExportStringClassHistAction;
 
     QMenu*   mpContextMenu;
     QAction* mpAddStartAction;
@@ -89,6 +90,7 @@ namespace mlrrts {
     void onExportGrammar();
     void onExportAllSimpleStrings();
     void onReset();
+    void onExportStringClassHist();
   };
 
 }
