@@ -23,7 +23,8 @@ namespace birrts {
     Path*  mp_path;
 
     void dump_historical_data( std::string filename );
-    void write_historical_data( std::ostream& out ); 
+    void write_historical_data( std::ostream& out );
+    void record(); 
   };
 
   class StringClassMgr {
@@ -31,12 +32,13 @@ namespace birrts {
     StringClassMgr(homotopy::StringGrammar* p_grammar);
     virtual ~StringClassMgr();
 
-    void import_path( Path* p_path );
+    void import_path( Path* p_path, unsigned int iteration_num );
     std::vector<Path*> export_paths();
     void merge();
     StringClass* find_string_class( std::vector< std::string > str );
     std::vector< StringClass* >& get_string_classes() { return _classes; }  
     void export_grammar( std::string filename );
+    void record();
 
     void dump_historical_data( std::string filename );
   protected:

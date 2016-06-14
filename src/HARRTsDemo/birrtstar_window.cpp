@@ -73,6 +73,7 @@ void BIRRTstarWindow::createMenuBar() {
   mpToolMenu->addAction(mpSaveScreenAction);
   mpToolMenu->addAction(mpExportGrammarGraphAction);
   mpToolMenu->addAction(mpExportAllSimpleStringsAction);
+  mpFileMenu->addAction(mpExportStringClassHistAction);
 
   mpContextMenu = new QMenu();
   setContextMenuPolicy(Qt::CustomContextMenu);
@@ -86,6 +87,7 @@ void BIRRTstarWindow::createActions() {
   mpOpenAction = new QAction("Open", this);
   mpSaveAction = new QAction("Save", this);
   mpExportAction = new QAction("Export", this);
+  mpExportStringClassHistAction = new QAction("Export String Class Hist", this);
   mpLoadMapAction = new QAction("Load Map", this);
   mpLoadObjAction = new QAction("Config Objective", this);
   mpRunAction = new QAction("Run", this);
@@ -94,6 +96,7 @@ void BIRRTstarWindow::createActions() {
   connect(mpOpenAction, SIGNAL(triggered()), this, SLOT(onOpen()));
   connect(mpSaveAction, SIGNAL(triggered()), this, SLOT(onSave()));
   connect(mpExportAction, SIGNAL(triggered()), this, SLOT(onExport()));
+  connect(mpExportStringClassHistAction, SIGNAL(triggered()), this, SLOT(onExportStringClassHist()));
   connect(mpLoadMapAction, SIGNAL(triggered()), this, SLOT(onLoadMap()));
   connect(mpLoadObjAction, SIGNAL(triggered()), this, SLOT(onLoadObj()));
   connect(mpRunAction, SIGNAL(triggered()), this, SLOT(onRun()));
@@ -501,4 +504,13 @@ void BIRRTstarWindow::onReset() {
   mpViz->reset();
   updateStatus();
   repaint();
+}
+
+void BIRRTstarWindow::onExportStringClassHist() {
+  QString pathFilename = QFileDialog::getSaveFileName(this, tr("Save File"), "./", tr("Txt Files (*.txt)"));
+  if (pathFilename != "") {
+    if(mpBIRRTstar) {    
+      mpBIRRTstar->get_string_class_mgr()->dump_historical_data( pathFilename.toStdString() );
+    }
+  }
 }

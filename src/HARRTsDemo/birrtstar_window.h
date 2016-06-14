@@ -41,6 +41,7 @@ namespace birrts {
     QAction* mpOpenAction;
     QAction* mpSaveAction;
     QAction* mpExportAction;
+    QAction* mpExportStringClassHistAction;
 
     QMenu*   mpEditMenu;
     QAction* mpLoadMapAction;
@@ -81,6 +82,8 @@ namespace birrts {
     void onExportGrammar();
     void onExportAllSimpleStrings();
     void onReset();
+
+    void onExportStringClassHist();
   };
 
 }

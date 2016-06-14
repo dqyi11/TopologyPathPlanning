@@ -331,12 +331,12 @@ void BIRRTstar::extend() {
 
   if( _run_type != RUN_GOAL_TREE_TYPE ) {
     if( p_st_new_path ) {
-      _p_string_class_mgr->import_path( p_st_new_path );
+      _p_string_class_mgr->import_path( p_st_new_path, _current_iteration );
     }
   }
   if( _run_type != RUN_START_TREE_TYPE ) {
     if( p_gt_new_path ) {
-      _p_string_class_mgr->import_path( p_gt_new_path );
+      _p_string_class_mgr->import_path( p_gt_new_path, _current_iteration );
     }
   }
   _current_iteration++;

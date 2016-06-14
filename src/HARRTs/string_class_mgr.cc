@@ -49,6 +49,11 @@ void StringClass::write_historical_data( std::ostream& out ) {
   out << std::endl;
 }
 
+void StringClass::record() {
+
+  m_historical_data.push_back(m_cost);
+}
+
 StringClassMgr::StringClassMgr( StringGrammar* p_grammar ) {
   _p_grammar = p_grammar;
 }
@@ -58,7 +63,7 @@ StringClassMgr::~StringClassMgr() {
   _classes.clear();
 }
 
-void StringClassMgr::import_path( Path* p_path ) { 
+void StringClassMgr::import_path( Path* p_path, unsigned int iteration_num ) { 
   std::vector< std::string > non_repeating_id_string = _p_grammar->get_non_repeating_form( p_path->m_string );
   if ( _p_grammar->is_valid_string( non_repeating_id_string ) == false ) {
     std::cout << "INVALID STRING " << std::endl;
@@ -71,7 +76,7 @@ void StringClassMgr::import_path( Path* p_path ) {
     }
   }
   else {
-    p_string_class = new StringClass( non_repeating_id_string ); 
+    p_string_class = new StringClass( non_repeating_id_string, iteration_num ); 
     p_string_class->m_cost = p_path->m_cost;
     p_string_class->mp_path = p_path;
     _classes.push_back(p_string_class);
@@ -160,4 +165,15 @@ void StringClassMgr::dump_historical_data( std::string filename ) {
     }
   }
   hist_data_file.close();
+}
+
+void StringClassMgr::record() {
+
+  for(std::vector< StringClass* >::iterator it = _classes.begin();
+      it != _classes.end(); it++ ) {
+    StringClass* p_str_cls = (*it);
+    if(p_str_cls) {
+      p_str_cls->record();
+    }
+  }
 }
