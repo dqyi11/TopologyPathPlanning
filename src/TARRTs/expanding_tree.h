@@ -21,7 +21,8 @@ namespace mlrrts {
     std::string get_name();
     void add_exp_node( ExpandingNode* p_node );
     void init( homotopy::ReferenceFrameSet* p_rf );
-  
+    void import( Path* p_path );
+      
     std::vector< std::string >               m_string;
     KDTree2D*                                mp_kd_tree;
     std::vector< ExpandingNode* >            mp_exp_nodes;   
@@ -34,6 +35,7 @@ namespace mlrrts {
 
     Path*                         mp_path;  
     double                        m_cost;
+    unsigned int                  m_created_iteration_num;
   };
 
   class ExpandingNode {

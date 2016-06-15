@@ -26,7 +26,7 @@ MLRRTstarViz::MLRRTstarViz( QWidget * parent ) : QLabel(parent) {
   mp_tree = NULL;
   m_show_reference_frames = false;
   m_show_subregions = false;
-  m_show_paths = false;
+  m_show_paths = true;
   m_finished_planning = false;
   m_reference_frame_index = -1;
   m_found_path_index = -1;

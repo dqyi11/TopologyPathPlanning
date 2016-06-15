@@ -5,12 +5,15 @@
 #include <boost/graph/iteration_macros.hpp>
 #include "expanding_tree.h"
 #include "expanding_tree_mgr.h"
+#include "mlrrtstar.h"
 #include "ml_util.h"
 
 using namespace std;
 using namespace boost;
 using namespace mlrrts;
 using namespace homotopy;
+
+#define MAX_VAL numeric_limits<float>::max()
 
 struct Vertex{ std::string name; };
 struct Edge{ std::string name; };
@@ -24,9 +27,10 @@ StringClass::StringClass( std::vector< std::string > string ) {
   mp_kd_tree = new KDTree2D( std::ptr_fun(tac) );
   mp_exp_nodes.clear(); 
   mp_reference_frames.clear();  
- 
+  
   mp_path = NULL;
-  m_cost = numeric_limits<float>::max();
+  m_cost = MAX_VAL;
+  m_created_iteration_num = 0;
 }
 
 StringClass::~StringClass() {
@@ -49,6 +53,21 @@ void StringClass::init( homotopy::ReferenceFrameSet* p_rfs ) {
       ReferenceFrame* p_rf = p_rfs->get_reference_frame( id );
       if( p_rf ) {
         mp_reference_frames.push_back( p_rf );
+      }
+    }
+  }
+}
+
+void StringClass::import( Path* p_path ) {
+  if(p_path) {
+    if( mp_path == NULL ) {
+      mp_path = p_path;
+      m_cost = p_path->m_cost;
+    }
+    else {
+      if(p_path->m_cost < m_cost) {
+        mp_path = p_path;
+        m_cost = p_path->m_cost;
       }
     }
   }
@@ -81,16 +100,28 @@ void StringClass::dump_historical_data( std::string filename ) {
 }
 
 void StringClass::write_historical_data( std::ostream& out ) {
+
   for(std::vector<double>::iterator it = m_historical_data.begin();
       it != m_historical_data.end(); it++ ) {
     double data = (*it);
     out << data << " ";
   }
   out << std::endl;
+  for(int i=m_created_iteration_num;
+      i<m_historical_data.size()+m_created_iteration_num;i++) {
+    out << i << " ";
+  }
+  out << std::endl;
 }
 
 void StringClass::record() {
-  m_historical_data.push_back(m_cost);
+  
+  if(mp_path==NULL) {
+    m_created_iteration_num ++;
+  }
+  else {
+    m_historical_data.push_back(m_cost);
+  }
 }
 
 ExpandingNode::ExpandingNode( string name ) {

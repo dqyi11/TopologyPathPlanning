@@ -289,6 +289,10 @@ void MLRRTstar::extend() {
       }
     }
   }
+  if(_p_expanding_tree_mgr) {
+    _p_expanding_tree_mgr->record();
+  }
+  
   _current_iteration ++;
 }
 
@@ -504,8 +508,12 @@ void MLRRTstar::update_paths() {
          it != string_classes.end(); it ++ ) {
       StringClass* p_string_class = (*it);
       Path* p_path = _get_path( p_string_class );
+      p_string_class->import( p_path );
+      /*
       p_string_class->mp_path = p_path;
-      p_string_class->m_cost = p_path->m_cost;
+      if(p_path) {
+        p_string_class->m_cost = p_path->m_cost;
+      }*/
     }
   }
 }
@@ -535,7 +543,7 @@ Path* MLRRTstar::_get_path( StringClass* p_string_class ) {
       KDNode2D kdnode = _find_nearest( _goal, p_last_exp_node );
       MLRRTNode* p_near_goal = kdnode.get_pri_mlrrtnode();
       if( p_near_goal ) {
-        if( _is_obstacle_free( p_near_goal->m_pos, _goal ) == false ) {
+        if( _is_obstacle_free( p_near_goal->m_pos, _goal ) == true ) {
           Path* p_path = _get_path( p_near_goal );
           return p_path;
         }
@@ -559,7 +567,7 @@ Path* MLRRTstar::_get_path( MLRRTNode* p_node ) {
   }
   p_path->m_way_points.push_back( _goal );
   p_path->append_substring( p_node->m_substring );
-  p_path->m_cost = p_node->m_cost;
+  p_path->m_cost = p_node->m_cost + _calculate_cost( p_node->m_pos, _goal );
   return p_path;
 }
 
