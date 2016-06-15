@@ -41,7 +41,7 @@ void StringClass::write_historical_data( std::ostream& out ) {
   for(unsigned int i=0;i<m_created_iteration_num;i++) {
     out << std::numeric_limits<float>::max() << " ";
   }
-  out << std::endl;
+  //out << std::endl;
   for(std::vector<double>::iterator it = m_historical_data.begin();
       it != m_historical_data.end(); it++ ) {
     double data = (*it);
