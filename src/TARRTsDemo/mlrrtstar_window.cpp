@@ -15,7 +15,7 @@ using namespace std;
 using namespace homotopy;
 using namespace mlrrts;
 
-MLRRTstarWindow::MLRRTstarWindow(QWidget* parent) 
+MLRRTstarWindow::MLRRTstarWindow(QWidget* parent)
     : QMainWindow(parent) {
 
   mShowObj = false;
@@ -27,7 +27,7 @@ MLRRTstarWindow::MLRRTstarWindow(QWidget* parent)
   mpMap = NULL;
   mpMLRRTstar = NULL;
   mpReferenceFrameSet = NULL;
-  
+
   mpMLRRTstarConfig = new MLRRTstarConfig(this);
   mpMLRRTstarConfig->hide();
   setCentralWidget(mpViz);
@@ -37,7 +37,7 @@ MLRRTstarWindow::MLRRTstarWindow(QWidget* parent)
   mpStatusProgressBar = new QProgressBar();
   mpStringClassLabel = new QLabel();
   mpStringClassLabel->setFixedWidth(120);
-    
+
   statusBar()->addWidget(mpStatusLabel);
   statusBar()->addWidget(mpStatusProgressBar);
   statusBar()->addWidget(mpStringClassLabel);
@@ -168,7 +168,7 @@ void MLRRTstarWindow::setShowObj( bool show ) {
         }
         mpViz->setPixmap( *(mpViz->m_PPInfo.mp_obj) );
         repaint();
-      }  
+      }
     }
   }
   else {
@@ -176,7 +176,7 @@ void MLRRTstarWindow::setShowObj( bool show ) {
       mpViz->setPixmap( *mpMap );
       repaint();
     }
-  } 
+  }
 }
 
 void MLRRTstarWindow::onSave() {
@@ -241,7 +241,7 @@ bool MLRRTstarWindow::openMap(QString filename) {
     mpReferenceFrameSet = new ReferenceFrameSet();
     load_map_info( filename.toStdString(), map_width, map_height, obstacles );
     mpReferenceFrameSet->init( map_width, map_height, obstacles );
-    mpViz->set_reference_frame_set( mpReferenceFrameSet );        
+    mpViz->set_reference_frame_set( mpReferenceFrameSet );
     return true;
   }
   return false;
@@ -326,13 +326,13 @@ void MLRRTstarWindow::planPath() {
          && mpMLRRTstar->get_current_iteration() <= mpViz->m_PPInfo.m_max_iteration_num) {
     QString msg = "CurrentIteration " + QString::number(mpMLRRTstar->get_current_iteration()) + " ";
     mpMLRRTstar->extend();
-    msg += QString::number(mpMLRRTstar->get_expanding_tree_mgr()->get_string_classes().size()); 
+    msg += QString::number(mpMLRRTstar->get_expanding_tree_mgr()->get_string_classes().size());
     qDebug() << msg;
 
     mpMLRRTstar->update_paths();
 
     QApplication::processEvents();
-    
+
     updateStatus();
     repaint();
   }
@@ -435,6 +435,18 @@ void MLRRTstarWindow::keyPressEvent(QKeyEvent *event) {
        repaint();
      }
    }
+   else if ( event->key() == Qt::Key_T ) {
+     if(mpViz) {
+       if(mpViz->show_tree() == true) {
+         mpViz->set_show_tree( false );
+       }
+       else {
+         mpViz->set_show_tree( true );
+       }
+       updateStatus();
+       repaint();
+     }
+   }
    else if ( event->key() == Qt::Key_P ) {
      if(mpViz) {
        if(mpViz->show_paths() == true) {
@@ -460,7 +472,7 @@ void MLRRTstarWindow::keyPressEvent(QKeyEvent *event) {
    }
    else if ( event->key() == Qt::Key_O ) {
      if( getShowObj() ) {
-       setShowObj( false ); 
+       setShowObj( false );
      }
      else {
        setShowObj( true );
@@ -544,7 +556,7 @@ void MLRRTstarWindow::keyPressEvent(QKeyEvent *event) {
        repaint();
      }
    }
-   
+
 }
 
 void MLRRTstarWindow::onExportAllSimpleStrings() {

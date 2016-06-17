@@ -27,6 +27,7 @@ MLRRTstarViz::MLRRTstarViz( QWidget * parent ) : QLabel(parent) {
   m_show_reference_frames = false;
   m_show_subregions = false;
   m_show_paths = true;
+  m_show_tree = true;
   m_finished_planning = false;
   m_reference_frame_index = -1;
   m_found_path_index = -1;
@@ -63,12 +64,12 @@ void MLRRTstarViz::updateVizSubregions() {
         }
       }
     }
-  } 
+  }
   else {
     StringClass* p_str_cls = mp_tree->get_expanding_tree_mgr()->get_string_classes()[ m_string_class_index ];
     if( p_str_cls ) {
       m_exp_node_num = p_str_cls->mp_exp_nodes.size();
-       
+
       for( vector<ExpandingNode*>::iterator it_exp = p_str_cls->mp_exp_nodes.begin();
            it_exp != p_str_cls->mp_exp_nodes.end(); it_exp++ ) {
         ExpandingNode* p_exp_node = (*it_exp);
@@ -88,7 +89,7 @@ void MLRRTstarViz::updateVizReferenceFrames() {
 
   m_viz_reference_frames.clear();
   if( m_string_class_index < 0 ) {
-    for( int i = 0; i < mp_reference_frames->get_reference_frames().size(); i ++ ) { 
+    for( int i = 0; i < mp_reference_frames->get_reference_frames().size(); i ++ ) {
       ReferenceFrame* p_rf = mp_reference_frames->get_reference_frames()[i];
       m_viz_reference_frames.push_back( p_rf );
     }
@@ -98,11 +99,11 @@ void MLRRTstarViz::updateVizReferenceFrames() {
     if( p_str_cls ) {
       for( vector<ReferenceFrame*>::iterator it_rf = p_str_cls->mp_reference_frames.begin();
            it_rf != p_str_cls->mp_reference_frames.end(); it_rf++ ) {
-        ReferenceFrame* p_rf = (*it_rf); 
+        ReferenceFrame* p_rf = (*it_rf);
         m_viz_reference_frames.push_back( p_rf );
       }
     }
-  }  
+  }
   m_reference_frame_index = -1;
 }
 
@@ -139,94 +140,96 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
         QPainterPath tmpPath;
         tmpPath.addPolygon(poly);
         rg_painter.fillPath(tmpPath, rg_brush);
-      } 
+      }
     }
     rg_painter.end();
   }
 
   /* DRAW TREE */
   if( mp_tree ) {
-    QPainter tree_painter(device);
-    QPen tree_paintpen;
-    if(m_finished_planning) {
-      tree_paintpen.setColor(TREE_COLOR_ALPHA);
-    }
-    else{
-      tree_paintpen.setColor(TREE_COLOR);
-    }
-    tree_paintpen.setWidth( TREE_WIDTH );
-    if(m_finished_planning) {
-      tree_painter.setOpacity( TREE_OPACITY );
-    }
-    tree_painter.setPen(tree_paintpen);
-    if( m_string_class_index < 0 ) {
-      for( list<MLRRTNode*>::iterator it= mp_tree->get_nodes().begin(); 
-           it!=mp_tree->get_nodes().end();it++ ) {
-        MLRRTNode* p_node = (*it);
-        if(p_node) {
-          if(p_node->mp_parent) {
-            tree_painter.drawLine( toQPoint( p_node->mp_parent->m_pos ), 
-                                   toQPoint( p_node->m_pos ) );
+    if( m_show_tree ) {
+      QPainter tree_painter(device);
+      QPen tree_paintpen;
+      if(m_finished_planning) {
+        tree_paintpen.setColor(TREE_COLOR_ALPHA);
+      }
+      else{
+        tree_paintpen.setColor(TREE_COLOR);
+      }
+      tree_paintpen.setWidth( TREE_WIDTH );
+      if(m_finished_planning) {
+        tree_painter.setOpacity( TREE_OPACITY );
+      }
+      tree_painter.setPen(tree_paintpen);
+      if( m_string_class_index < 0 ) {
+        for( list<MLRRTNode*>::iterator it= mp_tree->get_nodes().begin();
+             it!=mp_tree->get_nodes().end();it++ ) {
+          MLRRTNode* p_node = (*it);
+          if(p_node) {
+            if(p_node->mp_parent) {
+              tree_painter.drawLine( toQPoint( p_node->mp_parent->m_pos ),
+                                     toQPoint( p_node->m_pos ) );
+            }
           }
         }
       }
-    }
-    else {
-      StringClass* p_str_cls = mp_tree->get_expanding_tree_mgr()->get_string_classes()[ m_string_class_index ];
-      if( p_str_cls ) {
+      else {
+        StringClass* p_str_cls = mp_tree->get_expanding_tree_mgr()->get_string_classes()[ m_string_class_index ];
+        if( p_str_cls ) {
 
-        if( m_exp_node_index < 0 ) {
-          for( vector<ExpandingNode*>::iterator it_exp = p_str_cls->mp_exp_nodes.begin();
-               it_exp != p_str_cls->mp_exp_nodes.end(); it_exp++ ) {
-            ExpandingNode* p_exp_node = (*it_exp);
-            if ( p_exp_node ) {
+          if( m_exp_node_index < 0 ) {
+            for( vector<ExpandingNode*>::iterator it_exp = p_str_cls->mp_exp_nodes.begin();
+                 it_exp != p_str_cls->mp_exp_nodes.end(); it_exp++ ) {
+              ExpandingNode* p_exp_node = (*it_exp);
+              if ( p_exp_node ) {
+                for( list<MLRRTNode*>::iterator it = p_exp_node->mp_nodes.begin();
+                     it != p_exp_node->mp_nodes.end(); it++ ) {
+                  MLRRTNode* p_node = (*it);
+                  if(p_node) {
+                    if(p_node->mp_parent) {
+                      tree_painter.drawLine( toQPoint( p_node->mp_parent->m_pos ),
+                                           toQPoint( p_node->m_pos ) );
+                    }
+                  }
+                }
+              }
+            }
+          }
+          else {
+            ExpandingNode* p_exp_node = p_str_cls->mp_exp_nodes[ m_exp_node_index ];
+            if( p_exp_node ) {
               for( list<MLRRTNode*>::iterator it = p_exp_node->mp_nodes.begin();
                    it != p_exp_node->mp_nodes.end(); it++ ) {
                 MLRRTNode* p_node = (*it);
                 if(p_node) {
                   if(p_node->mp_parent) {
                     tree_painter.drawLine( toQPoint( p_node->mp_parent->m_pos ),
-                                         toQPoint( p_node->m_pos ) );
+                                           toQPoint( p_node->m_pos ) );
                   }
                 }
               }
             }
-          }
-        }
-        else {
-          ExpandingNode* p_exp_node = p_str_cls->mp_exp_nodes[ m_exp_node_index ];
-          if( p_exp_node ) {
-            for( list<MLRRTNode*>::iterator it = p_exp_node->mp_nodes.begin();
-                 it != p_exp_node->mp_nodes.end(); it++ ) {
-              MLRRTNode* p_node = (*it);
-              if(p_node) {
-                if(p_node->mp_parent) {
-                  tree_painter.drawLine( toQPoint( p_node->mp_parent->m_pos ),
-                                         toQPoint( p_node->m_pos ) );
-                }
-              }
-            }
-          }
 
+          }
         }
       }
+      tree_painter.end();
     }
-    tree_painter.end();
   }
 
-  /* DRAW PATHS */ 
+  /* DRAW PATHS */
   if( m_show_paths ) {
     QPainter fpt_painter(device);
     QPen fpt_paintpen( PATH_COLOR );
     fpt_paintpen.setWidth( PATH_WIDTH );
     fpt_painter.setPen(fpt_paintpen);
-    
+
     Path* p_viz_path = get_viz_path();
     if( p_viz_path ) {
       int point_num = p_viz_path->m_way_points.size();
       if(point_num > 0) {
         for(int i=0;i<point_num-1;i++) {
-          fpt_painter.drawLine( toQPoint(p_viz_path->m_way_points[i]), 
+          fpt_painter.drawLine( toQPoint(p_viz_path->m_way_points[i]),
                                 toQPoint(p_viz_path->m_way_points[i+1]) );
         }
       }
@@ -312,6 +315,10 @@ void MLRRTstarViz::set_show_reference_frames(bool show) {
 void MLRRTstarViz::set_show_subregions(bool show) {
   m_show_subregions = show;
   m_subregion_index = -1;
+}
+
+void MLRRTstarViz::set_show_tree(bool show) {
+  m_show_tree = show;
 }
 
 void MLRRTstarViz::set_show_paths(bool show) {
@@ -486,7 +493,7 @@ void MLRRTstarViz::mousePressEvent( QMouseEvent * event ) {
       m_dragging = true;
       m_show_points = true;
       m_drawed_points.clear();
-    } 
+    }
     else if( NORMAL == m_mode ) {
       QPoint new_point( event->x(), event->y() );
       m_item_selected_name = item_selected( new_point );
@@ -538,15 +545,15 @@ ReferenceFrame* MLRRTstarViz::get_selected_reference_frame() {
   }
   return mp_reference_frames->get_reference_frames()[ m_reference_frame_index ];
 }
-    
+
 SubRegion* MLRRTstarViz::get_selected_subregion() {
   if( m_subregion_index >= 0 && m_subregion_index < m_viz_subregions.size() ) {
     return m_viz_subregions[ m_subregion_index ];
-  } 
+  }
   return NULL;
 }
 
- 
+
 void MLRRTstarViz::prev_subregion() {
   if (m_show_subregions) {
     if( m_subregion_index > 0 ) {
@@ -565,7 +572,7 @@ void MLRRTstarViz::next_subregion() {
     }
     else {
       m_subregion_index = 0;
-    } 
+    }
   }
 }
 
@@ -610,7 +617,7 @@ QString MLRRTstarViz::get_string_class_info() {
         info = "ALL";
       }
       else {
-        info = QString::fromStdString( mp_tree->get_expanding_tree_mgr()->get_string_classes()[ m_string_class_index ]->get_name() ); 
+        info = QString::fromStdString( mp_tree->get_expanding_tree_mgr()->get_string_classes()[ m_string_class_index ]->get_name() );
       }
     }
   }
@@ -638,7 +645,7 @@ QString MLRRTstarViz::item_selected( QPoint pos ) {
 
 Path* MLRRTstarViz::get_viz_path() {
 
-  /* DRAW PATHS */ 
+  /* DRAW PATHS */
   if( m_show_paths ) {
 
     if( m_string_class_index < 0 ) {

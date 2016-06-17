@@ -27,14 +27,16 @@ namespace mlrrts{
 
     void set_show_reference_frames( bool show );
     void set_show_subregions( bool show );
+    void set_show_tree(bool show);
     void set_finished_planning( bool finished ) { m_finished_planning = finished; }
     void set_show_paths( bool show );
-  
+
     bool show_reference_frames() { return m_show_reference_frames; }
     bool show_subregions() { return m_show_subregions; }
-    bool show_paths() { return m_show_paths; }    
+    bool show_tree() { return m_show_tree; }
+    bool show_paths() { return m_show_paths; }
     bool is_finished_planning() { return m_finished_planning; }
- 
+
     void set_mode( MLRRTstarVizMode mode ) { m_mode = mode; }
     MLRRTstarVizMode get_mode() { return m_mode; }
 
@@ -67,13 +69,13 @@ namespace mlrrts{
     std::vector<QPoint>& get_drawed_points() { return m_drawed_points; }
     void set_show_drawed_points( bool show ) { m_show_points = show; m_drawed_points.clear(); }
     bool get_show_drawed_points() { return m_show_points; }
-    
+
     int get_found_path_index() { return m_found_path_index; }
-    QString item_selected( QPoint pos ); 
+    QString item_selected( QPoint pos );
 
     Path* get_viz_path();
   signals:
-  
+
   public slots:
 
   protected:
@@ -99,6 +101,7 @@ namespace mlrrts{
     bool                         m_show_reference_frames;
     bool                         m_show_subregions;
     bool                         m_show_paths;
+    bool                         m_show_tree;
     bool                         m_finished_planning;
     int                          m_string_class_index;
     int                          m_exp_node_index;
@@ -110,7 +113,7 @@ namespace mlrrts{
 
     std::vector<homotopy::SubRegion*>      m_viz_subregions;
     std::vector<homotopy::ReferenceFrame*> m_viz_reference_frames;
- 
+
   private slots:
     void paintEvent( QPaintEvent* e );
   };
