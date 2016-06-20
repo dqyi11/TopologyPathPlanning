@@ -21,7 +21,7 @@ MLRRTstarPathPlanningInfo::MLRRTstarPathPlanningInfo() {
 
   m_paths_output = "";
   mp_found_paths.clear();
-  
+
   m_min_dist_enabled = true;
 
   m_grammar_type = STRING_GRAMMAR_TYPE;
@@ -107,9 +107,9 @@ void MLRRTstarPathPlanningInfo::init_obj_pixmap(){
     delete mp_obj;
     mp_obj = NULL;
   }
-  
-  mp_obj = new QPixmap( m_objective_file );   
-    
+
+  mp_obj = new QPixmap( m_objective_file );
+
 }
 
 void MLRRTstarPathPlanningInfo::init_func_param() {
@@ -135,14 +135,14 @@ void MLRRTstarPathPlanningInfo::read( xmlNodePtr root ) {
   if( root->type == XML_ELEMENT_NODE ){
     xmlChar* tmp = xmlGetProp( root, ( const xmlChar* )( "map_filename" ) );
     if ( tmp != NULL ) {
-      std::string map_filename = ( char * )( tmp ); 
+      std::string map_filename = ( char * )( tmp );
       m_map_filename = QString::fromStdString( map_filename );
       xmlFree( tmp );
-    } 
+    }
     tmp = xmlGetProp( root, ( const xmlChar* )( "map_fullpath" ) );
     if ( tmp != NULL ) {
       std::string map_fullpath = ( char * )( tmp );
-      m_map_fullpath = QString::fromStdString( map_fullpath ); 
+      m_map_fullpath = QString::fromStdString( map_fullpath );
       xmlFree( tmp );
     }
     tmp = xmlGetProp( root, ( const xmlChar* )( "map_width" ) );
@@ -179,7 +179,7 @@ void MLRRTstarPathPlanningInfo::read( xmlNodePtr root ) {
       goal_y_int = strtol( goal_y.c_str(), NULL, 10 );
     }
     m_goal = QPoint( goal_x_int, goal_y_int );
-    
+
     tmp = xmlGetProp( root, ( const xmlChar* )( "min_dist_enabled" ) );
     if ( tmp != NULL ) {
       std::string min_dist_enabled = ( char * )( tmp );
@@ -225,7 +225,7 @@ void MLRRTstarPathPlanningInfo::read( xmlNodePtr root ) {
 }
 
 void MLRRTstarPathPlanningInfo::write( xmlDocPtr doc, xmlNodePtr root ) const {
-    
+
   xmlNodePtr node = xmlNewDocNode( doc, NULL, ( const xmlChar* )( "world" ), NULL );
   xmlNewProp( node, ( const xmlChar* )( "map_filename" ), ( const xmlChar* )( m_map_filename.toStdString().c_str() ) );
   xmlNewProp( node, ( const xmlChar* )( "map_fullpath" ), ( const xmlChar* )( m_map_fullpath.toStdString().c_str() ) );
@@ -246,7 +246,7 @@ void MLRRTstarPathPlanningInfo::write( xmlDocPtr doc, xmlNodePtr root ) const {
   xmlNewProp( node, ( const xmlChar* )( "goal_x" ), ( const xmlChar* )( goal_x_str.str().c_str() ) );
   std::stringstream goal_y_str;
   goal_y_str << m_goal.y();
-  xmlNewProp( node, ( const xmlChar* )( "goal_y" ), ( const xmlChar* )( goal_y_str.str().c_str() ) );  
+  xmlNewProp( node, ( const xmlChar* )( "goal_y" ), ( const xmlChar* )( goal_y_str.str().c_str() ) );
 
   std::string min_dist_enabled;
   if ( m_min_dist_enabled ) {
@@ -261,7 +261,7 @@ void MLRRTstarPathPlanningInfo::write( xmlDocPtr doc, xmlNodePtr root ) const {
   } else {
     homotopic_enforcement = "0";
   }
-  xmlNewProp( node, ( const xmlChar* )( "min_dist_enabled" ), ( const xmlChar* )( min_dist_enabled.c_str() ) );
+  xmlNewProp( node, ( const xmlChar* )( "homotopic_enforcement" ), ( const xmlChar* )( homotopic_enforcement.c_str() ) );
   xmlNewProp( node, ( const xmlChar* )( "objective_file" ), ( const xmlChar* )( m_objective_file.toStdString().c_str() ) );
   xmlNewProp( node, ( const xmlChar* )( "path_output_file" ), ( const xmlChar* )( m_paths_output.toStdString().c_str() ) );
 
@@ -271,12 +271,12 @@ void MLRRTstarPathPlanningInfo::write( xmlDocPtr doc, xmlNodePtr root ) const {
   std::stringstream seg_len_str;
   seg_len_str << m_segment_length;
   xmlNewProp( node, ( const xmlChar* )( "segment_length" ), ( const xmlChar* )( seg_len_str.str().c_str() ) );
-    
+
   xmlAddChild( root, node );
 }
 
 bool MLRRTstarPathPlanningInfo::save_to_file(QString filename) {
-    
+
   xmlDocPtr doc = xmlNewDoc( ( xmlChar* )( "1.0" ) );
   xmlNodePtr root = xmlNewDocNode( doc, NULL, ( xmlChar* )( "root" ), NULL );    xmlDocSetRootElement( doc, root );
   write( doc, root );
@@ -294,8 +294,8 @@ bool MLRRTstarPathPlanningInfo::load_from_file(QString filename) {
     if( root->type == XML_ELEMENT_NODE ) {
       xmlNodePtr l1 = NULL;
       for( l1 = root->children; l1; l1 = l1->next ) {
-        if( l1->type == XML_ELEMENT_NODE ) { 
-          if( xmlStrcmp( l1->name, ( const xmlChar * )( "world" ) ) == 0 ){ 
+        if( l1->type == XML_ELEMENT_NODE ) {
+          if( xmlStrcmp( l1->name, ( const xmlChar * )( "world" ) ) == 0 ){
             read( l1 );
           }
         }
