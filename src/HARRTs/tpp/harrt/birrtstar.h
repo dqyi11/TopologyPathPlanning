@@ -3,9 +3,9 @@
 
 #include <vector>
 #include <list>
-#include "kdtree2d.h"
-#include "reference_frames.h"
-#include "string_class_mgr.h"
+#include "tpp/homotopy/reference_frames.h"
+#include "tpp/harrt/kdtree2d.h"
+#include "tpp/harrt/string_class_mgr.h"
 
 
 namespace birrts {

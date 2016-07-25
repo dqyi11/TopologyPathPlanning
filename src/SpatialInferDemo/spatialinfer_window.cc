@@ -3,11 +3,11 @@
 #include <QtDebug>
 #include <QKeyEvent>
 #include <QStatusBar>
-#include "spatialinfer_window.h"
-#include "inbetween_relation_function.h"
-#include "avoid_relation_function.h"
-#include "sideof_relation_function.h"
+#include "tpp/spatial_infer/inbetween_relation_function.h"
+#include "tpp/spatial_infer/avoid_relation_function.h"
+#include "tpp/spatial_infer/sideof_relation_function.h"
 #include "spatialinfer_config.h"
+#include "spatialinfer_window.h"
 
 using namespace std;
 using namespace homotopy;

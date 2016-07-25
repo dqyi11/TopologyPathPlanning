@@ -3,10 +3,10 @@
 #include <boost/graph/graphviz.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/iteration_macros.hpp>
-#include "expanding_tree.h"
-#include "expanding_tree_mgr.h"
-#include "mlrrtstar.h"
-#include "ml_util.h"
+#include "tpp/tarrt/expanding_tree.h"
+#include "tpp/tarrt/expanding_tree_mgr.h"
+#include "tpp/tarrt/mlrrtstar.h"
+#include "tpp/tarrt/ml_util.h"
 
 using namespace std;
 using namespace boost;

@@ -1,10 +1,10 @@
 
-set(LIB tbpp-tarrts)
+set(LIB tpp-tarrts)
 
-set(HDR    mlrrtstar.h
-           expanding_tree.h
-           expanding_tree_mgr.h
-           kdtreeml2d.h
+set(HDR    tpp/tarrt/mlrrtstar.h
+           tpp/tarrt/expanding_tree.h
+           tpp/tarrt/expanding_tree_mgr.h
+           tpp/tarrt/kdtreeml2d.h
    )
 
 add_library(${LIB} SHARED
@@ -14,7 +14,7 @@ add_library(${LIB} SHARED
            )
 
 target_link_libraries(${LIB}
-                      tbpp-homotopy
+                      tpp-homotopy
                       ${CGAL_LIBRARIES}
                       ${BOOST_LIBRARIES}
                      ) 
@@ -27,4 +27,4 @@ install(TARGETS ${LIB}
         DESTINATION lib)
 
 install(FILES ${HDR}
-        DESTINATION include/)
+        DESTINATION include/tpp/tarrt/)

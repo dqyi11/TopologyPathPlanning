@@ -3,10 +3,10 @@
 
 #include <QLabel>
 
-#include "mlrrtstar.h"
+#include "tpp/homotopy/reference_frames.h"
+#include "tpp/homotopy/region.h"
+#include "tpp/tarrt/mlrrtstar.h"
 #include "mlrrtstar_path_planning_info.h"
-#include "reference_frames.h"
-#include "region.h"
 
 namespace mlrrts{
 

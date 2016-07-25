@@ -1,7 +1,7 @@
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-add_executable(tbpp-spatial-infer-demo
+add_executable(tpp-spatial-infer-demo
                spatialinfer_window.h
                spatialinfer_window.cc
                spatialinfer_config.h
@@ -11,10 +11,9 @@ add_executable(tbpp-spatial-infer-demo
 include_directories(
                    )
 
-target_link_libraries(tbpp-spatial-infer-demo 
-                      tbpp-spatial-infer
-                      tbpp-spatial-infer-viz
+target_link_libraries(tpp-spatial-infer-demo 
+                      tpp-spatial-infer
+                      tpp-spatial-infer-viz
                       ${QT_LIBRARIES}
                      ) 
 
-install(TARGETS tbpp-spatial-infer-demo DESTINATION bin)

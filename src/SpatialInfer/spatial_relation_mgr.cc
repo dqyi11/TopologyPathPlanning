@@ -1,4 +1,4 @@
-#include "spatial_relation_mgr.h"
+#include "tpp/spatial_infer/spatial_relation_mgr.h"
 
 using namespace std;
 using namespace homotopy;

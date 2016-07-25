@@ -3,8 +3,8 @@
 
 #include <vector>
 #include <QLabel>
-#include "worldmap.h"
-#include "reference_frames.h"
+#include "tpp/homotopy/worldmap.h"
+#include "tpp/homotopy/reference_frames.h"
 
 namespace homotopy {
   

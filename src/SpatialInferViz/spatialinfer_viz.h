@@ -3,8 +3,8 @@
 
 #include <vector>
 #include <QLabel>
-#include "spatial_relation_mgr.h"
-#include "reference_frames.h"
+#include "tpp/homotopy/reference_frames.h"
+#include "tpp/spatial_infer/spatial_relation_mgr.h"
 
 namespace topology_inference {
   

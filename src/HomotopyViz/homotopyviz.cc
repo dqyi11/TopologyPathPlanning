@@ -1,8 +1,8 @@
 #include <cstdlib>
 #include <QPainter>
 #include <QMouseEvent>
+#include "tpp/homotopy/img_load_util.h"
 #include "homotopyviz.h"
-#include "img_load_util.h"
 
 #define LINE_WIDTH              1
 #define SELECTED_LINE_WIDTH     2

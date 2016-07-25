@@ -4,7 +4,7 @@
 #include <CGAL/Polygon_2_algorithms.h>
 #include <CGAL/Boolean_set_operations_2.h>
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-#include "worldmap.h"
+#include "tpp/homotopy/worldmap.h"
 
 #define DELTA_TRIAL 2.0
 

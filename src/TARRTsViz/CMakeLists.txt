@@ -1,4 +1,4 @@
-set(LIB tbpp-tarrts-viz)
+set(LIB tpp-tarrts-viz)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -14,19 +14,10 @@ add_library(${LIB} SHARED
            )
 
 target_link_libraries(${LIB}
-                      tbpp-tarrts
+                      tpp-tarrts
                       ${QT_LIBRARIES}
                       ${CGAL_LIBRARIES}
                       ${BOOST_LIBRARIES}
                       ${OpenCV_LIBRARIES}
                      )
-
-install(TARGETS ${LIB}
-        LIBRARY
-        DESTINATION lib
-        ARCHIVE
-        DESTINATION lib)
-
-install(FILES ${HDR}
-        DESTINATION include/) 
 

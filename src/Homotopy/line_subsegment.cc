@@ -1,8 +1,8 @@
 #include <sstream>
 #include <CGAL/squared_distance_2.h>
-#include "line_subsegment.h"
-#include "obstacle.h"
-#include "worldmap.h"
+#include "tpp/homotopy/line_subsegment.h"
+#include "tpp/homotopy/obstacle.h"
+#include "tpp/homotopy/worldmap.h"
 
 using namespace std;
 using namespace homotopy;

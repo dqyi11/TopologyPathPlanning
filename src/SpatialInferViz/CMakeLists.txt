@@ -1,5 +1,5 @@
 
-set(LIB tbpp-spatial-infer-viz)
+set(LIB tpp-spatial-infer-viz)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -12,15 +12,10 @@ include_directories(
                    )
 
 target_link_libraries(${LIB} 
-                      tbpp-homotopy
-                      tbpp-spatial-infer
+                      tpp-homotopy
+                      tpp-spatial-infer
                       ${QT_LIBRARIES} 
                       ${OpenCV_LIBRARIES}
                      )
 
-install(TARGETS ${LIB}
-        LIBRARY
-        DESTINATION lib
-        ARCHIVE
-        DESTINATION lib)
 

@@ -1,16 +1,16 @@
-#ifndef KDTREEML2D_H
-#define KDTREEML2D_H
+#ifndef KDTREE2D_H
+#define KDTREE2D_H
 
 #define KDTREE_DEFINE_OSTREAM_OPERATORS
 
 #include <functional>
 #include <iostream>
-#include <vector>
-#include "kdtree++/kdtree.hpp"
 
-namespace mlrrts {
+#include "tpp/harrt/kdtree++/kdtree.hpp"
 
-  class MLRRTNode;
+namespace birrts {
+
+  class BIRRTNode;
 
   class POS2D {
   public:
@@ -54,15 +54,12 @@ namespace mlrrts {
 
   class KDNode2D : public POS2D {
   public:
-    KDNode2D(value_type x, value_type y) : POS2D(x, y) { mp_pri_mlrrtnode = NULL; mp_mlrrtnodes.clear(); }
-    KDNode2D(POS2D & pos) : POS2D(pos) { mp_pri_mlrrtnode = NULL; mp_mlrrtnodes.clear(); }
-    void set_pri_mlrrtnode(MLRRTNode* p_node) { mp_pri_mlrrtnode = p_node; }
-    MLRRTNode* get_pri_mlrrtnode() { return mp_pri_mlrrtnode; }
-    void add_mlrrtnode( MLRRTNode* p_node ) { mp_mlrrtnodes.push_back( p_node ); }
-    std::vector<MLRRTNode*>& get_mlrrtnodes() { return mp_mlrrtnodes; }
+    KDNode2D(value_type x, value_type y) : POS2D(x, y) { mpBIRRTNode = NULL; }
+    KDNode2D(POS2D & pos) : POS2D(pos) { mpBIRRTNode = NULL; }
+    void setBIRRTNode(BIRRTNode* pNode) { mpBIRRTNode = pNode; }
+    BIRRTNode* getBIRRTNode() { return mpBIRRTNode; }
   protected:
-    MLRRTNode*              mp_pri_mlrrtnode;
-    std::vector<MLRRTNode*> mp_mlrrtnodes;
+    BIRRTNode* mpBIRRTNode;
   };
 
 

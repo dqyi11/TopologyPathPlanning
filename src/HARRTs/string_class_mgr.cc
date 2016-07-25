@@ -1,6 +1,6 @@
 #include <limits>
-#include "string_class_mgr.h"
-#include "birrtstar.h"
+#include "tpp/harrt/string_class_mgr.h"
+#include "tpp/harrt/birrtstar.h"
 
 using namespace homotopy;
 using namespace birrts;

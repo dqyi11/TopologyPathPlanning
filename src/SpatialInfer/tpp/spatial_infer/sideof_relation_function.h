@@ -1,8 +1,8 @@
 #ifndef SIDEOF_RELATION_FUNC_H_
 #define SIDEOF_RELATION_FUNC_H_
 
-#include "obstacle.h"
-#include "spatial_relation_function.h"
+#include "tpp/homotopy/obstacle.h"
+#include "tpp/spatial_infer/spatial_relation_function.h"
 
 namespace topology_inference {
 

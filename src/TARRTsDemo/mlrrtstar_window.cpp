@@ -6,10 +6,10 @@
 #include <QKeyEvent>
 #include <QStatusBar>
 #include <QApplication>
+#include "tpp/homotopy/img_load_util.h"
+#include "tpp/tarrt/expanding_tree.h"
 #include "mlrrtstar_config.h"
 #include "mlrrtstar_window.h"
-#include "img_load_util.h"
-#include "expanding_tree.h"
 
 using namespace std;
 using namespace homotopy;

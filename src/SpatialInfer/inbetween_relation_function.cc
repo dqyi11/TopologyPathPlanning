@@ -1,4 +1,4 @@
-#include "inbetween_relation_function.h"
+#include "tpp/spatial_infer/inbetween_relation_function.h"
 
 using namespace std;
 using namespace homotopy;

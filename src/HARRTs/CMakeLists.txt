@@ -1,17 +1,17 @@
 
-set(LIB tbpp-harrts)
+set(LIB tpp-harrts)
 
-set(HDR birrtstar.h
-        string_class_mgr.h
-        KDTree2D.h
+set(HDR tpp/harrt/birrtstar.h
+        tpp/harrt/string_class_mgr.h
+        tpp/harrt/KDTree2D.h
         )
 
-set(KD_HDR kdtree++/allocator.hpp
-           kdtree++/function.hpp
-           kdtree++/iterator.hpp
-           kdtree++/kdtree.hpp
-           kdtree++/node.hpp
-           kdtree++/region.hpp
+set(KD_HDR tpp/harrt/kdtree++/allocator.hpp
+           tpp/harrt/kdtree++/function.hpp
+           tpp/harrt/kdtree++/iterator.hpp
+           tpp/harrt/kdtree++/kdtree.hpp
+           tpp/harrt/kdtree++/node.hpp
+           tpp/harrt/kdtree++/region.hpp
         )
 
 add_library(${LIB} SHARED
@@ -23,13 +23,13 @@ include_directories(
                    )
 
 target_link_libraries(${LIB}
-                      tbpp-homotopy
+                      tpp-homotopy
                       ${CGAL_LIBRARIES}
                       ${BOOST_LIBRARIES}
                      ) 
 
-install(FILES ${HDR} DESTINATION include/)
-install(FILES ${KD_HDR} DESTINATION include/kdtree++/)
+install(FILES ${HDR} DESTINATION include/tpp/harrt/)
+install(FILES ${KD_HDR} DESTINATION include/tpp/harrt/kdtree++/)
 
 install(TARGETS ${LIB}
         LIBRARY

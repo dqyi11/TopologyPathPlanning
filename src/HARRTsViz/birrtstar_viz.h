@@ -3,9 +3,9 @@
 
 #include <QLabel>
 
-#include "birrtstar.h"
+#include "tpp/homotopy/reference_frames.h"
+#include "tpp/harrt/birrtstar.h"
 #include "birrtstar_path_planning_info.h"
-#include "reference_frames.h"
 
 namespace birrts {
 

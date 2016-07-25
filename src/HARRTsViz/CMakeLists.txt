@@ -1,4 +1,4 @@
-set(LIB tbpp-harrts-viz)
+set(LIB tpp-harrts-viz)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -14,7 +14,7 @@ add_library(${LIB} SHARED
 
 
 target_link_libraries(${LIB} 
-                      tbpp-harrts
+                      tpp-harrts
                       ${QT_LIBRARIES}
                       ${CGAL_LIBRARIES}
                       ${BOOST_LIBRARIES}
@@ -24,6 +24,3 @@ install(TARGETS ${LIB}
         DESTINATION lib
         ARCHIVE
         DESTINATION lib)
-
-install(FILES ${HDR}
-        DESTINATION include/)

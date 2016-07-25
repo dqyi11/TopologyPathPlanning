@@ -2,9 +2,9 @@
 #define EXPANDING_TREE_MGR_H_
 
 #include <vector>
-#include "kdtreeml2d.h"
-#include "expanding_tree.h"
-#include "reference_frames.h"
+#include "tpp/homotopy/reference_frames.h"
+#include "tpp/tarrt/kdtreeml2d.h"
+#include "tpp/tarrt/expanding_tree.h"
 
 namespace mlrrts {
 

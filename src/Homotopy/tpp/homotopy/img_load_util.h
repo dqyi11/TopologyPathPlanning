@@ -3,7 +3,7 @@
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include <opencv2/highgui/highgui.hpp>
-#include "world_datatype.h"
+#include "tpp/homotopy/world_datatype.h"
 
 bool load_map_info( std::string filename, int& width, int& height, std::vector< std::vector<Point2D> >& obstacles ) {
     obstacles.clear();

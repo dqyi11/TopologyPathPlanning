@@ -1,15 +1,16 @@
 
-set(LIB tbpp-homotopy)
+set(LIB tpp-homotopy)
 
-set(HDR obstacle.h
-         line_subsegment.h
-         region.h
-         string_grammar.h
-         homotopic_grammar.h
-         reference_frames.h
-         worldmap.h
-         cgal_util.h
-         world_datatype.h
+set(HDR  tpp/homotopy/obstacle.h
+         tpp/homotopy/line_subsegment.h
+         tpp/homotopy/region.h
+         tpp/homotopy/string_grammar.h
+         tpp/homotopy/homotopic_grammar.h
+         tpp/homotopy/reference_frames.h
+         tpp/homotopy/worldmap.h
+         tpp/homotopy/cgal_util.h
+         tpp/homotopy/world_datatype.h
+         tpp/homotopy/img_load_util.h
          )
 
 add_library(${LIB} SHARED
@@ -35,4 +36,4 @@ install(TARGETS ${LIB}
         DESTINATION lib)
 
 install(FILES ${HDR}
-        DESTINATION include/)
+        DESTINATION include/tpp/homotopy)

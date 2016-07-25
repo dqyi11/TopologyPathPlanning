@@ -1,4 +1,4 @@
-#include "homotopic_grammar.h"
+#include "tpp/homotopy/homotopic_grammar.h"
 
 using namespace homotopy;
 

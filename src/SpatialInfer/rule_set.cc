@@ -1,4 +1,4 @@
-#include "rule_set.h"
+#include "tpp/spatial_infer/rule_set.h"
 
 using namespace topology_inference;
 

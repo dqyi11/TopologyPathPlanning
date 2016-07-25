@@ -4,7 +4,7 @@
 #include <utility>
 #include <vector>
 #include <string>
-#include "reference_frames.h"
+#include "tpp/homotopy/reference_frames.h"
 
 namespace topology_inference {
 

@@ -3,9 +3,10 @@
 
 #include <vector>
 #include <list>
-#include "kdtreeml2d.h"
-#include "expanding_tree_mgr.h"
-#include "reference_frames.h"
+#include "tpp/homotopy/reference_frames.h"
+#include "tpp/tarrt/kdtreeml2d.h"
+#include "tpp/tarrt/expanding_tree_mgr.h"
+
 
 namespace mlrrts {
 

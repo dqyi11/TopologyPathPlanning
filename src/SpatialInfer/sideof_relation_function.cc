@@ -1,5 +1,5 @@
-#include "cgal_util.h"
-#include "sideof_relation_function.h"
+#include "tpp/homotopy/cgal_util.h"
+#include "tpp/spatial_infer/sideof_relation_function.h"
 
 using namespace std;
 using namespace homotopy;

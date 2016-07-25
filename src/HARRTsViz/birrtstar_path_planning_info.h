@@ -9,7 +9,7 @@
 #include <QDebug>
 #include <math.h>
 
-#include "birrtstar.h"
+#include "tpp/harrt/birrtstar.h"
 
 namespace birrts {
 

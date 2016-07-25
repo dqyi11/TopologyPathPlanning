@@ -1,13 +1,13 @@
 
-set(LIB tbpp-spatial-infer)
+set(LIB tpp-spatial-infer)
 
-set(HDR    spatial_relation_function.h
-           inbetween_relation_function.h
-           sideoof_relation_function.h
-           avoid_relation_function.h
-           spatial_relation_mgr.h
-           rule.h
-           rule_set.h
+set(HDR    tpp/spatial_infer/spatial_relation_function.h
+           tpp/spatial_infer/inbetween_relation_function.h
+           tpp/spatial_infer/sideoof_relation_function.h
+           tpp/spatial_infer/avoid_relation_function.h
+           tpp/spatial_infer/spatial_relation_mgr.h
+           tpp/spatial_infer/rule.h
+           tpp/spatial_infer/rule_set.h
    )
 
 add_library(${LIB} SHARED
@@ -20,17 +20,10 @@ add_library(${LIB} SHARED
            )
 
 target_link_libraries(${LIB}
-                      tbpp-homotopy
+                      tpp-homotopy
                       ${CGAL_LIBRARIES}
                       ${BOOST_LIBRARIES}
                      ) 
 
 
-install(TARGETS ${LIB}
-        LIBRARY
-        DESTINATION lib
-        ARCHIVE
-        DESTINATION lib)
 
-install(FILES ${HDR}
-        DESTINATION include/)

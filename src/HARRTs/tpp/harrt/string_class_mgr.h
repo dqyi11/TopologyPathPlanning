@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <iostream>
-#include "string_grammar.h"
+#include "tpp/homotopy/string_grammar.h"
 
 namespace birrts {
 

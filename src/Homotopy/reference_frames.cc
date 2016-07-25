@@ -1,5 +1,5 @@
 #include <CGAL/intersections.h>
-#include "reference_frames.h"
+#include "tpp/homotopy/reference_frames.h"
 
 #define MERGED_CENTER_SUBREGION "SC"
 

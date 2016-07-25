@@ -1,5 +1,5 @@
-#include "cgal_util.h"
-#include "region.h"
+#include "tpp/homotopy/cgal_util.h"
+#include "tpp/homotopy/region.h"
 
 using namespace homotopy;
 

@@ -1,6 +1,6 @@
 #include <fstream>
-#include "expanding_tree_mgr.h"
-#include "mlrrtstar.h"
+#include "tpp/tarrt/expanding_tree_mgr.h"
+#include "tpp/tarrt/mlrrtstar.h"
 
 using namespace std;
 using namespace homotopy;

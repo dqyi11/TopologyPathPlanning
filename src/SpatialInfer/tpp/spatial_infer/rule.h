@@ -2,7 +2,7 @@
 #define RULE_H_
 
 #include <vector>
-#include "reference_frames.h"
+#include "tpp/homotopy/reference_frames.h"
 
 namespace topology_inference {
 

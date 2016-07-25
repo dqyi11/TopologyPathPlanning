@@ -1,4 +1,4 @@
-#include "avoid_relation_function.h"
+#include "tpp/spatial_infer/avoid_relation_function.h"
 
 using namespace std;
 using namespace homotopy;

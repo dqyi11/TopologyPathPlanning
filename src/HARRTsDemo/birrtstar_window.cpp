@@ -6,10 +6,9 @@
 #include <QKeyEvent>
 #include <QStatusBar>
 #include <QApplication>
+#include "tpp/homotopy/img_load_util.h"
 #include "birrtstar_config.h"
 #include "birrtstar_window.h"
-#include "img_load_util.h"
-//#include "expanding_tree.h"
 
 using namespace homotopy;
 using namespace birrts;

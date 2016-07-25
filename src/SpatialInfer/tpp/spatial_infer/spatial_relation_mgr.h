@@ -2,8 +2,8 @@
 #define SPATIAL_RELATION_MGR_H
 
 #include <vector>
-#include "worldmap.h"
-#include "spatial_relation_function.h"
+#include "tpp/homotopy/worldmap.h"
+#include "tpp/spatial_infer/spatial_relation_function.h"
 
 namespace topology_inference {
 

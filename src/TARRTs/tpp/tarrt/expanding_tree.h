@@ -4,9 +4,9 @@
 #include <vector>
 #include <string>
 #include <iostream>
-#include "kdtreeml2d.h"
-#include "string_grammar.h"
-#include "reference_frames.h"
+#include "tpp/homotopy/string_grammar.h"
+#include "tpp/homotopy/reference_frames.h"
+#include "tpp/tarrt/kdtreeml2d.h"
 
 namespace mlrrts {
 

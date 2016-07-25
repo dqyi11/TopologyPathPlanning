@@ -5,7 +5,7 @@
 #include <boost/graph/graphviz.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/iteration_macros.hpp>
-#include "string_grammar.h"
+#include "tpp/homotopy/string_grammar.h"
 
 using namespace std;
 using namespace boost;

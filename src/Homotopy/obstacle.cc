@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <CGAL/centroid.h>
 #include <CGAL/squared_distance_2.h>
-#include "obstacle.h"
-#include "worldmap.h"
+#include "tpp/homotopy/obstacle.h"
+#include "tpp/homotopy/worldmap.h"
 
 using namespace std;
 using namespace homotopy;
