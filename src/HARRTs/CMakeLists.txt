@@ -3,7 +3,7 @@ set(LIB tpp-harrts)
 
 set(HDR tpp/harrt/birrtstar.h
         tpp/harrt/string_class_mgr.h
-        tpp/harrt/KDTree2D.h
+        tpp/harrt/kdtree2d.h
         )
 
 set(KD_HDR tpp/harrt/kdtree++/allocator.hpp
