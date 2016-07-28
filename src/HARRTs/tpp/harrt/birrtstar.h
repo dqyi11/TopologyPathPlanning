@@ -59,7 +59,7 @@ namespace birrts {
     BIRRTstar(int width, int height, int segment_length);
     virtual ~BIRRTstar();
 
-    bool init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp_cost_distrinution, homotopy::grammar_type_t grammar_type );
+    bool init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp_cost_distrinution, homotopy::grammar_type_t grammar_type = homotopy::STRING_GRAMMAR_TYPE );
     void load_map( int** pp_map );
 
     int get_sampling_width() { return _sampling_width; }
