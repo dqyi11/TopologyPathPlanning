@@ -19,3 +19,8 @@ Run HARRT*
 ```
 $ bin/tpp-harrts-demo
 ```
+
+Run TARRT*
+```
+$ bin/tpp-tarrts-demo
+```
