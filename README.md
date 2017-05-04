@@ -31,3 +31,9 @@ STEPS:
 * run the planner "Edit->Run"
 * after planning is finished, Left and Right keys to switch different paths
 
+TIPS
+* save a plan configuration "File->Save"
+* load a plan configuration "File->Open"
+* save paths and data to files "File->Export"
+
+* snapshot the GUI "Tool->Save Screen"
