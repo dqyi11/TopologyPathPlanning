@@ -24,3 +24,10 @@ Run TARRT*
 ```
 $ bin/tpp-tarrts-demo
 ```
+STEPS:
+* load a map "Edit->Load Map"
+* set start position and goal position by mouse right-click
+* configure the objective and parameters "Edit->Config Objective"
+* run the planner "Edit->Run"
+* after planning is finished, Left and Right keys to switch different paths
+
