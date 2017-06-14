@@ -258,6 +258,11 @@ std::vector< std::string > ReferenceFrameSet::get_string ( std::vector<Point2D> 
   return ids;
 }
 
+std::vector< std::string > ReferenceFrameSet::get_string ( PointSequence& path,  grammar_type_t type )
+{
+  return get_string(path.mPoints, type);
+}
+
 void ReferenceFrameSet::import_string_constraint( std::vector<Point2D> points, grammar_type_t type ) {
   std::vector< std::string > constraint = get_string( points, type );
   _string_constraint.push_back( constraint );

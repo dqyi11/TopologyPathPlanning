@@ -19,6 +19,8 @@ target_link_libraries(${LIB}
                       ${BOOST_LIBRARIES}
                      ) 
 
+add_custom_target(TARRTsHeaders SOURCES ${HDR})
+
 
 install(TARGETS ${LIB}
         LIBRARY

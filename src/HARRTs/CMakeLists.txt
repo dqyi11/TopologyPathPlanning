@@ -28,6 +28,8 @@ target_link_libraries(${LIB}
                       ${BOOST_LIBRARIES}
                      ) 
 
+add_custom_target(HARRTsHeaders SOURCES ${HDR} ${KD_HDR})
+
 install(FILES ${HDR} DESTINATION include/tpp/harrt/)
 install(FILES ${KD_HDR} DESTINATION include/tpp/harrt/kdtree++/)
 

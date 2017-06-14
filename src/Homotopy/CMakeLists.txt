@@ -29,6 +29,8 @@ target_link_libraries(${LIB}
                       ${LIBXML2_LIBRARIES}
                      )
 
+add_custom_target(HomotopyHeaders SOURCES ${HDR})
+
 install(TARGETS ${LIB}
         LIBRARY
         DESTINATION lib

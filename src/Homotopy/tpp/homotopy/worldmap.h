@@ -7,6 +7,15 @@
 
 namespace homotopy {
 
+  class PointSequence {
+  public:
+    PointSequence();
+    virtual ~PointSequence();
+    void addPoint(double x, double y);
+
+    std::vector<Point2D> mPoints;
+  };
+
   class WorldMap {
   public:
     WorldMap();

@@ -3,7 +3,7 @@ set(LIB tpp-spatial-infer)
 
 set(HDR    tpp/spatial_infer/spatial_relation_function.h
            tpp/spatial_infer/inbetween_relation_function.h
-           tpp/spatial_infer/sideoof_relation_function.h
+           tpp/spatial_infer/sideof_relation_function.h
            tpp/spatial_infer/avoid_relation_function.h
            tpp/spatial_infer/spatial_relation_mgr.h
            tpp/spatial_infer/rule.h
@@ -18,6 +18,8 @@ add_library(${LIB} SHARED
             rule.cc
             rule_set.cc
            )
+
+#add_custom_target(SpatialInferHeaders SOURCES ${HDR})
 
 target_link_libraries(${LIB}
                       tpp-homotopy

@@ -45,6 +45,7 @@ namespace homotopy {
     
     std::vector< std::string > get_string ( Point2D start, Point2D end, grammar_type_t type );
     std::vector< std::string > get_string ( std::vector<Point2D> points, grammar_type_t type );
+    std::vector< std::string > get_string ( PointSequence& path, grammar_type_t type );
     std::vector<ReferenceFrame*>& get_reference_frames() { return _reference_frames; }
 
     WorldMap* get_world_map() { return _p_world_map; }

@@ -22,6 +22,21 @@ bool SubregionSort(const SubRegion* lhs, const SubRegion* rhs ) {
   return lhs->m_dist_to_cp < rhs->m_dist_to_cp;
 }
 
+PointSequence::PointSequence()
+{
+}
+
+PointSequence::~PointSequence()
+{
+  mPoints.clear();
+}
+
+void PointSequence::addPoint(double x, double y)
+{
+    Point2D point(x, y);
+    mPoints.push_back(point);
+}
+
 WorldMap::WorldMap() {
   _map_width = 0;
   _map_height = 0;

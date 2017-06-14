@@ -547,12 +547,19 @@ void HomotopyViz::mouseReleaseEvent( QMouseEvent * event ){
 QString HomotopyViz::generate_string() {
 
   QString ref_str = "";
+  /*
   std::vector< Point2D > cgal_points;
   for( unsigned int i = 0; i < mPoints.size(); i ++ ) {
     Point2D p( mPoints[i].x(), mPoints[i].y() );
     cgal_points.push_back( p );
   }
   std::vector< std::string > refs = mpReferenceFrameSet->get_string( cgal_points, STRING_GRAMMAR_TYPE );
+  */
+  homotopy::PointSequence path;
+  for( unsigned int i = 0; i < mPoints.size(); i ++ ) {
+    path.addPoint( mPoints[i].x(), mPoints[i].y() );
+  }
+  std::vector< std::string > refs = mpReferenceFrameSet->get_string( path, STRING_GRAMMAR_TYPE );
 
   for( unsigned int i = 0; i < refs.size(); i ++ ) {
     if ( i > 0 ) {
