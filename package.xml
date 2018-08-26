@@ -1,0 +1,17 @@
+<package>
+  <!-- Package Metadata -->
+  <name>topologyPathPlanning</name>
+  <maintainer email="yi@byu.edu">Daqing Yi</maintainer>
+  <description>
+    Topology path planning (HARRT* and TARRT*)
+  </description>
+  <version>0.0.5</version>
+  <license>BSD</license>
+
+  <!-- Required by Catkin -->
+  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>CGAL</buildtool_depend>
+
+
+  <!-- Package Dependencies -->
+</package>
