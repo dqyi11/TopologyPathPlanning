@@ -1,6 +1,6 @@
 <package>
   <!-- Package Metadata -->
-  <name>topologyPathPlanning</name>
+  <name>tbpp</name>
   <maintainer email="yi@byu.edu">Daqing Yi</maintainer>
   <description>
     Topology path planning (HARRT* and TARRT*)
