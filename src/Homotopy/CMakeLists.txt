@@ -35,7 +35,9 @@ install(TARGETS ${LIB}
         LIBRARY
         DESTINATION lib
         ARCHIVE
-        DESTINATION lib)
+        DESTINATION lib
+        RUNTIME 
+        DESTINATION bin)
 
 install(FILES ${HDR}
-        DESTINATION include/tpp/homotopy)
+        DESTINATION  include/tpp/homotopy)

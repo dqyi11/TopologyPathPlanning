@@ -1,4 +1,5 @@
-<package>
+<?xml version="1.0"?>
+<package format="2">
   <!-- Package Metadata -->
   <name>tbpp</name>
   <maintainer email="yi@byu.edu">Daqing Yi</maintainer>
@@ -12,6 +13,7 @@
   <buildtool_depend>catkin</buildtool_depend>
   <buildtool_depend>CGAL</buildtool_depend>
 
-
+  <exec_depend>catkin</exec_depend>
+  <buildtool_depend>cmake</buildtool_depend>
   <!-- Package Dependencies -->
 </package>
