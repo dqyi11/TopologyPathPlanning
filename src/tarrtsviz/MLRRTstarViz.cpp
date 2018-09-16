@@ -59,11 +59,11 @@ void MLRRTstarViz::updateVizSubregions() {
 
   m_viz_subregions.clear();
   if( m_string_class_index < 0 ) {
-    for( unsigned int i = 0; i < mp_reference_frames->get_world_map()->get_subregion_set().size(); i++) {
-      SubRegionSet* p_subregion_set = mp_reference_frames->get_world_map()->get_subregion_set()[i];
+    for( unsigned int i = 0; i < mp_reference_frames->getWorldMap()->getSubregionSet().size(); i++) {
+      SubRegionSet* p_subregion_set = mp_reference_frames->getWorldMap()->getSubregionSet()[i];
       if(p_subregion_set) {
-        for( unsigned int j = 0; j < p_subregion_set->m_subregions.size(); j ++ ) {
-          SubRegion* p_subreg = p_subregion_set->m_subregions[j];
+        for( unsigned int j = 0; j < p_subregion_set->mSubregions.size(); j ++ ) {
+          SubRegion* p_subreg = p_subregion_set->mSubregions[j];
           m_viz_subregions.push_back( p_subreg );
         }
       }
@@ -93,8 +93,8 @@ void MLRRTstarViz::updateVizReferenceFrames() {
 
   m_viz_reference_frames.clear();
   if( m_string_class_index < 0 ) {
-    for( int i = 0; i < mp_reference_frames->get_reference_frames().size(); i ++ ) {
-      ReferenceFrame* p_rf = mp_reference_frames->get_reference_frames()[i];
+    for( int i = 0; i < mp_reference_frames->getReferenceFrames().size(); i ++ ) {
+      ReferenceFrame* p_rf = mp_reference_frames->getReferenceFrames()[i];
       m_viz_reference_frames.push_back( p_rf );
     }
   }
@@ -125,8 +125,8 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
         SubRegion* p_subreg = m_viz_subregions[i];
         if(p_subreg) {
           QPolygon poly;
-          for( unsigned int k = 0; k < p_subreg->m_points.size(); k++) {
-            poly << toQPoint( p_subreg->m_points[k] );
+          for( unsigned int k = 0; k < p_subreg->mPoints.size(); k++) {
+            poly << toQPoint( p_subreg->mPoints[k] );
           }
           QPainterPath tmpPath;
           tmpPath.addPolygon(poly);
@@ -138,8 +138,8 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
       SubRegion* p_subreg = m_viz_subregions[m_subregion_index];
       if(p_subreg) {
         QPolygon poly;
-        for( unsigned int k = 0; k < p_subreg->m_points.size(); k++) {
-          poly << toQPoint( p_subreg->m_points[k] );
+        for( unsigned int k = 0; k < p_subreg->mPoints.size(); k++) {
+          poly << toQPoint( p_subreg->mPoints[k] );
         }
         QPainterPath tmpPath;
         tmpPath.addPolygon(poly);
@@ -264,14 +264,14 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
     if( m_reference_frame_index < 0 ) {
      for( unsigned int rf_i = 0; rf_i < m_viz_reference_frames.size(); rf_i ++ ) {
        ReferenceFrame* rf = m_viz_reference_frames[rf_i];
-       rf_painter.drawLine( toQPoint( rf->m_segment.source() ),
-                            toQPoint( rf->m_segment.target() ) );
+       rf_painter.drawLine( toQPoint( rf->mSegment.source() ),
+                            toQPoint( rf->mSegment.target() ) );
       }
     }
     else{
       ReferenceFrame* rf = m_viz_reference_frames[m_reference_frame_index];
-      rf_painter.drawLine( toQPoint( rf->m_segment.source() ),
-                           toQPoint( rf->m_segment.target() ) );
+      rf_painter.drawLine( toQPoint( rf->mSegment.source() ),
+                           toQPoint( rf->mSegment.target() ) );
     }
     rf_painter.end();
   }
@@ -444,8 +444,8 @@ void MLRRTstarViz::next_reference_frame() {
 
 string MLRRTstarViz::get_reference_frame_name() {
 
-  if ( m_reference_frame_index < mp_reference_frames->get_reference_frames().size() ) {
-    return mp_reference_frames->get_reference_frames()[m_reference_frame_index]->m_name;
+  if ( m_reference_frame_index < mp_reference_frames->getReferenceFrames().size() ) {
+    return mp_reference_frames->getReferenceFrames()[m_reference_frame_index]->mName;
   }
   return "NO REF FRAME";
 }
@@ -453,7 +453,7 @@ string MLRRTstarViz::get_reference_frame_name() {
 string MLRRTstarViz::get_subregion_name() {
   SubRegion* p_subregion = get_selected_subregion();
   if( p_subregion ) {
-    return p_subregion->get_name();
+    return p_subregion->getName();
   }
   return "NO REGION";
 }
@@ -486,7 +486,7 @@ void MLRRTstarViz::import_string_constraint( vector< QPoint > points, grammar_ty
     ref_points.push_back( Point2D( points[i].x(), points[i].y() ) );
   }
   if( mp_reference_frames ) {
-    mp_reference_frames->import_string_constraint( ref_points, type );
+    mp_reference_frames->importStringConstraint( ref_points, type );
   }
 }
 
@@ -541,13 +541,13 @@ void MLRRTstarViz::mouseReleaseEvent( QMouseEvent * event ){
 
 ReferenceFrame* MLRRTstarViz::get_selected_reference_frame() {
 
-  if ( m_reference_frame_index >= mp_reference_frames->get_reference_frames().size() ) {
+  if ( m_reference_frame_index >= mp_reference_frames->getReferenceFrames().size() ) {
     return NULL;
   }
   if ( m_reference_frame_index < 0 ) {
     return NULL;
   }
-  return mp_reference_frames->get_reference_frames()[ m_reference_frame_index ];
+  return mp_reference_frames->getReferenceFrames()[ m_reference_frame_index ];
 }
 
 SubRegion* MLRRTstarViz::get_selected_subregion() {
@@ -633,15 +633,15 @@ QString MLRRTstarViz::item_selected( QPoint pos ) {
   Point2D point = toPoint2D( pos );
 
   if ( mp_reference_frames ) {
-    LineSubSegment* p_line_sub_segment = mp_reference_frames->get_world_map()->find_linesubsegment( point );
+    LineSubSegment* p_line_sub_segment = mp_reference_frames->getWorldMap()->findLinesubsegment( point );
     if( p_line_sub_segment ) {
-      cout << "FIND " << p_line_sub_segment->get_name() << endl;
-      return QString::fromStdString( p_line_sub_segment->get_name() );
+      cout << "FIND " << p_line_sub_segment->getName() << endl;
+      return QString::fromStdString( p_line_sub_segment->getName() );
     }
-    SubRegion* p_subregion = mp_reference_frames->get_world_map()->find_subregion( point );
+    SubRegion* p_subregion = mp_reference_frames->getWorldMap()->findSubregion( point );
     if( p_subregion ) {
-      cout << "FIND " << p_subregion->get_name() << endl;
-      return QString::fromStdString( p_subregion->get_name() );
+      cout << "FIND " << p_subregion->getName() << endl;
+      return QString::fromStdString( p_subregion->getName() );
     }
   }
   return name;

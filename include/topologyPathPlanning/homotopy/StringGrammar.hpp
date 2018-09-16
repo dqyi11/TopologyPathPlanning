@@ -24,11 +24,11 @@ namespace homotopy {
     bool operator==(const State& other) const;
 
     //Transition* find_transition( std::string trans_name );
-    Adjacency find_adjacency( std::string trans_name );
+    Adjacency findAdjacency( std::string trans_name );
 
-    std::string              m_name;
+    std::string              mName;
     // std::vector<Transition*> m_transitions;
-    std::vector<Adjacency>   m_adjacencies;
+    std::vector<Adjacency>   mAdjacencies;
   };
 
   class Transition {
@@ -48,35 +48,35 @@ namespace homotopy {
     StringGrammar();
     virtual ~StringGrammar();
 
-    State* find_state( std::string name );
-    Transition* find_transition( std::string name );
-    int get_state_index( std::string name );
+    State* findState( std::string name );
+    Transition* findTransition( std::string name );
+    int getStateIndex( std::string name );
 
-    bool has_transition( Transition* p_transition );
-    bool has_state( State* p_state );
+    bool hasTransition( Transition* p_transition );
+    bool hasState( State* p_state );
 
-    bool add_transition( std::string from_name, std::string to_name, std::string name );
+    bool addTransition( std::string from_name, std::string to_name, std::string name );
 
-    bool set_init( std::string name );
-    bool set_goal( std::string name );
+    bool setInit( std::string name );
+    bool setGoal( std::string name );
 
-    bool is_valid_string( std::vector< std::string > str );
-    bool is_valid_substring( std::vector< std::string > substr );
+    bool isValidString( std::vector< std::string > str );
+    bool isValidSubstring( std::vector< std::string > substr );
 
-    std::vector< std::vector< std::string > > get_all_simple_strings();   
+    std::vector< std::vector< std::string > > getAllSimpleStrings();
     void output( std::string filename ); 
-    std::vector< std::string > get_non_repeating_form( std::vector< std::string > str );
-    virtual bool is_equivalent( std::vector< std::string > str_a , std::vector< std::string > str_b );
-    std::vector< std::vector< Adjacency > > find_simple_paths();
-    std::vector< std::vector< Adjacency > > find_paths( std::vector< std::vector< std::string > > strs );
-    std::vector< std::vector< std::string > > find_simple_strings();
+    std::vector< std::string > getNonRepeatingForm( std::vector< std::string > str );
+    virtual bool isEquivalent( std::vector< std::string > str_a , std::vector< std::string > str_b );
+    std::vector< std::vector< Adjacency > > findSimplePaths();
+    std::vector< std::vector< Adjacency > > findPaths( std::vector< std::vector< std::string > > strs );
+    std::vector< std::vector< std::string > > findSimpleStrings();
 
 protected:
-    std::vector<Transition*> _transitions;
-    std::vector<State*>      _states;
+    std::vector<Transition*> mTransitions;
+    std::vector<State*>      mStates;
 
-    State*                   _p_init_state;
-    State*                   _p_goal_state;
+    State*                   mpInitState;
+    State*                   mpGoalState;
   };
 
 } // homotopy

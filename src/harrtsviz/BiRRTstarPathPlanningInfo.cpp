@@ -297,10 +297,10 @@ bool BIRRTstarPathPlanningInfo::export_paths(QString filename) {
              it != mp_found_paths.end(); it++) {
             Path* p_path = (*it);
             // Save scores
-            stream << p_path->m_cost << "\n";
+            stream << p_path->mCost << "\n";
             stream << "\n";
-            for(unsigned int i=0;i<p_path->m_way_points.size();i++) {
-                stream << p_path->m_way_points[i][0] << " " << p_path->m_way_points[i][1] << "\t";
+            for(unsigned int i=0;i<p_path->mWaypoints.size();i++) {
+                stream << p_path->mWaypoints[i][0] << " " << p_path->mWaypoints[i][1] << "\t";
             }
             stream << "\n";
             stream << "\n";

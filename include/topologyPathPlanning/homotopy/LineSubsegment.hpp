@@ -20,12 +20,12 @@ namespace homotopy {
     IntersectionPoint( Point2D point );
     virtual ~IntersectionPoint();
 
-    Point2D   m_point;
-    double    m_dist_to_bk;
-    Obstacle* mp_obstacle;
+    Point2D   mPoint;
+    double    mDistToBk;
+    Obstacle* mpObstacle;
 
     bool operator<(const  IntersectionPoint& other) const {
-        return ( m_dist_to_bk < other.m_dist_to_bk );
+        return ( mDistToBk < other.mDistToBk );
     }
   };
 
@@ -37,27 +37,27 @@ namespace homotopy {
     LineSubSegment( Point2D pos_a, Point2D pos_b, LineSubSegmentSet* p_subseg_set, unsigned int index, bool is_connected_to_central_point = false );
     virtual ~LineSubSegment();
 
-    virtual void to_xml( const std::string& filename )const;
-    virtual void to_xml( xmlDocPtr doc, xmlNodePtr root )const;
+    virtual void toXml( const std::string& filename )const;
+    virtual void toXml( xmlDocPtr doc, xmlNodePtr root )const;
 
-    virtual void from_xml( const std::string& filename );
-    virtual void from_xml( xmlNodePtr root );
+    virtual void fromXml( const std::string& filename );
+    virtual void fromXml( xmlNodePtr root );
 
     bool contains( Point2D point );
-    bool is_connected( Obstacle* p_obstacle );
+    bool isConnected( Obstacle* p_obstacle );
     
-    std::string get_name();
-    Point2D sample_position();
-    Segment2D m_subseg;
-    bool m_is_connected_to_central_point;
-    std::vector< SubRegion* > m_neighbors;
+    std::string getName();
+    Point2D samplePosition();
+    Segment2D mSubseg;
+    bool mIsConnectedToCentralPoint;
+    std::vector< SubRegion* > mNeighbors;
 
-    bool m_connected_to_boundary;
-    std::vector< Obstacle* > m_connected_obstacles;
+    bool mConnectedToBoundary;
+    std::vector< Obstacle* > mConnectedObstacles;
      
   protected:
-    LineSubSegmentSet* _p_subseg_set;
-    unsigned int _index;
+    LineSubSegmentSet* mpSubsegSet;
+    unsigned int mIndex;
 
   };
 
@@ -83,25 +83,25 @@ namespace homotopy {
         return ( m_direction < other.m_direction );
     }*/
 
-    virtual void to_xml( const std::string& filename )const;
-    virtual void to_xml( xmlDocPtr doc, xmlNodePtr root )const;
+    virtual void toXml( const std::string& filename )const;
+    virtual void toXml( xmlDocPtr doc, xmlNodePtr root )const;
 
-    virtual void from_xml( const std::string& filename );
-    virtual void from_xml( xmlNodePtr root );
+    virtual void fromXml( const std::string& filename );
+    virtual void fromXml( xmlNodePtr root );
 
-    static std::string type_to_std_string ( const unsigned int& type );
-    static unsigned int type_from_std_string ( const std::string& type_str );
+    static std::string typeToStdString ( const unsigned int& type );
+    static unsigned int typeFromStdString ( const std::string& type_str );
 
-    Obstacle* const get_obstacle() { return _p_obstacle; }
+    Obstacle* const getObstacle() { return mpObstacle; }
 
-    std::string get_name();
+    std::string getName();
 
-    Segment2D    m_seg;
-    unsigned int m_type;
-    std::vector< LineSubSegment* > m_subsegs;
-    std::vector< SubRegionSet* >   m_neighbors;
+    Segment2D    mSeg;
+    unsigned int mType;
+    std::vector< LineSubSegment* > mSubsegs;
+    std::vector< SubRegionSet* >   mNeighbors;
   protected:
-    Obstacle*    _p_obstacle;
+    Obstacle*    mpObstacle;
   };
 
   std::ostream& operator<<( std::ostream& out, const LineSubSegmentSet& other );

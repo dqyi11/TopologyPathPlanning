@@ -12,60 +12,60 @@ namespace topologyPathPlanning {
 namespace homotopy {
 
 Obstacle::Obstacle(vector<Point2D> points, int index, WorldMap* world ){
-  _index = index;
-  _p_world = world;
+  mIndex = index;
+  mpWorld = world;
 
-  m_dist_bk2cp = 0.0;
+  mDistBk2cp = 0.0;
 
-  m_points.clear();
-  m_border_segments.clear();
+  mPoints.clear();
+  mBorderSegments.clear();
   for( vector<Point2D>::iterator it = points.begin(); it != points.end(); it++ ) {
     Point2D pos = (*it);
-    m_points.push_back(pos);
-    m_pgn.push_back(pos);
+    mPoints.push_back(pos);
+    mPgn.push_back(pos);
   }
 
-  for( unsigned int i=0; i< m_points.size(); i++ ) {
-    if( i < m_points.size()-1 ) {
-      Segment2D seg( m_points[i], m_points[i+1] );
-      m_border_segments.push_back(seg);
+  for( unsigned int i=0; i< mPoints.size(); i++ ) {
+    if( i < mPoints.size()-1 ) {
+      Segment2D seg( mPoints[i], mPoints[i+1] );
+      mBorderSegments.push_back(seg);
     }
     else {
-      Segment2D seg( m_points[i], m_points[0] );
-      m_border_segments.push_back(seg);
+      Segment2D seg( mPoints[i], mPoints[0] );
+      mBorderSegments.push_back(seg);
     }
   }
 
-  if ( m_pgn.orientation() == CGAL::CLOCKWISE ) {
-    m_pgn.reverse_orientation();
+  if ( mPgn.orientation() == CGAL::CLOCKWISE ) {
+    mPgn.reverse_orientation();
   }
-  _min_x = m_pgn.bbox().xmin();
-  _min_y = m_pgn.bbox().ymin();
-  _max_x = m_pgn.bbox().xmax();
-  _max_y = m_pgn.bbox().ymax();
+  mMinX = mPgn.bbox().xmin();
+  mMinY = mPgn.bbox().ymin();
+  mMaxX = mPgn.bbox().xmax();
+  mMaxY = mPgn.bbox().ymax();
 
-  _centroid = Point2D( (_min_x + _max_x)/2 , (_min_y + _max_y)/2 );
+  mCentroid = Point2D( (mMinX + mMaxX)/2 , (mMinY + mMaxY)/2 );
 }
 
 Obstacle::~Obstacle() {
 
-  if ( mp_alpha_seg ) {
-    delete mp_alpha_seg;
-    mp_alpha_seg = NULL;
+  if ( mpAlphaSeg ) {
+    delete mpAlphaSeg;
+    mpAlphaSeg = NULL;
   }
-  if ( mp_beta_seg ) {
-    delete mp_beta_seg;
-    mp_beta_seg = NULL;
+  if ( mpBetaSeg ) {
+    delete mpBetaSeg;
+    mpBetaSeg = NULL;
   }
 
-  m_points.clear();
-  m_border_segments.clear();
+  mPoints.clear();
+  mBorderSegments.clear();
 }
 
-double Obstacle::distance_to_bk( Point2D& point ) {
+double Obstacle::distanceToBk( Point2D& point ) {
   double dist = 0.0;
-  double bk_x = CGAL::to_double( m_bk.x() );
-  double bk_y = CGAL::to_double( m_bk.y() );
+  double bk_x = CGAL::to_double( mBk.x() );
+  double bk_y = CGAL::to_double( mBk.y() );
   double p_x = CGAL::to_double( point.x() );
   double p_y = CGAL::to_double( point.y() );
   dist = pow( bk_x - p_x , 2 ) + pow( bk_y - p_y , 2 );
@@ -75,50 +75,50 @@ double Obstacle::distance_to_bk( Point2D& point ) {
 }
 
 bool Obstacle::contains( Point2D point ) {
-  if ( CGAL::ON_UNBOUNDED_SIDE != m_pgn.bounded_side( point ) ) { 
+  if ( CGAL::ON_UNBOUNDED_SIDE != mPgn.bounded_side( point ) ) { 
     return true;
   }
   return false;
 }
 
-Point2D Obstacle::sample_position() {
+Point2D Obstacle::samplePosition() {
 
   bool found = false;
   while (found == false) {
     float x_ratio = static_cast<float> (rand())/static_cast<float>(RAND_MAX);
     float y_ratio = static_cast<float> (rand())/static_cast<float>(RAND_MAX);
-    int rnd_x = static_cast<int>(x_ratio*(_max_x - _min_x)) + _min_x;
-    int rnd_y = static_cast<int>(y_ratio*(_max_y - _min_y)) + _min_y;
+    int rnd_x = static_cast<int>(x_ratio*(mMaxX - mMinX)) + mMinX;
+    int rnd_y = static_cast<int>(y_ratio*(mMaxY - mMinY)) + mMinY;
 
     Point2D rnd_point(rnd_x, rnd_y);
-    if ( CGAL::ON_BOUNDED_SIDE == m_pgn.bounded_side( rnd_point ) ) {
+    if ( CGAL::ON_BOUNDED_SIDE == mPgn.bounded_side( rnd_point ) ) {
       return rnd_point;
     }
   }
-  return _centroid;
+  return mCentroid;
 }
 
-string Obstacle::get_name() {
+string Obstacle::getName() {
   stringstream ss;
-  ss << "OBS" << _index;
+  ss << "OBS" << mIndex;
   return ss.str(); 
 }
 
-void Obstacle::to_xml( const string& filename )const {
+void Obstacle::toXml( const string& filename )const {
   xmlDocPtr doc = xmlNewDoc( ( xmlChar* )( "1.0" ) );
   xmlNodePtr root = xmlNewDocNode( doc, NULL, ( xmlChar* )( "root" ), NULL );
   xmlDocSetRootElement( doc, root );
-  to_xml( doc, root );
+  toXml( doc, root );
   xmlSaveFormatFileEnc( filename.c_str(), doc, "UTF-8", 1 );
   xmlFreeDoc( doc );
   return;
 }
 
-void Obstacle::to_xml( xmlDocPtr doc, xmlNodePtr root )const {
+void Obstacle::toXml( xmlDocPtr doc, xmlNodePtr root )const {
 
 }
 
-void Obstacle::from_xml( const string& filename ) {
+void Obstacle::fromXml( const string& filename ) {
   xmlDoc * doc = NULL;
   xmlNodePtr root = NULL;
   doc = xmlReadFile( filename.c_str(), NULL, 0 );
@@ -129,7 +129,7 @@ void Obstacle::from_xml( const string& filename ) {
       for( l1 = root->children; l1; l1 = l1->next ){
         if( l1->type == XML_ELEMENT_NODE ){
           if( xmlStrcmp( l1->name, ( const xmlChar* )( "obstacle" ) ) == 0 ){
-            from_xml( l1 );
+            fromXml( l1 );
           }
         }
       }
@@ -139,14 +139,14 @@ void Obstacle::from_xml( const string& filename ) {
   return;
 }
 
-void Obstacle::from_xml( xmlNodePtr root ) {
+void Obstacle::fromXml( xmlNodePtr root ) {
 
 }
 
 
   std::ostream& operator<<( std::ostream& out, const Obstacle& other ) {
-    out << "bk[" << other.m_bk.x() << "," << other.m_bk.y() << "]";
-    out << "    (" << other.m_dist_bk2cp << ")";
+    out << "bk[" << other.mBk.x() << "," << other.mBk.y() << "]";
+    out << "    (" << other.mDistBk2cp << ")";
     return out;
   }
 

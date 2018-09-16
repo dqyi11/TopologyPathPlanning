@@ -231,16 +231,16 @@ void SpatialInferWindow::updateStatusBar() {
       if ( mpViz->getSelectedSubregion() ) {
         status += "- (" + QString::number(mpViz->getSubregionIdx()) + ")";
         status += " = ";
-        for( unsigned int i = 0; i < mpViz->getSelectedSubregion()->m_neighbors.size(); i ++ ) {
-          LineSubSegment* p_line_subseg = mpViz->getSelectedSubregion()->m_neighbors[i];
-          status += " [ " + QString::fromStdString(p_line_subseg->get_name())  + " ] ";
+        for( unsigned int i = 0; i < mpViz->getSelectedSubregion()->mNeighbors.size(); i ++ ) {
+          LineSubSegment* p_line_subseg = mpViz->getSelectedSubregion()->mNeighbors[i];
+          status += " [ " + QString::fromStdString(p_line_subseg->getName())  + " ] ";
         } 
       }
       else {
         status += " = ";
         if ( mpViz->getSelectedRegion() ) {
-          status += " [ " + QString::fromStdString(mpViz->getSelectedRegion()->mp_line_segments_a->get_name())  + " ] ";
-          status += " [ " + QString::fromStdString(mpViz->getSelectedRegion()->mp_line_segments_b->get_name())  + " ] ";
+          status += " [ " + QString::fromStdString(mpViz->getSelectedRegion()->mpLineSegmentsA->getName())  + " ] ";
+          status += " [ " + QString::fromStdString(mpViz->getSelectedRegion()->mpLineSegmentsB->getName())  + " ] ";
         }
       }
     }

@@ -7,94 +7,94 @@ namespace homotopy {
 
 SubRegion::SubRegion( Polygon2D poly , SubRegionSet* p_parent ) {
 
-  m_points.clear();
-  m_polygon = Polygon2D();
-  mp_parent = p_parent;
+  mPoints.clear();
+  mPolygon = Polygon2D();
+  mpParent = p_parent;
 
   for( Polygon2D::Vertex_iterator it = poly.vertices_begin();
        it != poly.vertices_end(); it++ ) {
     Point2D p = *it;
-    m_points.push_back(p);
-    m_polygon.push_back(p);
+    mPoints.push_back(p);
+    mPolygon.push_back(p);
   }
-  if (m_polygon.orientation() == CGAL::CLOCKWISE) {
-    m_polygon.reverse_orientation();
+  if (mPolygon.orientation() == CGAL::CLOCKWISE) {
+    mPolygon.reverse_orientation();
   }
-  m_centroid = get_centroid( m_polygon );
-  _min_x = m_polygon.bbox().xmin();
-  _min_y = m_polygon.bbox().ymin();
-  _max_x = m_polygon.bbox().xmax();
-  _max_y = m_polygon.bbox().ymax();
-  m_dist_to_cp = 0.0;
-  m_index = 0;
+  mCentroid = getCentroid( mPolygon );
+  mMinX = mPolygon.bbox().xmin();
+  mMinY = mPolygon.bbox().ymin();
+  mMaxX = mPolygon.bbox().xmax();
+  mMaxY = mPolygon.bbox().ymax();
+  mDistToCp = 0.0;
+  mIndex = 0;
 }
 
 SubRegion::~SubRegion() {
 
-  m_points.clear();
-  m_polygon.clear();
+  mPoints.clear();
+  mPolygon.clear();
 }
 
-std::string SubRegion:: get_name() {
-  if( mp_parent ) {
+std::string SubRegion:: getName() {
+  if( mpParent ) {
     std::stringstream ss;
-    ss << mp_parent->get_name().c_str() << "-" << m_index;
+    ss << mpParent->getName().c_str() << "-" << mIndex;
     return ss.str();
   }
   return "NA";
 }
 
 bool SubRegion::contains( Point2D point ) {
-  if ( CGAL::ON_UNBOUNDED_SIDE != m_polygon.bounded_side( point ) ) { 
+  if ( CGAL::ON_UNBOUNDED_SIDE != mPolygon.bounded_side( point ) ) { 
     return true;
   }
   return false;
 }
 
-Point2D SubRegion::sample_position() {
+Point2D SubRegion::samplePosition() {
   bool found = false;
   while (found == false) {
     float x_ratio = static_cast<float> (rand())/static_cast<float>(RAND_MAX);
     float y_ratio = static_cast<float> (rand())/static_cast<float>(RAND_MAX);
-    int rnd_x = static_cast<int>(x_ratio*(_max_x - _min_x)) + _min_x;
-    int rnd_y = static_cast<int>(y_ratio*(_max_y - _min_y)) + _min_y;
+    int rnd_x = static_cast<int>(x_ratio*(mMaxX - mMinX)) + mMinX;
+    int rnd_y = static_cast<int>(y_ratio*(mMaxY - mMinY)) + mMinY;
 
     Point2D rnd_point(rnd_x, rnd_y);
-    if ( CGAL::ON_BOUNDED_SIDE == m_polygon.bounded_side( rnd_point ) ) {
+    if ( CGAL::ON_BOUNDED_SIDE == mPolygon.bounded_side( rnd_point ) ) {
       return rnd_point;
     }
   }
-  return m_centroid;
+  return mCentroid;
 }
   
 SubRegionSet::SubRegionSet(std::list<Point2D> points, unsigned int idx) {
 
-  m_boundary_points.clear();
-  m_index = idx;
-  m_subregions.clear();
-  m_polygon = Polygon2D();
+  mBoundaryPoints.clear();
+  mIndex = idx;
+  mSubregions.clear();
+  mPolygon = Polygon2D();
 
   for( std::list<Point2D>::iterator it=points.begin(); it != points.end(); it++ ) {
     Point2D p = *it;
-    m_boundary_points.push_back(p);
-    m_polygon.push_back(p);
+    mBoundaryPoints.push_back(p);
+    mPolygon.push_back(p);
   }
 
-  if(m_polygon.orientation() == CGAL::CLOCKWISE) {
-    m_polygon.reverse_orientation();
+  if(mPolygon.orientation() == CGAL::CLOCKWISE) {
+    mPolygon.reverse_orientation();
   }
-  m_centroid = get_centroid( m_polygon );
+  mCentroid = getCentroid( mPolygon );
 
 }
 
 SubRegionSet::~SubRegionSet() {
 
-  m_boundary_points.clear();
+  mBoundaryPoints.clear();
 }
 
-std::string SubRegionSet:: get_name() {
+std::string SubRegionSet:: getName() {
   std::stringstream ss;
-  ss << "R" << m_index;
+  ss << "R" << mIndex;
   return ss.str();
 }
 

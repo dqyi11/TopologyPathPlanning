@@ -22,11 +22,11 @@ SideOfRelationFunction::~SideOfRelationFunction() {
 vector< pair<ReferenceFrame*, bool> > SideOfRelationFunction::get_rules( ReferenceFrameSet* p_reference_frame_set ) {
   vector< pair<ReferenceFrame*, bool> > rules;
   if( p_reference_frame_set ) {
-    for( unsigned int i=0; i<p_reference_frame_set->get_reference_frames().size(); i++ ) {
-      ReferenceFrame* p_ref = p_reference_frame_set->get_reference_frames()[i];
+    for( unsigned int i=0; i<p_reference_frame_set->getReferenceFrames().size(); i++ ) {
+      ReferenceFrame* p_ref = p_reference_frame_set->getReferenceFrames()[i];
       if( p_ref ) {
-        if( p_ref->mp_line_subsegment && p_ref->mp_line_subsegment->is_connected( mp_obstacle ) ) {
-          double radius = get_radius( mp_obstacle->get_centroid(), p_ref->m_mid_point );         
+        if( p_ref->mpLineSubsegment && p_ref->mpLineSubsegment->isConnected( mp_obstacle ) ) {
+          double radius = getRadius( mp_obstacle->getCentroid(), p_ref->mMidPoint );         
           switch( m_type ) {
           default:
             break;
@@ -82,7 +82,7 @@ string SideOfRelationFunction::get_name() {
       break;
   }
   if( mp_obstacle ) {
-    name += "(" + mp_obstacle->get_name() + ")";
+    name += "(" + mp_obstacle->getName() + ")";
   }
   return name;
 }

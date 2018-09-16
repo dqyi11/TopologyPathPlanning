@@ -160,7 +160,7 @@ void ExpandingTreeMgr::export_subregion_mgrs( string filename ) {
   for( unsigned int i = 0; i < mp_subregion_mgrs.size(); i ++ ) {
     SubRegionMgr* p_mgr = mp_subregion_mgrs[i];
     if( p_mgr ) {
-      outfile << p_mgr->mp_subregion->get_name();
+      outfile << p_mgr->mp_subregion->getName();
       outfile << " ( " << p_mgr->mp_nodes.size() << " ) " << endl;
       for( unsigned int j = 0; j < p_mgr->mp_nodes.size(); j ++ ) {
         ExpandingNode* p_node = p_mgr->mp_nodes[j];

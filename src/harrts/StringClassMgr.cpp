@@ -9,25 +9,25 @@ namespace topologyPathPlanning {
 namespace harrts {
 
 StringClass::StringClass( std::vector< std::string > string, unsigned int created_iteration_num ) {
-  m_string = string;
-  m_cost = std::numeric_limits<float>::max();
-  mp_path = NULL;
-  m_created_iteration_num = created_iteration_num;
+  mString = string;
+  mCost = std::numeric_limits<float>::max();
+  mpPath = NULL;
+  mCreatedIterationNum = created_iteration_num;
 }
 
 StringClass::~StringClass() {
-  m_string.clear();
-  m_historical_data.clear();
-  mp_path = NULL;
+  mString.clear();
+  mHistoricalData.clear();
+  mpPath = NULL;
 }
 
-std::string StringClass::get_name() {
+std::string StringClass::getName() {
   std::string name = "";
-  for( unsigned int i = 0; i < m_string.size(); i ++ ) {
+  for( unsigned int i = 0; i < mString.size(); i ++ ) {
     if (i > 0) { 
       name += " ";
     }
-    name += m_string[i];
+    name += mString[i];
   }
   return name;
 }
@@ -35,7 +35,7 @@ std::string StringClass::get_name() {
 void StringClass::dump_historical_data( std::string filename ) {
   std::ofstream hist_data_file;
   hist_data_file.open(filename.c_str());
-  hist_data_file << get_name() << std::endl;
+  hist_data_file << getName() << std::endl;
   write_historical_data( hist_data_file );
   hist_data_file.close();
 }
@@ -46,14 +46,14 @@ void StringClass::write_historical_data( std::ostream& out ) {
     out << std::numeric_limits<float>::max() << " ";
   }*/
   //out << std::endl;
-  for(std::vector<double>::iterator it = m_historical_data.begin();
-      it != m_historical_data.end(); it++ ) {
+  for(std::vector<double>::iterator it = mHistoricalData.begin();
+      it != mHistoricalData.end(); it++ ) {
     double data = (*it);
     out << data << " ";
   }
   out << std::endl;
-  for(int i=m_created_iteration_num;
-      i<m_historical_data.size()+m_created_iteration_num;i++) {
+  for(int i=mCreatedIterationNum;
+      i<mHistoricalData.size()+mCreatedIterationNum;i++) {
     out << i << " ";
   }
   out << std::endl;
@@ -61,61 +61,61 @@ void StringClass::write_historical_data( std::ostream& out ) {
 
 void StringClass::record() {
 
-  m_historical_data.push_back(m_cost);
+  mHistoricalData.push_back(mCost);
 }
 
 StringClassMgr::StringClassMgr( StringGrammar* p_grammar ) {
-  _p_grammar = p_grammar;
+  mpGrammar = p_grammar;
 }
 
 StringClassMgr::~StringClassMgr() {
-  _p_grammar = NULL;
-  _classes.clear();
+  mpGrammar = NULL;
+  mClasses.clear();
 }
 
-void StringClassMgr::import_path( Path* p_path, unsigned int iteration_num ) { 
-  std::vector< std::string > non_repeating_id_string = _p_grammar->get_non_repeating_form( p_path->m_string );
-  if ( _p_grammar->is_valid_string( non_repeating_id_string ) == false ) {
+void StringClassMgr::importPath( Path* p_path, unsigned int iteration_num ) { 
+  std::vector< std::string > non_repeating_id_string = mpGrammar->getNonRepeatingForm( p_path->mString );
+  if ( mpGrammar->isValidString( non_repeating_id_string ) == false ) {
     std::cout << "INVALID STRING " << std::endl;
   }
-  StringClass* p_string_class = find_string_class( non_repeating_id_string );
+  StringClass* p_string_class = findStringClass( non_repeating_id_string );
   if( p_string_class ) {
-    if( p_string_class->m_cost > p_path->m_cost ) {
-      p_string_class->m_cost = p_path->m_cost;
-      p_string_class->mp_path = p_path;      
+    if( p_string_class->mCost > p_path->mCost ) {
+      p_string_class->mCost = p_path->mCost;
+      p_string_class->mpPath = p_path;      
     }
   }
   else {
     p_string_class = new StringClass( non_repeating_id_string, iteration_num ); 
-    p_string_class->m_cost = p_path->m_cost;
-    p_string_class->mp_path = p_path;
-    _classes.push_back(p_string_class);
+    p_string_class->mCost = p_path->mCost;
+    p_string_class->mpPath = p_path;
+    mClasses.push_back(p_string_class);
   }
 }
 
-std::vector<Path*> StringClassMgr::export_paths() {
+std::vector<Path*> StringClassMgr::exportPaths() {
 
   std::vector<Path*> paths;
-  for( unsigned int i = 0; i < _classes.size(); i++) {
-    paths.push_back( _classes[i]->mp_path );
+  for( unsigned int i = 0; i < mClasses.size(); i++) {
+    paths.push_back( mClasses[i]->mpPath );
   }
   return paths;
 }
 
-StringClass* StringClassMgr::find_string_class( std::vector< std::string > str ) {
+StringClass* StringClassMgr::findStringClass( std::vector< std::string > str ) {
   
   StringClass* p_string_class = NULL;
-  for( unsigned int i = 0; i < _classes.size(); i ++ ) {
-    if( _classes[i]->m_string.size() == str.size()) {
+  for( unsigned int i = 0; i < mClasses.size(); i ++ ) {
+    if( mClasses[i]->mString.size() == str.size()) {
       bool identical = true;
-      for( unsigned int j = 0; j < _classes[i]->m_string.size(); j ++) {
-        if( _classes[i]->m_string[j] != str[j] ) {
+      for( unsigned int j = 0; j < mClasses[i]->mString.size(); j ++) {
+        if( mClasses[i]->mString[j] != str[j] ) {
           identical = false;
           break;
         }
       }
       if( identical ) {
-        return _classes[i];
+        return mClasses[i];
       }
     }
   }
@@ -125,8 +125,8 @@ StringClass* StringClassMgr::find_string_class( std::vector< std::string > str )
 void StringClassMgr::merge() {
   std::vector< StringClass* > merged_classes;
   //std::cout << "NUM OF CLASSES " << _classes.size() << std::endl;
-  for( unsigned int i = 0; i < _classes.size(); i ++ ) {
-    StringClass* str_class = _classes[i];
+  for( unsigned int i = 0; i < mClasses.size(); i ++ ) {
+    StringClass* str_class = mClasses[i];
     if( merged_classes.size() == 0 ) {
       merged_classes.push_back( str_class );
     }
@@ -136,13 +136,13 @@ void StringClassMgr::merge() {
       for( unsigned int j = 0; j < merged_classes.size(); j++) {
         StringClass* str_class_in_mer = merged_classes[j];
         //std::cout << "COMPARE [" << str_class->get_name() << "] and [" << str_class_in_mer->get_name() << "]" << std::endl;
-        if( _p_grammar->is_equivalent( str_class_in_mer->m_string, str_class->m_string ) ) {
-          if( str_class_in_mer->m_string.size() < str_class->m_string.size() ) {
-            str_class_in_mer->m_string = str_class->m_string;
+        if( mpGrammar->isEquivalent( str_class_in_mer->mString, str_class->mString ) ) {
+          if( str_class_in_mer->mString.size() < str_class->mString.size() ) {
+            str_class_in_mer->mString = str_class->mString;
           }
-          if ( str_class_in_mer->m_cost > str_class->m_cost ) {
-            str_class_in_mer->m_cost = str_class->m_cost;
-            str_class_in_mer->mp_path = str_class->mp_path;
+          if ( str_class_in_mer->mCost > str_class->mCost ) {
+            str_class_in_mer->mCost = str_class->mCost;
+            str_class_in_mer->mpPath = str_class->mpPath;
           }
           found_equivalence = true;
           break;
@@ -154,23 +154,23 @@ void StringClassMgr::merge() {
     }
   }
 
-  _classes = merged_classes;
+  mClasses = merged_classes;
 }
   
-void StringClassMgr::export_grammar( std::string filename ) {
-  if( _p_grammar ) {
-    _p_grammar->output( filename );
+void StringClassMgr::exportGrammar( std::string filename ) {
+  if( mpGrammar ) {
+    mpGrammar->output( filename );
   }
 }
 
-void StringClassMgr::dump_historical_data( std::string filename ) {
+void StringClassMgr::dumpHistoricalData( std::string filename ) {
   std::ofstream hist_data_file;
   hist_data_file.open(filename.c_str());
-  for(std::vector< StringClass* >::iterator it = _classes.begin();
-      it != _classes.end(); it++ ) {
+  for(std::vector< StringClass* >::iterator it = mClasses.begin();
+      it != mClasses.end(); it++ ) {
     StringClass* p_str_cls = (*it);
     if(p_str_cls) {
-      hist_data_file << p_str_cls->get_name() << " : ";
+      hist_data_file << p_str_cls->getName() << " : ";
       p_str_cls->write_historical_data( hist_data_file );
     }
   }
@@ -179,8 +179,8 @@ void StringClassMgr::dump_historical_data( std::string filename ) {
 
 void StringClassMgr::record() {
 
-  for(std::vector< StringClass* >::iterator it = _classes.begin();
-      it != _classes.end(); it++ ) {
+  for(std::vector< StringClass* >::iterator it = mClasses.begin();
+      it != mClasses.end(); it++ ) {
     StringClass* p_str_cls = (*it);
     if(p_str_cls) {
       p_str_cls->record();

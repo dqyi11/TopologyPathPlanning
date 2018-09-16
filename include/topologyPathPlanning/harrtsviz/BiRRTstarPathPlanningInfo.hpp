@@ -89,12 +89,12 @@ namespace harrts {
 
       for(int x=(int)x1; x<maxX; x++) {
         if(steep) {
-          if (y>=0 && y<rrts->get_sampling_width() && x>=0 && x<rrts->get_sampling_height()) {
+          if (y>=0 && y<rrts->getSamplingWidth() && x>=0 && x<rrts->getSamplingHeight()) {
             cost += pp_distribution[y][x];
           }
         }
         else {
-          if (x>=0 && x<rrts->get_sampling_width() && y>=0 && y<rrts->get_sampling_height()) {
+          if (x>=0 && x<rrts->getSamplingWidth() && y>=0 && y<rrts->getSamplingHeight()) {
             cost += pp_distribution[x][y];
           }
         }

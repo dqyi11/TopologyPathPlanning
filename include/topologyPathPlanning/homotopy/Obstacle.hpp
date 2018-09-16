@@ -18,43 +18,43 @@ namespace homotopy {
     Obstacle(std::vector<Point2D> points, int index, WorldMap* world);
     virtual ~Obstacle();
 
-    Point2D sample_position();
-    double distance_to_bk( Point2D& point );
+    Point2D samplePosition();
+    double distanceToBk( Point2D& point );
     bool contains( Point2D point );
 
-    virtual void to_xml( const std::string& filename )const;
-    virtual void to_xml( xmlDocPtr doc, xmlNodePtr root )const;
+    virtual void toXml( const std::string& filename )const;
+    virtual void toXml( xmlDocPtr doc, xmlNodePtr root )const;
 
-    virtual void from_xml( const std::string& filename );
-    virtual void from_xml( xmlNodePtr root );
+    virtual void fromXml( const std::string& filename );
+    virtual void fromXml( xmlNodePtr root );
 
-    Point2D get_centroid() { return _centroid; }
+    Point2D getCentroid() { return mCentroid; }
 
-    WorldMap* get_world() { return _p_world; }
-    int get_index () { return _index; }
-    std::string get_name();
+    WorldMap* getWorld() { return mpWorld; }
+    int getIndex () { return mIndex; }
+    std::string getName();
     
-    std::vector<Point2D> m_points;
-    Polygon2D m_pgn;
-    Point2D m_bk;
-    std::vector<Segment2D> m_border_segments;
+    std::vector<Point2D> mPoints;
+    Polygon2D mPgn;
+    Point2D mBk;
+    std::vector<Segment2D> mBorderSegments;
 
-    LineSubSegmentSet* mp_alpha_seg;
-    LineSubSegmentSet* mp_beta_seg;
+    LineSubSegmentSet* mpAlphaSeg;
+    LineSubSegmentSet* mpBetaSeg;
 
-    std::vector<IntersectionPoint> m_alpha_intersection_points;
-    std::vector<IntersectionPoint> m_beta_intersection_points;
+    std::vector<IntersectionPoint> mAlphaIntersectionPoints;
+    std::vector<IntersectionPoint> mBetaIntersectionPoints;
 
-    double m_dist_bk2cp;
+    double mDistBk2cp;
 
   protected:
-    int _index;
-    int _min_x;
-    int _min_y;
-    int _max_x;
-    int _max_y;
-    Point2D _centroid;
-    WorldMap* _p_world;
+    int mIndex;
+    int mMinX;
+    int mMinY;
+    int mMaxX;
+    int mMaxY;
+    Point2D mCentroid;
+    WorldMap* mpWorld;
 
   };
 

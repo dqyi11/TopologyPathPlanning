@@ -81,12 +81,12 @@ bool SpatialInferViz::initWorld(QString filename) {
     mpReferenceFrameSet = NULL;
   }
 
-  load_map_info( filename.toStdString(), map_width, map_height, conts );   
+  loadMapInfo( filename.toStdString(), map_width, map_height, conts );   
   //std::cout << "CREATE WORLD " << map_width << " * " << map_height << std::endl;
   mpReferenceFrameSet = new ReferenceFrameSet();
   mpReferenceFrameSet->init( map_width, map_height, conts );
   //std::cout << "NUM OF OBS " << conts.size() << std::endl;
-  mpMgr = new SpatialRelationMgr( mpReferenceFrameSet->get_world_map() );
+  mpMgr = new SpatialRelationMgr( mpReferenceFrameSet->getWorldMap() );
   return true;
 }
 
@@ -105,8 +105,8 @@ void SpatialInferViz::paintEvent(QPaintEvent * e) {
         SubRegion* p_subreg = (*itr);
         if (p_subreg) {
           QPolygon poly;
-          for( unsigned int j=0; j < p_subreg->m_points.size(); j++ ) {
-            poly << toQPoint( p_subreg->m_points[j] );
+          for( unsigned int j=0; j < p_subreg->mPoints.size(); j++ ) {
+            poly << toQPoint( p_subreg->mPoints[j] );
           }
           QPainterPath tmpPath;
           tmpPath.addPolygon(poly);
@@ -124,13 +124,13 @@ void SpatialInferViz::paintEvent(QPaintEvent * e) {
            itLSS != m_viz_subsegments.end(); itLSS++ ) {
         LineSubSegment* p_line_subsegment = (*itLSS);
         if( p_line_subsegment ) {
-          line_hl_painter.drawLine( toQPoint( p_line_subsegment->m_subseg.source() ),
-                                    toQPoint( p_line_subsegment->m_subseg.target() ) );
+          line_hl_painter.drawLine( toQPoint( p_line_subsegment->mSubseg.source() ),
+                                    toQPoint( p_line_subsegment->mSubseg.target() ) );
         }
       }
       line_hl_painter.end();
 
-      std::vector<Obstacle*> obstacles =  mpMgr->mp_worldmap->get_obstacles();
+      std::vector<Obstacle*> obstacles =  mpMgr->mp_worldmap->getObstacles();
   
       QPainter obstacle_painter(this);
       obstacle_painter.setRenderHint(QPainter::Antialiasing);
@@ -141,8 +141,8 @@ void SpatialInferViz::paintEvent(QPaintEvent * e) {
         Obstacle* p_obstacle = (*it);
         if (p_obstacle) {
           QPolygon poly;
-          for( Polygon2D::Vertex_iterator itP=p_obstacle->m_pgn.vertices_begin();
-               itP != p_obstacle->m_pgn.vertices_end(); itP++ ) {
+          for( Polygon2D::Vertex_iterator itP=p_obstacle->mPgn.vertices_begin();
+               itP != p_obstacle->mPgn.vertices_end(); itP++ ) {
             Point2D p = (*itP);
             poly << toQPoint( p );
           }
@@ -158,13 +158,13 @@ void SpatialInferViz::paintEvent(QPaintEvent * e) {
       hl_obs_painter.setPen(hl_obs_pen);
       LineSubSegment* p_subseg = getSelectedLineSubsegment();
       if( p_subseg ) {
-        for( std::vector<Obstacle*>::iterator it = p_subseg->m_connected_obstacles.begin();
-             it != p_subseg->m_connected_obstacles.end(); it++ ) {
+        for( std::vector<Obstacle*>::iterator it = p_subseg->mConnectedObstacles.begin();
+             it != p_subseg->mConnectedObstacles.end(); it++ ) {
           Obstacle* p_obstacle = (*it);
           if (p_obstacle) {
             QPolygon poly;
-            for( Polygon2D::Vertex_iterator itP=p_obstacle->m_pgn.vertices_begin();
-                 itP != p_obstacle->m_pgn.vertices_end(); itP++ ) {
+            for( Polygon2D::Vertex_iterator itP=p_obstacle->mPgn.vertices_begin();
+                 itP != p_obstacle->mPgn.vertices_end(); itP++ ) {
               Point2D p = (*itP);
               poly << toQPoint( p );
             }
@@ -184,8 +184,8 @@ void SpatialInferViz::paintEvent(QPaintEvent * e) {
         Obstacle* p_obstacle = (*it);
         if (p_obstacle) {
           QPolygon poly;
-          for( Polygon2D::Vertex_iterator itP=p_obstacle->m_pgn.vertices_begin();
-               itP != p_obstacle->m_pgn.vertices_end(); itP++ ) {
+          for( Polygon2D::Vertex_iterator itP=p_obstacle->mPgn.vertices_begin();
+               itP != p_obstacle->mPgn.vertices_end(); itP++ ) {
             Point2D p = (*itP);
             poly << toQPoint( p );
           }
@@ -247,11 +247,11 @@ void SpatialInferViz::paintEvent(QPaintEvent * e) {
           Obstacle* p_obstacle = (*it);
           if ( p_obstacle ) {
             //std::cout << "OBS " << p_obstacle->get_index() << " ALPHA:" << p_obstacle->mp_alpha_seg->m_subsegs.size() << std::endl;
-            for( std::vector< LineSubSegment* >::iterator itap = p_obstacle->mp_alpha_seg->m_subsegs.begin();
-                 itap != p_obstacle->mp_alpha_seg->m_subsegs.end(); itap++ ) {
+            for( std::vector< LineSubSegment* >::iterator itap = p_obstacle->mpAlphaSeg->mSubsegs.begin();
+                 itap != p_obstacle->mpAlphaSeg->mSubsegs.end(); itap++ ) {
               LineSubSegment* p_subseg_a = (*itap);
-              a_subseg_painter.drawLine( toQPoint( p_subseg_a->m_subseg.source() ), 
-                                         toQPoint( p_subseg_a->m_subseg.target() ));
+              a_subseg_painter.drawLine( toQPoint( p_subseg_a->mSubseg.source() ), 
+                                         toQPoint( p_subseg_a->mSubseg.target() ));
             }
           }
         }
@@ -265,11 +265,11 @@ void SpatialInferViz::paintEvent(QPaintEvent * e) {
              it != obstacles.end(); it++ ) {
           Obstacle* p_obstacle = (*it);
           if ( p_obstacle ) {
-            for( std::vector< LineSubSegment* >::iterator itbp = p_obstacle->mp_beta_seg->m_subsegs.begin();
-                 itbp != p_obstacle->mp_beta_seg->m_subsegs.end(); itbp++ ) {
+            for( std::vector< LineSubSegment* >::iterator itbp = p_obstacle->mpBetaSeg->mSubsegs.begin();
+                 itbp != p_obstacle->mpBetaSeg->mSubsegs.end(); itbp++ ) {
               LineSubSegment* p_subseg_b = (*itbp);
-              b_subseg_painter.drawLine( toQPoint( p_subseg_b->m_subseg.source() ), 
-                                         toQPoint( p_subseg_b->m_subseg.target() ));
+              b_subseg_painter.drawLine( toQPoint( p_subseg_b->mSubseg.source() ), 
+                                         toQPoint( p_subseg_b->mSubseg.target() ));
             }
           }
         }
@@ -280,7 +280,7 @@ void SpatialInferViz::paintEvent(QPaintEvent * e) {
       QPen cp_pen( CENTER_POINT_COLOR );
       cp_pen.setWidth( POINT_SIZE );
       cp_painter.setPen( cp_pen );
-      cp_painter.drawPoint( toQPoint( mpMgr->mp_worldmap->get_central_point() ) );
+      cp_painter.drawPoint( toQPoint( mpMgr->mp_worldmap->getCentralPoint() ) );
       cp_painter.end();
 
       QPainter bk_painter(this);
@@ -291,7 +291,7 @@ void SpatialInferViz::paintEvent(QPaintEvent * e) {
            it != obstacles.end(); it++ ) {
         Obstacle* p_obstacle = (*it);
         if ( p_obstacle ) {
-          bk_painter.drawPoint( toQPoint( p_obstacle->m_bk ) );
+          bk_painter.drawPoint( toQPoint( p_obstacle->mBk ) );
         }
       }
       bk_painter.end();
@@ -304,15 +304,15 @@ void SpatialInferViz::paintEvent(QPaintEvent * e) {
            it != obstacles.end(); it++ ) {
         Obstacle* p_obstacle = (*it);
         if ( p_obstacle ) {
-          for( std::vector< IntersectionPoint >::iterator itap = p_obstacle->m_alpha_intersection_points.begin();
-               itap != p_obstacle->m_alpha_intersection_points.end(); itap++ ) {
+          for( std::vector< IntersectionPoint >::iterator itap = p_obstacle->mAlphaIntersectionPoints.begin();
+               itap != p_obstacle->mAlphaIntersectionPoints.end(); itap++ ) {
             IntersectionPoint alpha_intsec = (*itap);
-            intsec_painter.drawPoint( toQPoint( alpha_intsec.m_point ) );
+            intsec_painter.drawPoint( toQPoint( alpha_intsec.mPoint ) );
           }
-          for( std::vector< IntersectionPoint >::iterator itbp = p_obstacle->m_beta_intersection_points.begin();
-               itbp != p_obstacle->m_beta_intersection_points.end(); itbp++ ) {
+          for( std::vector< IntersectionPoint >::iterator itbp = p_obstacle->mBetaIntersectionPoints.begin();
+               itbp != p_obstacle->mBetaIntersectionPoints.end(); itbp++ ) {
             IntersectionPoint beta_intsec = (*itbp);
-            intsec_painter.drawPoint( toQPoint( beta_intsec.m_point ) );
+            intsec_painter.drawPoint( toQPoint( beta_intsec.mPoint ) );
           }
         }
       }
@@ -325,9 +325,9 @@ void SpatialInferViz::paintEvent(QPaintEvent * e) {
            it != obstacles.end(); it++ ) {
         Obstacle* p_obstacle = (*it);
         if( p_obstacle ) {
-          int c_x = (p_obstacle->m_pgn.bbox().xmax() + p_obstacle->m_pgn.bbox().xmin() )/2;
-          int c_y = (p_obstacle->m_pgn.bbox().ymax() + p_obstacle->m_pgn.bbox().ymin() )/2;
-          text_painter.drawText( c_x, c_y, QString::number(p_obstacle->get_index()) );
+          int c_x = (p_obstacle->mPgn.bbox().xmax() + p_obstacle->mPgn.bbox().xmin() )/2;
+          int c_y = (p_obstacle->mPgn.bbox().ymax() + p_obstacle->mPgn.bbox().ymin() )/2;
+          text_painter.drawText( c_x, c_y, QString::number(p_obstacle->getIndex()) );
         }
       }
       text_painter.end();
@@ -360,8 +360,8 @@ void SpatialInferViz::paintEvent(QPaintEvent * e) {
            it != mpMgr->m_rules.end(); it++ ) {
         pair< ReferenceFrame*, bool > rule = (*it);
         if( true == rule.second ) {
-          pos_ref_painter.drawLine( toQPoint( rule.first->m_segment.source() ), 
-                                    toQPoint( rule.first->m_segment.target() ));
+          pos_ref_painter.drawLine( toQPoint( rule.first->mSegment.source() ), 
+                                    toQPoint( rule.first->mSegment.target() ));
         }
       }
       pos_ref_painter.end();
@@ -374,8 +374,8 @@ void SpatialInferViz::paintEvent(QPaintEvent * e) {
            it != mpMgr->m_rules.end(); it++ ) {
         pair< ReferenceFrame*, bool > rule = (*it);
         if( false == rule.second ) {
-          neg_ref_painter.drawLine( toQPoint( rule.first->m_segment.source() ),
-                                    toQPoint( rule.first->m_segment.target() ));
+          neg_ref_painter.drawLine( toQPoint( rule.first->mSegment.source() ),
+                                    toQPoint( rule.first->mSegment.target() ));
         }
       }
       neg_ref_painter.end();
@@ -389,17 +389,17 @@ void SpatialInferViz::paintEvent(QPaintEvent * e) {
         if( mp_viz_string_class->mp_reference_frames.size() > 0 ) {
           
           st_cls_painter.drawLine( QPoint( mpMgr->m_start_x, mpMgr->m_start_y ),
-                                   toQPoint( mp_viz_string_class->mp_reference_frames[0]->m_mid_point ) );
+                                   toQPoint( mp_viz_string_class->mp_reference_frames[0]->mMidPoint ) );
           for( unsigned int i=0; i < mp_viz_string_class->mp_reference_frames.size()-1; i++ ) {
 
             ReferenceFrame* p_curr_rf_str_cls = mp_viz_string_class->mp_reference_frames[i];
             ReferenceFrame* p_next_rf_str_cls = mp_viz_string_class->mp_reference_frames[i+1];
             if( p_curr_rf_str_cls && p_next_rf_str_cls ) {
-              st_cls_painter.drawLine( toQPoint( p_curr_rf_str_cls->m_mid_point ),
-                                       toQPoint( p_next_rf_str_cls->m_mid_point ) );
+              st_cls_painter.drawLine( toQPoint( p_curr_rf_str_cls->mMidPoint ),
+                                       toQPoint( p_next_rf_str_cls->mMidPoint ) );
             }
           }
-          st_cls_painter.drawLine( toQPoint( mp_viz_string_class->mp_reference_frames.back()->m_mid_point ),
+          st_cls_painter.drawLine( toQPoint( mp_viz_string_class->mp_reference_frames.back()->mMidPoint ),
                                    QPoint( mpMgr->m_goal_x, mpMgr->m_goal_y ) );
         }
  
@@ -419,7 +419,7 @@ void SpatialInferViz::prevRegion() {
       updateVizLineSubsegments();
     }
     else {
-      mRegionIdx = static_cast<int>(mpMgr->mp_worldmap->get_subregion_set().size())-1;
+      mRegionIdx = static_cast<int>(mpMgr->mp_worldmap->getSubregionSet().size())-1;
       mSubRegionIdx = 0;
       updateVizSubregions();
       updateVizLineSubsegments();
@@ -429,7 +429,7 @@ void SpatialInferViz::prevRegion() {
 
 void SpatialInferViz::nextRegion() {
   if( mpMgr->mp_worldmap ) {
-    if ( mRegionIdx < static_cast<int>(mpMgr->mp_worldmap->get_subregion_set().size())-1 ) {
+    if ( mRegionIdx < static_cast<int>(mpMgr->mp_worldmap->getSubregionSet().size())-1 ) {
       mRegionIdx++;
       mSubRegionIdx = 0;
       updateVizSubregions();
@@ -446,9 +446,9 @@ void SpatialInferViz::nextRegion() {
 
 void SpatialInferViz::prevSubregion() {
   if ( mpMgr->mp_worldmap ) {
-    if ( mRegionIdx >= 0 && mRegionIdx < static_cast<int>(mpMgr->mp_worldmap->get_subregion_set().size()) ) {
-      SubRegionSet* p_subregions = mpMgr->mp_worldmap->get_subregion_set() [mRegionIdx];
-      int sub_num = static_cast<int>( p_subregions->m_subregions.size() );
+    if ( mRegionIdx >= 0 && mRegionIdx < static_cast<int>(mpMgr->mp_worldmap->getSubregionSet().size()) ) {
+      SubRegionSet* p_subregions = mpMgr->mp_worldmap->getSubregionSet() [mRegionIdx];
+      int sub_num = static_cast<int>( p_subregions->mSubregions.size() );
       if ( mSubRegionIdx > 0) {
         mSubRegionIdx --;
         updateVizSubregions();
@@ -465,9 +465,9 @@ void SpatialInferViz::prevSubregion() {
 
 void SpatialInferViz::nextSubregion() {
   if ( mpMgr->mp_worldmap ) {
-    if ( mRegionIdx >= 0 && mRegionIdx < static_cast<int>(mpMgr->mp_worldmap->get_subregion_set().size()) ) {
-         SubRegionSet* p_subregions = mpMgr->mp_worldmap->get_subregion_set() [mRegionIdx];
-      int sub_num = static_cast<int>( p_subregions->m_subregions.size() );
+    if ( mRegionIdx >= 0 && mRegionIdx < static_cast<int>(mpMgr->mp_worldmap->getSubregionSet().size()) ) {
+         SubRegionSet* p_subregions = mpMgr->mp_worldmap->getSubregionSet() [mRegionIdx];
+      int sub_num = static_cast<int>( p_subregions->mSubregions.size() );
       if ( mSubRegionIdx < sub_num-1) {
         mSubRegionIdx ++;
         updateVizSubregions();
@@ -491,7 +491,7 @@ void SpatialInferViz::prevLineSubsegmentSet() {
       updateVizLineSubsegments();
     }
     else {
-      mSubsegmentSetIdx = static_cast<int>(mpMgr->mp_worldmap->get_linesubsegment_set().size())-1;
+      mSubsegmentSetIdx = static_cast<int>(mpMgr->mp_worldmap->getLinesubsegmentSet().size())-1;
       mSubsegmentIdx = 0;
       updateVizSubregions();
       updateVizLineSubsegments();
@@ -501,7 +501,7 @@ void SpatialInferViz::prevLineSubsegmentSet() {
 
 void SpatialInferViz::nextLineSubsegmentSet() {
   if( mpMgr->mp_worldmap ) {
-    if ( mSubsegmentSetIdx < static_cast<int>(mpMgr->mp_worldmap->get_linesubsegment_set().size())-1 ) {
+    if ( mSubsegmentSetIdx < static_cast<int>(mpMgr->mp_worldmap->getLinesubsegmentSet().size())-1 ) {
       mSubsegmentSetIdx++;
       mSubsegmentIdx = 0;
       updateVizSubregions();
@@ -544,9 +544,9 @@ void SpatialInferViz::nextStringClass() {
 
 void SpatialInferViz::prevLineSubsegment() {
   if ( mpMgr->mp_worldmap ) {
-    if ( mSubsegmentSetIdx >= 0 && mSubsegmentSetIdx < static_cast<int>(mpMgr->mp_worldmap->get_linesubsegment_set().size()) ) {
-      LineSubSegmentSet* p_subsegment_set = mpMgr->mp_worldmap->get_linesubsegment_set() [mSubsegmentSetIdx];
-      int sub_num = static_cast<int>( p_subsegment_set->m_subsegs.size() );
+    if ( mSubsegmentSetIdx >= 0 && mSubsegmentSetIdx < static_cast<int>(mpMgr->mp_worldmap->getLinesubsegmentSet().size()) ) {
+      LineSubSegmentSet* p_subsegment_set = mpMgr->mp_worldmap->getLinesubsegmentSet() [mSubsegmentSetIdx];
+      int sub_num = static_cast<int>( p_subsegment_set->mSubsegs.size() );
       if ( mSubsegmentIdx > 0) {
         mSubsegmentIdx --;
         updateVizSubregions();
@@ -563,9 +563,9 @@ void SpatialInferViz::prevLineSubsegment() {
 
 void SpatialInferViz::nextLineSubsegment() {
   if ( mpMgr->mp_worldmap ) {
-    if ( mSubsegmentSetIdx >= 0 && mSubsegmentSetIdx < static_cast<int>(mpMgr->mp_worldmap->get_linesubsegment_set().size()) ) {
-      LineSubSegmentSet* p_subsegment_set = mpMgr->mp_worldmap->get_linesubsegment_set() [mSubsegmentSetIdx];
-      int sub_num = static_cast<int>( p_subsegment_set->m_subsegs.size() );
+    if ( mSubsegmentSetIdx >= 0 && mSubsegmentSetIdx < static_cast<int>(mpMgr->mp_worldmap->getLinesubsegmentSet().size()) ) {
+      LineSubSegmentSet* p_subsegment_set = mpMgr->mp_worldmap->getLinesubsegmentSet() [mSubsegmentSetIdx];
+      int sub_num = static_cast<int>( p_subsegment_set->mSubsegs.size() );
       if ( mSubsegmentIdx < sub_num-1) {
         mSubsegmentIdx ++;
         updateVizSubregions();
@@ -582,7 +582,7 @@ void SpatialInferViz::nextLineSubsegment() {
 
 bool SpatialInferViz::save( QString filename ) {
   if( mpMgr->mp_worldmap ) {
-    mpMgr->mp_worldmap->to_xml(filename.toStdString());
+    mpMgr->mp_worldmap->toXml(filename.toStdString());
     return true;
   }
   return false;
@@ -593,9 +593,9 @@ bool SpatialInferViz::load( QString filename ) {
     mpMgr->mp_worldmap = new WorldMap();
   }
 
-  mpMgr->mp_worldmap->from_xml(filename.toStdString());
+  mpMgr->mp_worldmap->fromXml(filename.toStdString());
 
-  QPixmap emptyPix( mpMgr->get_world_map()->get_width(), mpMgr->get_world_map()->get_height() );
+  QPixmap emptyPix( mpMgr->get_world_map()->getWidth(), mpMgr->get_world_map()->getHeight() );
   emptyPix.fill(QColor("white"));
   std::cout << " EMPTY PIX " << emptyPix.width() << " * " << emptyPix.height() << std::endl;
   //setPixmap(pix);
@@ -610,9 +610,9 @@ bool SpatialInferViz::load( QString filename ) {
 SubRegionSet* SpatialInferViz::getSelectedRegion() {
   SubRegionSet* p_region = NULL;
   if ( mpMgr->get_world_map() ) {
-    if ( mpMgr->get_world_map()->get_subregion_set().size() > 0 ) {
-      if( mRegionIdx >= 0 && mRegionIdx < mpMgr->get_world_map()->get_subregion_set().size() ) {
-        return mpMgr->get_world_map()->get_subregion_set()[ mRegionIdx ];
+    if ( mpMgr->get_world_map()->getSubregionSet().size() > 0 ) {
+      if( mRegionIdx >= 0 && mRegionIdx < mpMgr->get_world_map()->getSubregionSet().size() ) {
+        return mpMgr->get_world_map()->getSubregionSet()[ mRegionIdx ];
       }
     }  
   }
@@ -624,9 +624,9 @@ SubRegion* SpatialInferViz::getSelectedSubregion() {
   SubRegion* p_subregion = NULL;
   SubRegionSet* p_region = getSelectedRegion(); 
   if( p_region ) {
-    if( p_region->m_subregions.size() > 0 ) {
-      if( mSubRegionIdx >= 0 && mSubRegionIdx < p_region->m_subregions.size() ) {
-        return p_region->m_subregions[mSubRegionIdx];
+    if( p_region->mSubregions.size() > 0 ) {
+      if( mSubRegionIdx >= 0 && mSubRegionIdx < p_region->mSubregions.size() ) {
+        return p_region->mSubregions[mSubRegionIdx];
       }
     }
   }
@@ -646,9 +646,9 @@ StringClass* SpatialInferViz::getSelectedStringClass() {
 LineSubSegmentSet* SpatialInferViz::getSelectedLineSubsegmentSet() {
   LineSubSegmentSet* p_subseg_set = NULL;
   if ( mpMgr->get_world_map() ) {
-    if ( mpMgr->get_world_map()->get_linesubsegment_set().size() > 0 ) {
-      if( mSubsegmentSetIdx >= 0 && mSubsegmentSetIdx < mpMgr->get_world_map()->get_linesubsegment_set().size() ) {
-        return mpMgr->get_world_map()->get_linesubsegment_set()[ mSubsegmentSetIdx ];
+    if ( mpMgr->get_world_map()->getLinesubsegmentSet().size() > 0 ) {
+      if( mSubsegmentSetIdx >= 0 && mSubsegmentSetIdx < mpMgr->get_world_map()->getLinesubsegmentSet().size() ) {
+        return mpMgr->get_world_map()->getLinesubsegmentSet()[ mSubsegmentSetIdx ];
       }
     }  
   }
@@ -659,9 +659,9 @@ LineSubSegment* SpatialInferViz::getSelectedLineSubsegment() {
   LineSubSegment* p_subseg= NULL;  
   LineSubSegmentSet* p_subseg_set = getSelectedLineSubsegmentSet(); 
   if( p_subseg_set ) {
-    if( p_subseg_set->m_subsegs.size() > 0 ) {
-      if( mSubsegmentIdx >= 0 && mSubsegmentIdx < p_subseg_set->m_subsegs.size() ) {
-        return p_subseg_set->m_subsegs[mSubsegmentIdx];
+    if( p_subseg_set->mSubsegs.size() > 0 ) {
+      if( mSubsegmentIdx >= 0 && mSubsegmentIdx < p_subseg_set->mSubsegs.size() ) {
+        return p_subseg_set->mSubsegs[mSubsegmentIdx];
       }
     }
   }
@@ -678,8 +678,8 @@ void SpatialInferViz::updateVizSubregions() {
         m_viz_subregions.push_back( p_subregion );
       }
       else {
-        for( unsigned int i=0; i < p_region->m_subregions.size(); i++ ) {
-          SubRegion* p_subregion = p_region->m_subregions[i];
+        for( unsigned int i=0; i < p_region->mSubregions.size(); i++ ) {
+          SubRegion* p_subregion = p_region->mSubregions[i];
           m_viz_subregions.push_back( p_subregion );
         }
       }
@@ -690,8 +690,8 @@ void SpatialInferViz::updateVizSubregions() {
     if( p_subseg_set ) {
       LineSubSegment* p_subseg = getSelectedLineSubsegment();
       if( p_subseg ) {
-        for( unsigned int i=0; i < p_subseg->m_neighbors.size(); i++ ) {
-          SubRegion* p_subregion = p_subseg->m_neighbors[i];
+        for( unsigned int i=0; i < p_subseg->mNeighbors.size(); i++ ) {
+          SubRegion* p_subregion = p_subseg->mNeighbors[i];
           m_viz_subregions.push_back( p_subregion );
         }
       }
@@ -706,26 +706,26 @@ void SpatialInferViz::updateVizLineSubsegments() {
     if( p_region ) {
       SubRegion* p_subregion = getSelectedSubregion(); 
       if (p_subregion) {
-        for( unsigned int i=0; i < p_subregion->m_neighbors.size(); i++ ) {
-          LineSubSegment* p_subseg = p_subregion->m_neighbors[i];
+        for( unsigned int i=0; i < p_subregion->mNeighbors.size(); i++ ) {
+          LineSubSegment* p_subseg = p_subregion->mNeighbors[i];
           if( p_subseg ) {
             m_viz_subsegments.push_back( p_subseg );
           }
         }
       }
       else {
-        if( p_region->mp_line_segments_a ){
-          for( unsigned int i=0; i < p_region->mp_line_segments_a->m_subsegs.size(); i++ ) {
-            LineSubSegment* p_subseg = p_region->mp_line_segments_b->m_subsegs[i];
+        if( p_region->mpLineSegmentsA ){
+          for( unsigned int i=0; i < p_region->mpLineSegmentsA->mSubsegs.size(); i++ ) {
+            LineSubSegment* p_subseg = p_region->mpLineSegmentsB->mSubsegs[i];
             if( p_subseg ) {
               m_viz_subsegments.push_back( p_subseg );
             }
           }
         }
 
-        if( p_region->mp_line_segments_b ){
-          for( unsigned int i=0; i < p_region->mp_line_segments_b->m_subsegs.size(); i++ ) {
-            LineSubSegment* p_subseg = p_region->mp_line_segments_b->m_subsegs[i];
+        if( p_region->mpLineSegmentsB ){
+          for( unsigned int i=0; i < p_region->mpLineSegmentsB->mSubsegs.size(); i++ ) {
+            LineSubSegment* p_subseg = p_region->mpLineSegmentsB->mSubsegs[i];
             if( p_subseg ) {
               m_viz_subsegments.push_back( p_subseg );
             }
@@ -743,8 +743,8 @@ void SpatialInferViz::updateVizLineSubsegments() {
         m_viz_subsegments.push_back( p_subseg ); 
       }
       else {
-        for( unsigned int i=0; i < p_subseg_set->m_subsegs.size(); i++ ) {
-          LineSubSegment* p_subseg = p_subseg_set->m_subsegs[i];
+        for( unsigned int i=0; i < p_subseg_set->mSubsegs.size(); i++ ) {
+          LineSubSegment* p_subseg = p_subseg_set->mSubsegs[i];
           if( p_subseg ){
             m_viz_subsegments.push_back( p_subseg ); 
           }
@@ -772,7 +772,7 @@ void SpatialInferViz::setMode( SpatialInferVizMode mode ) {
 void SpatialInferViz::mousePressEvent( QMouseEvent * event ) {
   if( event->button() == Qt::LeftButton ) {
     Point2D clicked_point( event->x(), event->y() );
-    Obstacle* p_selected_obstacle = mpReferenceFrameSet->get_world_map()->find_obstacle( clicked_point );
+    Obstacle* p_selected_obstacle = mpReferenceFrameSet->getWorldMap()->findObstacle( clicked_point );
     if( p_selected_obstacle ) {
       if( is_selected_obstacle( p_selected_obstacle ) ) {
         unselect_obstacle( p_selected_obstacle );

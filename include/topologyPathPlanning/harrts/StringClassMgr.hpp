@@ -15,14 +15,14 @@ namespace harrts {
   public:
     StringClass( std::vector< std::string > string, unsigned int created_iteration_num = 0 );
     virtual ~StringClass();
-    std::string get_name();
+    std::string getName();
   
-    std::vector< std::string > m_string;
+    std::vector< std::string > mString;
     
-    std::vector< double > m_historical_data;
-    unsigned int m_created_iteration_num;   
-    double m_cost;
-    Path*  mp_path;
+    std::vector< double > mHistoricalData;
+    unsigned int mCreatedIterationNum;
+    double mCost;
+    Path*  mpPath;
 
     void dump_historical_data( std::string filename );
     void write_historical_data( std::ostream& out );
@@ -34,18 +34,18 @@ namespace harrts {
     StringClassMgr(homotopy::StringGrammar* p_grammar);
     virtual ~StringClassMgr();
 
-    void import_path( Path* p_path, unsigned int iteration_num );
-    std::vector<Path*> export_paths();
+    void importPath( Path* p_path, unsigned int iteration_num );
+    std::vector<Path*> exportPaths();
     void merge();
-    StringClass* find_string_class( std::vector< std::string > str );
-    std::vector< StringClass* >& get_string_classes() { return _classes; }  
-    void export_grammar( std::string filename );
+    StringClass* findStringClass( std::vector< std::string > str );
+    std::vector< StringClass* >& getStringClasses() { return mClasses; }
+    void exportGrammar( std::string filename );
     void record();
 
-    void dump_historical_data( std::string filename );
+    void dumpHistoricalData( std::string filename );
   protected:
-    homotopy::StringGrammar* _p_grammar;
-    std::vector< StringClass* > _classes;
+    homotopy::StringGrammar* mpGrammar;
+    std::vector< StringClass* > mClasses;
   };
 
 } // harrts

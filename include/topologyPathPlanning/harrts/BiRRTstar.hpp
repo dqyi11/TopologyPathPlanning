@@ -32,11 +32,11 @@ namespace harrts {
     void clear_string();
     void append_to_string( std::vector< std::string > ids );
 
-    double   m_cost;
-    BIRRTNode* mp_parent;
-    POS2D    m_pos;
-    std::list<BIRRTNode*> m_child_nodes;
-    std::vector< std::string > m_substring;
+    double   mCost;
+    BIRRTNode* mpParent;
+    POS2D    mPos;
+    std::list<BIRRTNode*> mChildNodes;
+    std::vector< std::string > mSubstring;
   };
 
   class Path {
@@ -44,14 +44,14 @@ namespace harrts {
   public:
     Path(POS2D start, POS2D goal);
     ~Path();
-    void append_waypoints( std::vector<POS2D> waypoints, bool reverse = false );
-    void append_substring( std::vector< std::string > ids, bool reverse = false );
+    void appendWaypoints( std::vector<POS2D> waypoints, bool reverse = false );
+    void appendSubstring( std::vector< std::string > ids, bool reverse = false );
 
-    double m_cost;
-    POS2D  m_start;
-    POS2D  m_goal;
-    std::vector<POS2D> m_way_points;
-    std::vector< std::string > m_string;
+    double mCost;
+    POS2D  mStart;
+    POS2D  mGoal;
+    std::vector<POS2D> mWaypoints;
+    std::vector< std::string > mString;
   };
 
   class BIRRTstar {
@@ -61,113 +61,113 @@ namespace harrts {
     virtual ~BIRRTstar();
 
     bool init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp_cost_distrinution, homotopy::grammar_type_t grammar_type = homotopy::STRING_GRAMMAR_TYPE );
-    void load_map( int** pp_map );
+    void loadMap( int** pp_map );
 
-    int get_sampling_width() { return _sampling_width; }
-    int get_sampling_height() { return _sampling_height; }
-    int get_current_iteration() { return _current_iteration; }
+    int getSamplingWidth() { return mSamplingWidth; }
+    int getSamplingHeight() { return mSamplingHeight; }
+    int getCurrentIteration() { return mCurrentIteration; }
 
-    std::list<BIRRTNode*>& get_st_nodes() { return _st_nodes; }
-    std::list<BIRRTNode*>& get_gt_nodes() { return _gt_nodes; }
+    std::list<BIRRTNode*>& getSTNodes() { return mSTNodes; }
+    std::list<BIRRTNode*>& getGTNodes() { return mGTNodes; }
 
-    int**& get_map_info() { return _pp_map_info; }
-    double get_st_ball_radius() { return _st_ball_radius; }
-    double get_gt_ball_radius() { return _gt_ball_radius; }
+    int**& getMapInfo() { return mppMapInfo; }
+    double getSTBallRadius() { return mSTBallRadius; }
+    double getGTBallRadius() { return mGTBallRadius; }
 
     void extend();
-    Path* find_path( POS2D via_pos );
-    std::vector<Path*> get_paths();
+    Path* findPath( POS2D via_pos );
+    std::vector<Path*> getPaths();
 
-    void set_reference_frames( homotopy::ReferenceFrameSet* p_reference_frames );
-    homotopy::ReferenceFrameSet* get_reference_frames() { return _reference_frames; }
-    StringClassMgr* get_string_class_mgr() { return _p_string_class_mgr; }
+    void setReferenceFrames( homotopy::ReferenceFrameSet* p_reference_frames );
+    homotopy::ReferenceFrameSet* getReferenceFrames() { return mReferenceFrames; }
+    StringClassMgr* getStringClassMgr() { return mpStringClassMgr; }
 
-    void set_run_type( RRTree_run_type_t tree_type ) { _run_type = tree_type; }
-    RRTree_run_type_t get_run_type() { return _run_type; } 
-    homotopy::grammar_type_t get_grammar_type() { return _grammar_type; }
-    void dump_distribution(std::string filename);
+    void setRunType( RRTree_run_type_t tree_type ) { mRunType = tree_type; }
+    RRTree_run_type_t getRunType() { return mRunType; }
+    homotopy::grammar_type_t getGrammarType() { return mGrammarType; }
+    void dumpDistribution(std::string filename);
 
   protected:
-    POS2D _sampling();
-    POS2D _steer( POS2D pos_a, POS2D pos_b );
-    BIRRTNode* _extend(RRTree_type_t tree_type);
+    POS2D sampling();
+    POS2D steer( POS2D pos_a, POS2D pos_b );
+    BIRRTNode* extend(RRTree_type_t tree_type);
 
-    Path* _concatenate_paths( Path* p_from_path, Path* p_to_path );
-    Path* _get_subpath( BIRRTNode* p_end_node, RRTree_type_t tree_type );
+    Path* concatenatePaths( Path* p_from_path, Path* p_to_path );
+    Path* getSubpath( BIRRTNode* p_end_node, RRTree_type_t tree_type );
 
-    KDNode2D _find_nearest( POS2D pos, RRTree_type_t tree_type );
-    std::list<KDNode2D> _find_near( POS2D pos, RRTree_type_t tree_type );
+    KDNode2D findNearest( POS2D pos, RRTree_type_t tree_type );
+    std::list<KDNode2D> findNear( POS2D pos, RRTree_type_t tree_type );
 
-    bool _is_homotopy_eligible( BIRRTNode* p_node_parent, POS2D pos, RRTree_type_t tree_type );
-    bool _is_obstacle_free( POS2D pos_a, POS2D pos_b );
-    bool _is_in_obstacle( POS2D pos );
-    bool _contains( POS2D pos );
+    bool isHomotopyEligible( BIRRTNode* p_node_parent, POS2D pos, RRTree_type_t tree_type );
+    bool isObstacleFree( POS2D pos_a, POS2D pos_b );
+    bool isInObstacle( POS2D pos );
+    bool contains( POS2D pos );
 
-    double _calculate_cost( POS2D& pos_a, POS2D& pos_b );
+    double calculateCost( POS2D& pos_a, POS2D& pos_b );
 
-    BIRRTNode* _create_new_node( POS2D pos, RRTree_type_t tree_type );
-    bool _remove_edge( BIRRTNode* p_node_parent, BIRRTNode* p_node_child );
-    bool _has_edge( BIRRTNode* p_node_parent, BIRRTNode* p_node_child );
-    bool _add_edge( BIRRTNode* p_node_parent, BIRRTNode* p_node_child );
+    BIRRTNode* createNewNode( POS2D pos, RRTree_type_t tree_type );
+    bool removeEdge( BIRRTNode* p_node_parent, BIRRTNode* p_node_child );
+    bool hasEdge( BIRRTNode* p_node_parent, BIRRTNode* p_node_child );
+    bool addEdge( BIRRTNode* p_node_parent, BIRRTNode* p_node_child );
 
-    std::list<BIRRTNode*> _find_all_children( BIRRTNode* node );
+    std::list<BIRRTNode*> findAllChildren( BIRRTNode* node );
 
-    void _attach_new_node( BIRRTNode* p_node_new, BIRRTNode* p_nearest_node, std::list<BIRRTNode*> near_nodes, RRTree_type_t type );
-    void _rewire_near_nodes( BIRRTNode* p_node_new, std::list<BIRRTNode*> near_nodes, RRTree_type_t tree_type );
-    void _update_cost_to_children( BIRRTNode* p_node, double delta_cost );
-    bool _get_closest_node( POS2D pos, BIRRTNode*& p_node_closest, double& delta_cost, RRTree_type_t tree_type );
+    void attachNewNode( BIRRTNode* p_node_new, BIRRTNode* p_nearest_node, std::list<BIRRTNode*> near_nodes, RRTree_type_t type );
+    void rewireNearNodes( BIRRTNode* p_node_new, std::list<BIRRTNode*> near_nodes, RRTree_type_t tree_type );
+    void updateCostToChildren( BIRRTNode* p_node, double delta_cost );
+    bool getClosestNode( POS2D pos, BIRRTNode*& p_node_closest, double& delta_cost, RRTree_type_t tree_type );
 
-    BIRRTNode* _find_ancestor( BIRRTNode* p_node );
-    void set_grammar_type( homotopy::grammar_type_t grammar_type ) { _grammar_type = grammar_type; }
+    BIRRTNode* findAncestor( BIRRTNode* p_node );
+    void setGrammarType( homotopy::grammar_type_t grammar_type ) { mGrammarType = grammar_type; }
 
-    homotopy::ReferenceFrameSet* _reference_frames;
-    homotopy::StringGrammar*     _string_grammar;
+    homotopy::ReferenceFrameSet* mReferenceFrames;
+    homotopy::StringGrammar*     mStringGrammar;
  
-    POS2D    _start;
-    POS2D    _goal;
-    BIRRTNode* _p_st_root;
-    BIRRTNode* _p_gt_root;
+    POS2D    mStart;
+    POS2D    mGoal;
+    BIRRTNode* mpSTRoot;
+    BIRRTNode* mpGTRoot;
 
-    homotopy::grammar_type_t _grammar_type;
+    homotopy::grammar_type_t mGrammarType;
 
-    BIRRTNode* _p_st_new_node;
-    BIRRTNode* _p_gt_new_node;
-    BIRRTNode* _p_st_connected_node;
-    BIRRTNode* _p_gt_connected_node;
+    BIRRTNode* mpSTNewNode;
+    BIRRTNode* mpGTNewNode;
+    BIRRTNode* mpSTConnectedNode;
+    BIRRTNode* mpGTConnectedNode;
 
-    int _sampling_width;
-    int _sampling_height;
+    int mSamplingWidth;
+    int mSamplingHeight;
 
-    int**           _pp_map_info;
-    StringClassMgr* _p_string_class_mgr;
-    KDTree2D*       _p_st_kd_tree;
-    KDTree2D*       _p_gt_kd_tree;
-    COST_FUNC_PTR   _p_cost_func;
-    double**        _pp_cost_distribution;
+    int**           mppMapInfo;
+    StringClassMgr* mpStringClassMgr;
+    KDTree2D*       mpSTKDTree;
+    KDTree2D*       mpGTKDTree;
+    COST_FUNC_PTR   mpCostFunc;
+    double**        mppCostDistribution;
 
-    std::list<BIRRTNode*> _st_nodes;
-    std::list<BIRRTNode*> _gt_nodes;
+    std::list<BIRRTNode*> mSTNodes;
+    std::list<BIRRTNode*> mGTNodes;
 
-    RRTree_run_type_t _run_type;
-    double _range;
-    double _st_ball_radius;
-    double _gt_ball_radius;
-    double _segment_length;
-    int    _obs_check_resolution;
+    RRTree_run_type_t mRunType;
+    double mRange;
+    double mSTBallRadius;
+    double mGTBallRadius;
+    double mSegmentLength;
+    int    mObsCheckResolution;
 
-    double _theta;
-    int    _current_iteration;
+    double mTheta;
+    int    mCurrentIteration;
   };
 
   inline BIRRTNode* get_ancestor( BIRRTNode * node ) {
     if( NULL == node ) {
       return NULL;
     }
-    if( NULL == node->mp_parent ) {
+    if( NULL == node->mpParent ) {
       return node;
     }
     else {
-      return get_ancestor( node->mp_parent );
+      return get_ancestor( node->mpParent );
     }
   }
 
@@ -176,7 +176,7 @@ namespace harrts {
       return;
     }
     path.push_back( node );
-    get_parent_node_list( node->mp_parent, path );
+    get_parent_node_list( node->mpParent, path );
     return;
   }
 

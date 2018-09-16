@@ -64,12 +64,12 @@ bool HomotopyViz::initWorld(QString filename) {
     mpReferenceFrameSet = NULL;
   }
 
-  load_map_info( filename.toStdString(), map_width, map_height, conts );   
+  loadMapInfo( filename.toStdString(), map_width, map_height, conts );   
   //std::cout << "CREATE WORLD " << map_width << " * " << map_height << std::endl;
   mpReferenceFrameSet = new ReferenceFrameSet();
   mpReferenceFrameSet->init( map_width, map_height, conts );
   //std::cout << "NUM OF OBS " << conts.size() << std::endl;
-  mpWorld = mpReferenceFrameSet->get_world_map();
+  mpWorld = mpReferenceFrameSet->getWorldMap();
   return true;
 }
 
@@ -88,9 +88,9 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
       SubRegion* p_subreg = (*itr);
       if (p_subreg) {
         QPolygon poly;
-        for( unsigned int j=0; j < p_subreg->m_points.size(); j++ ) {
-          double x = CGAL::to_double( p_subreg->m_points[j].x() );
-          double y = CGAL::to_double( p_subreg->m_points[j].y() );
+        for( unsigned int j=0; j < p_subreg->mPoints.size(); j++ ) {
+          double x = CGAL::to_double( p_subreg->mPoints[j].x() );
+          double y = CGAL::to_double( p_subreg->mPoints[j].y() );
           poly << QPoint( x, y );
         }
         QPainterPath tmpPath;
@@ -109,8 +109,8 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
          itLSS != m_viz_subsegments.end(); itLSS++ ) {
       LineSubSegment* p_line_subsegment = (*itLSS);
       if( p_line_subsegment ) {
-        Point2D line_hl_src = p_line_subsegment->m_subseg.source();
-        Point2D line_hl_end = p_line_subsegment->m_subseg.target();
+        Point2D line_hl_src = p_line_subsegment->mSubseg.source();
+        Point2D line_hl_end = p_line_subsegment->mSubseg.target();
         double line_hl_src_x = CGAL::to_double( line_hl_src.x() );
         double line_hl_src_y = CGAL::to_double( line_hl_src.y() );
         double line_hl_end_x = CGAL::to_double( line_hl_end.x() );
@@ -122,7 +122,7 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
     }
     line_hl_painter.end();
 
-    std::vector<Obstacle*> obstacles =  mpWorld->get_obstacles();
+    std::vector<Obstacle*> obstacles =  mpWorld->getObstacles();
 
     QPainter obstacle_painter(this);
     obstacle_painter.setRenderHint(QPainter::Antialiasing);
@@ -133,8 +133,8 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
       Obstacle* p_obstacle = (*it);
       if (p_obstacle) {
         QPolygon poly;
-        for( Polygon2D::Vertex_iterator itP=p_obstacle->m_pgn.vertices_begin();
-             itP != p_obstacle->m_pgn.vertices_end(); itP++ ) {
+        for( Polygon2D::Vertex_iterator itP=p_obstacle->mPgn.vertices_begin();
+             itP != p_obstacle->mPgn.vertices_end(); itP++ ) {
           Point2D p = (*itP);
           double p_x = CGAL::to_double( p.x() );
           double p_y = CGAL::to_double( p.y() );
@@ -152,13 +152,13 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
     hl_obs_painter.setPen(hl_obs_pen);
     LineSubSegment* p_subseg = getSelectedLineSubsegment();
     if( p_subseg ) {
-      for( std::vector<Obstacle*>::iterator it = p_subseg->m_connected_obstacles.begin();
-           it != p_subseg->m_connected_obstacles.end(); it++ ) {
+      for( std::vector<Obstacle*>::iterator it = p_subseg->mConnectedObstacles.begin();
+           it != p_subseg->mConnectedObstacles.end(); it++ ) {
         Obstacle* p_obstacle = (*it);
         if (p_obstacle) {
           QPolygon poly;
-          for( Polygon2D::Vertex_iterator itP=p_obstacle->m_pgn.vertices_begin();
-               itP != p_obstacle->m_pgn.vertices_end(); itP++ ) {
+          for( Polygon2D::Vertex_iterator itP=p_obstacle->mPgn.vertices_begin();
+               itP != p_obstacle->mPgn.vertices_end(); itP++ ) {
             Point2D p = (*itP);
             double p_x = CGAL::to_double( p.x() );
             double p_y = CGAL::to_double( p.y() );
@@ -223,13 +223,13 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
         Obstacle* p_obstacle = (*it);
         if ( p_obstacle ) {
           //std::cout << "OBS " << p_obstacle->get_index() << " ALPHA:" << p_obstacle->mp_alpha_seg->m_subsegs.size() << std::endl;
-          for( std::vector< LineSubSegment* >::iterator itap = p_obstacle->mp_alpha_seg->m_subsegs.begin();
-               itap != p_obstacle->mp_alpha_seg->m_subsegs.end(); itap++ ) {
+          for( std::vector< LineSubSegment* >::iterator itap = p_obstacle->mpAlphaSeg->mSubsegs.begin();
+               itap != p_obstacle->mpAlphaSeg->mSubsegs.end(); itap++ ) {
             LineSubSegment* p_subseg_a = (*itap);
-            double a_src_x = CGAL::to_double( p_subseg_a->m_subseg.source().x() );
-            double a_src_y = CGAL::to_double( p_subseg_a->m_subseg.source().y() );
-            double a_end_x = CGAL::to_double( p_subseg_a->m_subseg.target().x() );
-            double a_end_y = CGAL::to_double( p_subseg_a->m_subseg.target().y() );
+            double a_src_x = CGAL::to_double( p_subseg_a->mSubseg.source().x() );
+            double a_src_y = CGAL::to_double( p_subseg_a->mSubseg.source().y() );
+            double a_end_x = CGAL::to_double( p_subseg_a->mSubseg.target().x() );
+            double a_end_y = CGAL::to_double( p_subseg_a->mSubseg.target().y() );
             //std::cout << p_subseg_a << std::endl;
             //std::cout << p_subseg_a->get_name() << " (" << a_src_x << "," << a_src_y << ") (" << a_end_x << "," << a_end_y << ")" << std::endl;
             a_subseg_painter.drawLine( QPoint( a_src_x , a_src_y ), QPoint( a_end_x , a_end_y ));
@@ -247,13 +247,13 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
         Obstacle* p_obstacle = (*it);
         if ( p_obstacle ) {
           //std::cout << "OBS " << p_obstacle->get_index() << " BETA:" << p_obstacle->mp_beta_seg->m_subsegs.size() << std::endl;
-          for( std::vector< LineSubSegment* >::iterator itbp = p_obstacle->mp_beta_seg->m_subsegs.begin();
-               itbp != p_obstacle->mp_beta_seg->m_subsegs.end(); itbp++ ) {
+          for( std::vector< LineSubSegment* >::iterator itbp = p_obstacle->mpBetaSeg->mSubsegs.begin();
+               itbp != p_obstacle->mpBetaSeg->mSubsegs.end(); itbp++ ) {
             LineSubSegment* p_subseg_b = (*itbp);
-            double b_src_x = CGAL::to_double( p_subseg_b->m_subseg.source().x() );
-            double b_src_y = CGAL::to_double( p_subseg_b->m_subseg.source().y() );
-            double b_end_x = CGAL::to_double( p_subseg_b->m_subseg.target().x() );
-            double b_end_y = CGAL::to_double( p_subseg_b->m_subseg.target().y() );
+            double b_src_x = CGAL::to_double( p_subseg_b->mSubseg.source().x() );
+            double b_src_y = CGAL::to_double( p_subseg_b->mSubseg.source().y() );
+            double b_end_x = CGAL::to_double( p_subseg_b->mSubseg.target().x() );
+            double b_end_y = CGAL::to_double( p_subseg_b->mSubseg.target().y() );
             //std::cout << p_subseg_b << std::endl;
             //std::cout << p_subseg_b->get_name() << " (" << b_src_x << "," << b_src_y << ") (" << b_end_x << "," << b_end_y << ")" << std::endl;
             b_subseg_painter.drawLine( QPoint( b_src_x , b_src_y ), QPoint( b_end_x , b_end_y ));
@@ -268,8 +268,8 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
     QPen cp_pen( CENTER_POINT_COLOR );
     cp_pen.setWidth( POINT_SIZE );
     cp_painter.setPen( cp_pen );
-    double cp_x = CGAL::to_double( mpWorld->get_central_point().x() );
-    double cp_y = CGAL::to_double( mpWorld->get_central_point().y() );
+    double cp_x = CGAL::to_double( mpWorld->getCentralPoint().x() );
+    double cp_y = CGAL::to_double( mpWorld->getCentralPoint().y() );
     cp_painter.drawPoint( QPoint( cp_x , cp_y ) );
     cp_painter.end();
 
@@ -281,8 +281,8 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
          it != obstacles.end(); it++ ) {
       Obstacle* p_obstacle = (*it);
       if ( p_obstacle ) {
-        double bk_x = CGAL::to_double( p_obstacle->m_bk.x() );
-        double bk_y = CGAL::to_double( p_obstacle->m_bk.y() );
+        double bk_x = CGAL::to_double( p_obstacle->mBk.x() );
+        double bk_y = CGAL::to_double( p_obstacle->mBk.y() );
         bk_painter.drawPoint( QPoint( bk_x , bk_y ) );
       }
     }
@@ -296,18 +296,18 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
          it != obstacles.end(); it++ ) {
       Obstacle* p_obstacle = (*it);
       if ( p_obstacle ) {
-        for( std::vector< IntersectionPoint >::iterator itap = p_obstacle->m_alpha_intersection_points.begin();
-             itap != p_obstacle->m_alpha_intersection_points.end(); itap++ ) {
+        for( std::vector< IntersectionPoint >::iterator itap = p_obstacle->mAlphaIntersectionPoints.begin();
+             itap != p_obstacle->mAlphaIntersectionPoints.end(); itap++ ) {
           IntersectionPoint alpha_intsec = (*itap);
-          double alpha_intsec_x = CGAL::to_double( alpha_intsec.m_point.x() );
-          double alpha_intsec_y = CGAL::to_double( alpha_intsec.m_point.y() );
+          double alpha_intsec_x = CGAL::to_double( alpha_intsec.mPoint.x() );
+          double alpha_intsec_y = CGAL::to_double( alpha_intsec.mPoint.y() );
           intsec_painter.drawPoint( QPoint( alpha_intsec_x , alpha_intsec_y ) );
         }
-        for( std::vector< IntersectionPoint >::iterator itbp = p_obstacle->m_beta_intersection_points.begin();
-             itbp != p_obstacle->m_beta_intersection_points.end(); itbp++ ) {
+        for( std::vector< IntersectionPoint >::iterator itbp = p_obstacle->mBetaIntersectionPoints.begin();
+             itbp != p_obstacle->mBetaIntersectionPoints.end(); itbp++ ) {
           IntersectionPoint beta_intsec = (*itbp);
-          double beta_intsec_x = CGAL::to_double( beta_intsec.m_point.x() );
-          double beta_intsec_y = CGAL::to_double( beta_intsec.m_point.y() );
+          double beta_intsec_x = CGAL::to_double( beta_intsec.mPoint.x() );
+          double beta_intsec_y = CGAL::to_double( beta_intsec.mPoint.y() );
           intsec_painter.drawPoint( QPoint( beta_intsec_x, beta_intsec_y ) );
         }
       }
@@ -321,9 +321,9 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
          it != obstacles.end(); it++ ) {
       Obstacle* p_obstacle = (*it);
       if( p_obstacle ) {
-        int c_x = (p_obstacle->m_pgn.bbox().xmax() + p_obstacle->m_pgn.bbox().xmin() )/2;
-        int c_y = (p_obstacle->m_pgn.bbox().ymax() + p_obstacle->m_pgn.bbox().ymin() )/2;
-        text_painter.drawText( c_x, c_y, QString::number(p_obstacle->get_index()) );
+        int c_x = (p_obstacle->mPgn.bbox().xmax() + p_obstacle->mPgn.bbox().xmin() )/2;
+        int c_y = (p_obstacle->mPgn.bbox().ymax() + p_obstacle->mPgn.bbox().ymin() )/2;
+        text_painter.drawText( c_x, c_y, QString::number(p_obstacle->getIndex()) );
       }
     }
     text_painter.end();
@@ -350,7 +350,7 @@ void HomotopyViz::prevRegion() {
       updateVizLineSubsegments();
     }
     else {
-      mRegionIdx = static_cast<int>(mpWorld->get_subregion_set().size())-1;
+      mRegionIdx = static_cast<int>(mpWorld->getSubregionSet().size())-1;
       mSubRegionIdx = 0;
       updateVizSubregions();
       updateVizLineSubsegments();
@@ -360,7 +360,7 @@ void HomotopyViz::prevRegion() {
 
 void HomotopyViz::nextRegion() {
   if( mpWorld ) {
-    if ( mRegionIdx < static_cast<int>(mpWorld->get_subregion_set().size())-1 ) {
+    if ( mRegionIdx < static_cast<int>(mpWorld->getSubregionSet().size())-1 ) {
       mRegionIdx++;
       mSubRegionIdx = 0;
       updateVizSubregions();
@@ -377,9 +377,9 @@ void HomotopyViz::nextRegion() {
 
 void HomotopyViz::prevSubregion() {
   if ( mpWorld ) {
-    if ( mRegionIdx >= 0 && mRegionIdx < static_cast<int>(mpWorld->get_subregion_set().size()) ) {
-      SubRegionSet* p_subregions = mpWorld->get_subregion_set() [mRegionIdx];
-      int sub_num = static_cast<int>( p_subregions->m_subregions.size() );
+    if ( mRegionIdx >= 0 && mRegionIdx < static_cast<int>(mpWorld->getSubregionSet().size()) ) {
+      SubRegionSet* p_subregions = mpWorld->getSubregionSet() [mRegionIdx];
+      int sub_num = static_cast<int>( p_subregions->mSubregions.size() );
       if ( mSubRegionIdx > 0) {
         mSubRegionIdx --;
         updateVizSubregions();
@@ -396,9 +396,9 @@ void HomotopyViz::prevSubregion() {
 
 void HomotopyViz::nextSubregion() {
   if ( mpWorld ) {
-    if ( mRegionIdx >= 0 && mRegionIdx < static_cast<int>(mpWorld->get_subregion_set().size()) ) {
-         SubRegionSet* p_subregions = mpWorld->get_subregion_set() [mRegionIdx];
-      int sub_num = static_cast<int>( p_subregions->m_subregions.size() );
+    if ( mRegionIdx >= 0 && mRegionIdx < static_cast<int>(mpWorld->getSubregionSet().size()) ) {
+         SubRegionSet* p_subregions = mpWorld->getSubregionSet() [mRegionIdx];
+      int sub_num = static_cast<int>( p_subregions->mSubregions.size() );
       if ( mSubRegionIdx < sub_num-1) {
         mSubRegionIdx ++;
         updateVizSubregions();
@@ -422,7 +422,7 @@ void HomotopyViz::prevLineSubsegmentSet() {
       updateVizLineSubsegments();
     }
     else {
-      mSubsegmentSetIdx = static_cast<int>(mpWorld->get_linesubsegment_set().size())-1;
+      mSubsegmentSetIdx = static_cast<int>(mpWorld->getLinesubsegmentSet().size())-1;
       mSubsegmentIdx = 0;
       updateVizSubregions();
       updateVizLineSubsegments();
@@ -432,7 +432,7 @@ void HomotopyViz::prevLineSubsegmentSet() {
 
 void HomotopyViz::nextLineSubsegmentSet() {
   if( mpWorld ) {
-    if ( mSubsegmentSetIdx < static_cast<int>(mpWorld->get_linesubsegment_set().size())-1 ) {
+    if ( mSubsegmentSetIdx < static_cast<int>(mpWorld->getLinesubsegmentSet().size())-1 ) {
       mSubsegmentSetIdx++;
       mSubsegmentIdx = 0;
       updateVizSubregions();
@@ -449,9 +449,9 @@ void HomotopyViz::nextLineSubsegmentSet() {
 
 void HomotopyViz::prevLineSubsegment() {
   if ( mpWorld ) {
-    if ( mSubsegmentSetIdx >= 0 && mSubsegmentSetIdx < static_cast<int>(mpWorld->get_linesubsegment_set().size()) ) {
-      LineSubSegmentSet* p_subsegment_set = mpWorld->get_linesubsegment_set() [mSubsegmentSetIdx];
-      int sub_num = static_cast<int>( p_subsegment_set->m_subsegs.size() );
+    if ( mSubsegmentSetIdx >= 0 && mSubsegmentSetIdx < static_cast<int>(mpWorld->getLinesubsegmentSet().size()) ) {
+      LineSubSegmentSet* p_subsegment_set = mpWorld->getLinesubsegmentSet() [mSubsegmentSetIdx];
+      int sub_num = static_cast<int>( p_subsegment_set->mSubsegs.size() );
       if ( mSubsegmentIdx > 0) {
         mSubsegmentIdx --;
         updateVizSubregions();
@@ -468,9 +468,9 @@ void HomotopyViz::prevLineSubsegment() {
 
 void HomotopyViz::nextLineSubsegment() {
   if ( mpWorld ) {
-    if ( mSubsegmentSetIdx >= 0 && mSubsegmentSetIdx < static_cast<int>(mpWorld->get_linesubsegment_set().size()) ) {
-      LineSubSegmentSet* p_subsegment_set = mpWorld->get_linesubsegment_set() [mSubsegmentSetIdx];
-      int sub_num = static_cast<int>( p_subsegment_set->m_subsegs.size() );
+    if ( mSubsegmentSetIdx >= 0 && mSubsegmentSetIdx < static_cast<int>(mpWorld->getLinesubsegmentSet().size()) ) {
+      LineSubSegmentSet* p_subsegment_set = mpWorld->getLinesubsegmentSet() [mSubsegmentSetIdx];
+      int sub_num = static_cast<int>( p_subsegment_set->mSubsegs.size() );
       if ( mSubsegmentIdx < sub_num-1) {
         mSubsegmentIdx ++;
         updateVizSubregions();
@@ -487,7 +487,7 @@ void HomotopyViz::nextLineSubsegment() {
 
 bool HomotopyViz::save( QString filename ) {
   if( mpWorld ) {
-    mpWorld->to_xml(filename.toStdString());
+    mpWorld->toXml(filename.toStdString());
     return true;
   }
   return false;
@@ -498,9 +498,9 @@ bool HomotopyViz::load( QString filename ) {
     mpWorld = new WorldMap();
   }
 
-  mpWorld->from_xml(filename.toStdString());
+  mpWorld->fromXml(filename.toStdString());
 
-  QPixmap emptyPix( mpWorld->get_width(), mpWorld->get_height() );
+  QPixmap emptyPix( mpWorld->getWidth(), mpWorld->getHeight() );
   emptyPix.fill(QColor("white"));
   std::cout << " EMPTY PIX " << emptyPix.width() << " * " << emptyPix.height() << std::endl;
   //setPixmap(pix);
@@ -561,7 +561,7 @@ QString HomotopyViz::generate_string() {
   for( unsigned int i = 0; i < mPoints.size(); i ++ ) {
     path.addPoint( mPoints[i].x(), mPoints[i].y() );
   }
-  std::vector< std::string > refs = mpReferenceFrameSet->get_string( path, STRING_GRAMMAR_TYPE );
+  std::vector< std::string > refs = mpReferenceFrameSet->getString( path, STRING_GRAMMAR_TYPE );
 
   for( unsigned int i = 0; i < refs.size(); i ++ ) {
     if ( i > 0 ) {
@@ -575,9 +575,9 @@ QString HomotopyViz::generate_string() {
 SubRegionSet* HomotopyViz::getSelectedRegion() {
   SubRegionSet* p_region = NULL;
   if ( mpWorld ) {
-    if ( mpWorld->get_subregion_set().size() > 0 ) {
-      if( mRegionIdx >= 0 && mRegionIdx < mpWorld->get_subregion_set().size() ) {
-        return mpWorld->get_subregion_set()[ mRegionIdx ];
+    if ( mpWorld->getSubregionSet().size() > 0 ) {
+      if( mRegionIdx >= 0 && mRegionIdx < mpWorld->getSubregionSet().size() ) {
+        return mpWorld->getSubregionSet()[ mRegionIdx ];
       }
     }  
   }
@@ -589,9 +589,9 @@ SubRegion* HomotopyViz::getSelectedSubregion() {
   SubRegion* p_subregion = NULL;
   SubRegionSet* p_region = getSelectedRegion(); 
   if( p_region ) {
-    if( p_region->m_subregions.size() > 0 ) {
-      if( mSubRegionIdx >= 0 && mSubRegionIdx < p_region->m_subregions.size() ) {
-        return p_region->m_subregions[mSubRegionIdx];
+    if( p_region->mSubregions.size() > 0 ) {
+      if( mSubRegionIdx >= 0 && mSubRegionIdx < p_region->mSubregions.size() ) {
+        return p_region->mSubregions[mSubRegionIdx];
       }
     }
   }
@@ -601,9 +601,9 @@ SubRegion* HomotopyViz::getSelectedSubregion() {
 LineSubSegmentSet* HomotopyViz::getSelectedLineSubsegmentSet() {
   LineSubSegmentSet* p_subseg_set = NULL;
   if ( mpWorld ) {
-    if ( mpWorld->get_linesubsegment_set().size() > 0 ) {
-      if( mSubsegmentSetIdx >= 0 && mSubsegmentSetIdx < mpWorld->get_linesubsegment_set().size() ) {
-        return mpWorld->get_linesubsegment_set()[ mSubsegmentSetIdx ];
+    if ( mpWorld->getLinesubsegmentSet().size() > 0 ) {
+      if( mSubsegmentSetIdx >= 0 && mSubsegmentSetIdx < mpWorld->getLinesubsegmentSet().size() ) {
+        return mpWorld->getLinesubsegmentSet()[ mSubsegmentSetIdx ];
       }
     }  
   }
@@ -614,9 +614,9 @@ LineSubSegment* HomotopyViz::getSelectedLineSubsegment() {
   LineSubSegment* p_subseg= NULL;  
   LineSubSegmentSet* p_subseg_set = getSelectedLineSubsegmentSet(); 
   if( p_subseg_set ) {
-    if( p_subseg_set->m_subsegs.size() > 0 ) {
-      if( mSubsegmentIdx >= 0 && mSubsegmentIdx < p_subseg_set->m_subsegs.size() ) {
-        return p_subseg_set->m_subsegs[mSubsegmentIdx];
+    if( p_subseg_set->mSubsegs.size() > 0 ) {
+      if( mSubsegmentIdx >= 0 && mSubsegmentIdx < p_subseg_set->mSubsegs.size() ) {
+        return p_subseg_set->mSubsegs[mSubsegmentIdx];
       }
     }
   }
@@ -633,8 +633,8 @@ void HomotopyViz::updateVizSubregions() {
         m_viz_subregions.push_back( p_subregion );
       }
       else {
-        for( unsigned int i=0; i < p_region->m_subregions.size(); i++ ) {
-          SubRegion* p_subregion = p_region->m_subregions[i];
+        for( unsigned int i=0; i < p_region->mSubregions.size(); i++ ) {
+          SubRegion* p_subregion = p_region->mSubregions[i];
           m_viz_subregions.push_back( p_subregion );
         }
       }
@@ -645,8 +645,8 @@ void HomotopyViz::updateVizSubregions() {
     if( p_subseg_set ) {
       LineSubSegment* p_subseg = getSelectedLineSubsegment();
       if( p_subseg ) {
-        for( unsigned int i=0; i < p_subseg->m_neighbors.size(); i++ ) {
-          SubRegion* p_subregion = p_subseg->m_neighbors[i];
+        for( unsigned int i=0; i < p_subseg->mNeighbors.size(); i++ ) {
+          SubRegion* p_subregion = p_subseg->mNeighbors[i];
           m_viz_subregions.push_back( p_subregion );
         }
       }
@@ -661,26 +661,26 @@ void HomotopyViz::updateVizLineSubsegments() {
     if( p_region ) {
       SubRegion* p_subregion = getSelectedSubregion(); 
       if (p_subregion) {
-        for( unsigned int i=0; i < p_subregion->m_neighbors.size(); i++ ) {
-          LineSubSegment* p_subseg = p_subregion->m_neighbors[i];
+        for( unsigned int i=0; i < p_subregion->mNeighbors.size(); i++ ) {
+          LineSubSegment* p_subseg = p_subregion->mNeighbors[i];
           if( p_subseg ) {
             m_viz_subsegments.push_back( p_subseg );
           }
         }
       }
       else {
-        if( p_region->mp_line_segments_a ){
-          for( unsigned int i=0; i < p_region->mp_line_segments_a->m_subsegs.size(); i++ ) {
-            LineSubSegment* p_subseg = p_region->mp_line_segments_b->m_subsegs[i];
+        if( p_region->mpLineSegmentsA ){
+          for( unsigned int i=0; i < p_region->mpLineSegmentsA->mSubsegs.size(); i++ ) {
+            LineSubSegment* p_subseg = p_region->mpLineSegmentsB->mSubsegs[i];
             if( p_subseg ) {
               m_viz_subsegments.push_back( p_subseg );
             }
           }
         }
 
-        if( p_region->mp_line_segments_b ){
-          for( unsigned int i=0; i < p_region->mp_line_segments_b->m_subsegs.size(); i++ ) {
-            LineSubSegment* p_subseg = p_region->mp_line_segments_b->m_subsegs[i];
+        if( p_region->mpLineSegmentsB ){
+          for( unsigned int i=0; i < p_region->mpLineSegmentsB->mSubsegs.size(); i++ ) {
+            LineSubSegment* p_subseg = p_region->mpLineSegmentsB->mSubsegs[i];
             if( p_subseg ) {
               m_viz_subsegments.push_back( p_subseg );
             }
@@ -698,8 +698,8 @@ void HomotopyViz::updateVizLineSubsegments() {
         m_viz_subsegments.push_back( p_subseg ); 
       }
       else {
-        for( unsigned int i=0; i < p_subseg_set->m_subsegs.size(); i++ ) {
-          LineSubSegment* p_subseg = p_subseg_set->m_subsegs[i];
+        for( unsigned int i=0; i < p_subseg_set->mSubsegs.size(); i++ ) {
+          LineSubSegment* p_subseg = p_subseg_set->mSubsegs[i];
           if( p_subseg ){
             m_viz_subsegments.push_back( p_subseg ); 
           }

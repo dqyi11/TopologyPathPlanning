@@ -164,10 +164,10 @@ bool MLRRTstar::init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp
   Point2D goal_point = toPoint2D( _goal );
   set_grammar_type(grammar_type);
   if( STRING_GRAMMAR_TYPE == grammar_type) {
-    _string_grammar = _reference_frames->get_string_grammar( start_point, goal_point );
+    _string_grammar = _reference_frames->getStringGrammar( start_point, goal_point );
   }
   else if( HOMOTOPIC_GRAMMAR_TYPE == grammar_type ) {
-    _string_grammar = _reference_frames->get_homotopic_grammar(start_point, goal_point );
+    _string_grammar = _reference_frames->getHomotopicGrammar(start_point, goal_point );
   }
   cout << "Init String Class Mgr ... " << endl;
   _p_expanding_tree_mgr = new ExpandingTreeMgr();
@@ -236,7 +236,7 @@ void MLRRTstar::extend() {
 
     if( true == _is_obstacle_free( nearest_node, new_pos ) ) {
        //cout << "NEW POS " << new_pos << endl;
-       SubRegion* p_subregion = _reference_frames->get_world_map()->in_subregion( toPoint2D( new_pos ) );
+       SubRegion* p_subregion = _reference_frames->getWorldMap()->inSubregion( toPoint2D( new_pos ) );
        if ( p_subregion ) {
          SubRegionMgr* p_mgr = _p_expanding_tree_mgr->find_subregion_mgr( p_subregion );
          if( p_mgr ) {
@@ -684,7 +684,7 @@ bool MLRRTstar::_add_edge( MLRRTNode* p_node_parent, MLRRTNode* p_node_child ) {
   Point2D start = toPoint2D( p_node_parent->m_pos );
   Point2D goal = toPoint2D( p_node_child->m_pos );
   //std::cout << "START " << start << " END " << goal << std::endl;
-  vector< string > ids = _reference_frames->get_string( start, goal, _grammar_type );
+  vector< string > ids = _reference_frames->getString( start, goal, _grammar_type );
   p_node_child->clear_string();
   p_node_child->append_to_string( p_node_parent->m_substring );
   p_node_child->append_to_string( ids );
@@ -735,7 +735,7 @@ bool MLRRTstar::_is_homotopic_constrained( MLRRTNode* p_node_parent, MLRRTNode* 
         //cout << "COMPARE child=" << p_exp_node_child->m_name << "(" << p_exp_node_child->mp_in_edge->mp_from->m_name << ") " << p_exp_node_parent->m_name << endl;
         if( p_exp_node_child->mp_in_edge->mp_from == p_exp_node_parent ) {
           //cout << "HAPPENED " << endl;
-          if( p_exp_node_child->mp_in_edge->mp_reference_frame->is_line_crossed( toPoint2D( p_node_parent->m_pos ), toPoint2D( p_node_child->m_pos ) ) ) {
+          if( p_exp_node_child->mp_in_edge->mp_reference_frame->isLineCrossed( toPoint2D( p_node_parent->m_pos ), toPoint2D( p_node_child->m_pos ) ) ) {
             return true;
           }
         }

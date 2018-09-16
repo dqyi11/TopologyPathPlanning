@@ -30,7 +30,7 @@ void StringClass::init( ReferenceFrameSet* p_rfs ) {
   if( p_rfs ) {
     for( unsigned int i=0; i < m_string.size(); i++ ) {
       string id = m_string[i];
-      ReferenceFrame* p_rf = p_rfs->get_reference_frame( id );
+      ReferenceFrame* p_rf = p_rfs->getReferenceFrame( id );
       if( p_rf ) {
         mp_reference_frames.push_back( p_rf );
       }
@@ -92,7 +92,7 @@ void SpatialRelationMgr::print_rules( vector< pair< ReferenceFrame*, bool > > ru
   cout << "RULES" << endl;
   for( unsigned int i=0; i<m_rules.size(); i++ ) {
     pair<ReferenceFrame*, bool> rule = m_rules[i];
-    cout << rule.first->get_name() << " " << rule.second << endl;
+    cout << rule.first->getName() << " " << rule.second << endl;
   }
 }
 
@@ -139,9 +139,9 @@ void SpatialRelationMgr::get_string_classes( ReferenceFrameSet* p_rfs  ) {
   vector< vector< string > > string_set;
   
   if( p_rfs ) {
-    StringGrammar* p_grammar = p_rfs->get_string_grammar( m_start_x, m_start_y, m_goal_x, m_goal_y );
+    StringGrammar* p_grammar = p_rfs->getStringGrammar( m_start_x, m_start_y, m_goal_x, m_goal_y );
     if( p_grammar ){
-      vector< vector< string > > all_simple_strings = p_grammar->find_simple_strings(); 
+      vector< vector< string > > all_simple_strings = p_grammar->findSimpleStrings(); 
       m_rules = get_rules( p_rfs );
       print_rules( m_rules );
       string_set = filter( all_simple_strings, m_rules );
@@ -188,7 +188,7 @@ bool SpatialRelationMgr::is_eligible( vector< string > string_item, vector< pair
 bool SpatialRelationMgr::is_eligible( vector< string > string_item, pair< ReferenceFrame*, bool > rule ) {
   bool positive = rule.second;
   ReferenceFrame* p_rf = rule.first;
-  if( contains( string_item, p_rf->get_name() ) == positive ) { 
+  if( contains( string_item, p_rf->getName() ) == positive ) { 
     return true; 
   }
   return false;

@@ -53,7 +53,7 @@ void StringClass::init( homotopy::ReferenceFrameSet* p_rfs ) {
   if( p_rfs ) {
     for( unsigned int i=0; i < m_string.size(); i++ ) {
       string id = m_string[i];
-      ReferenceFrame* p_rf = p_rfs->get_reference_frame( id );
+      ReferenceFrame* p_rf = p_rfs->getReferenceFrame( id );
       if( p_rf ) {
         mp_reference_frames.push_back( p_rf );
       }
@@ -163,7 +163,7 @@ std::vector<ExpandingNode*> ExpandingNode::get_child_nodes() {
 POS2D ExpandingNode::sample_random_pos() {
   POS2D pos( 0, 0 );
   if( mp_subregion ) {
-    Point2D point = mp_subregion->sample_position();
+    Point2D point = mp_subregion->samplePosition();
     pos = toPOS2D( point );
   }
   return pos;
@@ -261,7 +261,7 @@ std::vector<std::string> ExpandingEdge::get_substring() {
 POS2D ExpandingEdge::sample_random_pos() {
   POS2D pos( 0, 0 );
   if( mp_line_subsegment ) {
-    Point2D point = mp_line_subsegment->sample_position();
+    Point2D point = mp_line_subsegment->samplePosition();
     pos = toPOS2D( point );
   }
   return pos;
@@ -286,11 +286,11 @@ std::vector< StringClass* > ExpandingTree::init( homotopy::StringGrammar * p_gra
   }
 
   std::vector< std::vector < homotopy::Adjacency > > paths;
-  if( p_reference_frame_set->get_string_constraint().size() > 0 ) {  
-    paths = p_grammar->find_paths( p_reference_frame_set->get_string_constraint() );
+  if( p_reference_frame_set->getStringConstraint().size() > 0 ) {  
+    paths = p_grammar->findPaths( p_reference_frame_set->getStringConstraint() );
   }
   else {
-    paths = p_grammar->find_simple_paths();
+    paths = p_grammar->findSimplePaths();
   }
 
   for( unsigned int i = 0; i < paths.size(); i ++ ) {
@@ -316,12 +316,12 @@ std::vector< StringClass* > ExpandingTree::init( homotopy::StringGrammar * p_gra
         /* first node */
         if( mp_root == NULL ) {
           /* root uninitialized */
-          mp_root = new ExpandingNode( adj.mp_state->m_name );
+          mp_root = new ExpandingNode( adj.mp_state->mName );
           mp_root->import_ancestor_seq( node_seq );
           node_seq.push_back( mp_root );
           if ( p_reference_frame_set 
-               && p_reference_frame_set->get_world_map() ) {
-            mp_root->mp_subregion = p_reference_frame_set->get_world_map()->find_subregion( adj.mp_state->m_name );
+               && p_reference_frame_set->getWorldMap() ) {
+            mp_root->mp_subregion = p_reference_frame_set->getWorldMap()->findSubregion( adj.mp_state->mName );
           }
           m_nodes.push_back( mp_root );
           p_string_class->add_exp_node( mp_root );
@@ -331,8 +331,8 @@ std::vector< StringClass* > ExpandingTree::init( homotopy::StringGrammar * p_gra
           /* root initialized */
           p_string_class->add_exp_node( mp_root );
           p_current_node = mp_root;
-          if( p_current_node->m_name != adj.mp_state->m_name ) {
-            cout << "ERROR [ROOT MISMATCH] Root Name=\"" << p_current_node->m_name <<"\" Adj State Name =\"" << adj.mp_state->m_name << "\""  << endl;
+          if( p_current_node->m_name != adj.mp_state->mName ) {
+            cout << "ERROR [ROOT MISMATCH] Root Name=\"" << p_current_node->m_name <<"\" Adj State Name =\"" << adj.mp_state->mName << "\""  << endl;
           }
           node_seq.push_back( mp_root );
         }                
@@ -347,19 +347,19 @@ std::vector< StringClass* > ExpandingTree::init( homotopy::StringGrammar * p_gra
           p_edge->import_ancestor_seq( edge_seq );
           edge_seq.push_back( p_edge );
           if ( p_reference_frame_set 
-               && p_reference_frame_set->get_world_map() ) {
-            p_edge->mp_line_subsegment = p_reference_frame_set->get_world_map()->find_linesubsegment( adj.mp_transition->m_name );
-            p_edge->mp_reference_frame = p_reference_frame_set->get_reference_frame( adj.mp_transition->m_name );
+               && p_reference_frame_set->getWorldMap() ) {
+            p_edge->mp_line_subsegment = p_reference_frame_set->getWorldMap()->findLinesubsegment( adj.mp_transition->m_name );
+            p_edge->mp_reference_frame = p_reference_frame_set->getReferenceFrame( adj.mp_transition->m_name );
           }
-          p_edge->mp_to = new ExpandingNode( adj.mp_state->m_name );
+          p_edge->mp_to = new ExpandingNode( adj.mp_state->mName );
           p_edge->mp_to->mp_in_edge = p_edge;
           p_edge->mp_from->mp_out_edges.push_back( p_edge );
           p_edge->mp_to->import_ancestor_seq( node_seq );
           node_seq.push_back( p_edge->mp_to );
           p_string_class->add_exp_node( p_edge->mp_to );
           if ( p_reference_frame_set 
-               && p_reference_frame_set->get_world_map() ) {
-            p_edge->mp_to->mp_subregion = p_reference_frame_set->get_world_map()->find_subregion( adj.mp_state->m_name );
+               && p_reference_frame_set->getWorldMap() ) {
+            p_edge->mp_to->mp_subregion = p_reference_frame_set->getWorldMap()->findSubregion( adj.mp_state->mName );
           }
           m_edges.push_back( p_edge );
           m_nodes.push_back( p_edge->mp_to );
@@ -369,7 +369,7 @@ std::vector< StringClass* > ExpandingTree::init( homotopy::StringGrammar * p_gra
         else {
           /* edge found */
           if( p_edge->m_name == adj.mp_transition->m_name &&
-              p_edge->mp_to->m_name == adj.mp_state->m_name ) {
+              p_edge->mp_to->m_name == adj.mp_state->mName ) {
             edge_seq.push_back( p_edge );
             node_seq.push_back( p_edge->mp_to );
             p_string_class->add_exp_node( p_edge->mp_to );
@@ -444,14 +444,14 @@ void ExpandingTree::print() {
   for( unsigned int i=0; i < m_nodes.size(); i++ ) {
     ExpandingNode* p_node = m_nodes[i];
     if(p_node) {
-      std::cout << p_node->m_name << " " << p_node->mp_subregion->get_name() << " " << std::endl;
+      std::cout << p_node->m_name << " " << p_node->mp_subregion->getName() << " " << std::endl;
     }
   }
   std::cout << "EDGE " << std::endl;
   for( unsigned int i=0; i < m_edges.size(); i++ ) {
     ExpandingEdge* p_edge = m_edges[i];
     if(p_edge) {
-      std::cout << p_edge->m_name << " " << p_edge->mp_reference_frame->get_name() << " " << p_edge->mp_line_subsegment->get_name() << std::endl;
+      std::cout << p_edge->m_name << " " << p_edge->mp_reference_frame->getName() << " " << p_edge->mp_line_subsegment->getName() << std::endl;
     }
   }
 }

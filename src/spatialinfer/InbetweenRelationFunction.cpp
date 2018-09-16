@@ -20,29 +20,29 @@ vector< pair<ReferenceFrame*, bool> > InBetweenRelationFunction::get_rules( Refe
 
   if( p_reference_frame_set ) {
     // check whether there is a reference frame connecting to reference frames
-    for( unsigned int i=0; i<p_reference_frame_set->get_reference_frames().size(); i++ ) {
-      ReferenceFrame* p_ref = p_reference_frame_set->get_reference_frames()[i];
+    for( unsigned int i=0; i<p_reference_frame_set->getReferenceFrames().size(); i++ ) {
+      ReferenceFrame* p_ref = p_reference_frame_set->getReferenceFrames()[i];
       if( p_ref ) {
-        if( p_ref->mp_line_subsegment ) {
-          if( p_ref->mp_line_subsegment->is_connected( mp_obstacles[0] ) &&
-              p_ref->mp_line_subsegment->is_connected( mp_obstacles[1] ) ) {
+        if( p_ref->mpLineSubsegment ) {
+          if( p_ref->mpLineSubsegment->isConnected( mp_obstacles[0] ) &&
+              p_ref->mpLineSubsegment->isConnected( mp_obstacles[1] ) ) {
             rules.push_back( make_pair( p_ref, true ) );
           }
         }    
       }
     }
     if( rules.size() == 0 ) {
-      for( unsigned int i=0; i<p_reference_frame_set->get_reference_frames().size(); i++ ) {
-        ReferenceFrame* p_ref = p_reference_frame_set->get_reference_frames()[i];
+      for( unsigned int i=0; i<p_reference_frame_set->getReferenceFrames().size(); i++ ) {
+        ReferenceFrame* p_ref = p_reference_frame_set->getReferenceFrames()[i];
         if( p_ref ) {
-          if( p_ref->mp_line_subsegment ) {
-            if( p_ref->mp_line_subsegment->is_connected( mp_obstacles[0] ) &&
-                p_ref->mp_line_subsegment->m_is_connected_to_central_point ) {
+          if( p_ref->mpLineSubsegment ) {
+            if( p_ref->mpLineSubsegment->isConnected( mp_obstacles[0] ) &&
+                p_ref->mpLineSubsegment->mIsConnectedToCentralPoint ) {
 
               rules.push_back( make_pair( p_ref, true ) );
             }
-            else if( p_ref->mp_line_subsegment->is_connected( mp_obstacles[1] ) &&
-                     p_ref->mp_line_subsegment->m_is_connected_to_central_point ) {
+            else if( p_ref->mpLineSubsegment->isConnected( mp_obstacles[1] ) &&
+                     p_ref->mpLineSubsegment->mIsConnectedToCentralPoint ) {
               rules.push_back( make_pair( p_ref, true ) );
             }
           }
@@ -57,10 +57,10 @@ string InBetweenRelationFunction::get_name() {
   string name = "IN_BETWEEN(";
   for(unsigned int i=0; i<mp_obstacles.size(); i++) {
     if( i < mp_obstacles.size()-1 ) {
-      name += mp_obstacles[i]->get_name() + ",";
+      name += mp_obstacles[i]->getName() + ",";
     }
     else{
-      name += mp_obstacles[i]->get_name();
+      name += mp_obstacles[i]->getName();
     }
   }  
   name += ")";
