@@ -20,8 +20,8 @@ namespace tarrts {
   public:
     StringClass( std::vector< std::string > string );
     virtual ~StringClass();
-    std::string get_name();
-    void add_exp_node( ExpandingNode* p_node );
+    std::string getName();
+    void addExpNode( ExpandingNode* p_node );
     void init( homotopy::ReferenceFrameSet* p_rf );
     void import( Path* p_path );
       
@@ -31,8 +31,8 @@ namespace tarrts {
     std::vector< homotopy::ReferenceFrame* > mp_reference_frames; 
     std::vector< double >                    m_historical_data;
 
-    void dump_historical_data( std::string filename );
-    void write_historical_data( std::ostream& out );
+    void dumpHistoricalData( std::string filename );
+    void writeHistoricalData( std::ostream& out );
     void record();
 
     Path*                         mp_path;  
@@ -45,26 +45,26 @@ namespace tarrts {
     ExpandingNode( std::string name );
     virtual ~ExpandingNode();
 
-    ExpandingEdge* find_out_edge( std::string name );
-    bool has_out_edge( ExpandingEdge* p_edge );
+    ExpandingEdge* findOutEdge( std::string name );
+    bool hasOutEdge( ExpandingEdge* p_edge );
 
-    ExpandingNode* get_parent_node();
-    std::vector<ExpandingNode*> get_child_nodes();
-    void import_ancestor_seq ( std::vector<ExpandingNode*> ancestor_seq );
-    std::vector<std::string> get_substring();
+    ExpandingNode* getParentNode();
+    std::vector<ExpandingNode*> getChildNodes();
+    void importAncestorSeq ( std::vector<ExpandingNode*> ancestor_seq );
+    std::vector<std::string> getSubstring();
 
-    POS2D sample_random_pos();
-    std::vector<POS2D> find_feasible_path( ExpandingEdge* p_in_edge, ExpandingEdge* p_out_edge );
-    bool is_ancestor( ExpandingNode* p_node );
+    POS2D sampleRandomPos();
+    std::vector<POS2D> findFeasiblePath( ExpandingEdge* p_in_edge, ExpandingEdge* p_out_edge );
+    bool isAncestor( ExpandingNode* p_node );
  
-    std::string                 m_name;
-    ExpandingEdge*              mp_in_edge;
-    std::vector<ExpandingEdge*> mp_out_edges;
-    homotopy::SubRegion*        mp_subregion;
-    std::vector<StringClass*>   mp_string_classes;
+    std::string                 mName;
+    ExpandingEdge*              mpInEdge;
+    std::vector<ExpandingEdge*> mpOutEdges;
+    homotopy::SubRegion*        mpSubregion;
+    std::vector<StringClass*>   mpStringClasses;
 
-    std::list<MLRRTNode*>       mp_nodes;
-    std::vector<ExpandingNode*> mp_ancestor_seq;
+    std::list<MLRRTNode*>       mpNodes;
+    std::vector<ExpandingNode*> mpAncestorSeq;
   };
   
   class ExpandingEdge {
@@ -72,18 +72,18 @@ namespace tarrts {
     ExpandingEdge( std::string name );
     virtual ~ExpandingEdge();
     
-    void import_ancestor_seq ( std::vector<ExpandingEdge*> ancestor_seq );
-    std::vector<std::string> get_substring();
+    void importAncestorSeq ( std::vector<ExpandingEdge*> ancestor_seq );
+    std::vector<std::string> getSubstring();
 
-    POS2D sample_random_pos();
+    POS2D sampleRandomPos();
 
-    std::string                 m_name;
-    ExpandingNode*              mp_from;
-    ExpandingNode*              mp_to;
-    homotopy::LineSubSegment*   mp_line_subsegment;
-    homotopy::ReferenceFrame*   mp_reference_frame;
-    POS2D                       m_rand_pos;
-    std::vector<ExpandingEdge*> mp_ancestor_seq;
+    std::string                 mName;
+    ExpandingNode*              mpFrom;
+    ExpandingNode*              mpTo;
+    homotopy::LineSubSegment*   mpLineSubsegment;
+    homotopy::ReferenceFrame*   mpReferenceFrame;
+    POS2D                       mRandPos;
+    std::vector<ExpandingEdge*> mpAncestorSeq;
   };
 
   class ExpandingTree {
@@ -92,18 +92,18 @@ namespace tarrts {
     virtual ~ExpandingTree();
 
     std::vector< StringClass* > init( homotopy::StringGrammar* p_grammar, homotopy::ReferenceFrameSet* p_reference_frame_set = NULL );
-    ExpandingNode* get_root() { return mp_root; }
+    ExpandingNode* getRoot() { return mpRoot; }
 
     void output( std::string filename );
 
-    int get_index( ExpandingNode* p_node ); 
-    std::vector<ExpandingNode*> get_leaf_nodes();    
+    int getIndex( ExpandingNode* p_node );
+    std::vector<ExpandingNode*> getLeafNodes();
 
     void print();
 
-    ExpandingNode* mp_root; 
-    std::vector<ExpandingNode*> m_nodes;
-    std::vector<ExpandingEdge*> m_edges;
+    ExpandingNode* mpRoot;
+    std::vector<ExpandingNode*> mNodes;
+    std::vector<ExpandingEdge*> mEdges;
   };
 
 } // tarrts

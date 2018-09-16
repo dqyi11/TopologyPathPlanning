@@ -21,28 +21,28 @@ namespace harrts {
 
 BIRRTstarViz::BIRRTstarViz( QWidget *parent ) :
     QLabel(parent) {
-  mp_tree = NULL;
-  m_show_reference_frames = false;
-  m_show_regions = false;
-  m_finished_planning = false;
-  m_reference_frame_index = -1;
-  m_found_path_index = -1;
-  m_region_index = -1;
-  m_subregion_index = -1;
-  mp_reference_frames = NULL;
-  m_tree_show_type = BOTH_TREES_SHOW;
-  m_show_points = false;
-  m_colors.clear();
+  mpTree = NULL;
+  mShowReferenceFrames = false;
+  mShowRegions = false;
+  mFinishedPlanning = false;
+  mReferenceFrameIndex = -1;
+  mFoundPathIndex = -1;
+  mRegionIndex = -1;
+  mSubregionIndex = -1;
+  mpReferenceFrames = NULL;
+  mTreeShowType = BOTH_TREES_SHOW;
+  mShowPoints = false;
+  mColors.clear();
 }
 
-void BIRRTstarViz::set_tree( BIRRTstar* p_tree ) {
-  mp_tree = p_tree;
+void BIRRTstarViz::setTree( BIRRTstar* p_tree ) {
+  mpTree = p_tree;
 }
 
-void BIRRTstarViz::set_reference_frame_set(ReferenceFrameSet* p_rf) {
-  mp_reference_frames = p_rf;
-  for( unsigned int i = 0; i < mp_reference_frames->getWorldMap()->getSubregionSet().size(); i++) {
-    m_colors.push_back( QColor( rand()%255, rand()%255, rand()%255 ) );
+void BIRRTstarViz::setReferenceFrameSet(ReferenceFrameSet* p_rf) {
+  mpReferenceFrames = p_rf;
+  for( unsigned int i = 0; i < mpReferenceFrames->getWorldMap()->getSubregionSet().size(); i++) {
+    mColors.push_back( QColor( rand()%255, rand()%255, rand()%255 ) );
   }
 }
 
@@ -54,22 +54,22 @@ void BIRRTstarViz::paintEvent( QPaintEvent * e ) {
 
 
 void BIRRTstarViz::paint(QPaintDevice * device) {
-  if(mp_reference_frames==NULL) {
+  if(mpReferenceFrames==NULL) {
     return;
   }
-  if(mp_reference_frames->getWorldMap()==NULL) {
+  if(mpReferenceFrames->getWorldMap()==NULL) {
     return;
   }
 
-  if(m_show_regions) {
+  if(mShowRegions) {
 
-    if( m_region_index < 0 ) {
-      for( unsigned int i = 0; i < mp_reference_frames->getWorldMap()->getSubregionSet().size(); i++) {
-        SubRegionSet* p_subregion_set = mp_reference_frames->getWorldMap()->getSubregionSet()[i];
+    if( mRegionIndex < 0 ) {
+      for( unsigned int i = 0; i < mpReferenceFrames->getWorldMap()->getSubregionSet().size(); i++) {
+        SubRegionSet* p_subregion_set = mpReferenceFrames->getWorldMap()->getSubregionSet()[i];
         if(p_subregion_set) {
           QPainter rg_painter(device);
           rg_painter.setRenderHint(QPainter::Antialiasing);
-          QBrush rg_brush( m_colors[i] );
+          QBrush rg_brush( mColors[i] );
           rg_painter.setPen(Qt::NoPen);
           for( unsigned int j = 0; j < p_subregion_set->mSubregions.size(); j ++ ) {
             SubRegion* p_subreg = p_subregion_set->mSubregions[j];
@@ -90,14 +90,14 @@ void BIRRTstarViz::paint(QPaintDevice * device) {
       }
     }
     else {
-      SubRegionSet* p_subregion_set = mp_reference_frames->getWorldMap()->getSubregionSet()[ m_region_index ];
+      SubRegionSet* p_subregion_set = mpReferenceFrames->getWorldMap()->getSubregionSet()[ mRegionIndex ];
       if(p_subregion_set) {
         QPainter rg_painter(device);
         rg_painter.setRenderHint(QPainter::Antialiasing);
-        QBrush rg_brush( m_colors[m_region_index] );
+        QBrush rg_brush( mColors[mRegionIndex] );
         rg_painter.setPen(Qt::NoPen);
 
-        if( m_subregion_index < 0 ) {
+        if( mSubregionIndex < 0 ) {
           for( unsigned int j = 0; j < p_subregion_set->mSubregions.size(); j ++ ) {
             SubRegion* p_subreg = p_subregion_set->mSubregions[j];
             if(p_subreg) {
@@ -114,7 +114,7 @@ void BIRRTstarViz::paint(QPaintDevice * device) {
           }
         }
         else {
-          SubRegion* p_subreg = p_subregion_set->mSubregions[m_subregion_index];
+          SubRegion* p_subreg = p_subregion_set->mSubregions[mSubregionIndex];
           if(p_subreg) {
             QPolygon poly;
             for( unsigned int k = 0; k < p_subreg->mPoints.size(); k++) {
@@ -132,22 +132,22 @@ void BIRRTstarViz::paint(QPaintDevice * device) {
     }
   }
 
-  if(mp_tree) {
-    if(m_tree_show_type == START_TREE_SHOW || m_tree_show_type == BOTH_TREES_SHOW ) {
+  if(mpTree) {
+    if(mTreeShowType == START_TREE_SHOW || mTreeShowType == BOTH_TREES_SHOW ) {
       QPainter st_tree_painter(device);
       QPen st_tree_paintpen;
-      if(m_finished_planning) {
+      if(mFinishedPlanning) {
         st_tree_paintpen.setColor(START_TREE_COLOR_ALPHA);
       }
       else{
         st_tree_paintpen.setColor(START_TREE_COLOR);
       }
       st_tree_paintpen.setWidth(1);
-      if(m_finished_planning) {
+      if(mFinishedPlanning) {
         st_tree_painter.setOpacity(0.4);
       }
       st_tree_painter.setPen(st_tree_paintpen);
-      for( std::list<BIRRTNode*>::iterator it= mp_tree->getSTNodes().begin(); it!=mp_tree->getSTNodes().end();it++ ) {
+      for( std::list<BIRRTNode*>::iterator it= mpTree->getSTNodes().begin(); it!=mpTree->getSTNodes().end();it++ ) {
         BIRRTNode* p_node = (*it);
         if(p_node) {
           if(p_node->mpParent) {
@@ -157,21 +157,21 @@ void BIRRTstarViz::paint(QPaintDevice * device) {
       }
       st_tree_painter.end();
     }
-    if(m_tree_show_type == GOAL_TREE_SHOW || m_tree_show_type == BOTH_TREES_SHOW) {
+    if(mTreeShowType == GOAL_TREE_SHOW || mTreeShowType == BOTH_TREES_SHOW) {
       QPainter gt_tree_painter(device);
       QPen gt_tree_paintpen;
-      if(m_finished_planning) {
+      if(mFinishedPlanning) {
         gt_tree_paintpen.setColor(GOAL_TREE_COLOR_ALPHA);
       }
       else{
         gt_tree_paintpen.setColor(GOAL_TREE_COLOR);
       }
       gt_tree_paintpen.setWidth(1);
-      if(m_finished_planning) {
+      if(mFinishedPlanning) {
         gt_tree_painter.setOpacity(0.4);
       }
       gt_tree_painter.setPen(gt_tree_paintpen);
-      for( std::list<BIRRTNode*>::iterator it= mp_tree->getGTNodes().begin(); it!=mp_tree->getGTNodes().end();it++ ) {
+      for( std::list<BIRRTNode*>::iterator it= mpTree->getGTNodes().begin(); it!=mpTree->getGTNodes().end();it++ ) {
         BIRRTNode* p_node = (*it);
         if(p_node) {
           if(p_node->mpParent) {
@@ -182,8 +182,8 @@ void BIRRTstarViz::paint(QPaintDevice * device) {
       gt_tree_painter.end();
     }
   } 
-  if(m_PPInfo.mp_found_paths.size() > 0 && m_found_path_index >= 0  ) {
-    Path* p = m_PPInfo.mp_found_paths[m_found_path_index];
+  if(m_PPInfo.mpFoundPaths.size() > 0 && mFoundPathIndex >= 0  ) {
+    Path* p = m_PPInfo.mpFoundPaths[mFoundPathIndex];
     QPainter fpt_painter(device);
     QPen fpt_paintpen(QColor(255,140,0));
     fpt_paintpen.setWidth(4);
@@ -216,22 +216,22 @@ void BIRRTstarViz::paint(QPaintDevice * device) {
     gt_painter.end();
   }
 
-  if( m_show_reference_frames ) {
-    if( mp_reference_frames ) {
+  if( mShowReferenceFrames ) {
+    if( mpReferenceFrames ) {
       QPainter rf_painter(device);
       QPen rf_paintpen( REFERENCE_FRAME_COLOR );
       rf_paintpen.setWidth(2);
       rf_painter.setPen(rf_paintpen);
 
-      if ( m_reference_frame_index >= mp_reference_frames->getReferenceFrames().size() ) {
-        for( unsigned int rf_i = 0; rf_i < mp_reference_frames->getReferenceFrames().size(); rf_i ++ ) {
-          ReferenceFrame* rf = mp_reference_frames->getReferenceFrames()[rf_i];
+      if ( mReferenceFrameIndex >= mpReferenceFrames->getReferenceFrames().size() ) {
+        for( unsigned int rf_i = 0; rf_i < mpReferenceFrames->getReferenceFrames().size(); rf_i ++ ) {
+          ReferenceFrame* rf = mpReferenceFrames->getReferenceFrames()[rf_i];
           rf_painter.drawLine( QPoint( CGAL::to_double(rf->mSegment.source().x()), CGAL::to_double(rf->mSegment.source().y()) ),
                                QPoint( CGAL::to_double(rf->mSegment.target().x()), CGAL::to_double(rf->mSegment.target().y()) ) );
         }
       }
       else{
-        ReferenceFrame* rf = mp_reference_frames->getReferenceFrames()[m_reference_frame_index];
+        ReferenceFrame* rf = mpReferenceFrames->getReferenceFrames()[mReferenceFrameIndex];
         rf_painter.drawLine( QPoint( CGAL::to_double(rf->mSegment.source().x()), CGAL::to_double(rf->mSegment.source().y()) ),
                              QPoint( CGAL::to_double(rf->mSegment.target().x()), CGAL::to_double(rf->mSegment.target().y()) ) );
       }
@@ -239,9 +239,9 @@ void BIRRTstarViz::paint(QPaintDevice * device) {
     }
   }
 
-  if( mp_tree!=NULL && m_finished_planning==false ) {
-    if( mp_tree->getStringClassMgr() ) {
-      std::vector< StringClass* > classes = mp_tree->getStringClassMgr()->getStringClasses();
+  if( mpTree!=NULL && mFinishedPlanning==false ) {
+    if( mpTree->getStringClassMgr() ) {
+      std::vector< StringClass* > classes = mpTree->getStringClassMgr()->getStringClasses();
       QPainter path_painter(device);
       QPen path_paintpen( PATH_COLOR );
       path_paintpen.setWidth(3);
@@ -264,39 +264,39 @@ void BIRRTstarViz::paint(QPaintDevice * device) {
     }
   }
 
-  if( m_show_points ) {
+  if( mShowPoints ) {
     QPainter draw_line_painter(device);
     QPen draw_line_pen( DRAWING_LINE_COLOR );
     draw_line_pen.setWidth( LINE_WIDTH );
     draw_line_painter.setPen(draw_line_pen);
-    if( m_drawed_points.size() > 1 ) {
-      for( unsigned int pi = 0; pi < m_drawed_points.size()-1 ; pi ++ ) {
-        draw_line_painter.drawLine( m_drawed_points[pi], m_drawed_points[pi+1] );
+    if( mDrawedPoints.size() > 1 ) {
+      for( unsigned int pi = 0; pi < mDrawedPoints.size()-1 ; pi ++ ) {
+        draw_line_painter.drawLine( mDrawedPoints[pi], mDrawedPoints[pi+1] );
       }
     }
     draw_line_painter.end();
   }
 }
 
-void BIRRTstarViz::set_show_reference_frames(bool show) {
-  m_show_reference_frames = show;
-  m_reference_frame_index = 0;
+void BIRRTstarViz::setShowReferenceFrames(bool show) {
+  mShowReferenceFrames = show;
+  mReferenceFrameIndex = 0;
 }
 
-void BIRRTstarViz::set_show_regions(bool show) {
-  m_show_regions = show;
+void BIRRTstarViz::setShowRegions(bool show) {
+  mShowRegions = show;
 }
 
-bool BIRRTstarViz::draw_path(QString filename) {
+bool BIRRTstarViz::drawPath(QString filename) {
 
-  QPixmap pix(m_PPInfo.m_objective_file);
+  QPixmap pix(m_PPInfo.mObjectiveFile);
 
   std::cout << "DUMP PATH IMG " << pix.width() << " " << pix.height() << std::endl;
 
   QFile file(filename);
   if(file.open(QIODevice::WriteOnly)) {
-    if(m_PPInfo.mp_found_paths[ m_found_path_index ]) {
-      draw_path_on_map(pix);
+    if(m_PPInfo.mpFoundPaths[ mFoundPathIndex ]) {
+      drawPathOnMap(pix);
     }
     pix.save(&file, "PNG");
     return true;
@@ -304,8 +304,8 @@ bool BIRRTstarViz::draw_path(QString filename) {
   return false;
 }
 
-bool BIRRTstarViz::save_current_viz(QString filename) {
-  QPixmap pix(m_PPInfo.m_map_fullpath);
+bool BIRRTstarViz::saveCurrentViz(QString filename) {
+  QPixmap pix(m_PPInfo.mMapFullpath);
   QFile file(filename);
   if(file.open(QIODevice::WriteOnly)) {
     paint( dynamic_cast<QPaintDevice*>(&pix) );
@@ -315,9 +315,9 @@ bool BIRRTstarViz::save_current_viz(QString filename) {
   return false;
 }
 
-void BIRRTstarViz::draw_path_on_map(QPixmap& map) {
+void BIRRTstarViz::drawPathOnMap(QPixmap& map) {
 
-  Path * p = m_PPInfo.mp_found_paths[ m_found_path_index ];
+  Path * p = m_PPInfo.mpFoundPaths[ mFoundPathIndex ];
   QPainter painter(&map);
   QPen paintpen(QColor(255,140,0));
   paintpen.setWidth(2);
@@ -350,125 +350,125 @@ void BIRRTstarViz::draw_path_on_map(QPixmap& map) {
         
 }
 
-void BIRRTstarViz::switch_tree_show_type() {
+void BIRRTstarViz::switchTreeShowType() {
 
-  switch(m_tree_show_type) {
+  switch(mTreeShowType) {
   case NONE_TREE_SHOW:
-    m_tree_show_type = START_TREE_SHOW;
+    mTreeShowType = START_TREE_SHOW;
     break;
   case START_TREE_SHOW:
-    m_tree_show_type = GOAL_TREE_SHOW;
+    mTreeShowType = GOAL_TREE_SHOW;
     break;
   case GOAL_TREE_SHOW:
-    m_tree_show_type = BOTH_TREES_SHOW;
+    mTreeShowType = BOTH_TREES_SHOW;
     break;
   case BOTH_TREES_SHOW:
-    m_tree_show_type = NONE_TREE_SHOW;
+    mTreeShowType = NONE_TREE_SHOW;
     break;
   }
 }
 
-void BIRRTstarViz::prev_reference_frame() {
-  if(mp_reference_frames) {
-    if (m_show_reference_frames) {
-      if ( m_reference_frame_index <= 0) {
-        m_reference_frame_index = mp_reference_frames->getReferenceFrames().size();
+void BIRRTstarViz::prevReferenceFrame() {
+  if(mpReferenceFrames) {
+    if (mShowReferenceFrames) {
+      if ( mReferenceFrameIndex <= 0) {
+        mReferenceFrameIndex = mpReferenceFrames->getReferenceFrames().size();
       }else{
-        m_reference_frame_index -- ;
+        mReferenceFrameIndex -- ;
       }
     }
   }
 }
 
-void BIRRTstarViz::next_reference_frame() {
-  if(mp_reference_frames) {
-    if (m_show_reference_frames) {
-      if ( m_reference_frame_index >= mp_reference_frames->getReferenceFrames().size() ) {
-        m_reference_frame_index = 0;
+void BIRRTstarViz::nextReferenceFrame() {
+  if(mpReferenceFrames) {
+    if (mShowReferenceFrames) {
+      if ( mReferenceFrameIndex >= mpReferenceFrames->getReferenceFrames().size() ) {
+        mReferenceFrameIndex = 0;
       }else{
-        m_reference_frame_index ++;
+        mReferenceFrameIndex ++;
       }
     }
   }
 }
 
-std::string BIRRTstarViz::get_reference_frame_name() {
+std::string BIRRTstarViz::getReferenceFrameName() {
 
-  if (mp_reference_frames) {
-    if ( m_reference_frame_index < mp_reference_frames->getReferenceFrames().size() ) {
-      return mp_reference_frames->getReferenceFrames()[m_reference_frame_index]->mName;
+  if (mpReferenceFrames) {
+    if ( mReferenceFrameIndex < mpReferenceFrames->getReferenceFrames().size() ) {
+      return mpReferenceFrames->getReferenceFrames()[mReferenceFrameIndex]->mName;
     }
   }
   return "NO REF FRAME";
 }
 
-std::string BIRRTstarViz::get_region_name() {
-  SubRegion* p_subregion = get_selected_subregion();
+std::string BIRRTstarViz::getRegionName() {
+  SubRegion* p_subregion = getSelectedSubregion();
   if( p_subregion ) {
     return p_subregion->getName();
   }
-  SubRegionSet* p_subregion_set = get_selected_subregion_set();
+  SubRegionSet* p_subregion_set = getSelectedSubregionSet();
   if( p_subregion_set ) {
     return p_subregion_set->getName();
   }
   return "NO REGION";
 }
 
-void BIRRTstarViz::prev_found_path() {
-  if ( m_PPInfo.mp_found_paths.size() == 0 ) {
+void BIRRTstarViz::prevFoundPath() {
+  if ( m_PPInfo.mpFoundPaths.size() == 0 ) {
     return;
   }
-  if ( m_found_path_index < 0 ) {
-    m_found_path_index = m_PPInfo.mp_found_paths.size() - 1;
+  if ( mFoundPathIndex < 0 ) {
+    mFoundPathIndex = m_PPInfo.mpFoundPaths.size() - 1;
   } else {
-    m_found_path_index --;
+    mFoundPathIndex --;
   }
 }
 
-void BIRRTstarViz::next_found_path() {
-  if ( m_PPInfo.mp_found_paths.size() == 0 ) {
+void BIRRTstarViz::nextFoundPath() {
+  if ( m_PPInfo.mpFoundPaths.size() == 0 ) {
     return;
   }
-  if ( m_found_path_index >= m_PPInfo.mp_found_paths.size()-1 ) {
-    m_found_path_index = -1;
+  if ( mFoundPathIndex >= m_PPInfo.mpFoundPaths.size()-1 ) {
+    mFoundPathIndex = -1;
   } else {
-    m_found_path_index ++;
+    mFoundPathIndex ++;
   }
 }
 
-void BIRRTstarViz::import_string_constraint( std::vector< QPoint > points, grammar_type_t type ) {
+void BIRRTstarViz::importStringConstraint( std::vector< QPoint > points, grammar_type_t type ) {
   std::vector< Point2D > ref_points;
   for( unsigned int i = 0; i < points.size(); i ++ ) {
     ref_points.push_back( Point2D( points[i].x(), points[i].y() ) );
   }
-  if( mp_reference_frames ) {
-    mp_reference_frames->importStringConstraint( ref_points, type );
+  if( mpReferenceFrames ) {
+    mpReferenceFrames->importStringConstraint( ref_points, type );
   }
 }
 
 void BIRRTstarViz::mousePressEvent( QMouseEvent * event ) {
   // std::cout << "mousePressEvent" << std::endl;
   if ( event->button() == Qt::LeftButton ) {
-    m_dragging = true;
-    m_show_points = true;
-    m_drawed_points.clear();
+    mDragging = true;
+    mShowPoints = true;
+    mDrawedPoints.clear();
   }
 }
 
 void BIRRTstarViz::mouseMoveEvent( QMouseEvent * event ) {
   // std::cout << "mouseMoveEvent " << mPoints.size() << std::endl;
-  if ( m_dragging == true ) {
+  if ( mDragging == true ) {
     //std::cout << event->x() << " " << event->y() << std::endl;
     QPoint new_point( event->x(), event->y() );
-    if( m_drawed_points.size() > 0 ) {
-      QPoint last_point = m_drawed_points.back();
+    if( mDrawedPoints.size() > 0 ) {
+      QPoint last_point = mDrawedPoints.back();
       if( std::abs( new_point.x() - last_point.x() ) > 1 &&
           std::abs( new_point.y() - last_point.y() ) > 1 ) {
-        m_drawed_points.push_back( new_point );
+        mDrawedPoints.push_back( new_point );
       }
     }
     else {
-      m_drawed_points.push_back( new_point );
+      mDrawedPoints.push_back( new_point );
     }
     repaint();
   }
@@ -477,104 +477,104 @@ void BIRRTstarViz::mouseMoveEvent( QMouseEvent * event ) {
 void BIRRTstarViz::mouseReleaseEvent( QMouseEvent * event ){
   // std::cout << "mouseReleaseEvent" << std::endl;
   if ( event->button() == Qt::LeftButton ) {
-    m_dragging = false;
+    mDragging = false;
   }
 }
 
-ReferenceFrame* BIRRTstarViz::get_selected_reference_frame() {
+ReferenceFrame* BIRRTstarViz::getSelectedReferenceFrame() {
 
-  if(mp_reference_frames == NULL) {
+  if(mpReferenceFrames == NULL) {
       return NULL;
   }
-  if ( m_reference_frame_index >= mp_reference_frames->getReferenceFrames().size() ) {
+  if ( mReferenceFrameIndex >= mpReferenceFrames->getReferenceFrames().size() ) {
     return NULL;
   }
-  if ( m_reference_frame_index < 0 ) {
+  if ( mReferenceFrameIndex < 0 ) {
     return NULL;
   }
-  return mp_reference_frames->getReferenceFrames()[ m_reference_frame_index ];
+  return mpReferenceFrames->getReferenceFrames()[ mReferenceFrameIndex ];
 }
     
-SubRegionSet* BIRRTstarViz::get_selected_subregion_set() {
+SubRegionSet* BIRRTstarViz::getSelectedSubregionSet() {
 
-  if ( mp_reference_frames == NULL ) {
+  if ( mpReferenceFrames == NULL ) {
       return NULL;
   }
-  if ( m_region_index >= mp_reference_frames->getWorldMap()->getSubregionSet().size() ) {
+  if ( mRegionIndex >= mpReferenceFrames->getWorldMap()->getSubregionSet().size() ) {
     return NULL;
   }
-  if ( m_region_index < 0 ) {
+  if ( mRegionIndex < 0 ) {
     return NULL;
   }
-  return mp_reference_frames->getWorldMap()->getSubregionSet()[ m_region_index ];
+  return mpReferenceFrames->getWorldMap()->getSubregionSet()[ mRegionIndex ];
 }
 
-SubRegion* BIRRTstarViz::get_selected_subregion() {
+SubRegion* BIRRTstarViz::getSelectedSubregion() {
 
-  SubRegionSet* p_subregion_set = get_selected_subregion_set();
+  SubRegionSet* p_subregion_set = getSelectedSubregionSet();
   if (p_subregion_set) {
-    if( m_subregion_index >= 0 && m_subregion_index < p_subregion_set->mSubregions.size() ) {
-      return p_subregion_set->mSubregions[ m_subregion_index ];
+    if( mSubregionIndex >= 0 && mSubregionIndex < p_subregion_set->mSubregions.size() ) {
+      return p_subregion_set->mSubregions[ mSubregionIndex ];
     } 
     return NULL;
   } 
   return NULL;
 }
 
-void BIRRTstarViz::prev_region() {
-  if(mp_reference_frames) {
-    if (m_show_regions) {
-      if ( m_region_index < 0) {
-        m_region_index = mp_reference_frames->getWorldMap()->getSubregionSet().size() - 1;
-        m_subregion_index = -1;
+void BIRRTstarViz::prevRegion() {
+  if(mpReferenceFrames) {
+    if (mShowRegions) {
+      if ( mRegionIndex < 0) {
+        mRegionIndex = mpReferenceFrames->getWorldMap()->getSubregionSet().size() - 1;
+        mSubregionIndex = -1;
       }else{
-        m_region_index -- ;
-        m_subregion_index = -1;
+        mRegionIndex -- ;
+        mSubregionIndex = -1;
       }
     }
   }
 }
 
-void BIRRTstarViz::next_region() {
-  if(mp_reference_frames) {
-    if (m_show_regions) {
-      if ( m_region_index >= mp_reference_frames->getWorldMap()->getSubregionSet().size()-1 ) {
-        m_region_index = -1;
-        m_subregion_index = -1;
+void BIRRTstarViz::nextRegion() {
+  if(mpReferenceFrames) {
+    if (mShowRegions) {
+      if ( mRegionIndex >= mpReferenceFrames->getWorldMap()->getSubregionSet().size()-1 ) {
+        mRegionIndex = -1;
+        mSubregionIndex = -1;
       }else{
-        m_region_index ++;
-        m_subregion_index = -1;
+        mRegionIndex ++;
+        mSubregionIndex = -1;
       }
     }
   }
 }
  
-void BIRRTstarViz::prev_subregion() {
-  if(mp_reference_frames) {
-    if (m_show_regions) {
-      if( m_region_index >= 0 && m_region_index < mp_reference_frames->getWorldMap()->getSubregionSet().size()-1 ) {
-        SubRegionSet* p_subregions = mp_reference_frames->getWorldMap()->getSubregionSet()[ m_region_index ];
-        if( m_subregion_index > 0 ) {
-          m_subregion_index --;
+void BIRRTstarViz::prevSubregion() {
+  if(mpReferenceFrames) {
+    if (mShowRegions) {
+      if( mRegionIndex >= 0 && mRegionIndex < mpReferenceFrames->getWorldMap()->getSubregionSet().size()-1 ) {
+        SubRegionSet* p_subregions = mpReferenceFrames->getWorldMap()->getSubregionSet()[ mRegionIndex ];
+        if( mSubregionIndex > 0 ) {
+          mSubregionIndex --;
         }
         else {
-          m_subregion_index = p_subregions->mSubregions.size()-1;
+          mSubregionIndex = p_subregions->mSubregions.size()-1;
         }
       }
     }
   }
 }
 
-void BIRRTstarViz::next_subregion() {
-  if(mp_reference_frames) {
-    if (m_show_regions) {
-      if( m_region_index >= 0 && m_region_index < mp_reference_frames->getWorldMap()->getSubregionSet().size()-1 ) {
-        SubRegionSet* p_subregions = mp_reference_frames->getWorldMap()->getSubregionSet()[ m_region_index ];
-        if( m_subregion_index < p_subregions->mSubregions.size()-1 ) {
-          m_subregion_index ++;
+void BIRRTstarViz::nextSubregion() {
+  if(mpReferenceFrames) {
+    if (mShowRegions) {
+      if( mRegionIndex >= 0 && mRegionIndex < mpReferenceFrames->getWorldMap()->getSubregionSet().size()-1 ) {
+        SubRegionSet* p_subregions = mpReferenceFrames->getWorldMap()->getSubregionSet()[ mRegionIndex ];
+        if( mSubregionIndex < p_subregions->mSubregions.size()-1 ) {
+          mSubregionIndex ++;
         }
         else {
-          m_subregion_index = 0;
+          mSubregionIndex = 0;
         }
       }
     }
@@ -582,14 +582,14 @@ void BIRRTstarViz::next_subregion() {
 }
 
 void BIRRTstarViz::reset() {
-  mp_tree = NULL;
-  m_finished_planning = false;
-  m_reference_frame_index = -1;
-  m_found_path_index = -1;
-  m_region_index = -1;
-  m_subregion_index = -1;
-  m_tree_show_type = BOTH_TREES_SHOW;
-  m_show_points = false;
+  mpTree = NULL;
+  mFinishedPlanning = false;
+  mReferenceFrameIndex = -1;
+  mFoundPathIndex = -1;
+  mRegionIndex = -1;
+  mSubregionIndex = -1;
+  mTreeShowType = BOTH_TREES_SHOW;
+  mShowPoints = false;
 }
 
 } // harrts

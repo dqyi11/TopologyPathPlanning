@@ -22,52 +22,52 @@ namespace harrts {
     Q_OBJECT
   public:
     explicit BIRRTstarViz(QWidget *parent = 0);
-    void set_tree(BIRRTstar* p_tree);
-    void set_reference_frame_set(homotopy::ReferenceFrameSet* p_rf);
-    bool draw_path(QString filename);
-    bool save_current_viz(QString filename);
+    void setTree(BIRRTstar* p_tree);
+    void setReferenceFrameSet(homotopy::ReferenceFrameSet* p_rf);
+    bool drawPath(QString filename);
+    bool saveCurrentViz(QString filename);
 
-    void set_show_reference_frames( bool show );
-    void set_show_regions( bool show );
-    void set_finished_planning( bool finished ) { m_finished_planning = finished; }
-    bool get_finished_planning() { return m_finished_planning; }
+    void setShowReferenceFrames( bool show );
+    void setShowRegions( bool show );
+    void setFinishedPlanning( bool finished ) { mFinishedPlanning = finished; }
+    bool getFinishedPlanning() { return mFinishedPlanning; }
 
-    bool show_reference_frames() { return m_show_reference_frames; }
-    bool show_regions() { return m_show_regions; }
-    bool is_finished_planning() { return m_finished_planning; }
+    bool showReferenceFrames() { return mShowReferenceFrames; }
+    bool showRegions() { return mShowRegions; }
+    bool isFinishedPlanning() { return mFinishedPlanning; }
  
-    homotopy::ReferenceFrame* get_selected_reference_frame();
-    homotopy::SubRegionSet*   get_selected_subregion_set();
-    homotopy::SubRegion*      get_selected_subregion();
+    homotopy::ReferenceFrame* getSelectedReferenceFrame();
+    homotopy::SubRegionSet*   getSelectedSubregionSet();
+    homotopy::SubRegion*      getSelectedSubregion();
 
     void reset();
 
-    void prev_region();
-    void next_region();
-    void prev_subregion();
-    void next_subregion();
+    void prevRegion();
+    void nextRegion();
+    void prevSubregion();
+    void nextSubregion();
 
-    void prev_reference_frame();
-    void next_reference_frame();
-    void prev_found_path();
-    void next_found_path();
-    int  get_reference_frame_index() { return m_reference_frame_index; }
-    std::string get_reference_frame_name();
-    std::string get_region_name();
+    void prevReferenceFrame();
+    void nextReferenceFrame();
+    void prevFoundPath();
+    void nextFoundPath();
+    int  getReferenceFrameIndex() { return mReferenceFrameIndex; }
+    std::string getReferenceFrameName();
+    std::string getRegionName();
 
-    void import_string_constraint( std::vector< QPoint > points, homotopy::grammar_type_t type );
-    QString generate_string();
+    void importStringConstraint( std::vector< QPoint > points, homotopy::grammar_type_t type );
+    QString generateString();
 
-    tree_show_type_t get_tree_show_type() { return m_tree_show_type; }
-    void switch_tree_show_type();
+    tree_show_type_t getTreeShowType() { return mTreeShowType; }
+    void switchTreeShowType();
     
     BIRRTstarPathPlanningInfo m_PPInfo;
     
-    std::vector<QPoint>& get_drawed_points() { return m_drawed_points; }
-    void set_show_drawed_points( bool show ) { m_show_points = show; }
-    bool get_show_drawed_points() { return m_show_points; }
+    std::vector<QPoint>& getDrawedPoints() { return mDrawedPoints; }
+    void setShowDrawedPoints( bool show ) { mShowPoints = show; }
+    bool getShowDrawedPoints() { return mShowPoints; }
 
-    int get_found_path_index() { return m_found_path_index; }
+    int getFoundPathIndex() { return mFoundPathIndex; }
   signals:
     
   public slots:
@@ -77,26 +77,26 @@ namespace harrts {
     void mouseMoveEvent( QMouseEvent * event );
     void mouseReleaseEvent( QMouseEvent * event );
     
-    std::vector<QPoint>  m_drawed_points;
-    bool                 m_dragging;
-    bool                 m_show_points;
+    std::vector<QPoint>  mDrawedPoints;
+    bool                 mDragging;
+    bool                 mShowPoints;
 
   private:
-    void draw_path_on_map(QPixmap& map);
-    void draw_current_viz(QPixmap& map);
+    void drawPathOnMap(QPixmap& map);
+    void drawCurrentViz(QPixmap& map);
 
     void paint(QPaintDevice * device);
-    BIRRTstar*          mp_tree;
-    homotopy::ReferenceFrameSet*  mp_reference_frames;
-    bool                m_show_reference_frames;
-    bool                m_show_regions;
-    bool                m_finished_planning;
-    int                 m_reference_frame_index;
-    int                 m_found_path_index;
-    int                 m_region_index;
-    int                 m_subregion_index;
-    std::vector<QColor> m_colors;
-    tree_show_type_t    m_tree_show_type;
+    BIRRTstar*          mpTree;
+    homotopy::ReferenceFrameSet*  mpReferenceFrames;
+    bool                          mShowReferenceFrames;
+    bool                          mShowRegions;
+    bool                          mFinishedPlanning;
+    int                           mReferenceFrameIndex;
+    int                           mFoundPathIndex;
+    int                           mRegionIndex;
+    int                           mSubregionIndex;
+    std::vector<QColor>           mColors;
+    tree_show_type_t              mTreeShowType;
 
   private slots:
     void paintEvent(QPaintEvent * e);

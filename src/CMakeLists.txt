@@ -77,5 +77,5 @@ add_subdirectory(spatialinferviz)
 #add_subdirectory(homotopydemo)
 #add_subdirectory(harrtsdemo)
 #add_subdirectory(tarrtsdemo)
-add_subdirectory(spatialinferdemo)
+#add_subdirectory(spatialinferdemo)
 

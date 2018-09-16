@@ -22,11 +22,11 @@ namespace topologyinference {
     SideOfRelationFunction( side_type_t side_type = SIDE_TYPE_UNKNOWN );
     virtual ~SideOfRelationFunction();
 
-    void set_side_type( side_type_t side_type ) { m_type = side_type; }
-    side_type_t get_side_type( void ) { return m_type; }
+    void setSideType( side_type_t side_type ) { m_type = side_type; }
+    side_type_t getSideType( void ) { return m_type; }
 
-    virtual std::vector< std::pair<homotopy::ReferenceFrame*, bool> > get_rules( homotopy::ReferenceFrameSet* p_reference_frame_set ); 
-    virtual std::string get_name();
+    virtual std::vector< std::pair<homotopy::ReferenceFrame*, bool> > getRules( homotopy::ReferenceFrameSet* p_reference_frame_set ); 
+    virtual std::string getName();
 
     homotopy::Obstacle* mp_obstacle;
     side_type_t         m_type;

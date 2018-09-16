@@ -27,102 +27,102 @@ namespace tarrts {
 
 MLRRTstarViz::MLRRTstarViz( QWidget * parent ) : QLabel(parent) {
 
-  mp_tree = NULL;
-  m_show_reference_frames = false;
-  m_show_subregions = false;
-  m_show_paths = true;
-  m_show_tree = true;
-  m_finished_planning = false;
-  m_reference_frame_index = -1;
-  m_found_path_index = -1;
-  m_subregion_index = -1;
-  m_string_class_index = -1;
-  m_exp_node_index = -1;
-  m_exp_node_num = 0;
-  mp_reference_frames = NULL;
-  m_show_points = false;
-  m_mode = NORMAL;
-  m_item_selected_name = "";
+  mpTree = NULL;
+  mShowReferenceFrames = false;
+  mShowSubregions = false;
+  mShowPaths = true;
+  mShowTree = true;
+  mFinishedPlanning = false;
+  mReferenceFrameIndex = -1;
+  mFoundPathIndex = -1;
+  mSubregionIndex = -1;
+  mStringClassIndex = -1;
+  mExpNodeIndex = -1;
+  mExpNodeNum = 0;
+  mpReferenceFrames = NULL;
+  mShowPoints = false;
+  mMode = NORMAL;
+  mItemSelectedName = "";
 }
 
-void MLRRTstarViz::set_tree( MLRRTstar* p_tree ) {
-  mp_tree = p_tree;
+void MLRRTstarViz::setTree( MLRRTstar* p_tree ) {
+  mpTree = p_tree;
 }
 
-void MLRRTstarViz::set_reference_frame_set( ReferenceFrameSet* p_rf ) {
-  mp_reference_frames = p_rf;
+void MLRRTstarViz::setReferenceFrameSet( ReferenceFrameSet* p_rf ) {
+  mpReferenceFrames = p_rf;
   updateVizSubregions();
   updateVizReferenceFrames();
 }
 
 void MLRRTstarViz::updateVizSubregions() {
 
-  m_viz_subregions.clear();
-  if( m_string_class_index < 0 ) {
-    for( unsigned int i = 0; i < mp_reference_frames->getWorldMap()->getSubregionSet().size(); i++) {
-      SubRegionSet* p_subregion_set = mp_reference_frames->getWorldMap()->getSubregionSet()[i];
+  mVizSubregions.clear();
+  if( mStringClassIndex < 0 ) {
+    for( unsigned int i = 0; i < mpReferenceFrames->getWorldMap()->getSubregionSet().size(); i++) {
+      SubRegionSet* p_subregion_set = mpReferenceFrames->getWorldMap()->getSubregionSet()[i];
       if(p_subregion_set) {
         for( unsigned int j = 0; j < p_subregion_set->mSubregions.size(); j ++ ) {
           SubRegion* p_subreg = p_subregion_set->mSubregions[j];
-          m_viz_subregions.push_back( p_subreg );
+          mVizSubregions.push_back( p_subreg );
         }
       }
     }
   }
   else {
-    StringClass* p_str_cls = mp_tree->get_expanding_tree_mgr()->get_string_classes()[ m_string_class_index ];
+    StringClass* p_str_cls = mpTree->getExpandingTreeMgr()->getStringClasses()[ mStringClassIndex ];
     if( p_str_cls ) {
-      m_exp_node_num = p_str_cls->mp_exp_nodes.size();
+      mExpNodeNum = p_str_cls->mp_exp_nodes.size();
 
       for( vector<ExpandingNode*>::iterator it_exp = p_str_cls->mp_exp_nodes.begin();
            it_exp != p_str_cls->mp_exp_nodes.end(); it_exp++ ) {
         ExpandingNode* p_exp_node = (*it_exp);
         if ( p_exp_node ) {
-          SubRegion* p_subreg = p_exp_node->mp_subregion;
+          SubRegion* p_subreg = p_exp_node->mpSubregion;
           if ( p_subreg ) {
-            m_viz_subregions.push_back( p_subreg );
+            mVizSubregions.push_back( p_subreg );
           }
         }
       }
     }
   }
-  m_subregion_index = -1;
+  mSubregionIndex = -1;
 }
 
 void MLRRTstarViz::updateVizReferenceFrames() {
 
-  m_viz_reference_frames.clear();
-  if( m_string_class_index < 0 ) {
-    for( int i = 0; i < mp_reference_frames->getReferenceFrames().size(); i ++ ) {
-      ReferenceFrame* p_rf = mp_reference_frames->getReferenceFrames()[i];
-      m_viz_reference_frames.push_back( p_rf );
+  mVizReferenceFrames.clear();
+  if( mStringClassIndex < 0 ) {
+    for( int i = 0; i < mpReferenceFrames->getReferenceFrames().size(); i ++ ) {
+      ReferenceFrame* p_rf = mpReferenceFrames->getReferenceFrames()[i];
+      mVizReferenceFrames.push_back( p_rf );
     }
   }
   else {
-    StringClass* p_str_cls = mp_tree->get_expanding_tree_mgr()->get_string_classes()[ m_string_class_index ];
+    StringClass* p_str_cls = mpTree->getExpandingTreeMgr()->getStringClasses()[ mStringClassIndex ];
     if( p_str_cls ) {
       for( vector<ReferenceFrame*>::iterator it_rf = p_str_cls->mp_reference_frames.begin();
            it_rf != p_str_cls->mp_reference_frames.end(); it_rf++ ) {
         ReferenceFrame* p_rf = (*it_rf);
-        m_viz_reference_frames.push_back( p_rf );
+        mVizReferenceFrames.push_back( p_rf );
       }
     }
   }
-  m_reference_frame_index = -1;
+  mReferenceFrameIndex = -1;
 }
 
 void MLRRTstarViz::paint( QPaintDevice* device ) {
 
   /* DRAW SUB REGION */
-  if(m_show_subregions) {
+  if(mShowSubregions) {
 
     QPainter rg_painter(device);
     rg_painter.setRenderHint(QPainter::Antialiasing);
     QBrush rg_brush( SUBREGION_COLOR );
     rg_painter.setPen(Qt::NoPen);
-    if( m_subregion_index < 0 ) {
-      for( unsigned int i = 0; i < m_viz_subregions.size(); i ++ ) {
-        SubRegion* p_subreg = m_viz_subregions[i];
+    if( mSubregionIndex < 0 ) {
+      for( unsigned int i = 0; i < mVizSubregions.size(); i ++ ) {
+        SubRegion* p_subreg = mVizSubregions[i];
         if(p_subreg) {
           QPolygon poly;
           for( unsigned int k = 0; k < p_subreg->mPoints.size(); k++) {
@@ -135,7 +135,7 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
       }
     }
     else {
-      SubRegion* p_subreg = m_viz_subregions[m_subregion_index];
+      SubRegion* p_subreg = mVizSubregions[mSubregionIndex];
       if(p_subreg) {
         QPolygon poly;
         for( unsigned int k = 0; k < p_subreg->mPoints.size(); k++) {
@@ -150,49 +150,49 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
   }
 
   /* DRAW TREE */
-  if( mp_tree ) {
-    if( m_show_tree ) {
+  if( mpTree ) {
+    if( mShowTree ) {
       QPainter tree_painter(device);
       QPen tree_paintpen;
-      if(m_finished_planning) {
+      if(mFinishedPlanning) {
         tree_paintpen.setColor(TREE_COLOR_ALPHA);
       }
       else{
         tree_paintpen.setColor(TREE_COLOR);
       }
       tree_paintpen.setWidth( TREE_WIDTH );
-      if(m_finished_planning) {
+      if(mFinishedPlanning) {
         tree_painter.setOpacity( TREE_OPACITY );
       }
       tree_painter.setPen(tree_paintpen);
-      if( m_string_class_index < 0 ) {
-        for( list<MLRRTNode*>::iterator it= mp_tree->get_nodes().begin();
-             it!=mp_tree->get_nodes().end();it++ ) {
+      if( mStringClassIndex < 0 ) {
+        for( list<MLRRTNode*>::iterator it= mpTree->getNodes().begin();
+             it!=mpTree->getNodes().end();it++ ) {
           MLRRTNode* p_node = (*it);
           if(p_node) {
-            if(p_node->mp_parent) {
-              tree_painter.drawLine( toQPoint( p_node->mp_parent->m_pos ),
-                                     toQPoint( p_node->m_pos ) );
+            if(p_node->mpParent) {
+              tree_painter.drawLine( toQPoint( p_node->mpParent->mPos ),
+                                     toQPoint( p_node->mPos ) );
             }
           }
         }
       }
       else {
-        StringClass* p_str_cls = mp_tree->get_expanding_tree_mgr()->get_string_classes()[ m_string_class_index ];
+        StringClass* p_str_cls = mpTree->getExpandingTreeMgr()->getStringClasses()[ mStringClassIndex ];
         if( p_str_cls ) {
 
-          if( m_exp_node_index < 0 ) {
+          if( mExpNodeIndex < 0 ) {
             for( vector<ExpandingNode*>::iterator it_exp = p_str_cls->mp_exp_nodes.begin();
                  it_exp != p_str_cls->mp_exp_nodes.end(); it_exp++ ) {
               ExpandingNode* p_exp_node = (*it_exp);
               if ( p_exp_node ) {
-                for( list<MLRRTNode*>::iterator it = p_exp_node->mp_nodes.begin();
-                     it != p_exp_node->mp_nodes.end(); it++ ) {
+                for( list<MLRRTNode*>::iterator it = p_exp_node->mpNodes.begin();
+                     it != p_exp_node->mpNodes.end(); it++ ) {
                   MLRRTNode* p_node = (*it);
                   if(p_node) {
-                    if(p_node->mp_parent) {
-                      tree_painter.drawLine( toQPoint( p_node->mp_parent->m_pos ),
-                                           toQPoint( p_node->m_pos ) );
+                    if(p_node->mpParent) {
+                      tree_painter.drawLine( toQPoint( p_node->mpParent->mPos ),
+                                           toQPoint( p_node->mPos ) );
                     }
                   }
                 }
@@ -200,15 +200,15 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
             }
           }
           else {
-            ExpandingNode* p_exp_node = p_str_cls->mp_exp_nodes[ m_exp_node_index ];
+            ExpandingNode* p_exp_node = p_str_cls->mp_exp_nodes[ mExpNodeIndex ];
             if( p_exp_node ) {
-              for( list<MLRRTNode*>::iterator it = p_exp_node->mp_nodes.begin();
-                   it != p_exp_node->mp_nodes.end(); it++ ) {
+              for( list<MLRRTNode*>::iterator it = p_exp_node->mpNodes.begin();
+                   it != p_exp_node->mpNodes.end(); it++ ) {
                 MLRRTNode* p_node = (*it);
                 if(p_node) {
-                  if(p_node->mp_parent) {
-                    tree_painter.drawLine( toQPoint( p_node->mp_parent->m_pos ),
-                                           toQPoint( p_node->m_pos ) );
+                  if(p_node->mpParent) {
+                    tree_painter.drawLine( toQPoint( p_node->mpParent->mPos ),
+                                           toQPoint( p_node->mPos ) );
                   }
                 }
               }
@@ -222,19 +222,19 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
   }
 
   /* DRAW PATHS */
-  if( m_show_paths ) {
+  if( mShowPaths ) {
     QPainter fpt_painter(device);
     QPen fpt_paintpen( PATH_COLOR );
     fpt_paintpen.setWidth( PATH_WIDTH );
     fpt_painter.setPen(fpt_paintpen);
 
-    Path* p_viz_path = get_viz_path();
+    Path* p_viz_path = getVizPath();
     if( p_viz_path ) {
-      int point_num = p_viz_path->m_way_points.size();
+      int point_num = p_viz_path->mWaypoints.size();
       if(point_num > 0) {
         for(int i=0;i<point_num-1;i++) {
-          fpt_painter.drawLine( toQPoint(p_viz_path->m_way_points[i]),
-                                toQPoint(p_viz_path->m_way_points[i+1]) );
+          fpt_painter.drawLine( toQPoint(p_viz_path->mWaypoints[i]),
+                                toQPoint(p_viz_path->mWaypoints[i+1]) );
         }
       }
     }
@@ -242,34 +242,34 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
   }
 
   /* DRAW DRAWED POINTS */
-  if( m_show_points ) {
-    if( m_drawed_points.size() > 1 ) {
+  if( mShowPoints ) {
+    if( mDrawedPoints.size() > 1 ) {
       QPainter dp_painter(device);
       QPen dp_paintpen( DRAWING_LINE_COLOR );
       dp_paintpen.setWidth( LINE_WIDTH );
       dp_painter.setPen(dp_paintpen);
-      for( unsigned int i = 0; i < m_drawed_points.size()-1; i++ ) {
-        dp_painter.drawLine( m_drawed_points[ i ] ,
-                             m_drawed_points[ i+1 ] );
+      for( unsigned int i = 0; i < mDrawedPoints.size()-1; i++ ) {
+        dp_painter.drawLine( mDrawedPoints[ i ] ,
+                             mDrawedPoints[ i+1 ] );
       }
     }
   }
 
   /* DRAW REFERENCE FRAMES */
-  if( m_show_reference_frames ) {
+  if( mShowReferenceFrames ) {
     QPainter rf_painter(device);
     QPen rf_paintpen( REFERENCE_FRAME_COLOR );
     rf_paintpen.setWidth( LINE_WIDTH );
     rf_painter.setPen(rf_paintpen);
-    if( m_reference_frame_index < 0 ) {
-     for( unsigned int rf_i = 0; rf_i < m_viz_reference_frames.size(); rf_i ++ ) {
-       ReferenceFrame* rf = m_viz_reference_frames[rf_i];
+    if( mReferenceFrameIndex < 0 ) {
+     for( unsigned int rf_i = 0; rf_i < mVizReferenceFrames.size(); rf_i ++ ) {
+       ReferenceFrame* rf = mVizReferenceFrames[rf_i];
        rf_painter.drawLine( toQPoint( rf->mSegment.source() ),
                             toQPoint( rf->mSegment.target() ) );
       }
     }
     else{
-      ReferenceFrame* rf = m_viz_reference_frames[m_reference_frame_index];
+      ReferenceFrame* rf = mVizReferenceFrames[mReferenceFrameIndex];
       rf_painter.drawLine( toQPoint( rf->mSegment.source() ),
                            toQPoint( rf->mSegment.target() ) );
     }
@@ -277,31 +277,31 @@ void MLRRTstarViz::paint( QPaintDevice* device ) {
   }
 
   /* DRAW START AND GOAL */
-  if(m_PPInfo.m_start.x() >= 0 && m_PPInfo.m_start.y() >= 0) {
+  if(m_PPInfo.mStart.x() >= 0 && m_PPInfo.mStart.y() >= 0) {
     QPainter st_painter(device);
     QPen st_paintpen( START_COLOR );
     st_paintpen.setWidth( POINT_WIDTH );
     st_painter.setPen(st_paintpen);
-    st_painter.drawPoint( m_PPInfo.m_start );
+    st_painter.drawPoint( m_PPInfo.mStart );
     st_painter.end();
   }
 
-  if(m_PPInfo.m_goal.x() >= 0 && m_PPInfo.m_goal.y() >= 0) {
+  if(m_PPInfo.mGoal.x() >= 0 && m_PPInfo.mGoal.y() >= 0) {
     QPainter gt_painter(device);
     QPen gt_paintpen( GOAL_COLOR );
     gt_paintpen.setWidth( POINT_WIDTH );
     gt_painter.setPen(gt_paintpen);
-    gt_painter.drawPoint( m_PPInfo.m_goal );
+    gt_painter.drawPoint( m_PPInfo.mGoal );
     gt_painter.end();
   }
 
-  if( NORMAL == m_mode ) {
-    if ( m_item_selected_name != "" ) {
+  if( NORMAL == mMode ) {
+    if ( mItemSelectedName != "" ) {
       QPainter text_painter(device);
       QPen text_pen( TEXT_COLOR );
       text_painter.setPen(text_pen);
       QRect rect = QRect( 5, 5, 100, 10 );
-      text_painter.drawText( rect, Qt::AlignCenter, m_item_selected_name );
+      text_painter.drawText( rect, Qt::AlignCenter, mItemSelectedName );
     }
   }
 }
@@ -311,34 +311,34 @@ void MLRRTstarViz::paintEvent( QPaintEvent* e ) {
   paint( this );
 }
 
-void MLRRTstarViz::set_show_reference_frames(bool show) {
-  m_show_reference_frames = show;
-  m_reference_frame_index = -1;
+void MLRRTstarViz::setShowReferenceFrames(bool show) {
+  mShowReferenceFrames = show;
+  mReferenceFrameIndex = -1;
 }
 
-void MLRRTstarViz::set_show_subregions(bool show) {
-  m_show_subregions = show;
-  m_subregion_index = -1;
+void MLRRTstarViz::setShowSubregions(bool show) {
+  mShowSubregions = show;
+  mSubregionIndex = -1;
 }
 
-void MLRRTstarViz::set_show_tree(bool show) {
-  m_show_tree = show;
+void MLRRTstarViz::setShowTree(bool show) {
+  mShowTree = show;
 }
 
-void MLRRTstarViz::set_show_paths(bool show) {
-  m_show_paths = show;
-  m_found_path_index = -1;
+void MLRRTstarViz::setShowPaths(bool show) {
+  mShowPaths = show;
+  mFoundPathIndex = -1;
 }
 
-bool MLRRTstarViz::draw_path(QString filename) {
+bool MLRRTstarViz::drawPath(QString filename) {
 
-  QPixmap pix(m_PPInfo.m_objective_file);
+  QPixmap pix(m_PPInfo.mObjectiveFile);
   cout << "DUMP PATH IMG " << pix.width() << " " << pix.height() << endl;
 
   QFile file(filename);
   if(file.open(QIODevice::WriteOnly)) {
-    if(m_PPInfo.mp_found_paths[ m_found_path_index ]) {
-      draw_path_on_map(pix);
+    if(m_PPInfo.mpFoundPaths[ mFoundPathIndex ]) {
+      drawPathOnMap(pix);
     }
     pix.save(&file, "PNG");
     return true;
@@ -346,10 +346,10 @@ bool MLRRTstarViz::draw_path(QString filename) {
   return false;
 }
 
-bool MLRRTstarViz::save_current_viz(QString filename) {
-  QPixmap pix(m_PPInfo.m_map_fullpath);
-  if( m_PPInfo.m_min_dist_enabled == false ) {
-    pix = QPixmap( m_PPInfo.m_objective_file );
+bool MLRRTstarViz::saveCurrentViz(QString filename) {
+  QPixmap pix(m_PPInfo.mMapFullpath);
+  if( m_PPInfo.mMinDistEnabled == false ) {
+    pix = QPixmap( m_PPInfo.mObjectiveFile );
   }
   QFile file(filename);
   if(file.open(QIODevice::WriteOnly)) {
@@ -360,167 +360,167 @@ bool MLRRTstarViz::save_current_viz(QString filename) {
   return false;
 }
 
-void MLRRTstarViz::next_exp_node() {
+void MLRRTstarViz::nextExpNode() {
 
-  if ( m_exp_node_index < m_exp_node_num - 1 ) {
-    m_exp_node_index ++;
+  if ( mExpNodeIndex < mExpNodeNum - 1 ) {
+    mExpNodeIndex ++;
   }
   else {
-    m_exp_node_index = -1;
+    mExpNodeIndex = -1;
   }
 }
 
-void MLRRTstarViz::prev_exp_node() {
+void MLRRTstarViz::prevExpNode() {
 
-  if ( m_exp_node_index >= 0 ) {
-     m_exp_node_index --;
+  if ( mExpNodeIndex >= 0 ) {
+     mExpNodeIndex --;
   }
   else {
-     m_exp_node_index = m_exp_node_num-1;
+     mExpNodeIndex = mExpNodeNum-1;
   }
 }
 
-void MLRRTstarViz::next_string_class() {
-  if ( mp_tree ) {
-    if ( mp_tree->get_expanding_tree_mgr() ) {
-      ExpandingTreeMgr* p_mgr = mp_tree->get_expanding_tree_mgr();
-      if ( m_string_class_index < p_mgr->get_string_classes().size()-1 ) {
-        m_string_class_index ++;
+void MLRRTstarViz::nextStringClass() {
+  if ( mpTree ) {
+    if ( mpTree->getExpandingTreeMgr() ) {
+      ExpandingTreeMgr* p_mgr = mpTree->getExpandingTreeMgr();
+      if ( mStringClassIndex < p_mgr->getStringClasses().size()-1 ) {
+        mStringClassIndex ++;
         updateVizSubregions();
         updateVizReferenceFrames();
-        m_found_path_index = -1;
-        m_exp_node_index = -1;
+        mFoundPathIndex = -1;
+        mExpNodeIndex = -1;
       }
       else {
-        m_string_class_index = -1;
+        mStringClassIndex = -1;
         updateVizSubregions();
         updateVizReferenceFrames();
-        m_found_path_index = -1;
-        m_exp_node_index = -1;
+        mFoundPathIndex = -1;
+        mExpNodeIndex = -1;
       }
     }
   }
 }
 
-void MLRRTstarViz::prev_string_class() {
-  if ( mp_tree ) {
-    if ( mp_tree->get_expanding_tree_mgr() ) {
-      ExpandingTreeMgr* p_mgr = mp_tree->get_expanding_tree_mgr();
-      if ( m_string_class_index >= 0 ) {
-        m_string_class_index --;
+void MLRRTstarViz::prevStringClass() {
+  if ( mpTree ) {
+    if ( mpTree->getExpandingTreeMgr() ) {
+      ExpandingTreeMgr* p_mgr = mpTree->getExpandingTreeMgr();
+      if ( mStringClassIndex >= 0 ) {
+        mStringClassIndex --;
         updateVizSubregions();
         updateVizReferenceFrames();
-        m_found_path_index = -1;
+        mFoundPathIndex = -1;
       }
       else {
-        m_string_class_index = p_mgr->get_string_classes().size()-1;
+        mStringClassIndex = p_mgr->getStringClasses().size()-1;
         updateVizSubregions();
         updateVizReferenceFrames();
-        m_found_path_index = -1;
+        mFoundPathIndex = -1;
       }
     }
   }
 }
 
-void MLRRTstarViz::prev_reference_frame() {
-  if (m_show_reference_frames) {
-    if ( m_reference_frame_index < 0) {
-      m_reference_frame_index = m_viz_reference_frames.size()-1;
+void MLRRTstarViz::prevReferenceFrame() {
+  if (mShowReferenceFrames) {
+    if ( mReferenceFrameIndex < 0) {
+      mReferenceFrameIndex = mVizReferenceFrames.size()-1;
     }else{
-      m_reference_frame_index -- ;
+      mReferenceFrameIndex -- ;
     }
   }
 }
 
-void MLRRTstarViz::next_reference_frame() {
-  if (m_show_reference_frames) {
-    if ( m_reference_frame_index >= m_viz_reference_frames.size()-1 ) {
-      m_reference_frame_index = -1;
+void MLRRTstarViz::nextReferenceFrame() {
+  if (mShowReferenceFrames) {
+    if ( mReferenceFrameIndex >= mVizReferenceFrames.size()-1 ) {
+      mReferenceFrameIndex = -1;
     }else{
-      m_reference_frame_index ++;
+      mReferenceFrameIndex ++;
     }
   }
 }
 
-string MLRRTstarViz::get_reference_frame_name() {
+string MLRRTstarViz::getReferenceFrameName() {
 
-  if ( m_reference_frame_index < mp_reference_frames->getReferenceFrames().size() ) {
-    return mp_reference_frames->getReferenceFrames()[m_reference_frame_index]->mName;
+  if ( mReferenceFrameIndex < mpReferenceFrames->getReferenceFrames().size() ) {
+    return mpReferenceFrames->getReferenceFrames()[mReferenceFrameIndex]->mName;
   }
   return "NO REF FRAME";
 }
 
-string MLRRTstarViz::get_subregion_name() {
-  SubRegion* p_subregion = get_selected_subregion();
+string MLRRTstarViz::getSubregionName() {
+  SubRegion* p_subregion = getSelectedSubregion();
   if( p_subregion ) {
     return p_subregion->getName();
   }
   return "NO REGION";
 }
 
-void MLRRTstarViz::prev_found_path() {
-  if ( m_PPInfo.mp_found_paths.size() == 0 ) {
+void MLRRTstarViz::prevFoundPath() {
+  if ( m_PPInfo.mpFoundPaths.size() == 0 ) {
     return;
   }
-  if ( m_found_path_index < 0 ) {
-    m_found_path_index = m_PPInfo.mp_found_paths.size() - 1;
+  if ( mFoundPathIndex < 0 ) {
+    mFoundPathIndex = m_PPInfo.mpFoundPaths.size() - 1;
   } else {
-    m_found_path_index --;
+    mFoundPathIndex --;
   }
 }
 
 void MLRRTstarViz::next_found_path() {
-  if ( m_PPInfo.mp_found_paths.size() == 0 ) {
+  if ( m_PPInfo.mpFoundPaths.size() == 0 ) {
     return;
   }
-  if ( m_found_path_index >= m_PPInfo.mp_found_paths.size()-1 ) {
-    m_found_path_index = -1;
+  if ( mFoundPathIndex >= m_PPInfo.mpFoundPaths.size()-1 ) {
+    mFoundPathIndex = -1;
   } else {
-    m_found_path_index ++;
+    mFoundPathIndex ++;
   }
 }
 
-void MLRRTstarViz::import_string_constraint( vector< QPoint > points, grammar_type_t type ) {
+void MLRRTstarViz::importStringConstraint( vector< QPoint > points, grammar_type_t type ) {
   vector< Point2D > ref_points;
   for( unsigned int i = 0; i < points.size(); i ++ ) {
     ref_points.push_back( Point2D( points[i].x(), points[i].y() ) );
   }
-  if( mp_reference_frames ) {
-    mp_reference_frames->importStringConstraint( ref_points, type );
+  if( mpReferenceFrames ) {
+    mpReferenceFrames->importStringConstraint( ref_points, type );
   }
 }
 
 void MLRRTstarViz::mousePressEvent( QMouseEvent * event ) {
   // std::cout << "mousePressEvent" << std::endl;
   if ( event->button() == Qt::LeftButton ) {
-    if( DRAWING == m_mode ) {
-      m_dragging = true;
-      m_show_points = true;
-      m_drawed_points.clear();
+    if( DRAWING == mMode ) {
+      mDragging = true;
+      mShowPoints = true;
+      mDrawedPoints.clear();
     }
-    else if( NORMAL == m_mode ) {
+    else if( NORMAL == mMode ) {
       QPoint new_point( event->x(), event->y() );
-      m_item_selected_name = item_selected( new_point );
-      cout << "POS (" << event->x() << ", " << event->y() << ") " << m_item_selected_name.toStdString() << endl;
+      mItemSelectedName = itemSelected( new_point );
+      cout << "POS (" << event->x() << ", " << event->y() << ") " << mItemSelectedName.toStdString() << endl;
     }
   }
 }
 
 void MLRRTstarViz::mouseMoveEvent( QMouseEvent * event ) {
   // std::cout << "mouseMoveEvent " << mPoints.size() << std::endl;
-  if( DRAWING == m_mode ) {
-    if ( m_dragging == true ) {
+  if( DRAWING == mMode ) {
+    if ( mDragging == true ) {
       //std::cout << event->x() << " " << event->y() << std::endl;
       QPoint new_point( event->x(), event->y() );
-      if( m_drawed_points.size() > 0 ) {
-        QPoint last_point = m_drawed_points.back();
+      if( mDrawedPoints.size() > 0 ) {
+        QPoint last_point = mDrawedPoints.back();
         if( abs( new_point.x() - last_point.x() ) > 1 &&
             abs( new_point.y() - last_point.y() ) > 1 ) {
-          m_drawed_points.push_back( new_point );
+          mDrawedPoints.push_back( new_point );
         }
       }
       else {
-        m_drawed_points.push_back( new_point );
+        mDrawedPoints.push_back( new_point );
       }
       repaint();
     }
@@ -530,69 +530,69 @@ void MLRRTstarViz::mouseMoveEvent( QMouseEvent * event ) {
 void MLRRTstarViz::mouseReleaseEvent( QMouseEvent * event ){
   // std::cout << "mouseReleaseEvent" << std::endl;
   if ( event->button() == Qt::LeftButton ) {
-    if( DRAWING == m_mode ) {
-      m_dragging = false;
+    if( DRAWING == mMode ) {
+      mDragging = false;
     }
-    else if( NORMAL == m_mode ) {
-      m_item_selected_name = "";
+    else if( NORMAL == mMode ) {
+      mItemSelectedName = "";
     }
   }
 }
 
-ReferenceFrame* MLRRTstarViz::get_selected_reference_frame() {
+ReferenceFrame* MLRRTstarViz::getSelectedReferenceFrame() {
 
-  if ( m_reference_frame_index >= mp_reference_frames->getReferenceFrames().size() ) {
+  if ( mReferenceFrameIndex >= mpReferenceFrames->getReferenceFrames().size() ) {
     return NULL;
   }
-  if ( m_reference_frame_index < 0 ) {
+  if ( mReferenceFrameIndex < 0 ) {
     return NULL;
   }
-  return mp_reference_frames->getReferenceFrames()[ m_reference_frame_index ];
+  return mpReferenceFrames->getReferenceFrames()[ mReferenceFrameIndex ];
 }
 
-SubRegion* MLRRTstarViz::get_selected_subregion() {
-  if( m_subregion_index >= 0 && m_subregion_index < m_viz_subregions.size() ) {
-    return m_viz_subregions[ m_subregion_index ];
+SubRegion* MLRRTstarViz::getSelectedSubregion() {
+  if( mSubregionIndex >= 0 && mSubregionIndex < mVizSubregions.size() ) {
+    return mVizSubregions[ mSubregionIndex ];
   }
   return NULL;
 }
 
 
-void MLRRTstarViz::prev_subregion() {
-  if (m_show_subregions) {
-    if( m_subregion_index > 0 ) {
-      m_subregion_index --;
+void MLRRTstarViz::prevSubregion() {
+  if (mShowSubregions) {
+    if( mSubregionIndex > 0 ) {
+      mSubregionIndex --;
     }
     else {
-      m_subregion_index = m_viz_subregions.size()-1;
+      mSubregionIndex = mVizSubregions.size()-1;
     }
   }
 }
 
-void MLRRTstarViz::next_subregion() {
-  if (m_show_subregions) {
-    if( m_subregion_index < m_viz_subregions.size()-1 ) {
-      m_subregion_index ++;
+void MLRRTstarViz::nextSubregion() {
+  if (mShowSubregions) {
+    if( mSubregionIndex < mVizSubregions.size()-1 ) {
+      mSubregionIndex ++;
     }
     else {
-      m_subregion_index = 0;
+      mSubregionIndex = 0;
     }
   }
 }
 
-void MLRRTstarViz::draw_path_on_map(QPixmap& map) {
+void MLRRTstarViz::drawPathOnMap(QPixmap& map) {
 
-  Path * p = m_PPInfo.mp_found_paths[ m_found_path_index ];
+  Path * p = m_PPInfo.mpFoundPaths[ mFoundPathIndex ];
   QPainter painter(&map);
   QPen paintpen(QColor(255,140,0));
   paintpen.setWidth(2);
   painter.setPen(paintpen);
 
-  int point_num = p->m_way_points.size();
+  int point_num = p->mWaypoints.size();
 
   if(point_num > 0) {
     for(int i=0;i<point_num-1;i++) {
-      painter.drawLine( toQPoint( p->m_way_points[i] ), toQPoint( p->m_way_points[i+1] ) );
+      painter.drawLine( toQPoint( p->mWaypoints[i] ), toQPoint( p->mWaypoints[i+1] ) );
     }
   }
   painter.end();
@@ -603,42 +603,42 @@ void MLRRTstarViz::draw_path_on_map(QPixmap& map) {
   startPainter.setPen(paintpen1);
   startPainter.end();
 
-  startPainter.drawPoint( toQPoint( p->m_way_points[0] ) );
-  int lastIdx = p->m_way_points.size() - 1;
+  startPainter.drawPoint( toQPoint( p->mWaypoints[0] ) );
+  int lastIdx = p->mWaypoints.size() - 1;
   QPainter endPainter(&map);
   QPen paintpen2(QColor(0,0,255));
   paintpen.setWidth(10);
   endPainter.setPen(paintpen2);
-  endPainter.drawPoint( toQPoint( p->m_way_points[lastIdx] ) );
+  endPainter.drawPoint( toQPoint( p->mWaypoints[lastIdx] ) );
   endPainter.end();
 }
 
-QString MLRRTstarViz::get_string_class_info() {
+QString MLRRTstarViz::getStringClassInfo() {
   QString info;
-  if( mp_tree ) {
-    if( mp_tree->get_expanding_tree_mgr() ) {
-      if( m_string_class_index < 0 ) {
+  if( mpTree ) {
+    if( mpTree->getExpandingTreeMgr() ) {
+      if( mStringClassIndex < 0 ) {
         info = "ALL";
       }
       else {
-        info = QString::fromStdString( mp_tree->get_expanding_tree_mgr()->get_string_classes()[ m_string_class_index ]->get_name() );
+        info = QString::fromStdString( mpTree->getExpandingTreeMgr()->getStringClasses()[ mStringClassIndex ]->getName() );
       }
     }
   }
   return info;
 }
 
-QString MLRRTstarViz::item_selected( QPoint pos ) {
+QString MLRRTstarViz::itemSelected( QPoint pos ) {
   QString name = "";
   Point2D point = toPoint2D( pos );
 
-  if ( mp_reference_frames ) {
-    LineSubSegment* p_line_sub_segment = mp_reference_frames->getWorldMap()->findLinesubsegment( point );
+  if ( mpReferenceFrames ) {
+    LineSubSegment* p_line_sub_segment = mpReferenceFrames->getWorldMap()->findLinesubsegment( point );
     if( p_line_sub_segment ) {
       cout << "FIND " << p_line_sub_segment->getName() << endl;
       return QString::fromStdString( p_line_sub_segment->getName() );
     }
-    SubRegion* p_subregion = mp_reference_frames->getWorldMap()->findSubregion( point );
+    SubRegion* p_subregion = mpReferenceFrames->getWorldMap()->findSubregion( point );
     if( p_subregion ) {
       cout << "FIND " << p_subregion->getName() << endl;
       return QString::fromStdString( p_subregion->getName() );
@@ -647,19 +647,19 @@ QString MLRRTstarViz::item_selected( QPoint pos ) {
   return name;
 }
 
-Path* MLRRTstarViz::get_viz_path() {
+Path* MLRRTstarViz::getVizPath() {
 
   /* DRAW PATHS */
-  if( m_show_paths ) {
+  if( mShowPaths ) {
 
-    if( m_string_class_index < 0 ) {
-      if(m_PPInfo.mp_found_paths.size() > 0 && m_found_path_index >= 0  ) {
-        Path* p = m_PPInfo.mp_found_paths[m_found_path_index];
+    if( mStringClassIndex < 0 ) {
+      if(m_PPInfo.mpFoundPaths.size() > 0 && mFoundPathIndex >= 0  ) {
+        Path* p = m_PPInfo.mpFoundPaths[mFoundPathIndex];
         return p;
       }
     }
     else {
-      StringClass* p_str_cls = mp_tree->get_expanding_tree_mgr()->get_string_classes()[ m_string_class_index ];
+      StringClass* p_str_cls = mpTree->getExpandingTreeMgr()->getStringClasses()[ mStringClassIndex ];
       if( p_str_cls ) {
         if ( p_str_cls->mp_path ) {
           return p_str_cls->mp_path;

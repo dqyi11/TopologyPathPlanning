@@ -8,14 +8,14 @@ namespace topologyPathPlanning {
 namespace topologyinference {
 
 InBetweenRelationFunction::InBetweenRelationFunction() {
-  mp_obstacles.clear();
+  mpObstacles.clear();
 }
 
 InBetweenRelationFunction::~InBetweenRelationFunction() {
-  mp_obstacles.clear();
+  mpObstacles.clear();
 }
 
-vector< pair<ReferenceFrame*, bool> > InBetweenRelationFunction::get_rules( ReferenceFrameSet* p_reference_frame_set ) {
+vector< pair<ReferenceFrame*, bool> > InBetweenRelationFunction::getRules( ReferenceFrameSet* p_reference_frame_set ) {
   vector< pair<ReferenceFrame*, bool> > rules;
 
   if( p_reference_frame_set ) {
@@ -24,8 +24,8 @@ vector< pair<ReferenceFrame*, bool> > InBetweenRelationFunction::get_rules( Refe
       ReferenceFrame* p_ref = p_reference_frame_set->getReferenceFrames()[i];
       if( p_ref ) {
         if( p_ref->mpLineSubsegment ) {
-          if( p_ref->mpLineSubsegment->isConnected( mp_obstacles[0] ) &&
-              p_ref->mpLineSubsegment->isConnected( mp_obstacles[1] ) ) {
+          if( p_ref->mpLineSubsegment->isConnected( mpObstacles[0] ) &&
+              p_ref->mpLineSubsegment->isConnected( mpObstacles[1] ) ) {
             rules.push_back( make_pair( p_ref, true ) );
           }
         }    
@@ -36,12 +36,12 @@ vector< pair<ReferenceFrame*, bool> > InBetweenRelationFunction::get_rules( Refe
         ReferenceFrame* p_ref = p_reference_frame_set->getReferenceFrames()[i];
         if( p_ref ) {
           if( p_ref->mpLineSubsegment ) {
-            if( p_ref->mpLineSubsegment->isConnected( mp_obstacles[0] ) &&
+            if( p_ref->mpLineSubsegment->isConnected( mpObstacles[0] ) &&
                 p_ref->mpLineSubsegment->mIsConnectedToCentralPoint ) {
 
               rules.push_back( make_pair( p_ref, true ) );
             }
-            else if( p_ref->mpLineSubsegment->isConnected( mp_obstacles[1] ) &&
+            else if( p_ref->mpLineSubsegment->isConnected( mpObstacles[1] ) &&
                      p_ref->mpLineSubsegment->mIsConnectedToCentralPoint ) {
               rules.push_back( make_pair( p_ref, true ) );
             }
@@ -53,14 +53,14 @@ vector< pair<ReferenceFrame*, bool> > InBetweenRelationFunction::get_rules( Refe
   return rules;  
 }
 
-string InBetweenRelationFunction::get_name() {
+string InBetweenRelationFunction::getName() {
   string name = "IN_BETWEEN(";
-  for(unsigned int i=0; i<mp_obstacles.size(); i++) {
-    if( i < mp_obstacles.size()-1 ) {
-      name += mp_obstacles[i]->getName() + ",";
+  for(unsigned int i=0; i<mpObstacles.size(); i++) {
+    if( i < mpObstacles.size()-1 ) {
+      name += mpObstacles[i]->getName() + ",";
     }
     else{
-      name += mp_obstacles[i]->getName();
+      name += mpObstacles[i]->getName();
     }
   }  
   name += ")";

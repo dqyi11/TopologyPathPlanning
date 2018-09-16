@@ -13,28 +13,28 @@ namespace topologyPathPlanning {
 namespace tarrts {
 
 MLRRTstarPathPlanningInfo::MLRRTstarPathPlanningInfo() {
-  m_info_filename = "";
-  m_map_filename = "";
-  m_map_fullpath = "";
-  m_objective_file = "";
-  m_start.setX(-1);
-  m_start.setY(-1);
-  m_goal.setX(-1);
-  m_goal.setY(-1);
+  mInfoFilename = "";
+  mMapFilename = "";
+  mMapFullpath = "";
+  mObjectiveFile = "";
+  mStart.setX(-1);
+  mStart.setY(-1);
+  mGoal.setX(-1);
+  mGoal.setY(-1);
 
-  m_paths_output = "";
-  mp_found_paths.clear();
+  mPathsOutput = "";
+  mpFoundPaths.clear();
 
-  m_min_dist_enabled = true;
+  mMinDistEnabled = true;
 
-  m_grammar_type = STRING_GRAMMAR_TYPE;
-  m_max_iteration_num = 5000;
-  m_segment_length = 5.0;
-  m_cost_distribution = NULL;
-  m_homotopic_enforcement = true;
+  mGrammarType = STRING_GRAMMAR_TYPE;
+  mMaxIterationNum = 5000;
+  mSegmentLength = 5.0;
+  mCostDistribution = NULL;
+  mHomotopicEnforcement = true;
 
-  m_map_width = 0;
-  m_map_height = 0;
+  mMapWidth = 0;
+  mMapHeight = 0;
 
   mp_obj = NULL;
 }
@@ -46,18 +46,18 @@ MLRRTstarPathPlanningInfo::~MLRRTstarPathPlanningInfo() {
   }
 }
 
-bool MLRRTstarPathPlanningInfo::get_obstacle_info( int** pp_obstacle_info ) {
+bool MLRRTstarPathPlanningInfo::getObstacleInfo( int** pp_obstacle_info ) {
   if( pp_obstacle_info==NULL ) {
     return false;
   }
-  return get_pix_info( m_map_fullpath, pp_obstacle_info );
+  return getPixInfo( mMapFullpath, pp_obstacle_info );
 }
 
-bool MLRRTstarPathPlanningInfo::get_cost_distribution( double** pp_cost_distribution ) {
-  return get_pix_info( m_objective_file, pp_cost_distribution );
+bool MLRRTstarPathPlanningInfo::getCostDistribution( double** pp_cost_distribution ) {
+  return getPixInfo( mObjectiveFile, pp_cost_distribution );
 }
 
-bool MLRRTstarPathPlanningInfo::get_pix_info( QString filename, double** pp_pix_info ) {
+bool MLRRTstarPathPlanningInfo::getPixInfo( QString filename, double** pp_pix_info ) {
   if( pp_pix_info==NULL ) {
     return false;
   }
@@ -83,7 +83,7 @@ bool MLRRTstarPathPlanningInfo::get_pix_info( QString filename, double** pp_pix_
   return true;
 }
 
-bool MLRRTstarPathPlanningInfo::get_pix_info(QString filename, int ** pp_pix_info) {
+bool MLRRTstarPathPlanningInfo::getPixInfo(QString filename, int ** pp_pix_info) {
   if( pp_pix_info==NULL ) {
     return false;
   }
@@ -105,32 +105,32 @@ bool MLRRTstarPathPlanningInfo::get_pix_info(QString filename, int ** pp_pix_inf
   return true;
 }
 
-void MLRRTstarPathPlanningInfo::init_obj_pixmap(){
+void MLRRTstarPathPlanningInfo::initObjPixmap(){
   if( mp_obj ) {
     delete mp_obj;
     mp_obj = NULL;
   }
 
-  mp_obj = new QPixmap( m_objective_file );
+  mp_obj = new QPixmap( mObjectiveFile );
 
 }
 
-void MLRRTstarPathPlanningInfo::init_func_param() {
-  if( m_min_dist_enabled == true ) {
-    mp_func = MLRRTstarPathPlanningInfo::calc_dist;
-    m_cost_distribution = NULL;
+void MLRRTstarPathPlanningInfo::initFuncParam() {
+  if( mMinDistEnabled == true ) {
+    mpFunc = MLRRTstarPathPlanningInfo::calcDist;
+    mCostDistribution = NULL;
   }
   else {
-    mp_func = MLRRTstarPathPlanningInfo::calc_cost;
-    if(m_cost_distribution) {
-      delete[] m_cost_distribution;
-      m_cost_distribution = NULL;
+    mpFunc = MLRRTstarPathPlanningInfo::calc_cost;
+    if(mCostDistribution) {
+      delete[] mCostDistribution;
+      mCostDistribution = NULL;
     }
-    m_cost_distribution = new double*[m_map_width];
-    for(int i=0;i<m_map_width;i++) {
-      m_cost_distribution[i] = new double[m_map_height];
+    mCostDistribution = new double*[mMapWidth];
+    for(int i=0;i<mMapWidth;i++) {
+      mCostDistribution[i] = new double[mMapHeight];
     }
-    get_cost_distribution( m_cost_distribution );
+    getCostDistribution( mCostDistribution );
   }
 }
 
@@ -139,24 +139,24 @@ void MLRRTstarPathPlanningInfo::read( xmlNodePtr root ) {
     xmlChar* tmp = xmlGetProp( root, ( const xmlChar* )( "map_filename" ) );
     if ( tmp != NULL ) {
       std::string map_filename = ( char * )( tmp );
-      m_map_filename = QString::fromStdString( map_filename );
+      mMapFilename = QString::fromStdString( map_filename );
       xmlFree( tmp );
     }
     tmp = xmlGetProp( root, ( const xmlChar* )( "map_fullpath" ) );
     if ( tmp != NULL ) {
       std::string map_fullpath = ( char * )( tmp );
-      m_map_fullpath = QString::fromStdString( map_fullpath );
+      mMapFullpath = QString::fromStdString( map_fullpath );
       xmlFree( tmp );
     }
     tmp = xmlGetProp( root, ( const xmlChar* )( "map_width" ) );
     if ( tmp != NULL ) {
       std::string map_width = ( char * )( tmp );
-      m_map_width = strtol( map_width.c_str(), NULL, 10 );
+      mMapWidth = strtol( map_width.c_str(), NULL, 10 );
     }
     tmp = xmlGetProp( root, ( const xmlChar* )( "height_width" ) );
     if ( tmp != NULL ) {
       std::string map_height = ( char * )( tmp );
-      m_map_height = strtol( map_height.c_str(), NULL, 10 );
+      mMapHeight = strtol( map_height.c_str(), NULL, 10 );
     }
     int start_x_int = 0, start_y_int = 0;
     tmp = xmlGetProp( root, ( const xmlChar* )( "start_x" ) );
@@ -169,7 +169,7 @@ void MLRRTstarPathPlanningInfo::read( xmlNodePtr root ) {
       std::string start_y = ( char * )( tmp );
       start_y_int = strtol( start_y.c_str(), NULL, 10 );
     }
-    m_start = QPoint( start_x_int, start_y_int );
+    mStart = QPoint( start_x_int, start_y_int );
     int goal_x_int = 0, goal_y_int = 0;
     tmp = xmlGetProp( root, ( const xmlChar* )( "goal_x" ) );
     if ( tmp != NULL ) {
@@ -181,16 +181,16 @@ void MLRRTstarPathPlanningInfo::read( xmlNodePtr root ) {
       std::string goal_y = ( char * )( tmp );
       goal_y_int = strtol( goal_y.c_str(), NULL, 10 );
     }
-    m_goal = QPoint( goal_x_int, goal_y_int );
+    mGoal = QPoint( goal_x_int, goal_y_int );
 
     tmp = xmlGetProp( root, ( const xmlChar* )( "min_dist_enabled" ) );
     if ( tmp != NULL ) {
       std::string min_dist_enabled = ( char * )( tmp );
       int min_dist_enabled_int = strtol( min_dist_enabled.c_str(), NULL, 10 );
       if (min_dist_enabled_int > 0) {
-        m_min_dist_enabled = true;
+        mMinDistEnabled = true;
       } else {
-        m_min_dist_enabled = false;
+        mMinDistEnabled = false;
       }
     }
     tmp = xmlGetProp( root, ( const xmlChar* )( "homotopic_enforcement" ) );
@@ -198,30 +198,30 @@ void MLRRTstarPathPlanningInfo::read( xmlNodePtr root ) {
       std::string homotopic_enforcement = ( char * )( tmp );
       int homotopic_enforcement_int = strtol( homotopic_enforcement.c_str(), NULL, 10 );
       if (homotopic_enforcement_int > 0) {
-        m_homotopic_enforcement = true;
+        mHomotopicEnforcement = true;
       } else {
-        m_homotopic_enforcement = false;
+        mHomotopicEnforcement = false;
       }
     }
     tmp = xmlGetProp( root, ( const xmlChar* )( "objective_file" ) );
     if ( tmp != NULL ) {
       std::string objective_file = ( char * )( tmp );
-      m_objective_file = QString::fromStdString( objective_file );
+      mObjectiveFile = QString::fromStdString( objective_file );
     }
     tmp = xmlGetProp( root, ( const xmlChar* )( "path_output_file" ) );
     if ( tmp != NULL ) {
       std::string paths_output = ( char * )( tmp );
-      m_paths_output = QString::fromStdString( paths_output );
+      mPathsOutput = QString::fromStdString( paths_output );
     }
     tmp = xmlGetProp( root, ( const xmlChar* )( "max_iteration_num" ) );
     if ( tmp != NULL ) {
       std::string max_iter_num = ( char * )( tmp );
-      m_max_iteration_num = strtol( max_iter_num.c_str(), NULL, 10);
+      mMaxIterationNum = strtol( max_iter_num.c_str(), NULL, 10);
     }
     tmp = xmlGetProp( root, ( const xmlChar* )( "segment_length" ) );
     if ( tmp != NULL ) {
       std::string seg_len = ( char * )( tmp );
-      m_segment_length = strtof( seg_len.c_str(), NULL );
+      mSegmentLength = strtof( seg_len.c_str(), NULL );
     }
   }
 
@@ -230,55 +230,55 @@ void MLRRTstarPathPlanningInfo::read( xmlNodePtr root ) {
 void MLRRTstarPathPlanningInfo::write( xmlDocPtr doc, xmlNodePtr root ) const {
 
   xmlNodePtr node = xmlNewDocNode( doc, NULL, ( const xmlChar* )( "world" ), NULL );
-  xmlNewProp( node, ( const xmlChar* )( "map_filename" ), ( const xmlChar* )( m_map_filename.toStdString().c_str() ) );
-  xmlNewProp( node, ( const xmlChar* )( "map_fullpath" ), ( const xmlChar* )( m_map_fullpath.toStdString().c_str() ) );
+  xmlNewProp( node, ( const xmlChar* )( "map_filename" ), ( const xmlChar* )( mMapFilename.toStdString().c_str() ) );
+  xmlNewProp( node, ( const xmlChar* )( "map_fullpath" ), ( const xmlChar* )( mMapFullpath.toStdString().c_str() ) );
   std::stringstream width_str;
-  width_str << m_map_width;
+  width_str << mMapWidth;
   xmlNewProp( node, ( const xmlChar* )( "map_width" ), ( const xmlChar* )( width_str.str().c_str() ) );
   std::stringstream height_str;
-  height_str << m_map_height;
+  height_str << mMapHeight;
   xmlNewProp( node, ( const xmlChar* )( "map_height" ), ( const xmlChar* )( height_str.str().c_str() ) );
   std::stringstream start_x_str;
-  start_x_str << m_start.x();
+  start_x_str << mStart.x();
   xmlNewProp( node, ( const xmlChar* )( "start_x" ), ( const xmlChar* )( start_x_str.str().c_str() ) );
   std::stringstream start_y_str;
-  start_y_str << m_start.y();
+  start_y_str << mStart.y();
   xmlNewProp( node, ( const xmlChar* )( "start_y" ), ( const xmlChar* )( start_y_str.str().c_str() ) );
   std::stringstream goal_x_str;
-  goal_x_str << m_goal.x();
+  goal_x_str << mGoal.x();
   xmlNewProp( node, ( const xmlChar* )( "goal_x" ), ( const xmlChar* )( goal_x_str.str().c_str() ) );
   std::stringstream goal_y_str;
-  goal_y_str << m_goal.y();
+  goal_y_str << mGoal.y();
   xmlNewProp( node, ( const xmlChar* )( "goal_y" ), ( const xmlChar* )( goal_y_str.str().c_str() ) );
 
   std::string min_dist_enabled;
-  if ( m_min_dist_enabled ) {
+  if ( mMinDistEnabled ) {
     min_dist_enabled = "1";
   } else {
     min_dist_enabled = "0";
   }
   xmlNewProp( node, ( const xmlChar* )( "min_dist_enabled" ), ( const xmlChar* )( min_dist_enabled.c_str() ) );
   std::string homotopic_enforcement;
-  if ( m_homotopic_enforcement ) {
+  if ( mHomotopicEnforcement ) {
     homotopic_enforcement = "1";
   } else {
     homotopic_enforcement = "0";
   }
   xmlNewProp( node, ( const xmlChar* )( "homotopic_enforcement" ), ( const xmlChar* )( homotopic_enforcement.c_str() ) );
-  xmlNewProp( node, ( const xmlChar* )( "objective_file" ), ( const xmlChar* )( m_objective_file.toStdString().c_str() ) );
-  xmlNewProp( node, ( const xmlChar* )( "path_output_file" ), ( const xmlChar* )( m_paths_output.toStdString().c_str() ) );
+  xmlNewProp( node, ( const xmlChar* )( "objective_file" ), ( const xmlChar* )( mObjectiveFile.toStdString().c_str() ) );
+  xmlNewProp( node, ( const xmlChar* )( "path_output_file" ), ( const xmlChar* )( mPathsOutput.toStdString().c_str() ) );
 
   std::stringstream max_iter_num_str;
-  max_iter_num_str << m_max_iteration_num;
+  max_iter_num_str << mMaxIterationNum;
   xmlNewProp( node, ( const xmlChar* )( "max_iteration_num" ), ( const xmlChar* )( max_iter_num_str.str().c_str() ) );
   std::stringstream seg_len_str;
-  seg_len_str << m_segment_length;
+  seg_len_str << mSegmentLength;
   xmlNewProp( node, ( const xmlChar* )( "segment_length" ), ( const xmlChar* )( seg_len_str.str().c_str() ) );
 
   xmlAddChild( root, node );
 }
 
-bool MLRRTstarPathPlanningInfo::save_to_file(QString filename) {
+bool MLRRTstarPathPlanningInfo::saveToFile(QString filename) {
 
   xmlDocPtr doc = xmlNewDoc( ( xmlChar* )( "1.0" ) );
   xmlNodePtr root = xmlNewDocNode( doc, NULL, ( xmlChar* )( "root" ), NULL );    xmlDocSetRootElement( doc, root );
@@ -288,7 +288,7 @@ bool MLRRTstarPathPlanningInfo::save_to_file(QString filename) {
   return true;
 }
 
-bool MLRRTstarPathPlanningInfo::load_from_file(QString filename) {
+bool MLRRTstarPathPlanningInfo::loadFromFile(QString filename) {
   xmlDoc * doc = NULL;
   xmlNodePtr root = NULL;
   doc = xmlReadFile( filename.toStdString().c_str(), NULL, 0 );
@@ -308,22 +308,22 @@ bool MLRRTstarPathPlanningInfo::load_from_file(QString filename) {
   return true;
 }
 
-void MLRRTstarPathPlanningInfo::load_paths( std::vector<Path*> paths) {
-  mp_found_paths = paths;
+void MLRRTstarPathPlanningInfo::loadPaths( std::vector<Path*> paths) {
+  mpFoundPaths = paths;
 }
 
-bool MLRRTstarPathPlanningInfo::export_paths(QString filename) {
+bool MLRRTstarPathPlanningInfo::exportPaths(QString filename) {
   QFile file(filename);
   if( file.open(QIODevice::ReadWrite) ) {
     QTextStream stream( & file );
-    for( std::vector<Path*>::iterator it = mp_found_paths.begin();
-         it != mp_found_paths.end(); it++) {
+    for( std::vector<Path*>::iterator it = mpFoundPaths.begin();
+         it != mpFoundPaths.end(); it++) {
       Path* p_path = (*it);
       // Save scores
-      stream << p_path->m_cost << "\n";
+      stream << p_path->mCost << "\n";
       stream << "\n";
-      for(unsigned int i=0;i<p_path->m_way_points.size();i++) {
-        stream << p_path->m_way_points[i][0] << " " << p_path->m_way_points[i][1] << "\t";
+      for(unsigned int i=0;i<p_path->mWaypoints.size();i++) {
+        stream << p_path->mWaypoints[i][0] << " " << p_path->mWaypoints[i][1] << "\t";
       }
       stream << "\n";
       stream << "\n";
@@ -333,15 +333,15 @@ bool MLRRTstarPathPlanningInfo::export_paths(QString filename) {
   return false;
 }
 
-void MLRRTstarPathPlanningInfo::dump_cost_distribution( QString filename ) {
+void MLRRTstarPathPlanningInfo::dumpCostDistribution( QString filename ) {
   QFile file(filename);
   if( file.open(QIODevice::ReadWrite) ) {
     QTextStream stream( & file );
 
-    if( m_cost_distribution ) {
-      for(int i=0;i<m_map_width;i++) {
-        for(int j=0;j<m_map_height;j++) {
-          stream << m_cost_distribution[i][j] << " ";
+    if( mCostDistribution ) {
+      for(int i=0;i<mMapWidth;i++) {
+        for(int j=0;j<mMapHeight;j++) {
+          stream << mCostDistribution[i][j] << " ";
         }
         stream << "\n";
       }

@@ -12,7 +12,7 @@ namespace topologyinference {
     RuleSet();
     virtual ~RuleSet();
   
-    std::vector< Rule* > m_set;
+    std::vector< Rule* > mSet;
 
   };
 

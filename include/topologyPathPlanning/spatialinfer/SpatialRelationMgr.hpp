@@ -14,11 +14,11 @@ namespace topologyinference {
     StringClass( std::vector< std::string > string );
     virtual ~StringClass();
   
-    std::string get_name();
+    std::string getName();
     void init( homotopy::ReferenceFrameSet* p_rfs );
     
-    std::vector< std::string >               m_string;
-    std::vector< homotopy::ReferenceFrame* > mp_reference_frames;
+    std::vector< std::string >               mString;
+    std::vector< homotopy::ReferenceFrame* > mpReferenceFrames;
   };
 
   class SpatialRelationMgr {
@@ -26,30 +26,30 @@ namespace topologyinference {
     SpatialRelationMgr(homotopy::WorldMap* p_worldmap);
     virtual ~SpatialRelationMgr();
 
-    std::vector< std::pair<homotopy::ReferenceFrame*, bool> > get_rules( homotopy::ReferenceFrameSet* p_reference_frame_set );
-    std::vector< std::string > get_spatial_relation_function_names();
+    std::vector< std::pair<homotopy::ReferenceFrame*, bool> > getRules( homotopy::ReferenceFrameSet* p_reference_frame_set );
+    std::vector< std::string > getSpatialRelationFunctionNames();
   
-    bool has_spatial_relation_function( std::string name );
-    void remove_spatial_relation_function( std::string name );
+    bool hasSpatialRelationFunction( std::string name );
+    void removeSpatialRelationFunction( std::string name );
   
-    void get_string_classes( homotopy::ReferenceFrameSet* p_rfs  );
+    void getStringClasses( homotopy::ReferenceFrameSet* p_rfs  );
  
-    homotopy::WorldMap* get_world_map() {  return mp_worldmap; }
-    void print_rules( std::vector< std::pair< homotopy::ReferenceFrame*, bool > > rules );
+    homotopy::WorldMap* getWorldMap() {  return mpWorldmap; }
+    void printRules( std::vector< std::pair< homotopy::ReferenceFrame*, bool > > rules );
 
     std::vector< std::vector< std::string > > filter( std::vector< std::vector< std::string > > string_set, std::vector< std::pair< homotopy::ReferenceFrame*, bool > > rules );
-    bool is_eligible( std::vector< std::string > string_item, std::vector< std::pair< homotopy::ReferenceFrame*, bool > > rules );
-    bool is_eligible( std::vector< std::string > string_item, std::pair< homotopy::ReferenceFrame*, bool >  rule );
+    bool isEligible( std::vector< std::string > string_item, std::vector< std::pair< homotopy::ReferenceFrame*, bool > > rules );
+    bool isEligible( std::vector< std::string > string_item, std::pair< homotopy::ReferenceFrame*, bool >  rule );
 
-    std::vector<StringClass*>                                   mp_string_classes;
-    std::vector< std::pair< homotopy::ReferenceFrame*, bool > > m_rules;
+    std::vector<StringClass*>                                   mpStringClasses;
+    std::vector< std::pair< homotopy::ReferenceFrame*, bool > > mRules;
 
-    std::vector<SpatialRelationFunction*>                       mp_functions; 
-    homotopy::WorldMap*                                         mp_worldmap;
-    int m_start_x;
-    int m_start_y;
-    int m_goal_x;
-    int m_goal_y;
+    std::vector<SpatialRelationFunction*>                       mpFunctions;
+    homotopy::WorldMap*                                         mpWorldmap;
+    int mStartX;
+    int mStartY;
+    int mGoalX;
+    int mGoalY;
   };
 
 } // topologyinference

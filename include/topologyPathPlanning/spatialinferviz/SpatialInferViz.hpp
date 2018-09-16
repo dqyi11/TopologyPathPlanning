@@ -56,14 +56,14 @@ namespace topologyinference {
     void setMode( SpatialInferVizMode mode );
     SpatialInferVizMode getMode() { return mMode; }
     
-    SpatialRelationMgr* get_spatial_relation_mgr() { return mpMgr; }
-    bool is_selected_obstacle( homotopy::Obstacle* p_obstacle );
-    bool unselect_obstacle( homotopy::Obstacle* p_obstacle );
+    SpatialRelationMgr* getSpatialRelationMgr() { return mpMgr; }
+    bool isSelectedObstacle( homotopy::Obstacle* p_obstacle );
+    bool unselectObstacle( homotopy::Obstacle* p_obstacle );
 
-    std::vector<homotopy::Obstacle*> get_selected_obstacles() { return m_selected_obstacles; }
-    void clear_selected_obstacles() { m_selected_obstacles.clear(); }  
+    std::vector<homotopy::Obstacle*> getSelectedObstacles() { return mSelectedObstacles; }
+    void clearSelectedObstacles() { mSelectedObstacles.clear(); }
 
-    homotopy::ReferenceFrameSet* get_reference_frame_set() {  return mpReferenceFrameSet; }
+    homotopy::ReferenceFrameSet* getReferenceFrameSet() {  return mpReferenceFrameSet; }
 
   protected:
     bool initWorld(QString filename);
@@ -89,12 +89,12 @@ namespace topologyinference {
 
     int                  mStringClassIdx;
  
-    std::vector<homotopy::SubRegion*>      m_viz_subregions;
-    std::vector<homotopy::LineSubSegment*> m_viz_subsegments;
+    std::vector<homotopy::SubRegion*>      mVizSubregions;
+    std::vector<homotopy::LineSubSegment*> mVizSubsegments;
 
-    std::vector<homotopy::Obstacle*>       m_selected_obstacles;   
+    std::vector<homotopy::Obstacle*>       mSelectedObstacles;
 
-    StringClass*                           mp_viz_string_class;
+    StringClass*                           mpVizStringClass;
 
   signals:
 

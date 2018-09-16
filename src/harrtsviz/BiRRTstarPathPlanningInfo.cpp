@@ -13,43 +13,43 @@ namespace topologyPathPlanning {
 namespace harrts {
 
 BIRRTstarPathPlanningInfo::BIRRTstarPathPlanningInfo() {
-    m_info_filename = "";
-    m_map_filename = "";
-    m_map_fullpath = "";
-    m_objective_file = "";
+    mInfoFilename = "";
+    mMapFilename = "";
+    mMapFullpath = "";
+    mObjectiveFile = "";
     m_start.setX(-1);
     m_start.setY(-1);
     m_goal.setX(-1);
     m_goal.setY(-1);
 
-    m_paths_output = "";
-    mp_found_paths.clear();
+    mPathsOutput = "";
+    mpFoundPaths.clear();
       
-    m_grammar_type = STRING_GRAMMAR_TYPE;
-    m_run_type = RUN_BOTH_TREES_TYPE;
+    mGrammarType = STRING_GRAMMAR_TYPE;
+    mRunType = RUN_BOTH_TREES_TYPE;
    
-    m_min_dist_enabled = true;
+    mMinDistEnabled = true;
 
-    m_max_iteration_num = 1000;
-    m_segment_length = 5.0;
+    mMaxIterationNum = 1000;
+    mSegmentLength = 5.0;
     mCostDistribution = NULL;
 
-    m_map_width = 0;
-    m_map_height = 0;
+    mMapWidth = 0;
+    mMapHeight = 0;
 }
 
-bool BIRRTstarPathPlanningInfo::get_obstacle_info( int** pp_obstacle_info ) {
+bool BIRRTstarPathPlanningInfo::getObstacleInfo( int** pp_obstacle_info ) {
     if( pp_obstacle_info==NULL ) {
         return false;
     }
-    return get_pix_info( m_map_fullpath, pp_obstacle_info );
+    return getPixInfo( mMapFullpath, pp_obstacle_info );
 }
 
-bool BIRRTstarPathPlanningInfo::get_cost_distribution( double** pp_cost_distribution ) {
-    return get_pix_info( m_objective_file, pp_cost_distribution );
+bool BIRRTstarPathPlanningInfo::getCostDistribution( double** pp_cost_distribution ) {
+    return getPixInfo( mObjectiveFile, pp_cost_distribution );
 }
 
-bool BIRRTstarPathPlanningInfo::get_pix_info( QString filename, double** pp_pix_info ) {
+bool BIRRTstarPathPlanningInfo::getPixInfo( QString filename, double** pp_pix_info ) {
     if( pp_pix_info==NULL ) {
         return false;
     }
@@ -71,7 +71,7 @@ bool BIRRTstarPathPlanningInfo::get_pix_info( QString filename, double** pp_pix_
     return true;
 }
 
-bool BIRRTstarPathPlanningInfo::get_pix_info(QString filename, int ** pp_pix_info) {
+bool BIRRTstarPathPlanningInfo::getPixInfo(QString filename, int ** pp_pix_info) {
     if( pp_pix_info==NULL ) {
         return false;
     }
@@ -94,22 +94,22 @@ bool BIRRTstarPathPlanningInfo::get_pix_info(QString filename, int ** pp_pix_inf
 }
 
 
-void BIRRTstarPathPlanningInfo::init_func_param() {
-    if( m_min_dist_enabled == true ) {
-        mp_func = BIRRTstarPathPlanningInfo::calc_dist;
+void BIRRTstarPathPlanningInfo::initFuncParam() {
+    if( mMinDistEnabled == true ) {
+        mpFunc = BIRRTstarPathPlanningInfo::calcDist;
         mCostDistribution = NULL;
     }
     else {
-        mp_func = BIRRTstarPathPlanningInfo::calc_cost;
+        mpFunc = BIRRTstarPathPlanningInfo::calcCost;
         if(mCostDistribution) {
             delete[] mCostDistribution;
             mCostDistribution = NULL;
         }
-        mCostDistribution = new double*[m_map_width];
-        for(int i=0;i<m_map_width;i++) {
-            mCostDistribution[i] = new double[m_map_height];
+        mCostDistribution = new double*[mMapWidth];
+        for(int i=0;i<mMapWidth;i++) {
+            mCostDistribution[i] = new double[mMapHeight];
         }
-        get_cost_distribution( mCostDistribution );
+        getCostDistribution( mCostDistribution );
     }
 }
 
@@ -118,24 +118,24 @@ void BIRRTstarPathPlanningInfo::read( xmlNodePtr root ) {
         xmlChar* tmp = xmlGetProp( root, ( const xmlChar* )( "map_filename" ) );
         if ( tmp != NULL ) {
             std::string map_filename = ( char * )( tmp ); 
-            m_map_filename = QString::fromStdString( map_filename );
+            mMapFilename = QString::fromStdString( map_filename );
             xmlFree( tmp );
         } 
         tmp = xmlGetProp( root, ( const xmlChar* )( "map_fullpath" ) );
         if ( tmp != NULL ) {
             std::string map_fullpath = ( char * )( tmp );
-            m_map_fullpath = QString::fromStdString( map_fullpath ); 
+            mMapFullpath = QString::fromStdString( map_fullpath ); 
             xmlFree( tmp );
         }
         tmp = xmlGetProp( root, ( const xmlChar* )( "map_width" ) );
         if ( tmp != NULL ) {
             std::string map_width = ( char * )( tmp );
-            m_map_width = strtol( map_width.c_str(), NULL, 10 );
+            mMapWidth = strtol( map_width.c_str(), NULL, 10 );
         }
         tmp = xmlGetProp( root, ( const xmlChar* )( "height_width" ) );
         if ( tmp != NULL ) {
             std::string map_height = ( char * )( tmp );
-            m_map_height = strtol( map_height.c_str(), NULL, 10 );
+            mMapHeight = strtol( map_height.c_str(), NULL, 10 );
         }
         int start_x_int = 0, start_y_int = 0;
         tmp = xmlGetProp( root, ( const xmlChar* )( "start_x" ) );
@@ -164,42 +164,42 @@ void BIRRTstarPathPlanningInfo::read( xmlNodePtr root ) {
         tmp = xmlGetProp( root, ( const xmlChar* )( "grammar_type" ) );
         if ( tmp != NULL ) {
             std::string grammar_type_str = ( char * )( tmp );
-            m_grammar_type = static_cast<grammar_type_t>( strtol( grammar_type_str.c_str(), NULL, 10 ) );
+            mGrammarType = static_cast<grammar_type_t>( strtol( grammar_type_str.c_str(), NULL, 10 ) );
         }
         tmp = xmlGetProp( root, ( const xmlChar* )( "run_type" ) );
         if ( tmp != NULL ) {
             std::string run_type_str = ( char * )( tmp );
-            m_run_type = static_cast<RRTree_run_type_t>( strtol( run_type_str.c_str(), NULL, 10 ) );
+            mRunType = static_cast<RRTree_run_type_t>( strtol( run_type_str.c_str(), NULL, 10 ) );
         }
         tmp = xmlGetProp( root, ( const xmlChar* )( "min_dist_enabled" ) );
         if ( tmp != NULL ) {
             std::string min_dist_enabled = ( char * )( tmp );
             int min_dist_enabled_int = strtol( min_dist_enabled.c_str(), NULL, 10 );
             if (min_dist_enabled_int > 0) {
-                m_min_dist_enabled = true;
+                mMinDistEnabled = true;
             } else {
-                m_min_dist_enabled = false;
+                mMinDistEnabled = false;
             }
         }
         tmp = xmlGetProp( root, ( const xmlChar* )( "objective_file" ) );
         if ( tmp != NULL ) {
             std::string objective_file = ( char * )( tmp );
-            m_objective_file = QString::fromStdString( objective_file );
+            mObjectiveFile = QString::fromStdString( objective_file );
         }
         tmp = xmlGetProp( root, ( const xmlChar* )( "path_output_file" ) );
         if ( tmp != NULL ) {
             std::string paths_output = ( char * )( tmp );
-            m_paths_output = QString::fromStdString( paths_output );
+            mPathsOutput = QString::fromStdString( paths_output );
         }
         tmp = xmlGetProp( root, ( const xmlChar* )( "max_iteration_num" ) );
         if ( tmp != NULL ) {
             std::string max_iter_num = ( char * )( tmp );
-            m_max_iteration_num = strtol( max_iter_num.c_str(), NULL, 10);
+            mMaxIterationNum = strtol( max_iter_num.c_str(), NULL, 10);
         }
         tmp = xmlGetProp( root, ( const xmlChar* )( "segment_length" ) );
         if ( tmp != NULL ) {
             std::string seg_len = ( char * )( tmp );
-            m_segment_length = strtof( seg_len.c_str(), NULL );
+            mSegmentLength = strtof( seg_len.c_str(), NULL );
         }
     }
 
@@ -208,13 +208,13 @@ void BIRRTstarPathPlanningInfo::read( xmlNodePtr root ) {
 void BIRRTstarPathPlanningInfo::write( xmlDocPtr doc, xmlNodePtr root ) const {
     
     xmlNodePtr node = xmlNewDocNode( doc, NULL, ( const xmlChar* )( "world" ), NULL );
-    xmlNewProp( node, ( const xmlChar* )( "map_filename" ), ( const xmlChar* )( m_map_filename.toStdString().c_str() ) );
-    xmlNewProp( node, ( const xmlChar* )( "map_fullpath" ), ( const xmlChar* )( m_map_fullpath.toStdString().c_str() ) );
+    xmlNewProp( node, ( const xmlChar* )( "map_filename" ), ( const xmlChar* )( mMapFilename.toStdString().c_str() ) );
+    xmlNewProp( node, ( const xmlChar* )( "map_fullpath" ), ( const xmlChar* )( mMapFullpath.toStdString().c_str() ) );
     std::stringstream width_str;
-    width_str << m_map_width;
+    width_str << mMapWidth;
     xmlNewProp( node, ( const xmlChar* )( "map_width" ), ( const xmlChar* )( width_str.str().c_str() ) );
     std::stringstream height_str;
-    height_str << m_map_height;
+    height_str << mMapHeight;
     xmlNewProp( node, ( const xmlChar* )( "map_height" ), ( const xmlChar* )( height_str.str().c_str() ) );
     std::stringstream start_x_str;
     start_x_str << m_start.x();
@@ -229,33 +229,33 @@ void BIRRTstarPathPlanningInfo::write( xmlDocPtr doc, xmlNodePtr root ) const {
     goal_y_str << m_goal.y();
     xmlNewProp( node, ( const xmlChar* )( "goal_y" ), ( const xmlChar* )( goal_y_str.str().c_str() ) );
     std::stringstream grammar_t_str;
-    grammar_t_str << static_cast<unsigned int>( m_grammar_type );
+    grammar_t_str << static_cast<unsigned int>( mGrammarType );
     xmlNewProp( node, ( const xmlChar* )( "grammar_type"), ( const xmlChar* )( grammar_t_str.str().c_str() ) );    
     std::stringstream run_t_str;
-    run_t_str << static_cast<unsigned int>( m_run_type );
+    run_t_str << static_cast<unsigned int>( mRunType );
     xmlNewProp( node, ( const xmlChar* )( "run_type"), ( const xmlChar* )( run_t_str.str().c_str() ) );    
  
     std::string min_dist_enabled;
-    if ( m_min_dist_enabled ) {
+    if ( mMinDistEnabled ) {
         min_dist_enabled = "1";
     } else {
         min_dist_enabled = "0";
     }
     xmlNewProp( node, ( const xmlChar* )( "min_dist_enabled" ), ( const xmlChar* )( min_dist_enabled.c_str() ) );
-    xmlNewProp( node, ( const xmlChar* )( "objective_file" ), ( const xmlChar* )( m_objective_file.toStdString().c_str() ) );
-    xmlNewProp( node, ( const xmlChar* )( "path_output_file" ), ( const xmlChar* )( m_paths_output.toStdString().c_str() ) );
+    xmlNewProp( node, ( const xmlChar* )( "objective_file" ), ( const xmlChar* )( mObjectiveFile.toStdString().c_str() ) );
+    xmlNewProp( node, ( const xmlChar* )( "path_output_file" ), ( const xmlChar* )( mPathsOutput.toStdString().c_str() ) );
 
     std::stringstream max_iter_num_str;
-    max_iter_num_str << m_max_iteration_num;
+    max_iter_num_str << mMaxIterationNum;
     xmlNewProp( node, ( const xmlChar* )( "max_iteration_num" ), ( const xmlChar* )( max_iter_num_str.str().c_str() ) );
     std::stringstream seg_len_str;
-    seg_len_str << m_segment_length;
+    seg_len_str << mSegmentLength;
     xmlNewProp( node, ( const xmlChar* )( "segment_length" ), ( const xmlChar* )( seg_len_str.str().c_str() ) );
     
     xmlAddChild( root, node );
 }
 
-bool BIRRTstarPathPlanningInfo::save_to_file(QString filename) {
+bool BIRRTstarPathPlanningInfo::saveToFile(QString filename) {
     
     xmlDocPtr doc = xmlNewDoc( ( xmlChar* )( "1.0" ) );
     xmlNodePtr root = xmlNewDocNode( doc, NULL, ( xmlChar* )( "root" ), NULL );    xmlDocSetRootElement( doc, root );
@@ -265,7 +265,7 @@ bool BIRRTstarPathPlanningInfo::save_to_file(QString filename) {
     return true;
 }
 
-bool BIRRTstarPathPlanningInfo::load_from_file(QString filename) {
+bool BIRRTstarPathPlanningInfo::loadFromFile(QString filename) {
     xmlDoc * doc = NULL;
     xmlNodePtr root = NULL;
     doc = xmlReadFile( filename.toStdString().c_str(), NULL, 0 );
@@ -285,16 +285,16 @@ bool BIRRTstarPathPlanningInfo::load_from_file(QString filename) {
     return true;
 }
 
-void BIRRTstarPathPlanningInfo::load_paths( std::vector<Path*> paths) {
-    mp_found_paths = paths;
+void BIRRTstarPathPlanningInfo::loadPaths( std::vector<Path*> paths) {
+    mpFoundPaths = paths;
 }
 
-bool BIRRTstarPathPlanningInfo::export_paths(QString filename) {
+bool BIRRTstarPathPlanningInfo::exportPaths(QString filename) {
     QFile file(filename);
     if( file.open(QIODevice::ReadWrite) ) {
         QTextStream stream( & file );
-        for( std::vector<Path*>::iterator it = mp_found_paths.begin();
-             it != mp_found_paths.end(); it++) {
+        for( std::vector<Path*>::iterator it = mpFoundPaths.begin();
+             it != mpFoundPaths.end(); it++) {
             Path* p_path = (*it);
             // Save scores
             stream << p_path->mCost << "\n";
@@ -310,14 +310,14 @@ bool BIRRTstarPathPlanningInfo::export_paths(QString filename) {
     return false;
 }
 
-void BIRRTstarPathPlanningInfo::dump_cost_distribution( QString filename ) {
+void BIRRTstarPathPlanningInfo::dumpCostDistribution( QString filename ) {
     QFile file(filename);
     if( file.open(QIODevice::ReadWrite) ) {
         QTextStream stream( & file );
 
         if( mCostDistribution ) {
-            for(int i=0;i<m_map_width;i++) {
-                for(int j=0;j<m_map_height;j++) {
+            for(int i=0;i<mMapWidth;i++) {
+                for(int j=0;j<mMapHeight;j++) {
                     stream << mCostDistribution[i][j] << " ";
                 }
                 stream << "\n";

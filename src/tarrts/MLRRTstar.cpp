@@ -11,200 +11,200 @@ namespace tarrts {
 #define OBSTACLE_THRESHOLD 200
 
 MLRRTNode::MLRRTNode(POS2D pos) {
-  m_pos = pos;
-  m_cost = 0.0;
-  mp_parent = NULL;
-  mp_master = NULL;
-  m_child_nodes.clear();
-  m_substring.clear();
+  mPos = pos;
+  mCost = 0.0;
+  mpParent = NULL;
+  mpMaster = NULL;
+  mChildNodes.clear();
+  mSubstring.clear();
 }
 
 bool MLRRTNode::operator==(const MLRRTNode &other) {
-  if( m_pos==other.m_pos && mp_parent == other.mp_parent ) {
+  if( mPos==other.mPos && mpParent == other.mpParent ) {
     return true;
   }
   return false;
 }
 
-void MLRRTNode::clear_string() {
-  m_substring.clear();
+void MLRRTNode::clearString() {
+  mSubstring.clear();
 }
 
-void MLRRTNode::append_to_string( vector< string > ids ) {
+void MLRRTNode::appendToString( vector< string > ids ) {
   for( unsigned int i = 0; i < ids.size(); i ++ ) {
     string id = ids[i];
-    m_substring.push_back( id );
+    mSubstring.push_back( id );
   }
 }
 
 Path::Path(POS2D start, POS2D goal) {
-  m_start = start;
-  m_goal = goal;
-  m_cost = 0.0;
+  mStart = start;
+  mGoal = goal;
+  mCost = 0.0;
 
-  m_way_points.clear();
-  m_string.clear();
+  mWaypoints.clear();
+  mString.clear();
 }
 
 Path::~Path() {
-  m_cost = 0.0;
+  mCost = 0.0;
 }
 
-void Path::append_waypoints( vector<POS2D> waypoints, bool reverse ) {
+void Path::appendWaypoints( vector<POS2D> waypoints, bool reverse ) {
   if ( reverse ) {
     for( vector<POS2D>::reverse_iterator itr = waypoints.rbegin();
          itr != waypoints.rend(); itr++ ) {
       POS2D pos = (*itr);
-      m_way_points.push_back( pos );
+      mWaypoints.push_back( pos );
     }
   }
   else {
     for( vector<POS2D>::iterator it = waypoints.begin();
          it != waypoints.end(); it++ ) {
       POS2D pos = (*it);
-      m_way_points.push_back( pos );
+      mWaypoints.push_back( pos );
     }
   }
 }
 
-void Path::append_substring( vector< string > ids, bool reverse ) {
+void Path::appendSubstring( vector< string > ids, bool reverse ) {
   if ( reverse ) {
     for( vector< string >::reverse_iterator itr = ids.rbegin();
          itr != ids.rend(); itr++ ) {
       string str = (*itr);
-      m_string.push_back( str );
+      mString.push_back( str );
     }
   }
   else {
     for( vector< string >::iterator it = ids.begin();
          it != ids.end(); it++ ) {
       string str = (*it);
-      m_string.push_back( str );
+      mString.push_back( str );
     }
   }
 }
 
 MLRRTstar::MLRRTstar( int width, int height, int segment_length ) {
-  _sampling_width = width;
-  _sampling_height = height;
-  _segment_length = segment_length;
+  mSamplingWidth = width;
+  mSamplingHeight = height;
+  mSegmentLength = segment_length;
 
-  _p_root = NULL;
-  _reference_frames = NULL;
+  mpRoot = NULL;
+  mReferenceFrames = NULL;
 
-  _grammar_type = STRING_GRAMMAR_TYPE;
-  _p_master_kd_tree = new KDTree2D( ptr_fun(tac) );
+  mGrammarType = STRING_GRAMMAR_TYPE;
+  mpMasterKDTree = new KDTree2D( ptr_fun(tac) );
 
-  _range = (_sampling_width > _sampling_height) ? _sampling_width : _sampling_height;
-  _obs_check_resolution = 1;
-  _current_iteration = 0;
-  _homotopic_enforcement = false;
+  mRange = (mSamplingWidth > mSamplingHeight) ? mSamplingWidth : mSamplingHeight;
+  mObsCheckResolution = 1;
+  mCurrentIteration = 0;
+  mHomotopicEnforcement = false;
 
-  _theta = 10;
-  _pp_cost_distribution = NULL;
-  _p_expanding_tree_mgr = NULL;
+  mTheta = 10;
+  mppCostDistribution = NULL;
+  mpExpandingTreeMgr = NULL;
 
-  _pp_map_info = new int*[_sampling_width];
-  for(int i=0;i<_sampling_width;i++) {
-    _pp_map_info[i] = new int[_sampling_height];
-    for(int j=0;j<_sampling_height;j++) {
-      _pp_map_info[i][j] = 255;
+  mppMapInfo = new int*[mSamplingWidth];
+  for(int i=0;i<mSamplingWidth;i++) {
+    mppMapInfo[i] = new int[mSamplingHeight];
+    for(int j=0;j<mSamplingHeight;j++) {
+      mppMapInfo[i][j] = 255;
     }
   }
 }
 
 MLRRTstar::~MLRRTstar() {
-  if( _p_master_kd_tree ) {
-    delete _p_master_kd_tree;
-    _p_master_kd_tree = NULL;
+  if( mpMasterKDTree ) {
+    delete mpMasterKDTree;
+    mpMasterKDTree = NULL;
   }
-  if (_pp_map_info) {
-    for(int i=0;i<_sampling_width;i++) {
-      delete _pp_map_info[i];
-      _pp_map_info[i] = NULL;
+  if (mppMapInfo) {
+    for(int i=0;i<mSamplingWidth;i++) {
+      delete mppMapInfo[i];
+      mppMapInfo[i] = NULL;
     }
-    delete _pp_map_info;
-    _pp_map_info = NULL;
+    delete mppMapInfo;
+    mppMapInfo = NULL;
   }
 }
 
 bool MLRRTstar::init( POS2D start, POS2D goal, COST_FUNC_PTR p_func, double** pp_cost_distribution, homotopy::grammar_type_t grammar_type ) {
-  if( _p_root ) {
-    delete _p_root;
-    _p_root = NULL;
+  if( mpRoot ) {
+    delete mpRoot;
+    mpRoot = NULL;
   }
-  if( _p_expanding_tree_mgr ) {
-    delete _p_expanding_tree_mgr;
-    _p_expanding_tree_mgr = NULL;
+  if( mpExpandingTreeMgr ) {
+    delete mpExpandingTreeMgr;
+    mpExpandingTreeMgr = NULL;
   }
-  if (_reference_frames == NULL) {
+  if (mReferenceFrames == NULL) {
     return false;
   }
 
-  _start = start;
-  _goal = goal;
-  _p_cost_func = p_func;
+  mStart = start;
+  mGoal = goal;
+  mpCostFunc = p_func;
 
   if(pp_cost_distribution) {
-    if(_pp_cost_distribution == NULL) {
-      _pp_cost_distribution = new double*[_sampling_width];
-      for(int i=0;i<_sampling_width;i++) {
-        _pp_cost_distribution[i] = new double[_sampling_height];
+    if(mppCostDistribution == NULL) {
+      mppCostDistribution = new double*[mSamplingWidth];
+      for(int i=0;i<mSamplingWidth;i++) {
+        mppCostDistribution[i] = new double[mSamplingHeight];
       }
     }
-    for(int i=0;i<_sampling_width;i++) {
-      for(int j=0;j<_sampling_height;j++) {
-        _pp_cost_distribution[i][j] = pp_cost_distribution[i][j];
+    for(int i=0;i<mSamplingWidth;i++) {
+      for(int j=0;j<mSamplingHeight;j++) {
+        mppCostDistribution[i][j] = pp_cost_distribution[i][j];
       }
     }
   }
 
   cout << "Init grammar ... " << endl;
-  Point2D start_point = toPoint2D( _start );
-  Point2D goal_point = toPoint2D( _goal );
-  set_grammar_type(grammar_type);
+  Point2D start_point = toPoint2D( mStart );
+  Point2D goal_point = toPoint2D( mGoal );
+  setGrammarType(grammar_type);
   if( STRING_GRAMMAR_TYPE == grammar_type) {
-    _string_grammar = _reference_frames->getStringGrammar( start_point, goal_point );
+    mpStringGrammar = mReferenceFrames->getStringGrammar( start_point, goal_point );
   }
   else if( HOMOTOPIC_GRAMMAR_TYPE == grammar_type ) {
-    _string_grammar = _reference_frames->getHomotopicGrammar(start_point, goal_point );
+    mpStringGrammar = mReferenceFrames->getHomotopicGrammar(start_point, goal_point );
   }
   cout << "Init String Class Mgr ... " << endl;
-  _p_expanding_tree_mgr = new ExpandingTreeMgr();
-  _p_expanding_tree_mgr->init( _string_grammar, _reference_frames );
+  mpExpandingTreeMgr = new ExpandingTreeMgr();
+  mpExpandingTreeMgr->init( mpStringGrammar, mReferenceFrames );
 
   cout << "Init tree.." << endl;
 
-  ExpandingNode* p_exp_node_root = _p_expanding_tree_mgr->get_expanding_tree()->get_root();
+  ExpandingNode* p_exp_node_root = mpExpandingTreeMgr->getExpandingTree()->getRoot();
   if( p_exp_node_root == NULL ) {
     cout << "NO EXP NODE ROOT" << endl;
     return false;
   }
 
-  if( false == p_exp_node_root->mp_subregion->contains( toPoint2D( start ) ) ) {
+  if( false == p_exp_node_root->mpSubregion->contains( toPoint2D( start ) ) ) {
     cout << "ROOT NODE REGION MISMATCH" << endl;
     return false;
   }
 
-  _p_root = _create_new_node( start, p_exp_node_root );
+  mpRoot = createNewNode( start, p_exp_node_root );
 
   KDNode2D root( start );
-  root.add_mlrrtnode(_p_root);
-  _p_master_kd_tree->insert( root );
+  root.addMLRRTNode(mpRoot);
+  mpMasterKDTree->insert( root );
 
-  for( vector<StringClass*>::iterator it_str_cls = p_exp_node_root->mp_string_classes.begin();
-       it_str_cls != p_exp_node_root->mp_string_classes.end(); it_str_cls++ ) {
+  for( vector<StringClass*>::iterator it_str_cls = p_exp_node_root->mpStringClasses.begin();
+       it_str_cls != p_exp_node_root->mpStringClasses.end(); it_str_cls++ ) {
     StringClass* p_str_cls = (*it_str_cls);
     if( p_str_cls ) {
       if( p_str_cls->mp_kd_tree ) {
         KDNode2D new_node( start );
-        new_node.set_pri_mlrrtnode( _p_root );
+        new_node.setPriMLRRTNode( mpRoot );
         p_str_cls->mp_kd_tree->insert( new_node );
       }
     }
   }
 
-  _current_iteration = 0;
+  mCurrentIteration = 0;
 
   return true;
 }
@@ -219,38 +219,38 @@ void MLRRTstar::extend() {
     }
     retry_cnt ++;
     */
-    POS2D rnd_pos = _sampling();
-    KDNode2D nearest_node = _find_nearest( rnd_pos, NULL );
+    POS2D rnd_pos = sampling();
+    KDNode2D nearest_node = findNearest( rnd_pos, NULL );
 
     if ( rnd_pos[0]==nearest_node[0] && rnd_pos[1]==nearest_node[1] ) {
       continue;
     }
 
-    POS2D new_pos = _steer( rnd_pos, nearest_node );
-    if( true == _contains( new_pos ) ) {
+    POS2D new_pos = steer( rnd_pos, nearest_node );
+    if( true == contains( new_pos ) ) {
       continue;
     }
-    if( true == _is_in_obstacle( new_pos ) ) {
+    if( true == isInObstacle( new_pos ) ) {
       continue;
     }
 
-    if( true == _is_obstacle_free( nearest_node, new_pos ) ) {
+    if( true == isObstacleFree( nearest_node, new_pos ) ) {
        //cout << "NEW POS " << new_pos << endl;
-       SubRegion* p_subregion = _reference_frames->getWorldMap()->inSubregion( toPoint2D( new_pos ) );
+       SubRegion* p_subregion = mReferenceFrames->getWorldMap()->inSubregion( toPoint2D( new_pos ) );
        if ( p_subregion ) {
-         SubRegionMgr* p_mgr = _p_expanding_tree_mgr->find_subregion_mgr( p_subregion );
+         SubRegionMgr* p_mgr = mpExpandingTreeMgr->findSubregionMgr( p_subregion );
          if( p_mgr ) {
            KDNode2D new_master_node( new_pos );
            bool any_node_added = false;
            /* EACH EXPANDING NODE OF THE NEW POS */
-           for( vector<ExpandingNode*>::iterator it = p_mgr->mp_nodes.begin();
-                it != p_mgr->mp_nodes.end(); it ++ ) {
+           for( vector<ExpandingNode*>::iterator it = p_mgr->mpNodes.begin();
+                it != p_mgr->mpNodes.end(); it ++ ) {
              ExpandingNode* p_exp_node = (*it);
              if( p_exp_node ) {
                // create new node
-               MLRRTNode* p_new_rnode = _create_new_node( new_pos, p_exp_node );
-               KDNode2D nearest_node_in_class = _find_nearest( new_pos, p_exp_node );
-               list<KDNode2D> near_list_in_class = _find_near( new_pos, p_exp_node );
+               MLRRTNode* p_new_rnode = createNewNode( new_pos, p_exp_node );
+               KDNode2D nearest_node_in_class = findNearest( new_pos, p_exp_node );
+               list<KDNode2D> near_list_in_class = findNear( new_pos, p_exp_node );
 
                //MLRRTNode* p_nearest_rnode = nearest_node_in_class.get_pri_mlrrtnode();
                list<MLRRTNode*> near_rnodes;
@@ -258,64 +258,64 @@ void MLRRTstar::extend() {
                for( list<KDNode2D>::iterator itr = near_list_in_class.begin();
                     itr != near_list_in_class.end(); itr ++ ) {
                  KDNode2D near_kd_node = (*itr);
-                 MLRRTNode* p_near_rnode = near_kd_node.get_pri_mlrrtnode();
+                 MLRRTNode* p_near_rnode = near_kd_node.getPriMLRRTNode();
                  near_rnodes.push_back( p_near_rnode );
                }
                //std::cout << "IN " << p_exp_node->m_name << std::endl;
                // attach new noue
-               if( _attach_new_node( p_new_rnode, near_rnodes ) ) {
+               if( attachNewNode( p_new_rnode, near_rnodes ) ) {
                  any_node_added = true;
-                 new_master_node.add_mlrrtnode( p_new_rnode );
+                 new_master_node.addMLRRTNode( p_new_rnode );
 
                  if( p_exp_node ) {
-                   for( vector<StringClass*>::iterator it_str_cls = p_exp_node->mp_string_classes.begin();
-                        it_str_cls != p_exp_node->mp_string_classes.end(); it_str_cls++ ) {
+                   for( vector<StringClass*>::iterator it_str_cls = p_exp_node->mpStringClasses.begin();
+                        it_str_cls != p_exp_node->mpStringClasses.end(); it_str_cls++ ) {
                      StringClass* p_str_cls = (*it_str_cls);
                      if( p_str_cls->mp_kd_tree ) {
                        KDNode2D new_node( new_pos );
-                       new_node.set_pri_mlrrtnode( p_new_rnode );
+                       new_node.setPriMLRRTNode( p_new_rnode );
                        p_str_cls->mp_kd_tree->insert( new_node );
                      }
                    }
-                   p_exp_node->mp_nodes.push_back( p_new_rnode );
+                   p_exp_node->mpNodes.push_back( p_new_rnode );
                  }
                }
                // rewire near nodes
-               _rewire_near_nodes( p_new_rnode, near_rnodes );
+               rewireNearNodes( p_new_rnode, near_rnodes );
             }
           }
           if ( any_node_added ) {
-             _p_master_kd_tree->insert( new_master_node );
+             mpMasterKDTree->insert( new_master_node );
              node_inserted = true;
           }
         }
       }
     }
   }
-  if(_p_expanding_tree_mgr) {
-    _p_expanding_tree_mgr->record();
+  if(mpExpandingTreeMgr) {
+    mpExpandingTreeMgr->record();
   }
 
-  _current_iteration ++;
+  mCurrentIteration ++;
 }
 
-POS2D MLRRTstar::_sampling() {
+POS2D MLRRTstar::sampling() {
   double x = rand();
   double y = rand();
-  int int_x = x * ((double)(_sampling_width)/RAND_MAX);
-  int int_y = y * ((double)(_sampling_height)/RAND_MAX);
+  int int_x = x * ((double)(mSamplingWidth)/RAND_MAX);
+  int int_y = y * ((double)(mSamplingHeight)/RAND_MAX);
   POS2D m(int_x, int_y);
   return m;
 }
 
-POS2D MLRRTstar::_steer( POS2D pos_a, POS2D pos_b ) {
+POS2D MLRRTstar::steer( POS2D pos_a, POS2D pos_b ) {
   POS2D new_pos( pos_a[0], pos_a[1] );
   double delta[2];
   delta[0] = pos_a[0] - pos_b[0];
   delta[1] = pos_a[1] - pos_b[1];
   double delta_len = sqrt(delta[0]*delta[0] + delta[1]*delta[1]);
-  if ( delta_len > _segment_length ) {
-    double scale = _segment_length / delta_len;
+  if ( delta_len > mSegmentLength ) {
+    double scale = mSegmentLength / delta_len;
     delta[0] = delta[0] * scale;
     delta[1] = delta[1] * scale;
 
@@ -325,16 +325,16 @@ POS2D MLRRTstar::_steer( POS2D pos_a, POS2D pos_b ) {
   return new_pos;
 }
 
-bool MLRRTstar::_is_in_obstacle( POS2D pos ) {
+bool MLRRTstar::isInObstacle( POS2D pos ) {
   int x = (int)pos[0];
   int y = (int)pos[1];
-  if( _pp_map_info[x][y] < 255 ) {
+  if( mppMapInfo[x][y] < 255 ) {
     return true;
   }
   return false;
 }
 
-bool MLRRTstar::_is_obstacle_free( POS2D pos_a, POS2D pos_b ) {
+bool MLRRTstar::isObstacleFree( POS2D pos_a, POS2D pos_b ) {
   if ( pos_a == pos_b ) {
     return true;
   }
@@ -372,15 +372,15 @@ bool MLRRTstar::_is_obstacle_free( POS2D pos_a, POS2D pos_b ) {
 
   for(int x=(int)x1; x<maxX; x++) {
     if(steep) {
-      if ( y>=0 && y<_sampling_width && x>=0 && x<_sampling_height ) {
-        if ( _pp_map_info[y][x] < OBSTACLE_THRESHOLD ) {
+      if ( y>=0 && y<mSamplingWidth && x>=0 && x<mSamplingHeight ) {
+        if ( mppMapInfo[y][x] < OBSTACLE_THRESHOLD ) {
           return false;
         }
       }
     }
     else {
-      if ( x>=0 && x<_sampling_width && y>=0 && y<_sampling_height ) {
-        if ( _pp_map_info[x][y] < OBSTACLE_THRESHOLD ) {
+      if ( x>=0 && x<mSamplingWidth && y>=0 && y<mSamplingHeight ) {
+        if ( mppMapInfo[x][y] < OBSTACLE_THRESHOLD ) {
           return false;
         }
       }
@@ -395,25 +395,25 @@ bool MLRRTstar::_is_obstacle_free( POS2D pos_a, POS2D pos_b ) {
   return true;
 }
 
-KDNode2D MLRRTstar::_find_nearest( POS2D pos, ExpandingNode* p_exp_node ) {
+KDNode2D MLRRTstar::findNearest( POS2D pos, ExpandingNode* p_exp_node ) {
   KDNode2D node( pos );
   KDNode2D nearest_node( pos );
   if( p_exp_node == NULL ) {
-    pair<KDTree2D::const_iterator,double> found = _p_master_kd_tree->find_nearest( node );
+    pair<KDTree2D::const_iterator,double> found = mpMasterKDTree->find_nearest( node );
     nearest_node = *found.first;
   }
   else {
     /* find nearest in each string class */
-    double nearest_distance = _sampling_width > _sampling_height ? _sampling_width : _sampling_height;
+    double nearest_distance = mSamplingWidth > mSamplingHeight ? mSamplingWidth : mSamplingHeight;
 
-    for(vector<StringClass*>::iterator it = p_exp_node->mp_string_classes.begin(); it != p_exp_node->mp_string_classes.end(); it ++ ) {
+    for(vector<StringClass*>::iterator it = p_exp_node->mpStringClasses.begin(); it != p_exp_node->mpStringClasses.end(); it ++ ) {
       StringClass* p_class = (*it);
       pair<KDTree2D::const_iterator,double> found = p_class->mp_kd_tree->find_nearest( node );
       KDNode2D nearest_node_in_class = *found.first;
       double distance_in_class = found.second;
 
       if( (distance_in_class < nearest_distance) &&
-           in_current_and_parent_exp_node( nearest_node, p_exp_node ) ) {
+           inCurrentAndParentExpNode( nearest_node, p_exp_node ) ) {
         nearest_distance = distance_in_class;
         nearest_node = nearest_node_in_class;
       }
@@ -423,29 +423,29 @@ KDNode2D MLRRTstar::_find_nearest( POS2D pos, ExpandingNode* p_exp_node ) {
   return nearest_node;
 }
 
-list<KDNode2D> MLRRTstar::_find_near( POS2D pos, ExpandingNode* p_exp_node ) {
+list<KDNode2D> MLRRTstar::findNear( POS2D pos, ExpandingNode* p_exp_node ) {
   list<KDNode2D> near_list;
   KDNode2D node(pos);
   int num_dimensions = 2;
   if( p_exp_node == NULL ) {
-    int num_vertices = _p_master_kd_tree->size();
-    double ball_radius =  _theta * _range * pow( log((double)(num_vertices + 1.0))/((double)(num_vertices + 1.0)), 1.0/((double)num_dimensions) );
+    int num_vertices = mpMasterKDTree->size();
+    double ball_radius =  mTheta * mRange * pow( log((double)(num_vertices + 1.0))/((double)(num_vertices + 1.0)), 1.0/((double)num_dimensions) );
 
-    _p_master_kd_tree->find_within_range( node, ball_radius, back_inserter( near_list ) );
+    mpMasterKDTree->find_within_range( node, ball_radius, back_inserter( near_list ) );
   }
   else {
 
-    for(vector<StringClass*>::iterator it = p_exp_node->mp_string_classes.begin(); it != p_exp_node->mp_string_classes.end(); it ++ ) {
+    for(vector<StringClass*>::iterator it = p_exp_node->mpStringClasses.begin(); it != p_exp_node->mpStringClasses.end(); it ++ ) {
       StringClass* p_class = (*it);
       list<KDNode2D> near_list_in_class;
       int num_vertices = p_class->mp_kd_tree->size();
-      double ball_radius =  _theta * _range * pow( log((double)(num_vertices + 1.0))/((double)(num_vertices + 1.0)), 1.0/((double)num_dimensions) );
+      double ball_radius =  mTheta * mRange * pow( log((double)(num_vertices + 1.0))/((double)(num_vertices + 1.0)), 1.0/((double)num_dimensions) );
       p_class->mp_kd_tree->find_within_range( node, ball_radius, back_inserter( near_list_in_class ) );
       //cout << "NEAR LIST IN CLASS " << near_list_in_class.size() << endl;
       for( list<KDNode2D>::iterator it_cls = near_list_in_class.begin();
            it_cls != near_list_in_class.end(); it_cls ++ ) {
         KDNode2D kdnode = (*it_cls);
-        if ( in_current_and_parent_exp_node( kdnode, p_exp_node ) ) {
+        if ( inCurrentAndParentExpNode( kdnode, p_exp_node ) ) {
           near_list.push_back( kdnode );
         }
       }
@@ -455,17 +455,17 @@ list<KDNode2D> MLRRTstar::_find_near( POS2D pos, ExpandingNode* p_exp_node ) {
   return near_list;
 }
 
-bool MLRRTstar::in_current_and_parent_exp_node( POS2D pos, ExpandingNode* p_exp_node ) {
+bool MLRRTstar::inCurrentAndParentExpNode( POS2D pos, ExpandingNode* p_exp_node ) {
   if( p_exp_node ) {
-    if( p_exp_node->mp_subregion ) {
-      if( p_exp_node->mp_subregion->contains( toPoint2D( pos ) ) ) {
+    if( p_exp_node->mpSubregion ) {
+      if( p_exp_node->mpSubregion->contains( toPoint2D( pos ) ) ) {
         return true;
       }
     }
-    if( p_exp_node->mp_in_edge ){
-      if( p_exp_node->mp_in_edge->mp_from ){
-        if( p_exp_node->mp_in_edge->mp_from->mp_subregion ) {
-          if( p_exp_node->mp_in_edge->mp_from->mp_subregion->contains( toPoint2D( pos ) ) ) {
+    if( p_exp_node->mpInEdge ){
+      if( p_exp_node->mpInEdge->mpFrom ){
+        if( p_exp_node->mpInEdge->mpFrom->mpSubregion ) {
+          if( p_exp_node->mpInEdge->mpFrom->mpSubregion->contains( toPoint2D( pos ) ) ) {
             return true;
           }
         }
@@ -475,11 +475,11 @@ bool MLRRTstar::in_current_and_parent_exp_node( POS2D pos, ExpandingNode* p_exp_
   return false;
 }
 
-bool MLRRTstar::_contains( POS2D pos ) {
-  if(_p_master_kd_tree) {
+bool MLRRTstar::contains( POS2D pos ) {
+  if(mpMasterKDTree) {
     KDNode2D node( pos[0], pos[1] );
-    KDTree2D::const_iterator it = _p_master_kd_tree->find(node);
-    if( it!=_p_master_kd_tree->end() ) {
+    KDTree2D::const_iterator it = mpMasterKDTree->find(node);
+    if( it!=mpMasterKDTree->end() ) {
       return true;
     }
     else {
@@ -489,28 +489,28 @@ bool MLRRTstar::_contains( POS2D pos ) {
   return false;
 }
 
-MLRRTNode* MLRRTstar::_create_new_node( POS2D pos, ExpandingNode* p_exp_node ) {
+MLRRTNode* MLRRTstar::createNewNode( POS2D pos, ExpandingNode* p_exp_node ) {
   MLRRTNode* p_node = new MLRRTNode( pos );
-  _nodes.push_back( p_node );
+  mNodes.push_back( p_node );
   if( p_exp_node ) {
-    p_exp_node->mp_nodes.push_back( p_node );
+    p_exp_node->mpNodes.push_back( p_node );
   }
-  p_node->mp_master = p_exp_node;
+  p_node->mpMaster = p_exp_node;
   return p_node;
 }
 
-void MLRRTstar::set_reference_frames( ReferenceFrameSet* p_reference_frames ) {
-  _reference_frames = p_reference_frames;
+void MLRRTstar::setReferenceFrames( ReferenceFrameSet* p_reference_frames ) {
+  mReferenceFrames = p_reference_frames;
 }
 
-void MLRRTstar::update_paths() {
+void MLRRTstar::updatePaths() {
 
-  if( _p_expanding_tree_mgr ) {
-    vector<StringClass*> string_classes = _p_expanding_tree_mgr->get_string_classes();
+  if( mpExpandingTreeMgr ) {
+    vector<StringClass*> string_classes = mpExpandingTreeMgr->getStringClasses();
     for( vector<StringClass*>::iterator it = string_classes.begin();
          it != string_classes.end(); it ++ ) {
       StringClass* p_string_class = (*it);
-      Path* p_path = _get_path( p_string_class );
+      Path* p_path = getPath( p_string_class );
       p_string_class->import( p_path );
       /*
       p_string_class->mp_path = p_path;
@@ -521,11 +521,11 @@ void MLRRTstar::update_paths() {
   }
 }
 
-vector<Path*> MLRRTstar::get_paths() {
+vector<Path*> MLRRTstar::getPaths() {
   vector<Path*> paths;
-  update_paths();
-  if( _p_expanding_tree_mgr ) {
-    vector<StringClass*> string_classes = _p_expanding_tree_mgr->get_string_classes();
+  updatePaths();
+  if( mpExpandingTreeMgr ) {
+    vector<StringClass*> string_classes = mpExpandingTreeMgr->getStringClasses();
     for( vector<StringClass*>::iterator it = string_classes.begin();
          it != string_classes.end(); it ++ ) {
       StringClass* p_string_class = (*it);
@@ -537,7 +537,7 @@ vector<Path*> MLRRTstar::get_paths() {
   return paths;
 }
 
-Path* MLRRTstar::_get_path( StringClass* p_string_class ) {
+Path* MLRRTstar::getPath( StringClass* p_string_class ) {
 
   if( p_string_class ) {
     int exp_node_num = p_string_class->mp_exp_nodes.size();
@@ -545,15 +545,15 @@ Path* MLRRTstar::_get_path( StringClass* p_string_class ) {
     if( p_last_exp_node ) {
       // get a set of nodes, sort them by distance
       // find the first one belong to the exp node
-      std::list<KDNode2D> near_kdnodes = _find_near( _goal, p_last_exp_node );
+      std::list<KDNode2D> near_kdnodes = findNear( mGoal, p_last_exp_node );
       for(std::list<KDNode2D>::iterator it = near_kdnodes.begin();
           it != near_kdnodes.end();it++) {
         KDNode2D kdnode = (*it);
-        MLRRTNode* p_near_goal = kdnode.get_pri_mlrrtnode();
-        if(p_last_exp_node==p_near_goal->mp_master) {
+        MLRRTNode* p_near_goal = kdnode.getPriMLRRTNode();
+        if(p_last_exp_node==p_near_goal->mpMaster) {
           if( p_near_goal ) {
-            if( _is_obstacle_free( p_near_goal->m_pos, _goal ) == true ) {
-              Path* p_path = _get_path( p_near_goal );
+            if( isObstacleFree( p_near_goal->mPos, mGoal ) == true ) {
+              Path* p_path = getPath( p_near_goal );
               return p_path;
             }
           }
@@ -564,36 +564,36 @@ Path* MLRRTstar::_get_path( StringClass* p_string_class ) {
   return NULL;
 }
 
-Path* MLRRTstar::_get_path( MLRRTNode* p_node ) {
+Path* MLRRTstar::getPath( MLRRTNode* p_node ) {
   list<MLRRTNode*> node_list;
-  get_parent_node_list( p_node, node_list );
-  Path* p_path = new Path( _start, _goal );
+  getParentNodeList( p_node, node_list );
+  Path* p_path = new Path( mStart, mGoal );
   for( list<MLRRTNode*>::reverse_iterator itr = node_list.rbegin();
        itr != node_list.rend(); itr ++ ) {
     MLRRTNode* p_rrt_node = (*itr);
-    p_path->m_way_points.push_back( p_rrt_node->m_pos );
+    p_path->mWaypoints.push_back( p_rrt_node->mPos );
   }
-  p_path->m_way_points.push_back( _goal );
-  p_path->append_substring( p_node->m_substring );
-  p_path->m_cost = p_node->m_cost + _calculate_cost( p_node->m_pos, _goal );
+  p_path->mWaypoints.push_back( mGoal );
+  p_path->appendSubstring( p_node->mSubstring );
+  p_path->mCost = p_node->mCost + calculateCost( p_node->mPos, mGoal );
   return p_path;
 }
 
 
-bool MLRRTstar::_attach_new_node( MLRRTNode* p_node_new, list<MLRRTNode*> near_nodes ) {
+bool MLRRTstar::attachNewNode( MLRRTNode* p_node_new, list<MLRRTNode*> near_nodes ) {
   double min_new_node_cost = -1;
   MLRRTNode* p_min_node = NULL;
 
   for(list<MLRRTNode*>::iterator it = near_nodes.begin(); it != near_nodes.end(); it++) {
     MLRRTNode* p_near_node = (*it);
-    if( true == _is_obstacle_free( p_near_node->m_pos, p_node_new->m_pos ) ) {
+    if( true == isObstacleFree( p_near_node->mPos, p_node_new->mPos ) ) {
       bool eligible = true;
-      if( _homotopic_enforcement ) {
-        eligible = _is_homotopic_constrained( p_near_node, p_node_new );
+      if( mHomotopicEnforcement ) {
+        eligible = isHomotopicConstrained( p_near_node, p_node_new );
       }
       if( eligible ) {
-        double delta_cost = _calculate_cost( p_near_node->m_pos, p_node_new->m_pos );
-        double new_cost = p_near_node->m_cost + delta_cost;
+        double delta_cost = calculateCost( p_near_node->mPos, p_node_new->mPos );
+        double new_cost = p_near_node->mCost + delta_cost;
         if( (p_min_node==NULL) || (new_cost < min_new_node_cost) ) {
           p_min_node = p_near_node;
           min_new_node_cost = new_cost;
@@ -605,41 +605,41 @@ bool MLRRTstar::_attach_new_node( MLRRTNode* p_node_new, list<MLRRTNode*> near_n
     return false;
   }
 
-  bool added = _add_edge( p_min_node, p_node_new );
+  bool added = addEdge( p_min_node, p_node_new );
   if( added ) {
-    p_node_new->m_cost = min_new_node_cost;
+    p_node_new->mCost = min_new_node_cost;
     return true;
   }
   return false;
 }
 
-void MLRRTstar::_rewire_near_nodes( MLRRTNode* p_node_new, list<MLRRTNode*> near_nodes ) {
+void MLRRTstar::rewireNearNodes( MLRRTNode* p_node_new, list<MLRRTNode*> near_nodes ) {
   for( list<MLRRTNode*>::iterator it = near_nodes.begin();
        it != near_nodes.end(); it++ ) {
     MLRRTNode* p_near_node = (*it);
 
-    if( p_near_node->m_pos == p_node_new->m_pos ||
-        p_near_node->m_pos == _p_root->m_pos ) {
+    if( p_near_node->mPos == p_node_new->mPos ||
+        p_near_node->mPos == mpRoot->mPos ) {
       continue;
     }
 
-    if( true == _is_obstacle_free( p_node_new->m_pos, p_near_node->m_pos ) ) {
+    if( true == isObstacleFree( p_node_new->mPos, p_near_node->mPos ) ) {
       bool eligible = true;
-      if( _homotopic_enforcement ) {
-        eligible = _is_homotopic_constrained( p_node_new, p_near_node );
+      if( mHomotopicEnforcement ) {
+        eligible = isHomotopicConstrained( p_node_new, p_near_node );
       }
       if( eligible ) {
-        double temp_delta_cost = _calculate_cost( p_node_new->m_pos, p_near_node->m_pos );
-        double temp_cost_from_new_node = p_node_new->m_cost + temp_delta_cost;
-        if( temp_cost_from_new_node < p_near_node->m_cost ) {
-          double min_delta_cost = p_near_node->m_cost - temp_cost_from_new_node;
-          MLRRTNode* p_parent_node = p_near_node->mp_parent;
-          bool removed = _remove_edge( p_parent_node, p_near_node );
+        double temp_delta_cost = calculateCost( p_node_new->mPos, p_near_node->mPos );
+        double temp_cost_from_new_node = p_node_new->mCost + temp_delta_cost;
+        if( temp_cost_from_new_node < p_near_node->mCost ) {
+          double min_delta_cost = p_near_node->mCost - temp_cost_from_new_node;
+          MLRRTNode* p_parent_node = p_near_node->mpParent;
+          bool removed = removeEdge( p_parent_node, p_near_node );
           if( removed ) {
-            bool added = _add_edge( p_node_new, p_near_node );
+            bool added = addEdge( p_node_new, p_near_node );
             if( added ) {
-              p_near_node->m_cost = temp_cost_from_new_node;
-              _update_cost_to_children( p_near_node, min_delta_cost );
+              p_near_node->mCost = temp_cost_from_new_node;
+              updateCostToChildren( p_near_node, min_delta_cost );
             }
           }
           else {
@@ -652,15 +652,15 @@ void MLRRTstar::_rewire_near_nodes( MLRRTNode* p_node_new, list<MLRRTNode*> near
 
 }
 
-double MLRRTstar::_calculate_cost( POS2D& pos_a, POS2D& pos_b ) {
-  return _p_cost_func( pos_a, pos_b, _pp_cost_distribution, this);
+double MLRRTstar::calculateCost( POS2D& pos_a, POS2D& pos_b ) {
+  return mpCostFunc( pos_a, pos_b, mppCostDistribution, this);
 }
 
-bool MLRRTstar::_has_edge( MLRRTNode* p_node_parent, MLRRTNode* p_node_child ) {
+bool MLRRTstar::hasEdge( MLRRTNode* p_node_parent, MLRRTNode* p_node_child ) {
   if ( p_node_parent == NULL || p_node_child == NULL ) {
     return false;
   }
-  for( list<MLRRTNode*>::iterator it=p_node_parent->m_child_nodes.begin();it!=p_node_parent->m_child_nodes.end();it++ ) {
+  for( list<MLRRTNode*>::iterator it=p_node_parent->mChildNodes.begin();it!=p_node_parent->mChildNodes.end();it++ ) {
     MLRRTNode* p_curr_node = (*it);
     if( p_curr_node == p_node_child ) {
       return true;
@@ -673,69 +673,69 @@ bool MLRRTstar::_has_edge( MLRRTNode* p_node_parent, MLRRTNode* p_node_child ) {
   return false;
 }
 
-bool MLRRTstar::_add_edge( MLRRTNode* p_node_parent, MLRRTNode* p_node_child ) {
+bool MLRRTstar::addEdge( MLRRTNode* p_node_parent, MLRRTNode* p_node_child ) {
   if( p_node_parent == NULL || p_node_child == NULL || p_node_parent == p_node_child ) {
     return false;
   }
-  if ( p_node_parent->m_pos == p_node_child->m_pos ) {
+  if ( p_node_parent->mPos == p_node_child->mPos ) {
     return false;
   }
   // generate the string of ID characters
-  Point2D start = toPoint2D( p_node_parent->m_pos );
-  Point2D goal = toPoint2D( p_node_child->m_pos );
+  Point2D start = toPoint2D( p_node_parent->mPos );
+  Point2D goal = toPoint2D( p_node_child->mPos );
   //std::cout << "START " << start << " END " << goal << std::endl;
-  vector< string > ids = _reference_frames->getString( start, goal, _grammar_type );
-  p_node_child->clear_string();
-  p_node_child->append_to_string( p_node_parent->m_substring );
-  p_node_child->append_to_string( ids );
+  vector< string > ids = mReferenceFrames->getString( start, goal, mGrammarType );
+  p_node_child->clearString();
+  p_node_child->appendToString( p_node_parent->mSubstring );
+  p_node_child->appendToString( ids );
 
-  if ( true == _has_edge( p_node_parent, p_node_child ) ) {
-    p_node_child->mp_parent = p_node_parent;
+  if ( true == hasEdge( p_node_parent, p_node_child ) ) {
+    p_node_child->mpParent = p_node_parent;
   }
   else {
-    p_node_parent->m_child_nodes.push_back( p_node_child );
-    p_node_child->mp_parent = p_node_parent;
+    p_node_parent->mChildNodes.push_back( p_node_child );
+    p_node_child->mpParent = p_node_parent;
   }
-  p_node_child->m_child_nodes.unique();
+  p_node_child->mChildNodes.unique();
 
   return true;
 }
 
-bool MLRRTstar::_remove_edge( MLRRTNode* p_node_parent, MLRRTNode* p_node_child ) {
+bool MLRRTstar::removeEdge( MLRRTNode* p_node_parent, MLRRTNode* p_node_child ) {
   if( p_node_parent==NULL ) {
     return false;
   }
 
-  p_node_child->mp_parent = NULL;
+  p_node_child->mpParent = NULL;
   bool removed = false;
-  for( list<MLRRTNode*>::iterator it=p_node_parent->m_child_nodes.begin();it!=p_node_parent->m_child_nodes.end();it++ ) {
+  for( list<MLRRTNode*>::iterator it=p_node_parent->mChildNodes.begin();it!=p_node_parent->mChildNodes.end();it++ ) {
     MLRRTNode* p_current = (MLRRTNode*)(*it);
-    if ( p_current == p_node_child || p_current->m_pos==p_node_child->m_pos ) {
-      p_current->mp_parent = NULL;
-      p_current->clear_string();
-      it = p_node_parent->m_child_nodes.erase(it);
+    if ( p_current == p_node_child || p_current->mPos==p_node_child->mPos ) {
+      p_current->mpParent = NULL;
+      p_current->clearString();
+      it = p_node_parent->mChildNodes.erase(it);
       removed = true;
     }
   }
   return removed;
 }
 
-bool MLRRTstar::_is_homotopic_constrained( MLRRTNode* p_node_parent, MLRRTNode* p_node_child ) {
+bool MLRRTstar::isHomotopicConstrained( MLRRTNode* p_node_parent, MLRRTNode* p_node_child ) {
   if( p_node_parent && p_node_child ) {
-    if( p_node_parent->mp_master && p_node_child->mp_master ) {
-      ExpandingNode* p_exp_node_parent = p_node_parent->mp_master;
-      ExpandingNode* p_exp_node_child = p_node_child->mp_master;
+    if( p_node_parent->mpMaster && p_node_child->mpMaster ) {
+      ExpandingNode* p_exp_node_parent = p_node_parent->mpMaster;
+      ExpandingNode* p_exp_node_child = p_node_child->mpMaster;
       if( p_exp_node_parent == p_exp_node_child ) {
         return true;
       }
 
-      if( p_exp_node_child->mp_in_edge ) {
+      if( p_exp_node_child->mpInEdge ) {
         //cout << "Parent " << p_exp_node_parent->m_name <<  endl;
         //cout << "Child " << p_exp_node_child->m_name << " ( " << p_exp_node_child->mp_in_edge->mp_from->m_name << " ) " << endl;
         //cout << "COMPARE child=" << p_exp_node_child->m_name << "(" << p_exp_node_child->mp_in_edge->mp_from->m_name << ") " << p_exp_node_parent->m_name << endl;
-        if( p_exp_node_child->mp_in_edge->mp_from == p_exp_node_parent ) {
+        if( p_exp_node_child->mpInEdge->mpFrom == p_exp_node_parent ) {
           //cout << "HAPPENED " << endl;
-          if( p_exp_node_child->mp_in_edge->mp_reference_frame->isLineCrossed( toPoint2D( p_node_parent->m_pos ), toPoint2D( p_node_child->m_pos ) ) ) {
+          if( p_exp_node_child->mpInEdge->mpReferenceFrame->isLineCrossed( toPoint2D( p_node_parent->mPos ), toPoint2D( p_node_child->mPos ) ) ) {
             return true;
           }
         }
@@ -749,18 +749,18 @@ bool MLRRTstar::_is_homotopic_constrained( MLRRTNode* p_node_parent, MLRRTNode* 
   return false;
 }
 
-void MLRRTstar::_update_cost_to_children( MLRRTNode* p_node, double delta_cost ) {
-  list<MLRRTNode*> child_list = _find_all_children( p_node );
+void MLRRTstar::updateCostToChildren( MLRRTNode* p_node, double delta_cost ) {
+  list<MLRRTNode*> child_list = findAllChildren( p_node );
   for( list<MLRRTNode*>::iterator it = child_list.begin();
        it != child_list.end(); it++ ) {
     MLRRTNode* p_child_node = (*it);
     if( p_child_node ) {
-      p_child_node->m_cost -= delta_cost;
+      p_child_node->mCost -= delta_cost;
     }
   }
 }
 
-list<MLRRTNode*> MLRRTstar::_find_all_children( MLRRTNode* p_node ) {
+list<MLRRTNode*> MLRRTstar::findAllChildren( MLRRTNode* p_node ) {
   int level = 0;
   bool finished = false;
   list<MLRRTNode*> child_list;
@@ -774,8 +774,8 @@ list<MLRRTNode*> MLRRTstar::_find_all_children( MLRRTNode* p_node ) {
     for( list<MLRRTNode*>::iterator it = current_level_nodes.begin();
          it != current_level_nodes.end(); it ++ ) {
       MLRRTNode* p_current_node = (*it);
-      for( list<MLRRTNode*>::iterator itc = p_current_node->m_child_nodes.begin();
-           itc != p_current_node->m_child_nodes.end(); itc ++ ) {
+      for( list<MLRRTNode*>::iterator itc = p_current_node->mChildNodes.begin();
+           itc != p_current_node->mChildNodes.end(); itc ++ ) {
          MLRRTNode* p_child_node = (*itc);
          if( p_child_node ) {
            current_level_children.push_back( p_child_node );

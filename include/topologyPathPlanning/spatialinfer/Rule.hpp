@@ -13,8 +13,8 @@ namespace topologyinference {
     Rule();
     virtual ~Rule();
   
-    std::vector< Rule* > m_rule_sequence;
-    homotopy::ReferenceFrame* mp_reference_frame;
+    std::vector< Rule* > mRuleSequence;
+    homotopy::ReferenceFrame* mpReferenceFrame;
   };
 
 } // topologyinference

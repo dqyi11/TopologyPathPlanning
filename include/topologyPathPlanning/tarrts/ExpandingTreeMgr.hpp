@@ -16,11 +16,11 @@ namespace tarrts {
     SubRegionMgr( homotopy::SubRegion* p_subregion );
     virtual ~SubRegionMgr();
 
-    void add_node( ExpandingNode* p_node );
-    ExpandingNode* find_node( std::string name);
+    void addNode( ExpandingNode* p_node );
+    ExpandingNode* findNode( std::string name);
 
-    homotopy::SubRegion*        mp_subregion;
-    std::vector<ExpandingNode*> mp_nodes;
+    homotopy::SubRegion*        mpSubregion;
+    std::vector<ExpandingNode*> mpNodes;
   };
 
   class LineSubSegmentMgr{
@@ -28,11 +28,11 @@ namespace tarrts {
     LineSubSegmentMgr( homotopy::LineSubSegment* p_line_subsegment );
     virtual ~LineSubSegmentMgr();
 
-    void add_edge( ExpandingEdge* p_edge );
-    ExpandingEdge* find_edge( std::string name);
+    void addEdge( ExpandingEdge* p_edge );
+    ExpandingEdge* findEdge( std::string name);
 
-    homotopy::LineSubSegment*   mp_line_subsegment;
-    std::vector<ExpandingEdge*> mp_edges;
+    homotopy::LineSubSegment*   mpLineSubsegment;
+    std::vector<ExpandingEdge*> mpEdges;
   };
   
   class ExpandingTreeMgr {
@@ -42,22 +42,22 @@ namespace tarrts {
 
     void init( homotopy::StringGrammar* p_grammar, homotopy::ReferenceFrameSet* p_reference_frame_set );
     
-    SubRegionMgr* find_subregion_mgr( homotopy::SubRegion* p_subregion );
-    LineSubSegmentMgr* find_line_subsegment_mgr( homotopy::LineSubSegment* p_line_subsegment );
-    std::vector<StringClass*>& get_string_classes() { return mp_string_classes; };
-    ExpandingTree* get_expanding_tree() { return mp_expanding_tree; };
+    SubRegionMgr* findSubregionMgr( homotopy::SubRegion* p_subregion );
+    LineSubSegmentMgr* findLineSubsegmentMgr( homotopy::LineSubSegment* p_line_subsegment );
+    std::vector<StringClass*>& getStringClasses() { return mpStringClasses; };
+    ExpandingTree* getExpandingTree() { return mpExpandingTree; };
     
-    void export_subregion_mgrs( std::string filename );
+    void exportSubregionMgrs( std::string filename );
 
-    void dump_historical_data( std::string filename );
+    void dumpHistoricalData( std::string filename );
     void record();
 
   protected:
-    ExpandingTree*                  mp_expanding_tree;
-    homotopy::StringGrammar*        mp_string_grammar;
-    std::vector<StringClass*>       mp_string_classes;
-    std::vector<SubRegionMgr*>      mp_subregion_mgrs;
-    std::vector<LineSubSegmentMgr*> mp_line_subsegment_mgrs; 
+    ExpandingTree*                  mpExpandingTree;
+    homotopy::StringGrammar*        mpStringGrammar;
+    std::vector<StringClass*>       mpStringClasses;
+    std::vector<SubRegionMgr*>      mpSubregionMgrs;
+    std::vector<LineSubSegmentMgr*> mpLineSubsegmentMgrs;
   };
 
 } // tarrts

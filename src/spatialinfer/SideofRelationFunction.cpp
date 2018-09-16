@@ -19,7 +19,7 @@ SideOfRelationFunction::~SideOfRelationFunction() {
   mp_obstacle = NULL;
 }
 
-vector< pair<ReferenceFrame*, bool> > SideOfRelationFunction::get_rules( ReferenceFrameSet* p_reference_frame_set ) {
+vector< pair<ReferenceFrame*, bool> > SideOfRelationFunction::getRules( ReferenceFrameSet* p_reference_frame_set ) {
   vector< pair<ReferenceFrame*, bool> > rules;
   if( p_reference_frame_set ) {
     for( unsigned int i=0; i<p_reference_frame_set->getReferenceFrames().size(); i++ ) {
@@ -62,7 +62,7 @@ vector< pair<ReferenceFrame*, bool> > SideOfRelationFunction::get_rules( Referen
   return rules;  
 }
 
-string SideOfRelationFunction::get_name() {
+string SideOfRelationFunction::getName() {
   string name = "";
   switch( m_type ) {
     default:

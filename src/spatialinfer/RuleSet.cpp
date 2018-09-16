@@ -9,7 +9,7 @@ RuleSet::RuleSet() {
 }
 
 RuleSet::~RuleSet() {
-  m_set.clear();
+  mSet.clear();
 }
 
 } // topologyinference

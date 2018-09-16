@@ -21,27 +21,27 @@ namespace tarrts {
     MLRRTstarPathPlanningInfo();
     virtual ~MLRRTstarPathPlanningInfo();
 
-    bool get_obstacle_info( int** pp_obstacle_info );
-    bool get_cost_distribution( double** pp_cost_distribution );
+    bool getObstacleInfo( int** pp_obstacle_info );
+    bool getCostDistribution( double** pp_cost_distribution );
 
-    bool get_pix_info( QString filename, double** pp_pix_info );
-    bool get_pix_info( QString filename, int** pp_pix_info );
-    void init_func_param();
+    bool getPixInfo( QString filename, double** pp_pix_info );
+    bool getPixInfo( QString filename, int** pp_pix_info );
+    void initFuncParam();
 
-    void dump_cost_distribution( QString filename );
+    void dumpCostDistribution( QString filename );
 
-    bool save_to_file( QString filename );
-    bool load_from_file( QString filename );
+    bool saveToFile( QString filename );
+    bool loadFromFile( QString filename );
 
     void read( xmlNodePtr root );
     void write( xmlDocPtr doc, xmlNodePtr root ) const;
 
-    void load_paths( std::vector<Path*> paths );
-    bool export_paths( QString filename );
+    void loadPaths( std::vector<Path*> paths );
+    bool exportPaths( QString filename );
  
-    void init_obj_pixmap();
+    void initObjPixmap();
 
-    static double calc_dist( POS2D pos_a, POS2D pos_b, double** pp_distribution, void* tree ) {
+    static double calcDist( POS2D pos_a, POS2D pos_b, double** pp_distribution, void* tree ) {
       double dist = 0.0;
       if (pos_a == pos_b) {
         return dist;
@@ -93,12 +93,12 @@ namespace tarrts {
 
       for(int x=(int)x1; x<maxX; x++) {
         if(steep) {
-          if (y>=0 && y<rrts->get_sampling_width() && x>=0 && x<rrts->get_sampling_height()) {
+          if (y>=0 && y<rrts->getSamplingWidth() && x>=0 && x<rrts->getSamplingHeight()) {
             cost += pp_distribution[y][x];
           }
         }
         else {
-          if (x>=0 && x<rrts->get_sampling_width() && y>=0 && y<rrts->get_sampling_height()) {
+          if (x>=0 && x<rrts->getSamplingWidth() && y>=0 && y<rrts->getSamplingHeight()) {
             cost += pp_distribution[x][y];
           }
         }
@@ -113,31 +113,31 @@ namespace tarrts {
     }
 
     /* Member variables */
-    QString m_info_filename;
-    QString m_map_filename;
-    QString m_map_fullpath;
-    int m_map_width;
-    int m_map_height;
+    QString mInfoFilename;
+    QString mMapFilename;
+    QString mMapFullpath;
+    int mMapWidth;
+    int mMapHeight;
 
-    QPoint m_start;
-    QPoint m_goal;
+    QPoint mStart;
+    QPoint mGoal;
 
-    QString m_paths_output;
-    bool m_min_dist_enabled;
-    QString m_objective_file;
+    QString mPathsOutput;
+    bool mMinDistEnabled;
+    QString mObjectiveFile;
 
-    COST_FUNC_PTR mp_func;
-    double** m_cost_distribution; 
+    COST_FUNC_PTR mpFunc;
+    double** mCostDistribution;
 
     QPixmap* mp_obj;
 
-    homotopy::grammar_type_t m_grammar_type;
+    homotopy::grammar_type_t mGrammarType;
 
-    int m_max_iteration_num;
-    double m_segment_length;
-    bool m_homotopic_enforcement;
+    int    mMaxIterationNum;
+    double mSegmentLength;
+    bool   mHomotopicEnforcement;
 
-    std::vector<Path*> mp_found_paths;
+    std::vector<Path*> mpFoundPaths;
   };
 
 } // tarrts

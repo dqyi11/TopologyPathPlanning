@@ -65,18 +65,18 @@ void StringClass::import( Path* p_path ) {
   if(p_path) {
     if( mp_path == NULL ) {
       mp_path = p_path;
-      m_cost = p_path->m_cost;
+      m_cost = p_path->mCost;
     }
     else {
-      if(p_path->m_cost < m_cost) {
+      if(p_path->mCost < m_cost) {
         mp_path = p_path;
-        m_cost = p_path->m_cost;
+        m_cost = p_path->mCost;
       }
     }
   }
 }
 
-std::string StringClass::get_name() {
+std::string StringClass::getName() {
   std::string name = "";
   for( unsigned int i = 0; i < m_string.size(); i ++ ) {
     if (i > 0) { 
@@ -87,22 +87,22 @@ std::string StringClass::get_name() {
   return name;
 }
 
-void StringClass::add_exp_node( ExpandingNode* p_node ) {
+void StringClass::addExpNode( ExpandingNode* p_node ) {
   if( p_node ) {
     mp_exp_nodes.push_back( p_node );
-    p_node->mp_string_classes.push_back( this );
+    p_node->mpStringClasses.push_back( this );
   }
 }
 
-void StringClass::dump_historical_data( std::string filename ) {
+void StringClass::dumpHistoricalData( std::string filename ) {
   std::ofstream hist_data_file;
   hist_data_file.open(filename.c_str());
-  hist_data_file << get_name() << std::endl;
-  write_historical_data( hist_data_file );
+  hist_data_file << getName() << std::endl;
+  writeHistoricalData( hist_data_file );
   hist_data_file.close();
 }
 
-void StringClass::write_historical_data( std::ostream& out ) {
+void StringClass::writeHistoricalData( std::ostream& out ) {
 
   for(std::vector<double>::iterator it = m_historical_data.begin();
       it != m_historical_data.end(); it++ ) {
@@ -128,31 +128,31 @@ void StringClass::record() {
 }
 
 ExpandingNode::ExpandingNode( string name ) {
-  m_name = name;
-  mp_in_edge = NULL;
-  mp_subregion = NULL;
-  mp_string_classes.clear();
-  mp_out_edges.clear();
+  mName = name;
+  mpInEdge = NULL;
+  mpSubregion = NULL;
+  mpStringClasses.clear();
+  mpOutEdges.clear();
 }
 
 ExpandingNode::~ExpandingNode() {
-  mp_in_edge = NULL;
-  mp_subregion = NULL;
-  mp_string_classes.clear();
-  mp_out_edges.clear();
+  mpInEdge = NULL;
+  mpSubregion = NULL;
+  mpStringClasses.clear();
+  mpOutEdges.clear();
 }
 
-ExpandingNode* ExpandingNode::get_parent_node() {
-  if( mp_in_edge ) {
-    return mp_in_edge->mp_from; 
+ExpandingNode* ExpandingNode::getParentNode() {
+  if( mpInEdge ) {
+    return mpInEdge->mpFrom; 
   }
   return NULL;
 }
 
-std::vector<ExpandingNode*> ExpandingNode::get_child_nodes() {
+std::vector<ExpandingNode*> ExpandingNode::getChildNodes() {
   std::vector<ExpandingNode*> nodes;
-  for( unsigned int i = 0; i < mp_out_edges.size(); i ++ ) {
-    ExpandingNode* p_node = mp_out_edges[i]->mp_to;
+  for( unsigned int i = 0; i < mpOutEdges.size(); i ++ ) {
+    ExpandingNode* p_node = mpOutEdges[i]->mpTo;
     if( p_node ) {
       nodes.push_back( p_node );
     }
@@ -160,16 +160,16 @@ std::vector<ExpandingNode*> ExpandingNode::get_child_nodes() {
   return nodes;
 }
 
-POS2D ExpandingNode::sample_random_pos() {
+POS2D ExpandingNode::sampleRandomPos() {
   POS2D pos( 0, 0 );
-  if( mp_subregion ) {
-    Point2D point = mp_subregion->samplePosition();
+  if( mpSubregion ) {
+    Point2D point = mpSubregion->samplePosition();
     pos = toPOS2D( point );
   }
   return pos;
 }
 
-std::vector<POS2D> ExpandingNode::find_feasible_path( ExpandingEdge* p_in_edge, ExpandingEdge* p_out_edge ) {
+std::vector<POS2D> ExpandingNode::findFeasiblePath( ExpandingEdge* p_in_edge, ExpandingEdge* p_out_edge ) {
   std::vector<POS2D> paths;
   if( p_in_edge && p_out_edge ) {
 
@@ -177,29 +177,29 @@ std::vector<POS2D> ExpandingNode::find_feasible_path( ExpandingEdge* p_in_edge, 
   return paths;
 }
 
-ExpandingEdge* ExpandingNode::find_out_edge( std::string name ) {
+ExpandingEdge* ExpandingNode::findOutEdge( std::string name ) {
 
   ExpandingEdge* p_edge = NULL;
-  for(vector<ExpandingEdge*>::iterator it = mp_out_edges.begin(); it != mp_out_edges.end(); it++ ) {
+  for(vector<ExpandingEdge*>::iterator it = mpOutEdges.begin(); it != mpOutEdges.end(); it++ ) {
     ExpandingEdge* p_current_edge = (*it);
-    if( p_current_edge->m_name == name ) {
+    if( p_current_edge->mName == name ) {
       return p_current_edge;
     } 
   }
   return p_edge;
 }
    
-void ExpandingNode::import_ancestor_seq ( std::vector<ExpandingNode*> ancestor_seq ) {
-  mp_ancestor_seq.clear();
+void ExpandingNode::importAncestorSeq ( std::vector<ExpandingNode*> ancestor_seq ) {
+  mpAncestorSeq.clear();
   for( unsigned int i = 0; i < ancestor_seq.size(); i++ ) {
     ExpandingNode* p_node = ancestor_seq[i ];
-    mp_ancestor_seq.push_back( p_node );
+    mpAncestorSeq.push_back( p_node );
   }
 }
 
-bool ExpandingNode::has_out_edge( ExpandingEdge* p_edge ) {
+bool ExpandingNode::hasOutEdge( ExpandingEdge* p_edge ) {
 
-  for(vector<ExpandingEdge*>::iterator it = mp_out_edges.begin(); it != mp_out_edges.end(); it++ ) {
+  for(vector<ExpandingEdge*>::iterator it = mpOutEdges.begin(); it != mpOutEdges.end(); it++ ) {
     ExpandingEdge* p_current_edge = (*it);
     if( p_current_edge == p_edge ) {
       return true;
@@ -208,17 +208,17 @@ bool ExpandingNode::has_out_edge( ExpandingEdge* p_edge ) {
   return false;
 }
 
-std::vector<std::string> ExpandingNode::get_substring() {
+std::vector<std::string> ExpandingNode::getSubstring() {
   std::vector<std::string> substring;
-  for( unsigned int i = 0; i < mp_ancestor_seq.size(); i++ ) {
-    substring.push_back( mp_ancestor_seq[i]->m_name );
+  for( unsigned int i = 0; i < mpAncestorSeq.size(); i++ ) {
+    substring.push_back( mpAncestorSeq[i]->mName );
   }
   return substring;
 }
 
-bool ExpandingNode::is_ancestor( ExpandingNode* p_node ) {
-  for( vector<ExpandingNode*>::iterator it = mp_ancestor_seq.begin();
-       it != mp_ancestor_seq.end(); it++) {
+bool ExpandingNode::isAncestor( ExpandingNode* p_node ) {
+  for( vector<ExpandingNode*>::iterator it = mpAncestorSeq.begin();
+       it != mpAncestorSeq.end(); it++) {
     ExpandingNode* p_ancestor_node = (*it);
     if( p_ancestor_node == p_node ) {
       return false;
@@ -228,40 +228,40 @@ bool ExpandingNode::is_ancestor( ExpandingNode* p_node ) {
 }
 
 ExpandingEdge::ExpandingEdge( string name ) {
-  m_name = name;
-  mp_from = NULL;
-  mp_to = NULL;
-  mp_line_subsegment = NULL;
-  mp_reference_frame = NULL;
+  mName = name;
+  mpFrom = NULL;
+  mpTo = NULL;
+  mpLineSubsegment = NULL;
+  mpReferenceFrame = NULL;
 }
 
 ExpandingEdge::~ExpandingEdge() {
-  mp_from = NULL;
-  mp_to = NULL;
-  mp_line_subsegment = NULL;
-  mp_reference_frame = NULL;
+  mpFrom = NULL;
+  mpTo = NULL;
+  mpLineSubsegment = NULL;
+  mpReferenceFrame = NULL;
 }
 
-void ExpandingEdge::import_ancestor_seq ( std::vector<ExpandingEdge*> ancestor_seq ) {
-  mp_ancestor_seq.clear();
+void ExpandingEdge::importAncestorSeq ( std::vector<ExpandingEdge*> ancestor_seq ) {
+  mpAncestorSeq.clear();
   for( unsigned int i = 0; i < ancestor_seq.size(); i++ ) {
     ExpandingEdge* p_edge = ancestor_seq[i ];
-    mp_ancestor_seq.push_back( p_edge );
+    mpAncestorSeq.push_back( p_edge );
   }
 }
 
-std::vector<std::string> ExpandingEdge::get_substring() {
+std::vector<std::string> ExpandingEdge::getSubstring() {
   std::vector<std::string> substring;
-  for( unsigned int i = 0; i < mp_ancestor_seq.size(); i++ ) {
-    substring.push_back( mp_ancestor_seq[i]->m_name );
+  for( unsigned int i = 0; i < mpAncestorSeq.size(); i++ ) {
+    substring.push_back( mpAncestorSeq[i]->mName );
   }
   return substring;
 }
 
-POS2D ExpandingEdge::sample_random_pos() {
+POS2D ExpandingEdge::sampleRandomPos() {
   POS2D pos( 0, 0 );
-  if( mp_line_subsegment ) {
-    Point2D point = mp_line_subsegment->samplePosition();
+  if( mpLineSubsegment ) {
+    Point2D point = mpLineSubsegment->samplePosition();
     pos = toPOS2D( point );
   }
   return pos;
@@ -269,14 +269,14 @@ POS2D ExpandingEdge::sample_random_pos() {
 
 ExpandingTree::ExpandingTree() {
 
-  mp_root = NULL;
-  m_nodes.clear();
+  mpRoot = NULL;
+  mNodes.clear();
 }
 
 ExpandingTree::~ExpandingTree() {
   
-  mp_root = NULL;
-  m_nodes.clear();
+  mpRoot = NULL;
+  mNodes.clear();
 }
 
 std::vector< StringClass* > ExpandingTree::init( homotopy::StringGrammar * p_grammar, homotopy::ReferenceFrameSet* p_reference_frame_set ) {
@@ -314,70 +314,70 @@ std::vector< StringClass* > ExpandingTree::init( homotopy::StringGrammar * p_gra
       homotopy::Adjacency adj = path[ j ];
       if ( p_current_node == NULL ) {
         /* first node */
-        if( mp_root == NULL ) {
+        if( mpRoot == NULL ) {
           /* root uninitialized */
-          mp_root = new ExpandingNode( adj.mp_state->mName );
-          mp_root->import_ancestor_seq( node_seq );
-          node_seq.push_back( mp_root );
+          mpRoot = new ExpandingNode( adj.mp_state->mName );
+          mpRoot->importAncestorSeq( node_seq );
+          node_seq.push_back( mpRoot );
           if ( p_reference_frame_set 
                && p_reference_frame_set->getWorldMap() ) {
-            mp_root->mp_subregion = p_reference_frame_set->getWorldMap()->findSubregion( adj.mp_state->mName );
+            mpRoot->mpSubregion = p_reference_frame_set->getWorldMap()->findSubregion( adj.mp_state->mName );
           }
-          m_nodes.push_back( mp_root );
-          p_string_class->add_exp_node( mp_root );
-          p_current_node = mp_root;
+          mNodes.push_back( mpRoot );
+          p_string_class->addExpNode( mpRoot );
+          p_current_node = mpRoot;
         }
         else {
           /* root initialized */
-          p_string_class->add_exp_node( mp_root );
-          p_current_node = mp_root;
-          if( p_current_node->m_name != adj.mp_state->mName ) {
-            cout << "ERROR [ROOT MISMATCH] Root Name=\"" << p_current_node->m_name <<"\" Adj State Name =\"" << adj.mp_state->mName << "\""  << endl;
+          p_string_class->addExpNode( mpRoot );
+          p_current_node = mpRoot;
+          if( p_current_node->mName != adj.mp_state->mName ) {
+            cout << "ERROR [ROOT MISMATCH] Root Name=\"" << p_current_node->mName <<"\" Adj State Name =\"" << adj.mp_state->mName << "\""  << endl;
           }
-          node_seq.push_back( mp_root );
+          node_seq.push_back( mpRoot );
         }                
       } 
       else {
         /* not first node */
-        ExpandingEdge* p_edge = p_current_node->find_out_edge( adj.mp_transition->m_name );
+        ExpandingEdge* p_edge = p_current_node->findOutEdge( adj.mp_transition->m_name );
         if( p_edge == NULL ) {
           /* no edge found */ 
           p_edge = new ExpandingEdge( adj.mp_transition->m_name );
-          p_edge->mp_from = p_current_node;
-          p_edge->import_ancestor_seq( edge_seq );
+          p_edge->mpFrom = p_current_node;
+          p_edge->importAncestorSeq( edge_seq );
           edge_seq.push_back( p_edge );
           if ( p_reference_frame_set 
                && p_reference_frame_set->getWorldMap() ) {
-            p_edge->mp_line_subsegment = p_reference_frame_set->getWorldMap()->findLinesubsegment( adj.mp_transition->m_name );
-            p_edge->mp_reference_frame = p_reference_frame_set->getReferenceFrame( adj.mp_transition->m_name );
+            p_edge->mpLineSubsegment = p_reference_frame_set->getWorldMap()->findLinesubsegment( adj.mp_transition->m_name );
+            p_edge->mpReferenceFrame = p_reference_frame_set->getReferenceFrame( adj.mp_transition->m_name );
           }
-          p_edge->mp_to = new ExpandingNode( adj.mp_state->mName );
-          p_edge->mp_to->mp_in_edge = p_edge;
-          p_edge->mp_from->mp_out_edges.push_back( p_edge );
-          p_edge->mp_to->import_ancestor_seq( node_seq );
-          node_seq.push_back( p_edge->mp_to );
-          p_string_class->add_exp_node( p_edge->mp_to );
+          p_edge->mpTo = new ExpandingNode( adj.mp_state->mName );
+          p_edge->mpTo->mpInEdge = p_edge;
+          p_edge->mpFrom->mpOutEdges.push_back( p_edge );
+          p_edge->mpTo->importAncestorSeq( node_seq );
+          node_seq.push_back( p_edge->mpTo );
+          p_string_class->addExpNode( p_edge->mpTo );
           if ( p_reference_frame_set 
                && p_reference_frame_set->getWorldMap() ) {
-            p_edge->mp_to->mp_subregion = p_reference_frame_set->getWorldMap()->findSubregion( adj.mp_state->mName );
+            p_edge->mpTo->mpSubregion = p_reference_frame_set->getWorldMap()->findSubregion( adj.mp_state->mName );
           }
-          m_edges.push_back( p_edge );
-          m_nodes.push_back( p_edge->mp_to );
+          mEdges.push_back( p_edge );
+          mNodes.push_back( p_edge->mpTo );
  
-          p_current_node = p_edge->mp_to;
+          p_current_node = p_edge->mpTo;
         }
         else {
           /* edge found */
-          if( p_edge->m_name == adj.mp_transition->m_name &&
-              p_edge->mp_to->m_name == adj.mp_state->mName ) {
+          if( p_edge->mName == adj.mp_transition->m_name &&
+              p_edge->mpTo->mName == adj.mp_state->mName ) {
             edge_seq.push_back( p_edge );
-            node_seq.push_back( p_edge->mp_to );
-            p_string_class->add_exp_node( p_edge->mp_to );
-            p_current_node = p_edge->mp_to;
+            node_seq.push_back( p_edge->mpTo );
+            p_string_class->addExpNode( p_edge->mpTo );
+            p_current_node = p_edge->mpTo;
           }     
           else {
-            cout << "ERROR [EDGE MISMATCH] E(" << p_edge->m_name << " || " << adj.mp_transition->m_name << ")";
-            cout << " N(" << p_edge->mp_to->m_name << " || " << adj.mp_transition->m_name << ")" << endl;
+            cout << "ERROR [EDGE MISMATCH] E(" << p_edge->mName << " || " << adj.mp_transition->m_name << ")";
+            cout << " N(" << p_edge->mpTo->mName << " || " << adj.mp_transition->m_name << ")" << endl;
           }
         }   
       }
@@ -388,10 +388,10 @@ std::vector< StringClass* > ExpandingTree::init( homotopy::StringGrammar * p_gra
   return string_classes;
 }
 
-int ExpandingTree::get_index( ExpandingNode* p_node ) {
+int ExpandingTree::getIndex( ExpandingNode* p_node ) {
 
-  for( int i = 0; i < m_nodes.size(); i++ ) {
-    if( m_nodes[i] == p_node ) {
+  for( int i = 0; i < mNodes.size(); i++ ) {
+    if( mNodes[i] == p_node ) {
       return i;
     }
   } 
@@ -400,25 +400,25 @@ int ExpandingTree::get_index( ExpandingNode* p_node ) {
 
 void ExpandingTree::output( std::string filename ) {
 
-  const unsigned int edge_num = m_edges.size();
-  const unsigned int vertex_num = m_nodes.size();
+  const unsigned int edge_num = mEdges.size();
+  const unsigned int vertex_num = mNodes.size();
  
   Graph g;
   std::vector<vertex_t> vs;
   for( unsigned int i = 0; i < vertex_num; i ++ ) {
     vertex_t vt = add_vertex( g );
-    g[vt].name = m_nodes[ i ]->m_name;
+    g[vt].name = mNodes[ i ]->mName;
     vs.push_back( vt );
   }
   std::vector<edge_t> es;
   for( unsigned int i = 0; i < edge_num; i ++ ) {
     bool b = false;
     edge_t et;
-    ExpandingEdge* p_edge = m_edges[ i ];
-    int s_i = get_index( p_edge->mp_from );
-    int g_i = get_index( p_edge->mp_to );
+    ExpandingEdge* p_edge = mEdges[ i ];
+    int s_i = getIndex( p_edge->mpFrom );
+    int g_i = getIndex( p_edge->mpTo );
     tie(et, b) = add_edge( vs[s_i], vs[g_i], g );
-    g[et].name = p_edge->m_name;
+    g[et].name = p_edge->mName;
     es.push_back( et );
   }
  
@@ -427,12 +427,12 @@ void ExpandingTree::output( std::string filename ) {
  
 }  
 
-std::vector<ExpandingNode*> ExpandingTree::get_leaf_nodes() {
+std::vector<ExpandingNode*> ExpandingTree::getLeafNodes() {
   std::vector<ExpandingNode*> leaf_nodes;
-  for( std::vector<ExpandingNode*>::iterator it = m_nodes.begin();
-       it != m_nodes.end(); it++ ) {
+  for( std::vector<ExpandingNode*>::iterator it = mNodes.begin();
+       it != mNodes.end(); it++ ) {
     ExpandingNode* p_node = (*it);
-    if (p_node->mp_out_edges.size() == 0) {
+    if (p_node->mpOutEdges.size() == 0) {
       leaf_nodes.push_back( p_node );
     }
   }
@@ -441,17 +441,17 @@ std::vector<ExpandingNode*> ExpandingTree::get_leaf_nodes() {
 
 void ExpandingTree::print() {
   std::cout << "NODE " << std::endl;
-  for( unsigned int i=0; i < m_nodes.size(); i++ ) {
-    ExpandingNode* p_node = m_nodes[i];
+  for( unsigned int i=0; i < mNodes.size(); i++ ) {
+    ExpandingNode* p_node = mNodes[i];
     if(p_node) {
-      std::cout << p_node->m_name << " " << p_node->mp_subregion->getName() << " " << std::endl;
+      std::cout << p_node->mName << " " << p_node->mpSubregion->getName() << " " << std::endl;
     }
   }
   std::cout << "EDGE " << std::endl;
-  for( unsigned int i=0; i < m_edges.size(); i++ ) {
-    ExpandingEdge* p_edge = m_edges[i];
+  for( unsigned int i=0; i < mEdges.size(); i++ ) {
+    ExpandingEdge* p_edge = mEdges[i];
     if(p_edge) {
-      std::cout << p_edge->m_name << " " << p_edge->mp_reference_frame->getName() << " " << p_edge->mp_line_subsegment->getName() << std::endl;
+      std::cout << p_edge->mName << " " << p_edge->mpReferenceFrame->getName() << " " << p_edge->mpLineSubsegment->getName() << std::endl;
     }
   }
 }

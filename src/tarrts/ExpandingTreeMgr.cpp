@@ -11,25 +11,25 @@ namespace tarrts {
 
 SubRegionMgr::SubRegionMgr( SubRegion* p_subregion ) {
   
-  mp_subregion = p_subregion;
-  mp_nodes.clear();
+  mpSubregion = p_subregion;
+  mpNodes.clear();
 }
     
 SubRegionMgr::~SubRegionMgr() {
   
-  mp_subregion = NULL;
-  mp_nodes.clear();
+  mpSubregion = NULL;
+  mpNodes.clear();
 }
 
-void SubRegionMgr::add_node( ExpandingNode* p_node ) {
-  mp_nodes.push_back( p_node );
+void SubRegionMgr::addNode( ExpandingNode* p_node ) {
+  mpNodes.push_back( p_node );
 }
 
-ExpandingNode* SubRegionMgr::find_node( string name ) {
-  for(vector<ExpandingNode*>::iterator it = mp_nodes.begin();
-      it != mp_nodes.end(); it ++ ) {
+ExpandingNode* SubRegionMgr::findNode( string name ) {
+  for(vector<ExpandingNode*>::iterator it = mpNodes.begin();
+      it != mpNodes.end(); it ++ ) {
     ExpandingNode* p_node = (*it);
-    if( p_node->m_name == name ) {
+    if( p_node->mName == name ) {
       return p_node;
     }
   }
@@ -38,25 +38,25 @@ ExpandingNode* SubRegionMgr::find_node( string name ) {
 
 LineSubSegmentMgr::LineSubSegmentMgr( LineSubSegment* p_line_subsegment ) {
 
-  mp_line_subsegment = p_line_subsegment;
-  mp_edges.clear();
+  mpLineSubsegment = p_line_subsegment;
+  mpEdges.clear();
 }
 
 LineSubSegmentMgr::~LineSubSegmentMgr() {
 
-  mp_line_subsegment = NULL;
-  mp_edges.clear();
+  mpLineSubsegment = NULL;
+  mpEdges.clear();
 }
 
-void LineSubSegmentMgr::add_edge( ExpandingEdge* p_edge ) {
-  mp_edges.push_back( p_edge );
+void LineSubSegmentMgr::addEdge( ExpandingEdge* p_edge ) {
+  mpEdges.push_back( p_edge );
 }
 
-ExpandingEdge* LineSubSegmentMgr::find_edge( string name ) {
-  for(vector<ExpandingEdge*>::iterator it = mp_edges.begin();
-      it != mp_edges.end(); it ++ ) {
+ExpandingEdge* LineSubSegmentMgr::findEdge( string name ) {
+  for(vector<ExpandingEdge*>::iterator it = mpEdges.begin();
+      it != mpEdges.end(); it ++ ) {
     ExpandingEdge* p_edge = (*it);
-    if( p_edge->m_name == name ) {
+    if( p_edge->mName == name ) {
       return p_edge;
     }
   }
@@ -65,49 +65,49 @@ ExpandingEdge* LineSubSegmentMgr::find_edge( string name ) {
 
 ExpandingTreeMgr::ExpandingTreeMgr() {
 
-  mp_expanding_tree = NULL;
-  mp_string_grammar = NULL;
+  mpExpandingTree = NULL;
+  mpStringGrammar = NULL;
 }
 
 ExpandingTreeMgr::~ExpandingTreeMgr() {
   
-  mp_expanding_tree = NULL;
-  mp_string_grammar = NULL;
-  mp_string_classes.clear();
-  for(vector<SubRegionMgr*>::iterator it = mp_subregion_mgrs.begin(); 
-      it != mp_subregion_mgrs.end(); it++) {
+  mpExpandingTree = NULL;
+  mpStringGrammar = NULL;
+  mpStringClasses.clear();
+  for(vector<SubRegionMgr*>::iterator it = mpSubregionMgrs.begin(); 
+      it != mpSubregionMgrs.end(); it++) {
     SubRegionMgr* p_mgr = (*it);
     delete p_mgr;
     p_mgr = NULL;
   }
-  for(vector<LineSubSegmentMgr*>::iterator it = mp_line_subsegment_mgrs.begin();
-      it != mp_line_subsegment_mgrs.end(); it++) { 
+  for(vector<LineSubSegmentMgr*>::iterator it = mpLineSubsegmentMgrs.begin();
+      it != mpLineSubsegmentMgrs.end(); it++) { 
     LineSubSegmentMgr* p_mgr = (*it);
     delete p_mgr;
     p_mgr = NULL;
   }
-  mp_subregion_mgrs.clear();
-  mp_line_subsegment_mgrs.clear();
+  mpSubregionMgrs.clear();
+  mpLineSubsegmentMgrs.clear();
 }
 
-SubRegionMgr* ExpandingTreeMgr::find_subregion_mgr( SubRegion* p_subregion ) {
+SubRegionMgr* ExpandingTreeMgr::findSubregionMgr( SubRegion* p_subregion ) {
 
-  for(vector<SubRegionMgr*>::iterator it = mp_subregion_mgrs.begin(); 
-      it != mp_subregion_mgrs.end(); it++) {
+  for(vector<SubRegionMgr*>::iterator it = mpSubregionMgrs.begin(); 
+      it != mpSubregionMgrs.end(); it++) {
     SubRegionMgr* p_mgr = (*it);
-    if( p_mgr->mp_subregion == p_subregion ) {
+    if( p_mgr->mpSubregion == p_subregion ) {
       return p_mgr;
     } 
   }
   return NULL;
 }
 
-LineSubSegmentMgr* ExpandingTreeMgr::find_line_subsegment_mgr( LineSubSegment* p_line_subsegment ) {
+LineSubSegmentMgr* ExpandingTreeMgr::findLineSubsegmentMgr( LineSubSegment* p_line_subsegment ) {
 
-  for(vector<LineSubSegmentMgr*>::iterator it = mp_line_subsegment_mgrs.begin();
-      it != mp_line_subsegment_mgrs.end(); it++) { 
+  for(vector<LineSubSegmentMgr*>::iterator it = mpLineSubsegmentMgrs.begin();
+      it != mpLineSubsegmentMgrs.end(); it++) { 
     LineSubSegmentMgr* p_mgr = (*it);
-    if( p_mgr->mp_line_subsegment == p_line_subsegment ) {
+    if( p_mgr->mpLineSubsegment == p_line_subsegment ) {
       return p_mgr;
     }
   }
@@ -115,59 +115,59 @@ LineSubSegmentMgr* ExpandingTreeMgr::find_line_subsegment_mgr( LineSubSegment* p
 }
 
 void ExpandingTreeMgr::init( StringGrammar* p_grammar, ReferenceFrameSet* p_reference_frame_set ) {
-  if ( mp_expanding_tree ) {
-    delete mp_expanding_tree;
-    mp_expanding_tree = NULL;
+  if ( mpExpandingTree ) {
+    delete mpExpandingTree;
+    mpExpandingTree = NULL;
   }
-  for( vector<StringClass*>::iterator it = mp_string_classes.begin();
-       it != mp_string_classes.end(); it++ ) {
+  for( vector<StringClass*>::iterator it = mpStringClasses.begin();
+       it != mpStringClasses.end(); it++ ) {
     StringClass* p_string_class = (*it);
     delete p_string_class;
     p_string_class = NULL;
   }
-  mp_string_classes.clear();   
+  mpStringClasses.clear();   
 
-  mp_string_grammar = p_grammar;
-  mp_expanding_tree = new ExpandingTree();
+  mpStringGrammar = p_grammar;
+  mpExpandingTree = new ExpandingTree();
   /* init string classes */
-  mp_string_classes = mp_expanding_tree->init( p_grammar, p_reference_frame_set );
+  mpStringClasses = mpExpandingTree->init( p_grammar, p_reference_frame_set );
 
-  for( vector<ExpandingNode*>::iterator it = mp_expanding_tree->m_nodes.begin();
-       it != mp_expanding_tree->m_nodes.end(); it ++ ) {
+  for( vector<ExpandingNode*>::iterator it = mpExpandingTree->mNodes.begin();
+       it != mpExpandingTree->mNodes.end(); it ++ ) {
     ExpandingNode* p_node = (*it);
-    SubRegionMgr* p_mgr = find_subregion_mgr( p_node->mp_subregion );
+    SubRegionMgr* p_mgr = findSubregionMgr( p_node->mpSubregion );
     if( p_mgr == NULL ) {
-      p_mgr = new SubRegionMgr( p_node->mp_subregion );
-      mp_subregion_mgrs.push_back( p_mgr );
+      p_mgr = new SubRegionMgr( p_node->mpSubregion );
+      mpSubregionMgrs.push_back( p_mgr );
     }
-    p_mgr->add_node( p_node );   
+    p_mgr->addNode( p_node );   
   } 
-  for( vector<ExpandingEdge*>::iterator it = mp_expanding_tree->m_edges.begin(); 
-       it != mp_expanding_tree->m_edges.end(); it ++ ) {
+  for( vector<ExpandingEdge*>::iterator it = mpExpandingTree->mEdges.begin(); 
+       it != mpExpandingTree->mEdges.end(); it ++ ) {
     ExpandingEdge* p_edge = (*it);
-    LineSubSegmentMgr* p_mgr = find_line_subsegment_mgr( p_edge->mp_line_subsegment );
+    LineSubSegmentMgr* p_mgr = findLineSubsegmentMgr( p_edge->mpLineSubsegment );
     if( p_mgr == NULL ) {
-      p_mgr = new LineSubSegmentMgr( p_edge->mp_line_subsegment );
-      mp_line_subsegment_mgrs.push_back( p_mgr );
+      p_mgr = new LineSubSegmentMgr( p_edge->mpLineSubsegment );
+      mpLineSubsegmentMgrs.push_back( p_mgr );
     }
-    p_mgr->add_edge( p_edge );
+    p_mgr->addEdge( p_edge );
   }
 }
 
-void ExpandingTreeMgr::export_subregion_mgrs( string filename ) {
+void ExpandingTreeMgr::exportSubregionMgrs( string filename ) {
 
   ofstream outfile( filename.c_str() );
-  for( unsigned int i = 0; i < mp_subregion_mgrs.size(); i ++ ) {
-    SubRegionMgr* p_mgr = mp_subregion_mgrs[i];
+  for( unsigned int i = 0; i < mpSubregionMgrs.size(); i ++ ) {
+    SubRegionMgr* p_mgr = mpSubregionMgrs[i];
     if( p_mgr ) {
-      outfile << p_mgr->mp_subregion->getName();
-      outfile << " ( " << p_mgr->mp_nodes.size() << " ) " << endl;
-      for( unsigned int j = 0; j < p_mgr->mp_nodes.size(); j ++ ) {
-        ExpandingNode* p_node = p_mgr->mp_nodes[j];
+      outfile << p_mgr->mpSubregion->getName();
+      outfile << " ( " << p_mgr->mpNodes.size() << " ) " << endl;
+      for( unsigned int j = 0; j < p_mgr->mpNodes.size(); j ++ ) {
+        ExpandingNode* p_node = p_mgr->mpNodes[j];
         outfile << "\t" << p_node << endl;
-        if( p_node->mp_in_edge ) {
-          if( p_node->mp_in_edge->mp_from ) {
-            outfile << "\t\t" << p_node->mp_in_edge->mp_from->m_name << endl;
+        if( p_node->mpInEdge ) {
+          if( p_node->mpInEdge->mpFrom ) {
+            outfile << "\t\t" << p_node->mpInEdge->mpFrom->mName << endl;
           }
         }
       }
@@ -180,8 +180,8 @@ void ExpandingTreeMgr::export_subregion_mgrs( string filename ) {
 
 void ExpandingTreeMgr::record() {
 
-  for(std::vector< StringClass* >::iterator it = mp_string_classes.begin();
-      it != mp_string_classes.end(); it++ ) {
+  for(std::vector< StringClass* >::iterator it = mpStringClasses.begin();
+      it != mpStringClasses.end(); it++ ) {
     StringClass* p_str_cls = (*it);
     if(p_str_cls) {
       p_str_cls->record();
@@ -189,15 +189,15 @@ void ExpandingTreeMgr::record() {
   }
 }
 
-void ExpandingTreeMgr::dump_historical_data( std::string filename ) {
+void ExpandingTreeMgr::dumpHistoricalData( std::string filename ) {
   std::ofstream hist_data_file;
   hist_data_file.open(filename.c_str());
-  for(std::vector< StringClass* >::iterator it = mp_string_classes.begin();
-      it != mp_string_classes.end(); it++ ) {
+  for(std::vector< StringClass* >::iterator it = mpStringClasses.begin();
+      it != mpStringClasses.end(); it++ ) {
     StringClass* p_str_cls = (*it);
     if(p_str_cls) {
-      hist_data_file << p_str_cls->get_name() << " : ";
-      p_str_cls->write_historical_data( hist_data_file );
+      hist_data_file << p_str_cls->getName() << " : ";
+      p_str_cls->writeHistoricalData( hist_data_file );
     }
   }
   hist_data_file.close();

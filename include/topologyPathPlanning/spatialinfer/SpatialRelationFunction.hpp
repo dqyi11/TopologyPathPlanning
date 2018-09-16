@@ -15,8 +15,8 @@ namespace topologyinference {
     SpatialRelationFunction() {};
     virtual ~SpatialRelationFunction() {};
 
-    virtual std::vector< std::pair<homotopy::ReferenceFrame*, bool> > get_rules( homotopy::ReferenceFrameSet* p_reference_frame_set ) = 0; 
-    virtual std::string get_name() = 0;
+    virtual std::vector< std::pair<homotopy::ReferenceFrame*, bool> > getRules( homotopy::ReferenceFrameSet* p_reference_frame_set ) = 0; 
+    virtual std::string getName() = 0;
   };
 
 } // topologyinference

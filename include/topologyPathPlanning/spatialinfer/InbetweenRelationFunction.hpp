@@ -13,10 +13,10 @@ namespace topologyinference {
     InBetweenRelationFunction();
     virtual ~InBetweenRelationFunction();
 
-    virtual std::vector< std::pair< homotopy::ReferenceFrame*, bool> > get_rules( homotopy::ReferenceFrameSet* p_reference_frame_set ); 
-    virtual std::string get_name();
+    virtual std::vector< std::pair< homotopy::ReferenceFrame*, bool> > getRules( homotopy::ReferenceFrameSet* p_reference_frame_set ); 
+    virtual std::string getName();
 
-    std::vector<homotopy::Obstacle*> mp_obstacles;
+    std::vector<homotopy::Obstacle*> mpObstacles;
   };
 
 } // topologyinference

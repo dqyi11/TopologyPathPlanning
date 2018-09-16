@@ -8,31 +8,31 @@ namespace topologyPathPlanning {
 namespace topologyinference {
 
 StringClass::StringClass( vector< std::string > string ) {
-  m_string = string;
+  mString = string;
 }
 
 StringClass::~StringClass() {
-  mp_reference_frames.clear();
+  mpReferenceFrames.clear();
 }
   
-string StringClass::get_name() {
+string StringClass::getName() {
   string name = "";
-  for( unsigned int i=0; i<m_string.size(); i++ ) {
+  for( unsigned int i=0; i<mString.size(); i++ ) {
     if( i>0 ) {
       name += " ";
     }
-    name += m_string[i];
+    name += mString[i];
   }
   return name;
 }
 
 void StringClass::init( ReferenceFrameSet* p_rfs ) {
   if( p_rfs ) {
-    for( unsigned int i=0; i < m_string.size(); i++ ) {
-      string id = m_string[i];
+    for( unsigned int i=0; i < mString.size(); i++ ) {
+      string id = mString[i];
       ReferenceFrame* p_rf = p_rfs->getReferenceFrame( id );
       if( p_rf ) {
-        mp_reference_frames.push_back( p_rf );
+        mpReferenceFrames.push_back( p_rf );
       }
     }
   } 
@@ -51,35 +51,35 @@ bool contains( vector< string > string_set, string string_item ) {
 }
 
 SpatialRelationMgr::SpatialRelationMgr( WorldMap* p_worldmap ) {
-  mp_worldmap = p_worldmap;
-  mp_functions.clear();
-  mp_string_classes.clear();
-  m_rules.clear();
-  m_start_x = -1;
-  m_start_y = -1;
-  m_goal_x = -1;
-  m_goal_y = -1;
+  mpWorldmap = p_worldmap;
+  mpFunctions.clear();
+  mpStringClasses.clear();
+  mRules.clear();
+  mStartX = -1;
+  mStartY = -1;
+  mGoalX = -1;
+  mGoalY = -1;
 }
 
 SpatialRelationMgr::~SpatialRelationMgr() {
-  mp_worldmap = NULL;
-  mp_functions.clear();
-  for( vector<StringClass*>::iterator it = mp_string_classes.begin();
-       it != mp_string_classes.end(); it++ ) {
+  mpWorldmap = NULL;
+  mpFunctions.clear();
+  for( vector<StringClass*>::iterator it = mpStringClasses.begin();
+       it != mpStringClasses.end(); it++ ) {
     StringClass* p_str_cls = (*it);
     delete p_str_cls;
     p_str_cls = NULL;
   }
-  mp_string_classes.clear();
-  m_rules.clear();
+  mpStringClasses.clear();
+  mRules.clear();
 }
 
-vector< pair<ReferenceFrame*, bool> > SpatialRelationMgr::get_rules( ReferenceFrameSet* p_reference_frame_set ) {
+vector< pair<ReferenceFrame*, bool> > SpatialRelationMgr::getRules( ReferenceFrameSet* p_reference_frame_set ) {
   vector< pair<ReferenceFrame*, bool> > rules;
-  for( unsigned int i=0; i < mp_functions.size(); i++ ) {
-    cout << "FUNC: " << mp_functions[i]->get_name() << endl;
-    vector< pair<ReferenceFrame*, bool> > rfs = mp_functions[i]->get_rules( p_reference_frame_set );
-    print_rules( rfs );
+  for( unsigned int i=0; i < mpFunctions.size(); i++ ) {
+    cout << "FUNC: " << mpFunctions[i]->getName() << endl;
+    vector< pair<ReferenceFrame*, bool> > rfs = mpFunctions[i]->getRules( p_reference_frame_set );
+    printRules( rfs );
     for( unsigned int j=0; j < rfs.size(); j ++ ) {
       rules.push_back( rfs[j] );
     } 
@@ -87,31 +87,31 @@ vector< pair<ReferenceFrame*, bool> > SpatialRelationMgr::get_rules( ReferenceFr
   return rules;
 }
 
-void SpatialRelationMgr::print_rules( vector< pair< ReferenceFrame*, bool > > rules ) {
+void SpatialRelationMgr::printRules( vector< pair< ReferenceFrame*, bool > > rules ) {
 
   cout << "RULES" << endl;
-  for( unsigned int i=0; i<m_rules.size(); i++ ) {
-    pair<ReferenceFrame*, bool> rule = m_rules[i];
+  for( unsigned int i=0; i<mRules.size(); i++ ) {
+    pair<ReferenceFrame*, bool> rule = mRules[i];
     cout << rule.first->getName() << " " << rule.second << endl;
   }
 }
 
-vector< string > SpatialRelationMgr::get_spatial_relation_function_names() {
+vector< string > SpatialRelationMgr::getSpatialRelationFunctionNames() {
   vector< string > names;
-  for(unsigned int i=0; i < mp_functions.size(); i++) {
-    SpatialRelationFunction* p_func = mp_functions[i];
+  for(unsigned int i=0; i < mpFunctions.size(); i++) {
+    SpatialRelationFunction* p_func = mpFunctions[i];
     if( p_func ) {
-      names.push_back( p_func->get_name() );
+      names.push_back( p_func->getName() );
     }
   }
   return names;
 }
 
-bool SpatialRelationMgr::has_spatial_relation_function( string name ) {
-  for(unsigned int i=0; i < mp_functions.size(); i++) {
-    SpatialRelationFunction* p_func = mp_functions[i];
+bool SpatialRelationMgr::hasSpatialRelationFunction( string name ) {
+  for(unsigned int i=0; i < mpFunctions.size(); i++) {
+    SpatialRelationFunction* p_func = mpFunctions[i];
     if( p_func ) {
-      if( p_func->get_name() == name ) {
+      if( p_func->getName() == name ) {
         return true;
       }
     }
@@ -119,13 +119,13 @@ bool SpatialRelationMgr::has_spatial_relation_function( string name ) {
   return false;
 }
 
-void SpatialRelationMgr::remove_spatial_relation_function( string name ) {
+void SpatialRelationMgr::removeSpatialRelationFunction( string name ) {
 
-  for( vector<SpatialRelationFunction*>::iterator it = mp_functions.begin();
-       it != mp_functions.end(); /* it ++ */ ) { 
+  for( vector<SpatialRelationFunction*>::iterator it = mpFunctions.begin();
+       it != mpFunctions.end(); /* it ++ */ ) { 
     SpatialRelationFunction* p_func = (*it);
-    if( p_func && ( p_func->get_name() == name ) ) {
-      mp_functions.erase( it );
+    if( p_func && ( p_func->getName() == name ) ) {
+      mpFunctions.erase( it );
     }
     else {
       ++ it;
@@ -133,18 +133,18 @@ void SpatialRelationMgr::remove_spatial_relation_function( string name ) {
   }
 }
 
-void SpatialRelationMgr::get_string_classes( ReferenceFrameSet* p_rfs  ) {
-  mp_string_classes.clear();
-  m_rules.clear();
+void SpatialRelationMgr::getStringClasses( ReferenceFrameSet* p_rfs  ) {
+  mpStringClasses.clear();
+  mRules.clear();
   vector< vector< string > > string_set;
   
   if( p_rfs ) {
-    StringGrammar* p_grammar = p_rfs->getStringGrammar( m_start_x, m_start_y, m_goal_x, m_goal_y );
+    StringGrammar* p_grammar = p_rfs->getStringGrammar( mStartX, mStartY, mGoalX, mGoalY );
     if( p_grammar ){
       vector< vector< string > > all_simple_strings = p_grammar->findSimpleStrings(); 
-      m_rules = get_rules( p_rfs );
-      print_rules( m_rules );
-      string_set = filter( all_simple_strings, m_rules );
+      mRules = getRules( p_rfs );
+      printRules( mRules );
+      string_set = filter( all_simple_strings, mRules );
         
       delete p_grammar;
       p_grammar=NULL;
@@ -155,7 +155,7 @@ void SpatialRelationMgr::get_string_classes( ReferenceFrameSet* p_rfs  ) {
     vector< string > item = (*it);
     StringClass* p_class = new StringClass( item );
     p_class->init( p_rfs );
-    mp_string_classes.push_back( p_class );
+    mpStringClasses.push_back( p_class );
   }
 
 }
@@ -166,7 +166,7 @@ vector< vector< string > > SpatialRelationMgr::filter( vector< vector< string > 
   for( vector< vector< string > >::iterator it = string_set.begin();
        it != string_set.end(); it++ ) {
     vector< string > item = (*it);
-    if( is_eligible( item, rules ) ) {
+    if( isEligible( item, rules ) ) {
       output_set.push_back( item );
     }
   }
@@ -174,18 +174,18 @@ vector< vector< string > > SpatialRelationMgr::filter( vector< vector< string > 
 }
 
 
-bool SpatialRelationMgr::is_eligible( vector< string > string_item, vector< pair< ReferenceFrame*, bool > > rules ) {
+bool SpatialRelationMgr::isEligible( vector< string > string_item, vector< pair< ReferenceFrame*, bool > > rules ) {
   for( vector< pair< ReferenceFrame*, bool > >::iterator it = rules.begin();
        it != rules.end(); it ++ ) {
     pair< ReferenceFrame*, bool> rule = (*it);
-    if( false == is_eligible( string_item, rule ) ) {
+    if( false == isEligible( string_item, rule ) ) {
       return false;
     }
   }
   return true;
 }
 
-bool SpatialRelationMgr::is_eligible( vector< string > string_item, pair< ReferenceFrame*, bool > rule ) {
+bool SpatialRelationMgr::isEligible( vector< string > string_item, pair< ReferenceFrame*, bool > rule ) {
   bool positive = rule.second;
   ReferenceFrame* p_rf = rule.first;
   if( contains( string_item, p_rf->getName() ) == positive ) { 
