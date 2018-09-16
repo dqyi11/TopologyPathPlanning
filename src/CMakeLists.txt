@@ -64,34 +64,18 @@ endif()
 #message( "OpenCV_LIB:" ${OpenCV_LIBRARIES} )
 include_directories(${OpenCV_INCLUDE_DIRS})
 
-
-#add the include directories to the build
-include_directories(${PROJECT_SOURCE_DIR}/src/Homotopy
-                    ${PROJECT_SOURCE_DIR}/src/HomotopyViz 
-                    ${PROJECT_SOURCE_DIR}/src/HomotopyDemo
-                    ${PROJECT_SOURCE_DIR}/src/HARRTs
-                    ${PROJECT_SOURCE_DIR}/src/HARRTsViz
-                    ${PROJECT_SOURCE_DIR}/src/HARRTsDemo
-                    ${PROJECT_SOURCE_DIR}/src/TARRTs
-                    ${PROJECT_SOURCE_DIR}/src/TARRTsViz
-                    ${PROJECT_SOURCE_DIR}/src/TARRTsDemo
-                    ${PROJECT_SOURCE_DIR}/src/SpatialInfer
-                    ${PROJECT_SOURCE_DIR}/src/SpatialInferViz
-                    ${PROJECT_SOURCE_DIR}/src/SpatialInferDemo
-                   )
-
 add_definitions(-Wall -g -O3)
 
-add_subdirectory(Homotopy)
-add_subdirectory(HomotopyViz)
-add_subdirectory(HomotopyDemo)
-add_subdirectory(HARRTs)
-add_subdirectory(HARRTsViz)
-add_subdirectory(HARRTsDemo)
-add_subdirectory(TARRTs)
-add_subdirectory(TARRTsViz)
-add_subdirectory(TARRTsDemo)
-add_subdirectory(SpatialInfer)
-add_subdirectory(SpatialInferViz)
-add_subdirectory(SpatialInferDemo)
+add_subdirectory(homotopy)
+add_subdirectory(homotopyviz)
+add_subdirectory(harrts)
+add_subdirectory(harrtsviz)
+add_subdirectory(tarrts)
+add_subdirectory(tarrtsviz)
+add_subdirectory(spatialinfer)
+add_subdirectory(spatialinferviz)
+#add_subdirectory(homotopydemo)
+#add_subdirectory(harrtsdemo)
+#add_subdirectory(tarrtsdemo)
+add_subdirectory(spatialinferdemo)
 

@@ -1,16 +1,21 @@
 cmake_minimum_required(VERSION 2.8)
-project(tbpp)
+project(topologyPathPlanning)
 
 set(HARRTS_VERSION 1.0)
-#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-#set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
-#set(CMAKE_INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+set(INCLUDE_INSTALL_DIR "include")
+set(LIBRARY_INSTALL_DIR "lib")
+set(CONFIG_INSTALL_DIR "${LIBRARY_INSTALL_DIR}/${PRJECT_NAME}/cmake")
 
-#set(CMAKE_SKIP_BUILD_RPATH FALSE)
-#set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
-#set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-#set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+include_directories("include")
 
 add_subdirectory(src)
 
+#==========================================================================
+# Installation.
+# 
+install(DIRECTORY "include/"
+  DESTINATION "${INCLUDE_INSTALL_DIR}")
+
+install(FILES "package.xml"
+  DESTINATION "share/${PROJECT_NAME}")
