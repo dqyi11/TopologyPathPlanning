@@ -20,13 +20,10 @@ IntersectionPoint::~IntersectionPoint() {
   mpObstacle = NULL;
 }
 
-namespace homotopy {
-
-  std::ostream& operator<<( std::ostream& out, const IntersectionPoint& other ) {
+std::ostream& operator<<( std::ostream& out, const IntersectionPoint& other ) {
     out << "P[" << other.mPoint.x() << "," << other.mPoint.y() << "]";
     out << "  (" << other.mDistToBk << ")" << std::endl;
     return out;
-  }
 }
 
 LineSubSegment::LineSubSegment( Point2D pos_a, Point2D pos_b, LineSubSegmentSet* p_subseg_set, unsigned int index, bool is_connected_to_central_point ) {
@@ -127,12 +124,10 @@ void LineSubSegment::fromXml( xmlNodePtr root ) {
 
 }
 
-namespace homotopy {
-  std::ostream& operator<<( std::ostream& out, const LineSubSegment& other ) {
-    out << "LineSubSegment [" << other.mSubseg.source().x() << "," << other.mSubseg.source().y() <<"] ==> ";
-    out << "[" << other.mSubseg.target().x() <<"," << other.mSubseg.target().y() << "]" << std::endl;
-    return out;
-  }
+std::ostream& operator<<( std::ostream& out, const LineSubSegment& other ) {
+  out << "LineSubSegment [" << other.mSubseg.source().x() << "," << other.mSubseg.source().y() <<"] ==> ";
+  out << "[" << other.mSubseg.target().x() <<"," << other.mSubseg.target().y() << "]" << std::endl;
+  return out;
 }
 
 LineSubSegmentSet::LineSubSegmentSet( Point2D pos_a, Point2D pos_b, unsigned int type, Obstacle* p_obstacle ) {
@@ -345,13 +340,12 @@ void LineSubSegmentSet::fromXml( xmlNodePtr root ) {
 
 }
 
-
 std::ostream& operator<<( std::ostream& out, const LineSubSegmentSet& other ) {
-for( unsigned int i =0; i < other.mSubsegs.size(); i++ ) {
-  LineSubSegment* seg = other.mSubsegs[i];
-  out << (*seg) << std::endl;
-}
-return out;
+    for( unsigned int i =0; i < other.mSubsegs.size(); i++ ) {
+      LineSubSegment* seg = other.mSubsegs[i];
+      out << (*seg) << std::endl;
+    }
+    return out;
 }
 
 } // homotopy

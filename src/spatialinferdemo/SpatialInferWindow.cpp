@@ -251,9 +251,9 @@ void SpatialInferWindow::updateStatusBar() {
 
 void SpatialInferWindow::onAddStart() {
   if( mpViz ) {
-    if( mpViz->get_spatial_relation_mgr() ) {
-      mpViz->get_spatial_relation_mgr()->m_start_x = mCursorPoint.x();
-      mpViz->get_spatial_relation_mgr()->m_start_y = mCursorPoint.y();
+    if( mpViz->getSpatialRelationMgr() ) {
+      mpViz->getSpatialRelationMgr()->mStartX = mCursorPoint.x();
+      mpViz->getSpatialRelationMgr()->mStartY = mCursorPoint.y();
       repaint();
     }
   }
@@ -261,9 +261,9 @@ void SpatialInferWindow::onAddStart() {
 
 void SpatialInferWindow::onAddGoal() {
   if( mpViz ) {
-    if( mpViz->get_spatial_relation_mgr() ) {
-      mpViz->get_spatial_relation_mgr()->m_goal_x = mCursorPoint.x();
-      mpViz->get_spatial_relation_mgr()->m_goal_y = mCursorPoint.y();
+    if( mpViz->getSpatialRelationMgr() ) {
+      mpViz->getSpatialRelationMgr()->mGoalX = mCursorPoint.x();
+      mpViz->getSpatialRelationMgr()->mGoalY = mCursorPoint.y();
       repaint();
     }
   }
@@ -272,7 +272,7 @@ void SpatialInferWindow::onAddGoal() {
 void SpatialInferWindow::onAddInbetweenSpatialRelation() {
   vector<Obstacle*> selected_obstacles;
   if( mpViz) {
-    selected_obstacles = mpViz->get_selected_obstacles();
+    selected_obstacles = mpViz->getSelectedObstacles();
   }
   if( selected_obstacles.size() != 2 ) {
     if( mpMsgBox ) {
@@ -284,19 +284,19 @@ void SpatialInferWindow::onAddInbetweenSpatialRelation() {
   InBetweenRelationFunction* p_func = new InBetweenRelationFunction();
   for( unsigned int i=0; i < selected_obstacles.size(); i++ ) {
     Obstacle* p_obs = selected_obstacles[i];
-    p_func->mp_obstacles.push_back( p_obs );
+    p_func->mpObstacles.push_back( p_obs );
   }
   if( mpViz ) {
-    mpViz->get_spatial_relation_mgr()->mp_functions.push_back( p_func );
+    mpViz->getSpatialRelationMgr()->mpFunctions.push_back( p_func );
   } 
-  mpViz->clear_selected_obstacles();
+  mpViz->clearSelectedObstacles();
   repaint(); 
 }
 
 void SpatialInferWindow::onAddAvoidSpatialRelation() {
   vector<Obstacle*> selected_obstacles;
   if( mpViz) {
-    selected_obstacles = mpViz->get_selected_obstacles();
+    selected_obstacles = mpViz->getSelectedObstacles();
   }
   if( selected_obstacles.size() != 1 ) {
     if( mpMsgBox ) {
@@ -306,11 +306,11 @@ void SpatialInferWindow::onAddAvoidSpatialRelation() {
     return;
   }
   AvoidRelationFunction* p_func = new AvoidRelationFunction();
-  p_func->mp_obstacle = selected_obstacles[0];
+  p_func->mpObstacle = selected_obstacles[0];
   if( mpViz ) {
-    mpViz->get_spatial_relation_mgr()->mp_functions.push_back( p_func );
+    mpViz->getSpatialRelationMgr()->mpFunctions.push_back( p_func );
   } 
-  mpViz->clear_selected_obstacles();
+  mpViz->clearSelectedObstacles();
   repaint();
   
   if( mpConfig ) {
@@ -321,7 +321,7 @@ void SpatialInferWindow::onAddAvoidSpatialRelation() {
 void SpatialInferWindow::onAddLeftofSpatialRelation() {
   vector<Obstacle*> selected_obstacles;
   if( mpViz) {
-    selected_obstacles = mpViz->get_selected_obstacles();
+    selected_obstacles = mpViz->getSelectedObstacles();
   }
   if( selected_obstacles.size() != 1 ) {
     if( mpMsgBox ) {
@@ -333,16 +333,16 @@ void SpatialInferWindow::onAddLeftofSpatialRelation() {
   SideOfRelationFunction* p_func = new SideOfRelationFunction( SIDE_TYPE_LEFT );
   p_func->mp_obstacle = selected_obstacles[0];
   if( mpViz ) {
-    mpViz->get_spatial_relation_mgr()->mp_functions.push_back( p_func );
+    mpViz->getSpatialRelationMgr()->mpFunctions.push_back( p_func );
   } 
-  mpViz->clear_selected_obstacles();
+  mpViz->clearSelectedObstacles();
   repaint(); 
 }
 
 void SpatialInferWindow::onAddRightofSpatialRelation() {
   vector<Obstacle*> selected_obstacles;
   if( mpViz) {
-    selected_obstacles = mpViz->get_selected_obstacles();
+    selected_obstacles = mpViz->getSelectedObstacles();
   }
   if( selected_obstacles.size() != 1 ) {
     if( mpMsgBox ) {
@@ -354,16 +354,16 @@ void SpatialInferWindow::onAddRightofSpatialRelation() {
   SideOfRelationFunction* p_func = new SideOfRelationFunction( SIDE_TYPE_RIGHT );
   p_func->mp_obstacle = selected_obstacles[0];
   if( mpViz ) {
-    mpViz->get_spatial_relation_mgr()->mp_functions.push_back( p_func );
+    mpViz->getSpatialRelationMgr()->mpFunctions.push_back( p_func );
   } 
-  mpViz->clear_selected_obstacles();
+  mpViz->clearSelectedObstacles();
   repaint(); 
 }
 
 void SpatialInferWindow::onAddTopofSpatialRelation() {
   vector<Obstacle*> selected_obstacles;
   if( mpViz) {
-    selected_obstacles = mpViz->get_selected_obstacles();
+    selected_obstacles = mpViz->getSelectedObstacles();
   }
   if( selected_obstacles.size() != 1 ) {
     if( mpMsgBox ) {
@@ -375,16 +375,16 @@ void SpatialInferWindow::onAddTopofSpatialRelation() {
   SideOfRelationFunction* p_func = new SideOfRelationFunction( SIDE_TYPE_TOP );
   p_func->mp_obstacle = selected_obstacles[0];
   if( mpViz ) {
-    mpViz->get_spatial_relation_mgr()->mp_functions.push_back( p_func );
+    mpViz->getSpatialRelationMgr()->mpFunctions.push_back( p_func );
   } 
-  mpViz->clear_selected_obstacles();
+  mpViz->clearSelectedObstacles();
   repaint(); 
 }
 
 void SpatialInferWindow::onAddBottomofSpatialRelation() {
   vector<Obstacle*> selected_obstacles;
   if( mpViz) {
-    selected_obstacles = mpViz->get_selected_obstacles();
+    selected_obstacles = mpViz->getSelectedObstacles();
   }
   if( selected_obstacles.size() != 1 ) {
     if( mpMsgBox ) {
@@ -396,9 +396,9 @@ void SpatialInferWindow::onAddBottomofSpatialRelation() {
   SideOfRelationFunction* p_func = new SideOfRelationFunction( SIDE_TYPE_BOTTOM );
   p_func->mp_obstacle = selected_obstacles[0];
   if( mpViz ) {
-    mpViz->get_spatial_relation_mgr()->mp_functions.push_back( p_func );
+    mpViz->getSpatialRelationMgr()->mpFunctions.push_back( p_func );
   }
-  mpViz->clear_selected_obstacles();
+  mpViz->clearSelectedObstacles();
   repaint(); 
 }
 
@@ -410,23 +410,23 @@ void SpatialInferWindow::onShowConfig() {
 }
 
 void SpatialInferWindow::onExecute() {
-  if( mpViz->get_spatial_relation_mgr()->m_start_x < 0 ||
-      mpViz->get_spatial_relation_mgr()->m_start_y < 0 ) {
+  if( mpViz->getSpatialRelationMgr()->mStartX < 0 ||
+      mpViz->getSpatialRelationMgr()->mStartY < 0 ) {
     if( mpMsgBox ) {
       mpMsgBox->setText( "Start position not set" );
       mpMsgBox->show();
     }
   } 
 
-  if( mpViz->get_spatial_relation_mgr()->m_goal_x < 0 ||
-      mpViz->get_spatial_relation_mgr()->m_goal_y < 0 ) {
+  if( mpViz->getSpatialRelationMgr()->mGoalX < 0 ||
+      mpViz->getSpatialRelationMgr()->mGoalY < 0 ) {
     if( mpMsgBox ) {
       mpMsgBox->setText( "Goal position not set" );
       mpMsgBox->show();
     } 
   }
 
-  mpViz->get_spatial_relation_mgr()->get_string_classes( mpViz->get_reference_frame_set() ); 
+  mpViz->getSpatialRelationMgr()->getStringClasses( mpViz->getReferenceFrameSet() );
   repaint();
 }
 

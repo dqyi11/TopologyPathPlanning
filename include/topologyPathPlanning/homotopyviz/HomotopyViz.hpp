@@ -45,7 +45,6 @@ namespace homotopy {
 
     LineSubSegmentSet* getSelectedLineSubsegmentSet();
     LineSubSegment*    getSelectedLineSubsegment();
-    
 
     bool save( QString filename );
     bool load( QString filename );

@@ -47,7 +47,7 @@ void SpatialInferConfig::onBtnRemoveClicked() {
     if( p_item ) {
       if( mpParentWindow ) {
         if( mpParentWindow->mpViz ) {
-          mpParentWindow->mpViz->get_spatial_relation_mgr()->remove_spatial_relation_function( p_item->text().toStdString() );
+          mpParentWindow->mpViz->getSpatialRelationMgr()->removeSpatialRelationFunction( p_item->text().toStdString() );
         }
       }
     } 
@@ -59,7 +59,7 @@ void SpatialInferConfig::updateDisplay() {
   mpListWidget->clear();
   if( mpParentWindow ) {
     if( mpParentWindow->mpViz ) {
-      vector< string > names = mpParentWindow->mpViz->get_spatial_relation_mgr()->get_spatial_relation_function_names();
+      vector< string > names = mpParentWindow->mpViz->getSpatialRelationMgr()->getSpatialRelationFunctionNames();
       for( unsigned int i = 0; i < names.size(); i++ ) {
         mpListWidget->addItem( QString::fromStdString( names[i] ) );
       }

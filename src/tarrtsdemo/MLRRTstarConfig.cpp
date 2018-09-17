@@ -15,7 +15,7 @@ MLRRTstarConfig::MLRRTstarConfig(MLRRTstarWindow * parent) {
   mpParentWindow = parent;
 
   mpCheckMinDist = new QCheckBox();
-  if (mpParentWindow->mpViz->m_PPInfo.m_min_dist_enabled==true) {
+  if (mpParentWindow->mpViz->m_PPInfo.mMinDistEnabled==true) {
     mpCheckMinDist->setChecked(true);
   }
   else {
@@ -26,16 +26,16 @@ MLRRTstarConfig::MLRRTstarConfig(MLRRTstarWindow * parent) {
 
   mpLabelIterationNum = new QLabel("Iteration Num: ");
   mpLineEditIterationNum = new QLineEdit();
-  mpLineEditIterationNum->setText(QString::number(mpParentWindow->mpViz->m_PPInfo.m_max_iteration_num));
+  mpLineEditIterationNum->setText(QString::number(mpParentWindow->mpViz->m_PPInfo.mMaxIterationNum));
   mpLineEditIterationNum->setMaximumWidth(40);
   mpLabelSegmentLength = new QLabel("Segment Len: ");
   mpLineEditSegmentLength = new QLineEdit();
-  mpLineEditSegmentLength->setText(QString::number(mpParentWindow->mpViz->m_PPInfo.m_segment_length));
+  mpLineEditSegmentLength->setText(QString::number(mpParentWindow->mpViz->m_PPInfo.mSegmentLength));
   mpLineEditSegmentLength->setMaximumWidth(40);
 
   mpLabelCost = new QLabel("Cost Map: ");
   mpLineEditCost = new QLineEdit();
-  mpLineEditCost->setText(mpParentWindow->mpViz->m_PPInfo.m_objective_file);
+  mpLineEditCost->setText(mpParentWindow->mpViz->m_PPInfo.mObjectiveFile);
   mpLineEditCost->setMaximumWidth(300);
 
   QHBoxLayout * minDistLayout = new QHBoxLayout();
@@ -49,7 +49,7 @@ MLRRTstarConfig::MLRRTstarConfig(MLRRTstarWindow * parent) {
   connect(mpBtnAdd, SIGNAL(clicked()), this, SLOT(onBtnAddClicked()));
   
   mpCheckHomotopicEnforcement = new QCheckBox();
-  if (mpParentWindow->mpViz->m_PPInfo.m_homotopic_enforcement==true) {
+  if (mpParentWindow->mpViz->m_PPInfo.mHomotopicEnforcement==true) {
     mpCheckHomotopicEnforcement->setChecked(true);
   }
   else {
@@ -117,49 +117,49 @@ void MLRRTstarConfig::onBtnAddClicked() {
 void MLRRTstarConfig::updateDisplay() {
   if(mpParentWindow) {
     if(mpParentWindow->mpViz) {
-      if( mpParentWindow->mpViz->m_PPInfo.m_min_dist_enabled==true ) {
+      if( mpParentWindow->mpViz->m_PPInfo.mMinDistEnabled==true ) {
         mpCheckMinDist->setChecked(true);
       }
       else {
         mpCheckMinDist->setChecked(false);
       }
-      if( mpParentWindow->mpViz->m_PPInfo.m_homotopic_enforcement==true ) {
+      if( mpParentWindow->mpViz->m_PPInfo.mHomotopicEnforcement==true ) {
         mpCheckHomotopicEnforcement->setChecked(true);
       }
       else {
         mpCheckHomotopicEnforcement->setChecked(false);
       }
-      mpLineEditSegmentLength->setText(QString::number(mpParentWindow->mpViz->m_PPInfo.m_segment_length));
-      mpLineEditIterationNum->setText(QString::number(mpParentWindow->mpViz->m_PPInfo.m_max_iteration_num));
-      mpLineEditCost->setText(mpParentWindow->mpViz->m_PPInfo.m_objective_file);
+      mpLineEditSegmentLength->setText(QString::number(mpParentWindow->mpViz->m_PPInfo.mSegmentLength));
+      mpLineEditIterationNum->setText(QString::number(mpParentWindow->mpViz->m_PPInfo.mMaxIterationNum));
+      mpLineEditCost->setText(mpParentWindow->mpViz->m_PPInfo.mObjectiveFile);
     }
   }
 }
 
 void MLRRTstarConfig::updateConfiguration() {
   if (mpCheckMinDist->isChecked()==true) {
-    mpParentWindow->mpViz->m_PPInfo.m_min_dist_enabled=true;
+    mpParentWindow->mpViz->m_PPInfo.mMinDistEnabled=true;
   }
   else {
-    mpParentWindow->mpViz->m_PPInfo.m_min_dist_enabled=false;
+    mpParentWindow->mpViz->m_PPInfo.mMinDistEnabled=false;
   }
   if (mpCheckHomotopicEnforcement->isChecked()==true) {
-    mpParentWindow->mpViz->m_PPInfo.m_homotopic_enforcement=true;
+    mpParentWindow->mpViz->m_PPInfo.mHomotopicEnforcement=true;
   }
   else {
-    mpParentWindow->mpViz->m_PPInfo.m_homotopic_enforcement=false;
+    mpParentWindow->mpViz->m_PPInfo.mHomotopicEnforcement=false;
   }
 
-  mpParentWindow->mpViz->m_PPInfo.m_objective_file = mpLineEditCost->text();
-  mpParentWindow->mpViz->m_PPInfo.m_max_iteration_num = mpLineEditIterationNum->text().toInt();
-    mpParentWindow->mpViz->m_PPInfo.m_segment_length = mpLineEditSegmentLength->text().toDouble();
+  mpParentWindow->mpViz->m_PPInfo.mObjectiveFile = mpLineEditCost->text();
+  mpParentWindow->mpViz->m_PPInfo.mMaxIterationNum = mpLineEditIterationNum->text().toInt();
+    mpParentWindow->mpViz->m_PPInfo.mSegmentLength = mpLineEditSegmentLength->text().toDouble();
 
 }
 
 bool MLRRTstarConfig::isCompatible(QString fitnessFile) {
   QPixmap pixmap(fitnessFile);
-  if (pixmap.width()==mpParentWindow->mpViz->m_PPInfo.m_map_width
-          && pixmap.height()==mpParentWindow->mpViz->m_PPInfo.m_map_height) {
+  if (pixmap.width()==mpParentWindow->mpViz->m_PPInfo.mMapWidth
+          && pixmap.height()==mpParentWindow->mpViz->m_PPInfo.mMapHeight) {
     return true;
   }
   return false;

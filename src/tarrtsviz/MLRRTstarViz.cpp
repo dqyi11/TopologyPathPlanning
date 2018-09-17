@@ -469,7 +469,7 @@ void MLRRTstarViz::prevFoundPath() {
   }
 }
 
-void MLRRTstarViz::next_found_path() {
+void MLRRTstarViz::nextFoundPath() {
   if ( m_PPInfo.mpFoundPaths.size() == 0 ) {
     return;
   }

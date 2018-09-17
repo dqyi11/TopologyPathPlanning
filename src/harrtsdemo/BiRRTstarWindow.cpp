@@ -135,8 +135,8 @@ void BIRRTstarWindow::onOpen() {
 
 bool BIRRTstarWindow::setupPlanning(QString filename) {
   if(mpViz) {
-    mpViz->m_PPInfo.load_from_file(filename);
-    openMap(mpViz->m_PPInfo.m_map_fullpath);
+    mpViz->m_PPInfo.loadFromFile(filename);
+    openMap(mpViz->m_PPInfo.mMapFullpath);
     if(mpBIRRTstarConfig) {
       mpBIRRTstarConfig->updateDisplay();
     }
@@ -150,7 +150,7 @@ void BIRRTstarWindow::onSave() {
 
   if(tempFilename!="") {
     if(mpViz) {
-      mpViz->m_PPInfo.save_to_file(tempFilename);
+      mpViz->m_PPInfo.saveToFile(tempFilename);
     }
   }
 }
@@ -158,7 +158,7 @@ void BIRRTstarWindow::onSave() {
 void BIRRTstarWindow::onExport() {
   QString pathFilename = QFileDialog::getSaveFileName(this, tr("Save File"), "./", tr("Txt Files (*.txt)"));
   if (pathFilename != "") {
-    mpViz->m_PPInfo.m_paths_output = pathFilename;
+    mpViz->m_PPInfo.mPathsOutput = pathFilename;
     exportPaths();
   }
 }
@@ -166,8 +166,8 @@ void BIRRTstarWindow::onExport() {
 bool BIRRTstarWindow::exportPaths() {
   if(mpViz) {
     bool success = false;
-    success = mpViz->m_PPInfo.export_paths(mpViz->m_PPInfo.m_paths_output);
-    success = mpViz->draw_path(mpViz->m_PPInfo.m_paths_output+".png");
+    success = mpViz->m_PPInfo.exportPaths(mpViz->m_PPInfo.mPathsOutput);
+    success = mpViz->drawPath(mpViz->m_PPInfo.mPathsOutput+".png");
     return success;
   }
   return false;
@@ -180,11 +180,11 @@ void BIRRTstarWindow::onLoadMap() {
   if(tempFilename != "") {
     QFileInfo fileInfo(tempFilename);
     QString filename(fileInfo.fileName());
-    mpViz->m_PPInfo.m_map_filename = filename;
-    mpViz->m_PPInfo.m_map_fullpath = tempFilename;
+    mpViz->m_PPInfo.mMapFilename = filename;
+    mpViz->m_PPInfo.mMapFullpath = tempFilename;
     qDebug("OPENING ");
     //qDebug(mpViz->m_PPInfo.m_map_filename.toStdString().c_str());
-    openMap(mpViz->m_PPInfo.m_map_fullpath);
+    openMap(mpViz->m_PPInfo.mMapFullpath);
   }
 }
 
@@ -196,17 +196,17 @@ bool BIRRTstarWindow::openMap(QString filename) {
   }
   mpMap = new QPixmap(filename);
   if(mpMap) {
-    mpViz->m_PPInfo.m_map_width = mpMap->width();
-    mpViz->m_PPInfo.m_map_height = mpMap->height();
+    mpViz->m_PPInfo.mMapWidth = mpMap->width();
+    mpViz->m_PPInfo.mMapHeight = mpMap->height();
     mpViz->setPixmap(*mpMap);
     updateTitle();
 
     int map_width = 0, map_height = 0;
     std::vector< std::vector< Point2D > > obstacles;
     mpReferenceFrameSet = new ReferenceFrameSet();
-    load_map_info( filename.toStdString(), map_width, map_height, obstacles );
+    loadMapInfo( filename.toStdString(), map_width, map_height, obstacles );
     mpReferenceFrameSet->init( map_width, map_height, obstacles );
-    mpViz->set_reference_frame_set( mpReferenceFrameSet );        
+    mpViz->setReferenceFrameSet( mpReferenceFrameSet );
     return true;
   }
   return false;
@@ -218,7 +218,7 @@ void BIRRTstarWindow::onLoadObj() {
 }
 
 void BIRRTstarWindow::onRun() {
-  if (mpViz->m_PPInfo.m_map_width <= 0 || mpViz->m_PPInfo.m_map_height <= 0) {
+  if (mpViz->m_PPInfo.mMapWidth <= 0 || mpViz->m_PPInfo.mMapHeight <= 0) {
     QMessageBox msgBox;
     msgBox.setText("Map is not initialized.");
     msgBox.exec();
@@ -245,7 +245,7 @@ void BIRRTstarWindow::onExportGrammar() {
 
   QString grammarFilename = QFileDialog::getSaveFileName(this, tr("Save File"), "./", tr("DOT Files (*.dot)"));
   if( mpReferenceFrameSet ) {
-    StringGrammar* p_grammar = mpReferenceFrameSet->get_string_grammar( mpViz->m_PPInfo.m_start.x(), mpViz->m_PPInfo.m_start.y(), mpViz->m_PPInfo.m_goal.x(), mpViz->m_PPInfo.m_goal.y() );
+    StringGrammar* p_grammar = mpReferenceFrameSet->getStringGrammar( mpViz->m_PPInfo.m_start.x(), mpViz->m_PPInfo.m_start.y(), mpViz->m_PPInfo.m_goal.x(), mpViz->m_PPInfo.m_goal.y() );
     if( p_grammar ) {
       p_grammar->output( grammarFilename.toStdString() );
       //mlrrts::ExpandingTree tree;
@@ -261,38 +261,38 @@ void BIRRTstarWindow::planPath() {
   if(mpBIRRTstar==NULL) {
 
       if (mpViz) {
-        for( std::vector<Path*>::iterator it = mpViz->m_PPInfo.mp_found_paths.begin();
-             it != mpViz->m_PPInfo.mp_found_paths.end(); it ++ ) {
+        for( std::vector<Path*>::iterator it = mpViz->m_PPInfo.mpFoundPaths.begin();
+             it != mpViz->m_PPInfo.mpFoundPaths.end(); it ++ ) {
           Path * p_path = (*it);
           delete p_path;
           p_path = NULL;
         }
-        mpViz->m_PPInfo.mp_found_paths.clear();
+        mpViz->m_PPInfo.mpFoundPaths.clear();
       }
 
-      mpViz->m_PPInfo.init_func_param();
+      mpViz->m_PPInfo.initFuncParam();
       QString msg = "INIT RRTstar ... \n";
-      msg += "SegmentLen( " + QString::number(mpViz->m_PPInfo.m_segment_length) + " ) \n";
-      msg += "MaxIterationNum( " + QString::number(mpViz->m_PPInfo.m_max_iteration_num) + " ) \n";
+      msg += "SegmentLen( " + QString::number(mpViz->m_PPInfo.mSegmentLength) + " ) \n";
+      msg += "MaxIterationNum( " + QString::number(mpViz->m_PPInfo.mMaxIterationNum) + " ) \n";
       qDebug() << msg;
 
-      mpBIRRTstar = new BIRRTstar(mpMap->width(), mpMap->height(), mpViz->m_PPInfo.m_segment_length);
-      mpBIRRTstar->set_reference_frames( mpReferenceFrameSet );
-      mpBIRRTstar->set_run_type( mpViz->m_PPInfo.m_run_type );
+      mpBIRRTstar = new BIRRTstar(mpMap->width(), mpMap->height(), mpViz->m_PPInfo.mSegmentLength);
+      mpBIRRTstar->setReferenceFrames( mpReferenceFrameSet );
+      mpBIRRTstar->setRunType( mpViz->m_PPInfo.mRunType );
       POS2D start(mpViz->m_PPInfo.m_start.x(), mpViz->m_PPInfo.m_start.y());
       POS2D goal(mpViz->m_PPInfo.m_goal.x(), mpViz->m_PPInfo.m_goal.y());
 
-      mpBIRRTstar->init(start, goal, mpViz->m_PPInfo.mp_func, mpViz->m_PPInfo.mCostDistribution, mpViz->m_PPInfo.m_grammar_type);
-      mpViz->m_PPInfo.get_obstacle_info(mpBIRRTstar->get_map_info());
-      mpViz->set_tree(mpBIRRTstar);
+      mpBIRRTstar->init(start, goal, mpViz->m_PPInfo.mpFunc, mpViz->m_PPInfo.mCostDistribution, mpViz->m_PPInfo.mGrammarType);
+      mpViz->m_PPInfo.getObstacleInfo(mpBIRRTstar->getMapInfo());
+      mpViz->setTree(mpBIRRTstar);
   }
 
-  mpViz->set_finished_planning( false );
+  mpViz->setFinishedPlanning( false );
   //mpBIRRTstar->dump_distribution("dist.txt");
-  while(mpBIRRTstar->get_current_iteration() <= mpViz->m_PPInfo.m_max_iteration_num) {
-    QString msg = "CurrentIteration " + QString::number(mpBIRRTstar->get_current_iteration()) + " ";
+  while(mpBIRRTstar->getCurrentIteration() <= mpViz->m_PPInfo.mMaxIterationNum) {
+    QString msg = "CurrentIteration " + QString::number(mpBIRRTstar->getCurrentIteration()) + " ";
     mpBIRRTstar->extend();
-    msg += QString::number(mpBIRRTstar->get_string_class_mgr()->get_string_classes().size()); 
+    msg += QString::number(mpBIRRTstar->getStringClassMgr()->getStringClasses().size());
     qDebug() << msg;
 
     QApplication::processEvents();
@@ -302,14 +302,14 @@ void BIRRTstarWindow::planPath() {
   }
 
   qDebug() << "START MERGE ";
-  mpBIRRTstar->get_string_class_mgr()->merge();
+  mpBIRRTstar->getStringClassMgr()->merge();
   qDebug() << "END MERGE ";
 
   //Path* path = mpBIRRTstar->find_path();
-  std::vector<Path*> p_paths = mpBIRRTstar->get_paths();
-  mpViz->m_PPInfo.load_paths(p_paths);
+  std::vector<Path*> p_paths = mpBIRRTstar->getPaths();
+  mpViz->m_PPInfo.loadPaths(p_paths);
 
-  mpViz->set_finished_planning( true );
+  mpViz->setFinishedPlanning( true );
   repaint();
 }
 
@@ -325,7 +325,7 @@ void BIRRTstarWindow::onAddGoal() {
 
 void BIRRTstarWindow::onSaveScreen() {
   QString tempFilename = QFileDialog::getSaveFileName(this, tr("Save PNG File"), "./", tr("PNG Files (*.png)"));
-  mpViz->save_current_viz( tempFilename );
+  mpViz->saveCurrentViz( tempFilename );
 }
 
 void BIRRTstarWindow::contextMenuRequested(QPoint point) {
@@ -334,7 +334,7 @@ void BIRRTstarWindow::contextMenuRequested(QPoint point) {
 }
 
 void BIRRTstarWindow::updateTitle() {
-  QString title = mpViz->m_PPInfo.m_map_filename;
+  QString title = mpViz->m_PPInfo.mMapFilename;
   setWindowTitle(title);
 }
 
@@ -345,9 +345,9 @@ void BIRRTstarWindow::updateStatus() {
   if(mpStatusProgressBar) {
     if(mpBIRRTstar) {
       mpStatusProgressBar->setMinimum(0);
-      mpStatusProgressBar->setMaximum(mpViz->m_PPInfo.m_max_iteration_num);
+      mpStatusProgressBar->setMaximum(mpViz->m_PPInfo.mMaxIterationNum);
       if(mpBIRRTstar) {
-        mpStatusProgressBar->setValue(mpBIRRTstar->get_current_iteration());
+        mpStatusProgressBar->setValue(mpBIRRTstar->getCurrentIteration());
       }
       else {
         mpStatusProgressBar->setValue(0);
@@ -356,15 +356,15 @@ void BIRRTstarWindow::updateStatus() {
   }
   if(mpStatusLabel) {
     QString status = "";
-    if (mpViz->get_finished_planning() == false) {
-      status += QString::fromStdString(mpViz->get_region_name());
+    if (mpViz->getFinishedPlanning() == false) {
+      status += QString::fromStdString(mpViz->getRegionName());
       status += " || ";
-      status += QString::fromStdString(mpViz->get_reference_frame_name());
+      status += QString::fromStdString(mpViz->getReferenceFrameName());
     }
     else {
-      status += QString::number( mpViz->get_found_path_index() );
+      status += QString::number( mpViz->getFoundPathIndex() );
       status += " / ";
-      status += QString::number( mpViz->m_PPInfo.mp_found_paths.size() );
+      status += QString::number( mpViz->m_PPInfo.mpFoundPaths.size() );
     }
     mpStatusLabel->setText(status);
   }
@@ -374,11 +374,11 @@ void BIRRTstarWindow::updateStatus() {
 void BIRRTstarWindow::keyPressEvent(QKeyEvent *event) {
   if ( event->key() == Qt::Key_R  ) {
     if(mpViz) {
-      if(mpViz->show_reference_frames() == true) {
-        mpViz->set_show_reference_frames( false );
+      if(mpViz->showReferenceFrames() == true) {
+        mpViz->setShowReferenceFrames( false );
       }
       else {
-        mpViz->set_show_reference_frames( true );
+        mpViz->setShowReferenceFrames( true );
       }
       updateStatus();
       repaint();
@@ -386,11 +386,11 @@ void BIRRTstarWindow::keyPressEvent(QKeyEvent *event) {
   }
   else if ( event->key() == Qt::Key_S ) {
     if(mpViz) {
-      if(mpViz->show_regions() == true) {
-        mpViz->set_show_regions( false );
+      if(mpViz->showRegions() == true) {
+        mpViz->setShowRegions( false );
       }
       else {
-        mpViz->set_show_regions( true );
+        mpViz->setShowRegions( true );
       }
       updateStatus();
       repaint();
@@ -398,17 +398,17 @@ void BIRRTstarWindow::keyPressEvent(QKeyEvent *event) {
   }
   else if ( event->key() == Qt::Key_T ) {
     if(mpViz) {
-      mpViz->switch_tree_show_type();
-      std::cout << "TREE DISP " <<mpViz->get_tree_show_type();
+      mpViz->switchTreeShowType();
+      std::cout << "TREE DISP " <<mpViz->getTreeShowType();
     }
     updateStatus();
     repaint();
   }
   else if ( event->key() == Qt::Key_I ) {
     if(mpViz) {
-      if( mpViz->get_drawed_points().size() > 1 ) {
-        mpViz->import_string_constraint( mpViz->get_drawed_points(), mpViz->m_PPInfo.m_grammar_type );
-        mpViz->set_show_drawed_points(false);
+      if( mpViz->getDrawedPoints().size() > 1 ) {
+        mpViz->importStringConstraint( mpViz->getDrawedPoints(), mpViz->m_PPInfo.mGrammarType );
+        mpViz->setShowDrawedPoints(false);
       }
     }
     updateStatus();
@@ -416,56 +416,56 @@ void BIRRTstarWindow::keyPressEvent(QKeyEvent *event) {
   }
   else if ( event->key() == Qt::Key_Up ) {
     if(mpViz) {
-      mpViz->prev_reference_frame();
+      mpViz->prevReferenceFrame();
       updateStatus();
       repaint();
     }
   }
   else if ( event->key() == Qt::Key_Down ) {
     if(mpViz) {
-      mpViz->next_reference_frame();
+      mpViz->nextReferenceFrame();
       updateStatus();
       repaint();
     }
   }
   else if ( event->key() == Qt::Key_Left ) {
     if(mpViz) {
-      mpViz->prev_found_path();
+      mpViz->prevFoundPath();
       updateStatus();
       repaint();
     }
   }
   else if ( event->key() == Qt::Key_Right ) {
     if(mpViz) {
-      mpViz->next_found_path();
+      mpViz->nextFoundPath();
       updateStatus();
       repaint();
     }
   }
   else if ( event->key() == Qt::Key_PageUp ) {
     if(mpViz) {
-      mpViz->prev_region();
+      mpViz->prevRegion();
       updateStatus();
       repaint();
     }
   }
   else if ( event->key() == Qt::Key_PageDown ) {
     if(mpViz) {
-      mpViz->next_region();
+      mpViz->nextRegion();
       updateStatus();
       repaint();
     }
   }
   else if ( event->key() == Qt::Key_Z ) {
     if(mpViz) {
-      mpViz->prev_subregion();
+      mpViz->prevSubregion();
       updateStatus();
       repaint();
     }
   }
   else if ( event->key() == Qt::Key_X ) {
     if(mpViz) {
-      mpViz->next_subregion();
+      mpViz->nextSubregion();
       updateStatus();
       repaint();
     }
@@ -477,9 +477,9 @@ void BIRRTstarWindow::onExportAllSimpleStrings() {
   QString stringFilename = QFileDialog::getSaveFileName(this, tr("Save File"), "./", tr("TXT Files (*.txt)"));
   if( mpReferenceFrameSet ) {
     std::vector< std::vector< std::string > > simple_strings;
-    StringGrammar* p_grammar = mpReferenceFrameSet->get_string_grammar( mpViz->m_PPInfo.m_start.x(), mpViz->m_PPInfo.m_start.y(), mpViz->m_PPInfo.m_goal.x(), mpViz->m_PPInfo.m_goal.y() );
+    StringGrammar* p_grammar = mpReferenceFrameSet->getStringGrammar( mpViz->m_PPInfo.m_start.x(), mpViz->m_PPInfo.m_start.y(), mpViz->m_PPInfo.m_goal.x(), mpViz->m_PPInfo.m_goal.y() );
     if( p_grammar ) {
-      simple_strings = p_grammar->get_all_simple_strings();
+      simple_strings = p_grammar->getAllSimpleStrings();
       QFile file(stringFilename);
       if( !file.open(QIODevice::WriteOnly | QIODevice::Text) ) {
         return;
@@ -490,7 +490,7 @@ void BIRRTstarWindow::onExportAllSimpleStrings() {
         for( unsigned int i=0; i < ids.size(); i ++) {
           out << ids[i].c_str() << " ";
         }
-        if( p_grammar->is_valid_string( ids )) {
+        if( p_grammar->isValidString( ids )) {
           out << "VALID";
         }
         else{
@@ -516,7 +516,7 @@ void BIRRTstarWindow::onExportStringClassHist() {
   QString pathFilename = QFileDialog::getSaveFileName(this, tr("Save File"), "./", tr("Txt Files (*.txt)"));
   if (pathFilename != "") {
     if(mpBIRRTstar) {    
-      mpBIRRTstar->get_string_class_mgr()->dump_historical_data( pathFilename.toStdString() );
+      mpBIRRTstar->getStringClassMgr()->dumpHistoricalData( pathFilename.toStdString() );
     }
   }
 }

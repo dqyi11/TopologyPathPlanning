@@ -58,7 +58,7 @@ namespace tarrts {
     void prevReferenceFrame();
     void nextReferenceFrame();
     void prevFoundPath();
-    void next_found_path();
+    void nextFoundPath();
     int  getReferenceFrameIndex() { return mReferenceFrameIndex; }
     std::string getReferenceFrameName();
     std::string getSubregionName();

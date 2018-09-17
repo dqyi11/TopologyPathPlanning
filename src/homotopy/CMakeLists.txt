@@ -16,6 +16,7 @@ target_link_libraries(${LIB}
                       ${CGAL_LIBRARIES}
                       ${BOOST_LIBRARIES}
                       ${LIBXML2_LIBRARIES}
+                      ${OpenCV_LIBRARIES}
                      )
 
 

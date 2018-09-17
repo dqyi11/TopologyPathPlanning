@@ -22,7 +22,7 @@ namespace homotopy {
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    HomotopyViz * mpViz;
+    HomotopyViz* mpViz;
 
   protected:
     void createMenuBar();
