@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(topologyPathPlanning)
 
-set(HARRTS_VERSION 1.0)
+set(TOPOLOGYPATHPLANNING_VERSION 1.0)
 
 set(INCLUDE_INSTALL_DIR "include")
 set(LIBRARY_INSTALL_DIR "lib")
