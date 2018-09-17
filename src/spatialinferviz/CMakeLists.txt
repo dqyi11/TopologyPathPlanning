@@ -5,6 +5,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 add_library(${LIB} SHARED
+            ${PROJECT_SOURCE_DIR}/include/topologyPathPlanning/spatialinferviz/SpatialInferViz.hpp
             SpatialInferViz.cpp)
 
 include_directories(

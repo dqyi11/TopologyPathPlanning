@@ -6,6 +6,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 add_library(${LIB} SHARED
             MLRRTstarPathPlanningInfo.cpp
             MLRRTstarViz.cpp
+            ${PROJECT_SOURCE_DIR}/include/topologyPathPlanning/tarrtsviz/MLRRTstarViz.hpp
            )
 
 target_link_libraries(${LIB}

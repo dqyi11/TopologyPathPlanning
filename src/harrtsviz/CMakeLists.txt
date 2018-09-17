@@ -7,6 +7,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 add_library(${LIB} SHARED
             BiRRTstarPathPlanningInfo.cpp
             BiRRTstarViz.cpp
+            ${PROJECT_SOURCE_DIR}/include/topologyPathPlanning/harrtsviz/BiRRTstarViz.hpp
            )
 
 
