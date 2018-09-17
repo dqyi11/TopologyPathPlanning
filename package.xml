@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <!-- Package Metadata -->
-  <name>tbpp</name>
+  <name>toplogyPathPlanning</name>
   <maintainer email="yi@byu.edu">Daqing Yi</maintainer>
   <description>
     Topology path planning (HARRT* and TARRT*)
