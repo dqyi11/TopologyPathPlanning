@@ -223,7 +223,7 @@ void BIRRTstarViz::paint(QPaintDevice * device) {
       rf_paintpen.setWidth(2);
       rf_painter.setPen(rf_paintpen);
 
-      if ( mReferenceFrameIndex >= mpReferenceFrames->getReferenceFrames().size() ) {
+      if ( mReferenceFrameIndex >= (signed)mpReferenceFrames->getReferenceFrames().size() ) {
         for( unsigned int rf_i = 0; rf_i < mpReferenceFrames->getReferenceFrames().size(); rf_i ++ ) {
           ReferenceFrame* rf = mpReferenceFrames->getReferenceFrames()[rf_i];
           rf_painter.drawLine( QPoint( CGAL::to_double(rf->mSegment.source().x()), CGAL::to_double(rf->mSegment.source().y()) ),
@@ -383,7 +383,7 @@ void BIRRTstarViz::prevReferenceFrame() {
 void BIRRTstarViz::nextReferenceFrame() {
   if(mpReferenceFrames) {
     if (mShowReferenceFrames) {
-      if ( mReferenceFrameIndex >= mpReferenceFrames->getReferenceFrames().size() ) {
+      if ( mReferenceFrameIndex >= (signed)mpReferenceFrames->getReferenceFrames().size() ) {
         mReferenceFrameIndex = 0;
       }else{
         mReferenceFrameIndex ++;
@@ -395,7 +395,7 @@ void BIRRTstarViz::nextReferenceFrame() {
 std::string BIRRTstarViz::getReferenceFrameName() {
 
   if (mpReferenceFrames) {
-    if ( mReferenceFrameIndex < mpReferenceFrames->getReferenceFrames().size() ) {
+    if ( mReferenceFrameIndex < (signed)mpReferenceFrames->getReferenceFrames().size() ) {
       return mpReferenceFrames->getReferenceFrames()[mReferenceFrameIndex]->mName;
     }
   }
@@ -429,7 +429,7 @@ void BIRRTstarViz::nextFoundPath() {
   if ( m_PPInfo.mpFoundPaths.size() == 0 ) {
     return;
   }
-  if ( mFoundPathIndex >= m_PPInfo.mpFoundPaths.size()-1 ) {
+  if ( mFoundPathIndex >= (signed)m_PPInfo.mpFoundPaths.size()-1 ) {
     mFoundPathIndex = -1;
   } else {
     mFoundPathIndex ++;
@@ -486,7 +486,7 @@ ReferenceFrame* BIRRTstarViz::getSelectedReferenceFrame() {
   if(mpReferenceFrames == NULL) {
       return NULL;
   }
-  if ( mReferenceFrameIndex >= mpReferenceFrames->getReferenceFrames().size() ) {
+  if ( mReferenceFrameIndex >= (signed)mpReferenceFrames->getReferenceFrames().size() ) {
     return NULL;
   }
   if ( mReferenceFrameIndex < 0 ) {
@@ -500,7 +500,7 @@ SubRegionSet* BIRRTstarViz::getSelectedSubregionSet() {
   if ( mpReferenceFrames == NULL ) {
       return NULL;
   }
-  if ( mRegionIndex >= mpReferenceFrames->getWorldMap()->getSubregionSet().size() ) {
+  if ( mRegionIndex >= (signed)mpReferenceFrames->getWorldMap()->getSubregionSet().size() ) {
     return NULL;
   }
   if ( mRegionIndex < 0 ) {
@@ -513,7 +513,7 @@ SubRegion* BIRRTstarViz::getSelectedSubregion() {
 
   SubRegionSet* p_subregion_set = getSelectedSubregionSet();
   if (p_subregion_set) {
-    if( mSubregionIndex >= 0 && mSubregionIndex < p_subregion_set->mSubregions.size() ) {
+    if( mSubregionIndex >= 0 && mSubregionIndex < (signed)p_subregion_set->mSubregions.size() ) {
       return p_subregion_set->mSubregions[ mSubregionIndex ];
     } 
     return NULL;
@@ -538,7 +538,7 @@ void BIRRTstarViz::prevRegion() {
 void BIRRTstarViz::nextRegion() {
   if(mpReferenceFrames) {
     if (mShowRegions) {
-      if ( mRegionIndex >= mpReferenceFrames->getWorldMap()->getSubregionSet().size()-1 ) {
+      if ( mRegionIndex >= (signed)mpReferenceFrames->getWorldMap()->getSubregionSet().size()-1 ) {
         mRegionIndex = -1;
         mSubregionIndex = -1;
       }else{
@@ -552,7 +552,7 @@ void BIRRTstarViz::nextRegion() {
 void BIRRTstarViz::prevSubregion() {
   if(mpReferenceFrames) {
     if (mShowRegions) {
-      if( mRegionIndex >= 0 && mRegionIndex < mpReferenceFrames->getWorldMap()->getSubregionSet().size()-1 ) {
+      if( mRegionIndex >= 0 && mRegionIndex < (signed)mpReferenceFrames->getWorldMap()->getSubregionSet().size()-1 ) {
         SubRegionSet* p_subregions = mpReferenceFrames->getWorldMap()->getSubregionSet()[ mRegionIndex ];
         if( mSubregionIndex > 0 ) {
           mSubregionIndex --;
@@ -568,9 +568,9 @@ void BIRRTstarViz::prevSubregion() {
 void BIRRTstarViz::nextSubregion() {
   if(mpReferenceFrames) {
     if (mShowRegions) {
-      if( mRegionIndex >= 0 && mRegionIndex < mpReferenceFrames->getWorldMap()->getSubregionSet().size()-1 ) {
+      if( mRegionIndex >= 0 && mRegionIndex < (signed)mpReferenceFrames->getWorldMap()->getSubregionSet().size()-1 ) {
         SubRegionSet* p_subregions = mpReferenceFrames->getWorldMap()->getSubregionSet()[ mRegionIndex ];
-        if( mSubregionIndex < p_subregions->mSubregions.size()-1 ) {
+        if( mSubregionIndex < (signed)p_subregions->mSubregions.size()-1 ) {
           mSubregionIndex ++;
         }
         else {

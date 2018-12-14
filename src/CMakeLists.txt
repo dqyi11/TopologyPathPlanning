@@ -36,13 +36,11 @@ include_directories(${CGAL_INCLUDE_DIR})
 #set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # search for the QT package, exit if not found
-find_package(Qt4 COMPONENTS QtCore QtGui QtOpenGL REQUIRED)
-if( NOT QT4_FOUND ) 
-  message( FATAL_ERROR "Qt4 not found\n" )
+find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
+if( NOT Qt5_FOUND ) 
+  message( FATAL_ERROR "Qt5 not found\n" )
   return()
 endif()
-include(${QT_USE_FILE})
-include_directories(${QT_INCLUDE_DIR})
 
 # search for the Graphviz package, exit if not found
 #find_package(Graphviz REQUIRED)

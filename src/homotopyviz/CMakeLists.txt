@@ -7,6 +7,7 @@ add_library(${LIB} SHARED
             ${PROJECT_SOURCE_DIR}/include/topologyPathPlanning/homotopyviz/HomotopyViz.hpp
             HomotopyViz.cpp)
 
+qt5_use_modules(${LIB} Widgets)
 
 target_link_libraries(${LIB} 
                       ${PROJECT_NAME}_homotopy

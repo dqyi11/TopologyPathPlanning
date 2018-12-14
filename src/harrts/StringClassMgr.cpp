@@ -53,7 +53,7 @@ void StringClass::write_historical_data( std::ostream& out ) {
   }
   out << std::endl;
   for(int i=mCreatedIterationNum;
-      i<mHistoricalData.size()+mCreatedIterationNum;i++) {
+      i<(signed)(mHistoricalData.size()+mCreatedIterationNum);i++) {
     out << i << " ";
   }
   out << std::endl;

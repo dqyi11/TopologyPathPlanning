@@ -8,6 +8,8 @@ add_library(${LIB} SHARED
             ${PROJECT_SOURCE_DIR}/include/topologyPathPlanning/spatialinferviz/SpatialInferViz.hpp
             SpatialInferViz.cpp)
 
+qt5_use_modules(${LIB} Widgets)
+
 include_directories(
                    )
 

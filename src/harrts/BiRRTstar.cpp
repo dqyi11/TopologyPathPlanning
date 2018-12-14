@@ -558,7 +558,7 @@ std::list<BIRRTNode*> BIRRTstar::findAllChildren( BIRRTNode* p_node ) {
     if (current_level_children.size()==0) {
       finished = true;
     }
-    else if (child_list.size()==child_list_num) {
+    else if ((signed)child_list.size()==child_list_num) {
       finished = true;
     }
     else {

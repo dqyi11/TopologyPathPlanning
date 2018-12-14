@@ -93,7 +93,7 @@ void MLRRTstarViz::updateVizReferenceFrames() {
 
   mVizReferenceFrames.clear();
   if( mStringClassIndex < 0 ) {
-    for( int i = 0; i < mpReferenceFrames->getReferenceFrames().size(); i ++ ) {
+    for( int i = 0; i < (signed)mpReferenceFrames->getReferenceFrames().size(); i ++ ) {
       ReferenceFrame* p_rf = mpReferenceFrames->getReferenceFrames()[i];
       mVizReferenceFrames.push_back( p_rf );
     }
@@ -384,7 +384,7 @@ void MLRRTstarViz::nextStringClass() {
   if ( mpTree ) {
     if ( mpTree->getExpandingTreeMgr() ) {
       ExpandingTreeMgr* p_mgr = mpTree->getExpandingTreeMgr();
-      if ( mStringClassIndex < p_mgr->getStringClasses().size()-1 ) {
+      if ( mStringClassIndex < (signed)p_mgr->getStringClasses().size()-1 ) {
         mStringClassIndex ++;
         updateVizSubregions();
         updateVizReferenceFrames();
@@ -434,7 +434,7 @@ void MLRRTstarViz::prevReferenceFrame() {
 
 void MLRRTstarViz::nextReferenceFrame() {
   if (mShowReferenceFrames) {
-    if ( mReferenceFrameIndex >= mVizReferenceFrames.size()-1 ) {
+    if ( mReferenceFrameIndex >= (signed)mVizReferenceFrames.size()-1 ) {
       mReferenceFrameIndex = -1;
     }else{
       mReferenceFrameIndex ++;
@@ -444,7 +444,7 @@ void MLRRTstarViz::nextReferenceFrame() {
 
 string MLRRTstarViz::getReferenceFrameName() {
 
-  if ( mReferenceFrameIndex < mpReferenceFrames->getReferenceFrames().size() ) {
+  if ( mReferenceFrameIndex < (signed)mpReferenceFrames->getReferenceFrames().size() ) {
     return mpReferenceFrames->getReferenceFrames()[mReferenceFrameIndex]->mName;
   }
   return "NO REF FRAME";
@@ -473,7 +473,7 @@ void MLRRTstarViz::nextFoundPath() {
   if ( m_PPInfo.mpFoundPaths.size() == 0 ) {
     return;
   }
-  if ( mFoundPathIndex >= m_PPInfo.mpFoundPaths.size()-1 ) {
+  if ( mFoundPathIndex >= (signed)m_PPInfo.mpFoundPaths.size()-1 ) {
     mFoundPathIndex = -1;
   } else {
     mFoundPathIndex ++;
@@ -541,7 +541,7 @@ void MLRRTstarViz::mouseReleaseEvent( QMouseEvent * event ){
 
 ReferenceFrame* MLRRTstarViz::getSelectedReferenceFrame() {
 
-  if ( mReferenceFrameIndex >= mpReferenceFrames->getReferenceFrames().size() ) {
+  if ( mReferenceFrameIndex >= (signed)mpReferenceFrames->getReferenceFrames().size() ) {
     return NULL;
   }
   if ( mReferenceFrameIndex < 0 ) {
@@ -551,7 +551,7 @@ ReferenceFrame* MLRRTstarViz::getSelectedReferenceFrame() {
 }
 
 SubRegion* MLRRTstarViz::getSelectedSubregion() {
-  if( mSubregionIndex >= 0 && mSubregionIndex < mVizSubregions.size() ) {
+  if( mSubregionIndex >= 0 && mSubregionIndex < (signed)mVizSubregions.size() ) {
     return mVizSubregions[ mSubregionIndex ];
   }
   return NULL;
@@ -571,7 +571,7 @@ void MLRRTstarViz::prevSubregion() {
 
 void MLRRTstarViz::nextSubregion() {
   if (mShowSubregions) {
-    if( mSubregionIndex < mVizSubregions.size()-1 ) {
+    if( mSubregionIndex < (signed)mVizSubregions.size()-1 ) {
       mSubregionIndex ++;
     }
     else {

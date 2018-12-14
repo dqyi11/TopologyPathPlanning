@@ -1,6 +1,8 @@
 
 set(LIB ${PROJECT_NAME}_harrts)
 
+#add_definitions(-DKDTREE_DEFINE_OSTREAM_OPERATORS)
+
 add_library(${LIB} SHARED
             BiRRTstar.cpp
             StringClassMgr.cpp

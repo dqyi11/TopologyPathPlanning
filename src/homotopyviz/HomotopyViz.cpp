@@ -1,4 +1,3 @@
-#include <cstdlib>
 #include <QPainter>
 #include <QMouseEvent>
 #include "topologyPathPlanning/homotopy/ImgLoadUtil.hpp"
@@ -64,7 +63,7 @@ bool HomotopyViz::initWorld(QString filename) {
     mpReferenceFrameSet = NULL;
   }
 
-  loadMapInfo( filename.toStdString(), map_width, map_height, conts );   
+  loadMapInfo( filename.toStdString(), map_width, map_height, conts );
   //std::cout << "CREATE WORLD " << map_width << " * " << map_height << std::endl;
   mpReferenceFrameSet = new ReferenceFrameSet();
   mpReferenceFrameSet->init( map_width, map_height, conts );
@@ -83,8 +82,8 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
     QBrush region_brush( SUBREGION_COLOR );
     region_painter.setPen(Qt::NoPen);
     for( std::vector<SubRegion*>::iterator itr = m_viz_subregions.begin();
-         itr != m_viz_subregions.end(); itr++ ) {  
-  
+         itr != m_viz_subregions.end(); itr++ ) {
+
       SubRegion* p_subreg = (*itr);
       if (p_subreg) {
         QPolygon poly;
@@ -104,7 +103,7 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
     QPen line_hl_pen( LINE_HIGHLIGHTED_COLOR );
     line_hl_pen.setWidth( LINE_WIDTH_HIGHLIGHTED );
     line_hl_painter.setPen( line_hl_pen );
- 
+
     for( std::vector< LineSubSegment* >::iterator itLSS = m_viz_subsegments.begin();
          itLSS != m_viz_subsegments.end(); itLSS++ ) {
       LineSubSegment* p_line_subsegment = (*itLSS);
@@ -262,7 +261,7 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
       }
       b_subseg_painter.end();
     }
-  
+
 
     QPainter cp_painter(this);
     QPen cp_pen( CENTER_POINT_COLOR );
@@ -334,7 +333,7 @@ void HomotopyViz::paintEvent(QPaintEvent * e) {
     draw_line_painter.setPen(draw_line_pen);
     if( mPoints.size() > 1 ) {
       for( unsigned int pi = 0; pi < mPoints.size()-1 ; pi ++ ) {
-        draw_line_painter.drawLine( mPoints[pi], mPoints[pi+1] );    
+        draw_line_painter.drawLine( mPoints[pi], mPoints[pi+1] );
       }
     }
     draw_line_painter.end();
@@ -516,7 +515,7 @@ void HomotopyViz::mousePressEvent( QMouseEvent * event ) {
   //std::cout << "mousePressEvent" << std::endl;
   if ( event->button() == Qt::LeftButton ) {
     mDragging = true;
-    mPoints.clear();    
+    mPoints.clear();
   }
 }
 
@@ -568,7 +567,7 @@ QString HomotopyViz::generate_string() {
       ref_str += "  ";
     }
     ref_str += QString::fromStdString( refs[i] );
-  } 
+  }
   return ref_str;
 }
 
@@ -576,10 +575,10 @@ SubRegionSet* HomotopyViz::getSelectedRegion() {
   SubRegionSet* p_region = NULL;
   if ( mpWorld ) {
     if ( mpWorld->getSubregionSet().size() > 0 ) {
-      if( mRegionIdx >= 0 && mRegionIdx < mpWorld->getSubregionSet().size() ) {
+      if( mRegionIdx >= 0 && mRegionIdx < (signed)mpWorld->getSubregionSet().size() ) {
         return mpWorld->getSubregionSet()[ mRegionIdx ];
       }
-    }  
+    }
   }
   return p_region;
 }
@@ -587,10 +586,10 @@ SubRegionSet* HomotopyViz::getSelectedRegion() {
 
 SubRegion* HomotopyViz::getSelectedSubregion() {
   SubRegion* p_subregion = NULL;
-  SubRegionSet* p_region = getSelectedRegion(); 
+  SubRegionSet* p_region = getSelectedRegion();
   if( p_region ) {
     if( p_region->mSubregions.size() > 0 ) {
-      if( mSubRegionIdx >= 0 && mSubRegionIdx < p_region->mSubregions.size() ) {
+      if( mSubRegionIdx >= 0 && mSubRegionIdx < (signed)p_region->mSubregions.size() ) {
         return p_region->mSubregions[mSubRegionIdx];
       }
     }
@@ -602,20 +601,20 @@ LineSubSegmentSet* HomotopyViz::getSelectedLineSubsegmentSet() {
   LineSubSegmentSet* p_subseg_set = NULL;
   if ( mpWorld ) {
     if ( mpWorld->getLinesubsegmentSet().size() > 0 ) {
-      if( mSubsegmentSetIdx >= 0 && mSubsegmentSetIdx < mpWorld->getLinesubsegmentSet().size() ) {
+      if( mSubsegmentSetIdx >= 0 && mSubsegmentSetIdx < (signed)mpWorld->getLinesubsegmentSet().size() ) {
         return mpWorld->getLinesubsegmentSet()[ mSubsegmentSetIdx ];
       }
-    }  
+    }
   }
   return p_subseg_set;
 }
 
 LineSubSegment* HomotopyViz::getSelectedLineSubsegment() {
-  LineSubSegment* p_subseg= NULL;  
-  LineSubSegmentSet* p_subseg_set = getSelectedLineSubsegmentSet(); 
+  LineSubSegment* p_subseg= NULL;
+  LineSubSegmentSet* p_subseg_set = getSelectedLineSubsegmentSet();
   if( p_subseg_set ) {
     if( p_subseg_set->mSubsegs.size() > 0 ) {
-      if( mSubsegmentIdx >= 0 && mSubsegmentIdx < p_subseg_set->mSubsegs.size() ) {
+      if( mSubsegmentIdx >= 0 && mSubsegmentIdx < (signed)p_subseg_set->mSubsegs.size() ) {
         return p_subseg_set->mSubsegs[mSubsegmentIdx];
       }
     }
@@ -628,7 +627,7 @@ void HomotopyViz::updateVizSubregions() {
   if( SUBREGION == mMode ) {
     SubRegionSet* p_region = getSelectedRegion();
     if( p_region ) {
-      SubRegion* p_subregion = getSelectedSubregion(); 
+      SubRegion* p_subregion = getSelectedSubregion();
       if (p_subregion) {
         m_viz_subregions.push_back( p_subregion );
       }
@@ -659,7 +658,7 @@ void HomotopyViz::updateVizLineSubsegments() {
   if( SUBREGION == mMode ) {
     SubRegionSet* p_region = getSelectedRegion();
     if( p_region ) {
-      SubRegion* p_subregion = getSelectedSubregion(); 
+      SubRegion* p_subregion = getSelectedSubregion();
       if (p_subregion) {
         for( unsigned int i=0; i < p_subregion->mNeighbors.size(); i++ ) {
           LineSubSegment* p_subseg = p_subregion->mNeighbors[i];
@@ -686,8 +685,8 @@ void HomotopyViz::updateVizLineSubsegments() {
             }
           }
         }
-          
-      } 
+
+      }
     }
   }
   else if( LINE_SUBSEGMENT == mMode ) {
@@ -695,13 +694,13 @@ void HomotopyViz::updateVizLineSubsegments() {
     if( p_subseg_set ) {
       LineSubSegment* p_subseg = getSelectedLineSubsegment();
       if( p_subseg ) {
-        m_viz_subsegments.push_back( p_subseg ); 
+        m_viz_subsegments.push_back( p_subseg );
       }
       else {
         for( unsigned int i=0; i < p_subseg_set->mSubsegs.size(); i++ ) {
           LineSubSegment* p_subseg = p_subseg_set->mSubsegs[i];
           if( p_subseg ){
-            m_viz_subsegments.push_back( p_subseg ); 
+            m_viz_subsegments.push_back( p_subseg );
           }
         }
       }

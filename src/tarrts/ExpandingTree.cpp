@@ -111,7 +111,7 @@ void StringClass::writeHistoricalData( std::ostream& out ) {
   }
   out << std::endl;
   for(int i=m_created_iteration_num;
-      i<m_historical_data.size()+m_created_iteration_num;i++) {
+      i<(signed)(m_historical_data.size()+m_created_iteration_num);i++) {
     out << i << " ";
   }
   out << std::endl;
@@ -390,7 +390,7 @@ std::vector< StringClass* > ExpandingTree::init( homotopy::StringGrammar * p_gra
 
 int ExpandingTree::getIndex( ExpandingNode* p_node ) {
 
-  for( int i = 0; i < mNodes.size(); i++ ) {
+  for( int i = 0; i < (signed)mNodes.size(); i++ ) {
     if( mNodes[i] == p_node ) {
       return i;
     }

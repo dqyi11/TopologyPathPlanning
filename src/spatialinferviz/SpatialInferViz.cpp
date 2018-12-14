@@ -531,7 +531,7 @@ void SpatialInferViz::prevStringClass() {
 
 void SpatialInferViz::nextStringClass() {
   if( mpMgr ) {
-    if( mStringClassIdx < mpMgr->mpStringClasses.size()-1 ) {
+    if( mStringClassIdx < (signed)mpMgr->mpStringClasses.size()-1 ) {
       mStringClassIdx ++;
       updateVizStringClass();
     }
@@ -611,7 +611,7 @@ SubRegionSet* SpatialInferViz::getSelectedRegion() {
   SubRegionSet* p_region = NULL;
   if ( mpMgr->getWorldMap() ) {
     if ( mpMgr->getWorldMap()->getSubregionSet().size() > 0 ) {
-      if( mRegionIdx >= 0 && mRegionIdx < mpMgr->getWorldMap()->getSubregionSet().size() ) {
+      if( mRegionIdx >= 0 && mRegionIdx < (signed)mpMgr->getWorldMap()->getSubregionSet().size() ) {
         return mpMgr->getWorldMap()->getSubregionSet()[ mRegionIdx ];
       }
     }  
@@ -625,7 +625,7 @@ SubRegion* SpatialInferViz::getSelectedSubregion() {
   SubRegionSet* p_region = getSelectedRegion(); 
   if( p_region ) {
     if( p_region->mSubregions.size() > 0 ) {
-      if( mSubRegionIdx >= 0 && mSubRegionIdx < p_region->mSubregions.size() ) {
+      if( mSubRegionIdx >= 0 && mSubRegionIdx < (signed)p_region->mSubregions.size() ) {
         return p_region->mSubregions[mSubRegionIdx];
       }
     }
@@ -636,7 +636,7 @@ SubRegion* SpatialInferViz::getSelectedSubregion() {
 StringClass* SpatialInferViz::getSelectedStringClass() {
   StringClass* p_string_class = NULL;
   if( mpMgr->mpStringClasses.size() > 0 ) {
-    if( mStringClassIdx >= 0 && mStringClassIdx < mpMgr->mpStringClasses.size() ) {
+    if( mStringClassIdx >= 0 && mStringClassIdx < (signed)mpMgr->mpStringClasses.size() ) {
       return mpMgr->mpStringClasses[mStringClassIdx];
     }
   } 
@@ -647,7 +647,7 @@ LineSubSegmentSet* SpatialInferViz::getSelectedLineSubsegmentSet() {
   LineSubSegmentSet* p_subseg_set = NULL;
   if ( mpMgr->getWorldMap() ) {
     if ( mpMgr->getWorldMap()->getLinesubsegmentSet().size() > 0 ) {
-      if( mSubsegmentSetIdx >= 0 && mSubsegmentSetIdx < mpMgr->getWorldMap()->getLinesubsegmentSet().size() ) {
+      if( mSubsegmentSetIdx >= 0 && mSubsegmentSetIdx < (signed)mpMgr->getWorldMap()->getLinesubsegmentSet().size() ) {
         return mpMgr->getWorldMap()->getLinesubsegmentSet()[ mSubsegmentSetIdx ];
       }
     }  
@@ -660,7 +660,7 @@ LineSubSegment* SpatialInferViz::getSelectedLineSubsegment() {
   LineSubSegmentSet* p_subseg_set = getSelectedLineSubsegmentSet(); 
   if( p_subseg_set ) {
     if( p_subseg_set->mSubsegs.size() > 0 ) {
-      if( mSubsegmentIdx >= 0 && mSubsegmentIdx < p_subseg_set->mSubsegs.size() ) {
+      if( mSubsegmentIdx >= 0 && mSubsegmentIdx < (signed)p_subseg_set->mSubsegs.size() ) {
         return p_subseg_set->mSubsegs[mSubsegmentIdx];
       }
     }
